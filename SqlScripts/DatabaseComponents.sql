@@ -619,3 +619,135 @@ CREATE FUNCTION SetTechnologyData (
       END;
   $$
   LANGUAGE 'plpgsql';
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-02-15
+-- Description: Script to get all Technology Data
+-- ##########################################################################
+Create a complete Technology Data
+Input paramteres: none	
+Return Value: Table with all TechnologyData 
+######################################################*/
+CREATE FUNCTION GetAllTechnologyData() 
+	RETURNS TABLE
+    	(
+    technologydataid integer,
+    technologydatauuid character(1),
+    technologyid integer,
+    technologydataname character varying(250),
+    technologydata character varying(32672),
+    technologydatadescription character varying(32672),
+    licensefee numeric(21, 4),
+    createdat timestamp without time zone,
+    createdby integer,
+    updateat timestamp without time zone,
+    updatedby integer
+        )
+    AS $$ 
+    SELECT  technologydataid,
+    		technologydatauuid,
+    		technologyid,
+    		technologydataname,
+    		technologydata,
+    		technologydatadescription,
+    		licensefee,
+    		createdat,
+    		createdby,	
+    		updateat,
+    		updatedby
+    FROM TechnologyData $$
+    LANGUAGE SQL;
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-02-15
+-- Description: Script to get all Components
+-- ##########################################################################
+Get all Components
+Input paramteres: none	
+Return Value: Table with all Components 
+######################################################*/
+CREATE FUNCTION GetAllComponents() 
+	RETURNS TABLE
+    	(
+    componentid integer,
+    componentname character varying(250),
+    componentparentid integer,
+    componentdescription character varying(32672), 
+    createdat timestamp without time zone,
+    createdby integer,
+    updatedat timestamp without time zone,
+    updatedby integer
+        )
+    AS $$ 
+    SELECT  componentid,
+    		componentname,
+    		componentparentid,
+		    componentdescription, 
+    		createdat,
+    		createdby,
+    		updatedat,
+    		updatedby 
+    FROM Components $$
+    LANGUAGE SQL;
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-02-16
+-- Description: Script to get all Tags
+-- ##########################################################################
+Get all Tags
+Input paramteres: none	
+Return Value: Table with all Tags 
+######################################################*/
+CREATE FUNCTION GetAllTags() 
+	RETURNS TABLE
+    	(
+    tagid integer,
+    tagname character varying(250),    
+    createdat timestamp without time zone,
+    createdby integer,
+    updatedat timestamp without time zone,
+    updatedby integer
+        )
+    AS $$ 
+    SELECT  tagid,
+    		tagname, 
+    		createdat,
+    		createdby,
+    		updatedat,
+    		updatedby 
+    FROM Tags $$
+    LANGUAGE SQL;
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-02-16
+-- Description: Script to get all Technologies
+-- ##########################################################################
+Get all Technologies
+Input paramteres: none	
+Return Value: Table with all Technologies
+######################################################*/
+CREATE FUNCTION GetAllTechnologies() 
+	RETURNS TABLE
+    	(
+    technologygid integer,
+    technologyname character varying(250),
+    technologydescription character varying(32672),            
+    createdat timestamp without time zone,
+    createdby integer,
+    updatedat timestamp without time zone,
+    updatedby integer
+        )
+    AS $$ 
+    SELECT  technologyid,
+    		technologyname, 
+            technologydescription, 
+    		createdat,
+    		createdby,
+    		updatedat,
+    		updatedby 
+    FROM Technologies $$
+    LANGUAGE SQL;

@@ -1,0 +1,186 @@
+swagger: '2.0'
+info:
+  version: 0.0.1
+  title: MarketplaceCore Database Rest API
+paths:
+  
+  
+  /getAllUsers:
+    get:
+      description: gets all users
+      parameters:
+        - name: userUUID
+          in: query
+          description: system client userid
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+              
+  /getAllTechnologyData:
+    get:
+      description: gets all technology data
+      parameters:
+        - name: userUUID
+          in: query
+          description: system client userid
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TechnologyData'
+              
+  /getAllTags:
+    get:
+      description: gets all tags
+      parameters:
+        - name: userUUID
+          in: query
+          description: system client userid
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Tags'
+              
+  /getAllComponents:
+    get:
+      description: gets all components
+      parameters:
+        - name: userUUID
+          in: query
+          description: system client userid
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Components'
+  
+  /getAllTechnologies:
+    get:
+      description: gets all technologies
+      parameters:
+        - name: userUUID
+          in: query
+          description: system client userid
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Technologies'
+          
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+      firstname:
+        type: string
+      lastname:
+        type: string
+      email:
+        type: string
+        
+  TechnologyData:
+    type: object
+    properties:
+      technologydataid:
+        type: integer
+      technologydataname:
+        type: string
+      technologydatadescription:
+        type: string
+      licensefee:
+        type: number 
+      createdat: 
+       type: string
+      createdby:
+       type: string
+      updatedat: 
+       type: string
+      updatedby: 
+       type: string
+  
+  Tags:
+   type: object
+   properties:
+     tagid: 
+      type: integer
+     tagname:
+      type: string
+     createdat: 
+      type: string
+     createdby:
+      type: string
+     updatedat: 
+      type: string
+     updatedby: 
+      type: string
+  
+  Components:
+   type: object
+   properties:
+     componentid: 
+      type: integer
+     componentname:
+      type: string
+     componentparentid:
+      type: integer
+     componentdescription:
+      type: string
+     createdat: 
+      type: string
+     createdby:
+      type: string
+     updatedat: 
+      type: string
+     updatedby: 
+      type: string
+      
+  Technologies:
+   type: object
+   properties:
+     technologyid: 
+      type: integer
+     technologyname:
+      type: string
+     technologydescription:
+      type: string
+     createdat: 
+      type: string
+     createdby:
+      type: string
+     updatedat: 
+      type: string
+     updatedby: 
+      type: string
+    
+    
+     
+     
+      
+  
+      
+      
