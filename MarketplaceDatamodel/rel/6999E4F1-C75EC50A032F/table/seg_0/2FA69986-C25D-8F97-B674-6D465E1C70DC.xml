@@ -1,0 +1,76 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="2FA69986-C25D-8F97-B674-6D465E1C70DC" name="RolePermissions">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:00:40 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="PermissionID" id="3B869160-A4BC-4EC7-8B48-125CBEA69F69">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:01:13 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>23FD7D4B-1524-3CF5-E62E-FE1B3723E311</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="52B2A504-4D86-27EE-6835-FA60371202F6" referredColumn="23FD7D4B-1524-3CF5-E62E-FE1B3723E311"/>
+</associations>
+</Column>
+<Column name="RoleID" id="25C31D9E-08B8-CA00-2F7B-F473878304B2">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:01:13 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>B330C503-FE73-0A66-6036-003DAF06E6DB</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="7DC5FA19-01F6-3E35-2FB5-842BF599D33D" referredColumn="B330C503-FE73-0A66-6036-003DAF06E6DB"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="918E6CEA-AF46-BE30-C3A5-1D7430C7577A" name="RolePermissions_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:01:13 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="3B869160-A4BC-4EC7-8B48-125CBEA69F69"/>
+<colUsage columnID="25C31D9E-08B8-CA00-2F7B-F473878304B2"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="15B4AFEB-514F-EE79-CFE0-DB194E6B818C" name="RolePermissions_Permissions_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:01:17 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="3B869160-A4BC-4EC7-8B48-125CBEA69F69"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="02832DB4-A13D-448C-873A-07CA124B903A" name="RolePermissions_Role_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:01:26 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="25C31D9E-08B8-CA00-2F7B-F473878304B2"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

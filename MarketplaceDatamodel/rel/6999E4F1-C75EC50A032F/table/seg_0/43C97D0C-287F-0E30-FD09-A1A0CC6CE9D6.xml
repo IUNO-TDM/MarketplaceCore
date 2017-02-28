@@ -1,0 +1,59 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="43C97D0C-287F-0E30-FD09-A1A0CC6CE9D6" name="Conditions">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:12:18 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ConditionID" id="8C162F3C-E3C6-4AA2-7DC6-23EA2DEAF813">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:13:09 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ConditionName" id="538B1C34-559A-B06C-B3BC-8702ABB5F3A8">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:13:09 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>50</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ConditionDescription" id="5D976BE8-42F8-551E-3EA3-8DC5250ECE90">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:13:09 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>max</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="9C9093F3-8612-9C9B-BF93-918EDE002DEB" name="Conditions_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:13:14 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="8C162F3C-E3C6-4AA2-7DC6-23EA2DEAF813"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

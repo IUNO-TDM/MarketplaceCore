@@ -8,7 +8,8 @@
 -- Insert System User
 DO
  $$
-    DECLARE vUserID int; 
+    DECLARE vUserID uuid; 
+			vCompParentID uuid;
 	BEGIN
     	-- Just in case. set all sequences to start point
         ALTER SEQUENCE userid RESTART WITH 1;
@@ -22,94 +23,99 @@ DO
             'System', 		-- <UserFirstName>
             'Admin', 		-- <UserLastName>
             'system@admin.com' -- <EmailAddress>
-        );
+        );	
+		
         -- Create Technologies
             -- Get UserID
-            vUserID := (select max(userid) from users);            
+            vUserID := (select useruuid from users where userid = 1);            
         perform public.createtechnology(
             'Juice Mixer',			-- <technologyname character varying>, 
             'Machine to mix juice',	-- <technologydescription character varying>, 
             vUserID 				-- <createdby integer>
         );
         -- Create Components & Attributes
+						
         perform public.setcomponent(
             'Root',   			-- <componentname character varying>, 
-            1,	      			-- <componentparentid integer>, 
+            'Root',	      			-- <componentparentid integer>, 
             'Root component', 	-- <componentdescription character varying>, 
             '{Root}',			-- <attributelist text[]>, 
-            '{1}',  				-- <technologylist integer[]>, 
+            '{Juice Mixer}',  				-- <technologylist text[]>, 
             vUserID 			-- <createdby integer>
          );
         -- Orange
         perform public.setcomponent(
             'Orange Juice',		-- <componentname character varying>, 
-            1,	      			-- <componentparentid integer>, 
+            'Root',	      			-- <componentparentid integer>, 
             'Orange Juice', 	-- <componentdescription character varying>, 
             '{Normal}',			-- <attributelist text[]>, 
-            '{1}', 				-- <technologylist integer[]>, 
+            '{Juice Mixer}', 				-- <technologylist text[]>, 
             vUserID 			-- <createdby integer>
          );
         -- Apple
         perform public.setcomponent(
             'Apple Juice',		-- <componentname character varying>, 
-            1,	      			-- <componentparentid integer>, 
+            'Root',	      			-- <componentparentid integer>, 
             'Apple Juice',  	-- <componentdescription character varying>, 
             '{Normal}',			-- <attributelist text[]>, 
-            '{1}', 				-- <technologylist integer[]>, 
+            '{Juice Mixer}', 				-- <technologylist text[]>, 
             vUserID 			-- <createdby integer>
          );
         -- Cola
         perform public.setcomponent(
             'Cola',				-- <componentname character varying>, 
-            1,	      			-- <componentparentid integer>, 
+            'Root',	      			-- <componentparentid integer>, 
             'Cola',			 	-- <componentdescription character varying>, 
             '{Normal}',			-- <attributelist text[]>, 
-            '{1}', 				-- <technologylist integer[]>, 
+            '{Juice Mixer}', 				-- <technologylist text[]>, 
             vUserID 			-- <createdby integer>
          );
          -- Mango
         perform public.setcomponent(
             'Mango Juice',		-- <componentname character varying>, 
-            1,	      			-- <componentparentid integer>, 
+            'Root',	      			-- <componentparentid integer>, 
             'Mango Juice', 		-- <componentdescription character varying>, 
             '{Normal}',			-- <attributelist text[]>, 
-            '{1}', 				-- <technologylist integer[]>, 
+            '{Juice Mixer}', 				-- <technologylist text[]>, 
             vUserID 			-- <createdby integer>
          );
         -- Ginger
         perform public.setcomponent(
             'Ginger Sirup',		-- <componentname character varying>, 
-            1,	      			-- <componentparentid integer>, 
+            'Root',	      			-- <componentparentid integer>, 
             'Ginger Sirup', 	-- <componentdescription character varying>, 
             '{Normal}',			-- <attributelist text[]>, 
-            '{1}', 				-- <technologylist integer[]>, 
+            '{Juice Mixer}', 				-- <technologylist text[]>, 
             vUserID 			-- <createdby integer>
          );
         -- Banana
         perform public.setcomponent(
             'Banana Juice',		-- <componentname character varying>, 
-            1,	      			-- <componentparentid integer>, 
+            'Root',	      			-- <componentparentid integer>, 
             'Banana Juice', 	-- <componentdescription character varying>, 
             '{Normal}',			-- <attributelist text[]>, 
-            '{1}', 				-- <technologylist integer[]>, 
+            '{Juice Mixer}', 				-- <technologylist text[]>, 
             vUserID 			-- <createdby integer>
          );
          -- Cherry
         perform public.setcomponent(
             'Cherry Juice',		-- <componentname character varying>, 
-            1,	      			-- <componentparentid integer>, 
+            'Root',	      			-- <componentparentid integer>, 
             'Cherry Juice', 	-- <componentdescription character varying>, 
             '{Normal}',			-- <attributelist text[]>, 
-            '{1}', 				-- <technologylist integer[]>, 
+            '{Juice Mixer}', 				-- <technologylist text[]>, 
             vUserID 			-- <createdby integer>
          );
    END;
- $$
+ $$;
  
 -- select * from components;
  
 DO 
 $$
+-- Get UserID
+        DECLARE  vUserUUID uuid := (select useruuid from users where userid = 1);
+				 vTechnologyUUID uuid := (select technologyuuid from technologies where technologyid = 1);
   BEGIN
   		-- Create TechnologyData      
         -- Cherry with Mango
@@ -117,10 +123,10 @@ $$
             'CheMa',		     				 -- <technologydataname character varying>, 
             '123456789',	     				 -- <technologydata character varying>, 
             'Cherry with Mango', 				 -- <technologydatadescription character varying>, 
-            1,    								 -- <vtechnologyid integer>, 
+            vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             4.99,    			 				 -- <licensefee numeric>, 
             '{Delicious, Cherry, Mango, Yummy}', -- <taglist text[]>, 
-            1,    						 		 -- <createdby integer>, 
+            vUserUUID,    						 		 -- <createdby integer>, 
             '{5,8}'    							 -- <componentlist integer[]>
          );
          -- Cherry with Cola
@@ -128,10 +134,10 @@ $$
             'CheCo',		     				 -- <technologydataname character varying>, 
             '123456789',	     				 -- <technologydata character varying>, 
             'Cherry with Mango', 				 -- <technologydatadescription character varying>, 
-            1,    								 -- <vtechnologyid integer>, 
+            vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             1.99,    			 				 -- <licensefee numeric>, 
             '{Delicious, Cherry, Cola, Refreshing}', -- <taglist text[]>, 
-            1,    						 -- <createdby integer>, 
+            vUserUUID,    						 -- <createdby integer>, 
             '{5,8}'    								 -- <componentlist integer[]>
          );
           -- Ginger, Orange
@@ -139,10 +145,10 @@ $$
             'Ginge',		     				 -- <technologydataname character varying>, 
             '123456789',	     				 -- <technologydata character varying>, 
             'Orange with Ginger', 				 -- <technologydatadescription character varying>, 
-            1,    								 -- <vtechnologyid integer>, 
+            vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             2.99,    			 				 -- <licensefee numeric>, 
             '{Delicious, Ginger, Orange}', -- <taglist text[]>, 
-            1,    						 -- <createdby integer>, 
+            vUserUUID,    						 -- <createdby integer>, 
             '{2,6}'    								 -- <componentlist integer[]>
          );
          -- Banana, Mango, Orange
@@ -150,10 +156,10 @@ $$
             'Bamao',		     				 -- <technologydataname character varying>, 
             '123456789',	     				 -- <technologydata character varying>, 
             'Delicious Banana, Mango, Orange juice', 				 -- <technologydatadescription character varying>, 
-            1,    								 -- <vtechnologyid integer>, 
+            vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             3.99,    			 				 -- <licensefee numeric>, 
             '{Delicious, Banana, Orange, Mango, Tasty}', -- <taglist text[]>, 
-            1,    						 -- <createdby integer>, 
+            vUserUUID,    						 -- <createdby integer>, 
             '{2,5,7}'    								 -- <componentlist integer[]>
          );
 	END;

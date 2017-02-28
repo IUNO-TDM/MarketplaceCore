@@ -1,0 +1,130 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="267FF5E4-FBE9-0D0E-8FF0-E5B7CDDB734E" name="TechnologyDataRating">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 10:45:32 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="RatingID" id="E3CC5045-E3CE-B410-2DA1-E65EE24ABBF6">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 07:44:57 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="RatingValueID" id="C8C2F108-001C-42ED-BA85-C3CAB5E7ABC2">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 07:45:25 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>AB433DD9-DFEA-6926-AECC-7C7E9714892B</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="127BDD25-A13C-C9D0-8E3F-9CD7F0D50450" referredColumn="AB433DD9-DFEA-6926-AECC-7C7E9714892B"/>
+</associations>
+</Column>
+<Column name="UserID" id="E208F2CD-283E-7F98-DA2A-3B69443F0B2B">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:36:45 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>AFB21320-926B-8DE2-48CC-05BDF43D0E03</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="49FDFAFB-2B92-29BD-BA93-FF5F4D690B4F" referredColumn="AFB21320-926B-8DE2-48CC-05BDF43D0E03"/>
+</associations>
+</Column>
+<Column name="ProductID" id="E595319C-D84C-F631-C6D5-2A4B62F6192E">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:36:57 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>4566F100-B17A-58EC-6C93-BEAA7F73B364</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="8B56DF50-D9CE-33AA-2FC3-1030DEAFF5B7" referredColumn="4566F100-B17A-58EC-6C93-BEAA7F73B364"/>
+</associations>
+</Column>
+<Column name="CreateAt" id="AC20E39A-42AB-5FB6-A64A-B08E7BB56376">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:44:57 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="UpdateAt" id="979030E6-6071-E355-9074-6164FBA64755">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:45:07 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="6595867C-BCE2-3FC8-804C-8AEE87B82DC6" name="Rating_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 07:44:57 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="E3CC5045-E3CE-B410-2DA1-E65EE24ABBF6"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="F37A83F4-703B-26C6-3A9D-24AD2601CD84" name="Rating_RatingValues_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 07:59:17 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="C8C2F108-001C-42ED-BA85-C3CAB5E7ABC2"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="76EF0486-6299-B871-A59B-D66DA3FD2B0A" name="Rating_Product_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:37:27 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="E595319C-D84C-F631-C6D5-2A4B62F6192E"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="D35C393F-480D-1FA4-688D-C5720BC28405" name="TechnologyDataRating_User_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-07 09:02:43 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="E208F2CD-283E-7F98-DA2A-3B69443F0B2B"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

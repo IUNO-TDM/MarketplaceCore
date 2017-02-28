@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<LogicalDesign class="oracle.dbtools.crest.model.design.logical.LogicalDesign" name="Logical" id="52B4B76C-3BAD-88E4-C972-D7A5165956E8" mainViewID="0C05EB24-E162-EC79-C17A-845BC4830E95">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 16:02:43 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<shouldBeOpen>false</shouldBeOpen>
+</LogicalDesign>

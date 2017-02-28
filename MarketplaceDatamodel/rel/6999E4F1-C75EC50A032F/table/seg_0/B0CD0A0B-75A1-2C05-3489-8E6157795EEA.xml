@@ -1,0 +1,35 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="B0CD0A0B-75A1-2C05-3489-8E6157795EEA" name="RatingValues">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 07:45:34 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="RatingValueID" id="AB433DD9-DFEA-6926-AECC-7C7E9714892B">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 07:59:13 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="920A2486-92C2-C650-314D-CF137138EEC5" name="RatingValues_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 07:59:13 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="AB433DD9-DFEA-6926-AECC-7C7E9714892B"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

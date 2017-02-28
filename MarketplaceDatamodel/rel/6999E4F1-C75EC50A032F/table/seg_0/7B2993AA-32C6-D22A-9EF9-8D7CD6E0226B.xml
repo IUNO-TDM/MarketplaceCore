@@ -1,0 +1,60 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="7B2993AA-32C6-D22A-9EF9-8D7CD6E0226B" name="Account">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 09:55:53 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="AccountID" id="F6F15EF3-00C7-76BC-087C-BDA611DE01F7">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 09:56:08 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="UserID" id="B355A87E-18A7-9CF6-EC5C-46A8E0796FFE">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-07 07:53:52 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>AFB21320-926B-8DE2-48CC-05BDF43D0E03</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="D37D93B5-7284-7EF9-F8BB-07362C8801F8" referredColumn="AFB21320-926B-8DE2-48CC-05BDF43D0E03"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="0387971E-1151-7D0C-0873-9ECF6D0B2A78" name="Account_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 08:08:35 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="F6F15EF3-00C7-76BC-087C-BDA611DE01F7"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="E4AD16F1-6DEE-946D-55BF-E83A2B027941" name="Account_User_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-07 07:54:01 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="B355A87E-18A7-9CF6-EC5C-46A8E0796FFE"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

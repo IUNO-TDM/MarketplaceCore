@@ -1,0 +1,58 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="5AF744CD-F160-EFE6-EA8D-977DE80CDAC9" name="Role">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 17:08:38 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="RoleID" id="B330C503-FE73-0A66-6036-003DAF06E6DB">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 17:09:24 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="RoleName" id="5C3A36D5-3ACA-2342-5EA0-FE9C7697CC28">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 17:09:24 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypeSize>250</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="RoleDescription" id="C49BAD26-158D-3020-BF5E-6F67C83DD721">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 17:09:24 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypeSize>max</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="D9D98326-97D5-3E8E-5877-C9623736AEDD" name="Role_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 17:09:24 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="B330C503-FE73-0A66-6036-003DAF06E6DB"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

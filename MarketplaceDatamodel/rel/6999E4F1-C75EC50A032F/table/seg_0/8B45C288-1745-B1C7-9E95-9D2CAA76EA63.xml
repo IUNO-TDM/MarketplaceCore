@@ -1,0 +1,57 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="8B45C288-1745-B1C7-9E95-9D2CAA76EA63" name="Log">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:52:00 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="LogID" id="3211FC63-184F-F7CC-3F5B-953FFC1C274C">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:52:11 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="LogMessage" id="FC01D8D7-EAFF-C9B7-BBCD-89BC3CC508DF">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 15:42:49 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypeSize>max</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CreateAt" id="6198AC61-42D6-19E2-F239-1C504AE46AB5">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 15:42:49 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="EFB12573-983A-8FC2-DCAC-081315B2CCCB" name="Log_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 15:42:49 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="3211FC63-184F-F7CC-3F5B-953FFC1C274C"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>
