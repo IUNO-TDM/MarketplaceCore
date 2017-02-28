@@ -1,0 +1,109 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="FB62E654-7D35-4D48-A488-D3AEE8D2296A" name="Components">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 09:44:11 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ComponentParentID" id="D656AA5A-824B-5CC0-13E3-88D990E91559">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 09:44:32 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ComponentChildID" id="1A222A93-A814-BE9F-A61B-0CE00EEAD931">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 09:45:02 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>D656AA5A-824B-5CC0-13E3-88D990E91559</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="FC3B28F9-6F28-7314-EFD8-C12D8833942A" referredColumn="D656AA5A-824B-5CC0-13E3-88D990E91559"/>
+</associations>
+</Column>
+<Column name="ComponentName" id="245B2175-7AEC-01BA-38C0-ED40E7F6AE88">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 09:45:43 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypeSize>250</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ComponentDescription" id="76F873CC-581F-3E5A-597B-AD3D6EA0CD31">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 09:45:43 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypeSize>max</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="AttributeID" id="073EB0F1-394C-5FCF-1D64-B95140AD3E77">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 15:45:46 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>FC259F37-E3C0-C8C2-8713-536D5A8E8E1D</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="67C6D003-E7F6-0F0B-BAA1-725C837D9890" referredColumn="FC259F37-E3C0-C8C2-8713-536D5A8E8E1D"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="EBBFA5B9-AB8F-2545-2A02-BBD873320EBE" name="Components_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 09:44:32 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="D656AA5A-824B-5CC0-13E3-88D990E91559"/>
+<colUsage columnID="1A222A93-A814-BE9F-A61B-0CE00EEAD931"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="4CD7906A-8DBE-3CCF-DD0D-4791291EE394" name="Components_Components_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 09:45:51 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="1A222A93-A814-BE9F-A61B-0CE00EEAD931"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="665B9349-C23F-80B4-0709-8227998B539F" name="Components_Attribute_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 15:45:53 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="073EB0F1-394C-5FCF-1D64-B95140AD3E77"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

@@ -1,0 +1,137 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="DA6A54F5-15E4-1C79-26BB-504E90B44C32" name="UserRating">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:38:18 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="RatingID" id="75DAE498-3B1A-BA3D-1571-907092729314">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:38:18 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NNC_TechnologyDataRatingv1_RatingID</notNullConstraintName>
+</Column>
+<Column name="RatingValueID" id="8DDD7E3C-BF3D-2821-E901-7B0EF7446256">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:38:18 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>AB433DD9-DFEA-6926-AECC-7C7E9714892B</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NNC_TechnologyDataRatingv1_RatingValueID</notNullConstraintName>
+<associations>
+<colAssociation fkAssociation="7E0349ED-3534-A2EA-C912-38D6B1208142" referredColumn="AB433DD9-DFEA-6926-AECC-7C7E9714892B"/>
+</associations>
+</Column>
+<Column name="EvaluaterID" id="C260EC57-5E7C-3C61-4C52-E2E21776D194">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:38:18 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>AFB21320-926B-8DE2-48CC-05BDF43D0E03</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="D4BE5EC9-DE30-C2ED-E84E-9BB3083D6FA4" referredColumn="AFB21320-926B-8DE2-48CC-05BDF43D0E03"/>
+</associations>
+</Column>
+<Column name="ProductID" id="1F00BEC3-E5C9-A359-1770-EAF1F96119AD">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:38:18 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NNC_TechnologyDataRatingv1_ProductID</notNullConstraintName>
+</Column>
+<Column name="EvaluatedID" id="1BC5DCD6-9965-7EAB-F423-BE09666AC3F1">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:40:31 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>AFB21320-926B-8DE2-48CC-05BDF43D0E03</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CreateAt" id="0FB582C1-7531-2A8B-C0D2-42B846E43FA5">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:44:16 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="UpdateAt" id="48AFC157-D821-6933-F222-68BDF7D62B8A">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:44:34 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="7748222E-4F18-B110-BEF6-F4B2B116F594" name="UserRating_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:38:18 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="75DAE498-3B1A-BA3D-1571-907092729314"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="6257281A-3521-9FFA-DABC-03CDB9FC5450" name="TechnologyDataRatingv1_RatingValues_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 16:38:18 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="8DDD7E3C-BF3D-2821-E901-7B0EF7446256"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="1DEB85D5-04AB-8E42-2112-BDBCF070C463" name="UserRating_User_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-07 09:02:03 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="C260EC57-5E7C-3C61-4C52-E2E21776D194"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="9B73C1B5-1FAA-0EB5-D74F-A29BD765CAC4" name="UserRating_User_FKv1">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-07 09:02:19 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+</ind_PK_UK>
+</indexes>
+</Table>

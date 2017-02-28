@@ -1,0 +1,9 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<relationalModel class="oracle.dbtools.crest.model.design.relational.RelationalDesign" name="MarketPlace" id="6999E4F1-B5CA-75EE-469C-C75EC50A032F" mainViewID="97692340-2282-4E53-C885-EB7E0741BF29">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 16:37:16 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<shouldBeOpen>true</shouldBeOpen>
+<selectedRDBMSSite>112220E5-3DBD-675C-4CE0-50DE0C486937</selectedRDBMSSite>
+</relationalModel>

@@ -1,0 +1,88 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="1F07D73F-77D4-818A-4309-B46010B2B1C5" name="TechnologyData">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 16:52:02 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="TechnologyDataID" id="4566F100-B17A-58EC-6C93-BEAA7F73B364">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 16:52:39 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="TechnologyDataName" id="FF6BFFEF-BAEE-0C2C-CA7C-B872F3EFDCD7">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 16:52:39 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypeSize>250</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="TechnologyData" id="3235EFF1-68C5-9150-D467-E98CFFD5D6CB">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:57:40 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypeSize>max</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Description" id="27B55EE3-0875-BA3B-948F-03FECF44F3C5">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:35:28 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CreateAt" id="B9906917-8DFC-B709-53B4-845EC1FE54A1">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:54:40 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="UpdateAt" id="E30CA5AE-ED40-0BED-90FF-B2A9FAF14560">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:54:51 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="B3D2AF1C-CE1A-3C47-B4B9-6897DAF6BBEF" name="TechnologyData_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 16:52:39 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="4566F100-B17A-58EC-6C93-BEAA7F73B364"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

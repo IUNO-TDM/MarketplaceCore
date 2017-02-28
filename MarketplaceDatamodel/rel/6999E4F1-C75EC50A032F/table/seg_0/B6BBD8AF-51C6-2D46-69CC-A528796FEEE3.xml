@@ -1,0 +1,134 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="B6BBD8AF-51C6-2D46-69CC-A528796FEEE3" name="UserTransaction">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:14:41 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="BuyerID" id="7FDCB61A-93FD-56F0-32B1-B799255B0AD3">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:15:57 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>AFB21320-926B-8DE2-48CC-05BDF43D0E03</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="56FD8997-15D6-437C-8D37-E903405ABD58" referredColumn="AFB21320-926B-8DE2-48CC-05BDF43D0E03"/>
+</associations>
+</Column>
+<Column name="VendorID" id="28A5CB4B-1FBD-A47F-16A5-C0784DF2565F">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:15:57 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>AFB21320-926B-8DE2-48CC-05BDF43D0E03</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="5400711F-BCF7-AA5E-C5E5-C04FEEFB3339" referredColumn="AFB21320-926B-8DE2-48CC-05BDF43D0E03"/>
+</associations>
+</Column>
+<Column name="TransactionID" id="00108C77-4A57-BFFE-554E-DECC72129B9E">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:16:08 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>FC3E35AA-7537-6244-BBC2-EBD6BEC11BAF</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="04A2F9E6-33C0-1D4C-CDC2-BFB628D96BAD" referredColumn="FC3E35AA-7537-6244-BBC2-EBD6BEC11BAF"/>
+</associations>
+</Column>
+<Column name="Transaction_RequestID" id="9B95F859-7EAD-BEB4-792C-DB6347394B5E">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 11:23:56 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>9578C8D8-1F28-71BF-9A59-165A2198ECF5</delegate>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="04A2F9E6-33C0-1D4C-CDC2-BFB628D96BAD" referredColumn="9578C8D8-1F28-71BF-9A59-165A2198ECF5"/>
+</associations>
+</Column>
+<Column name="Transaction_OfferID" id="961E3D27-DA03-3506-8BDF-71C2ABD259E0">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 11:24:18 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>3A5FCDCC-1081-2CCD-0040-E05148D39230</delegate>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="04A2F9E6-33C0-1D4C-CDC2-BFB628D96BAD" referredColumn="3A5FCDCC-1081-2CCD-0040-E05148D39230"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="582E4E57-7712-E3C9-0446-45CE06FDBFB1" name="UserToUser_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:15:57 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="7FDCB61A-93FD-56F0-32B1-B799255B0AD3"/>
+<colUsage columnID="28A5CB4B-1FBD-A47F-16A5-C0784DF2565F"/>
+<colUsage columnID="00108C77-4A57-BFFE-554E-DECC72129B9E"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="12120C69-F55D-547D-50E9-B5CBAC993200" name="UserTransaction_User_FKv2">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:16:31 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="7FDCB61A-93FD-56F0-32B1-B799255B0AD3"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="61606257-45AB-B91F-0036-4FB137B6DD0B" name="UserTransaction_Transaction_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:19:04 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="00108C77-4A57-BFFE-554E-DECC72129B9E"/>
+<colUsage columnID="9B95F859-7EAD-BEB4-792C-DB6347394B5E"/>
+<colUsage columnID="961E3D27-DA03-3506-8BDF-71C2ABD259E0"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="7EF8EAA7-461F-871E-4696-F177A72FDCC7" name="UserTransaction_User_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 08:27:05 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="28A5CB4B-1FBD-A47F-16A5-C0784DF2565F"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

@@ -1,0 +1,95 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="0DC09F9F-67CC-6545-3EA1-AF95B2965A14" name="User">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 16:59:02 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="UserID" id="AFB21320-926B-8DE2-48CC-05BDF43D0E03">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 17:00:10 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="UserFirtsName" id="7863D056-7E1C-617A-95C4-00E3B76E50A6">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 17:00:10 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="UserLastName" id="ADC0CC15-FCDE-0D1A-330A-CF4FF2434F8C">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 17:00:10 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT037</logicalDatatype>
+<dataTypeSize>250</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="Email" id="A7BBB52A-9E9D-AE7E-A527-27AD64622450">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:33:59 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>250</dataTypeSize>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CreateAt" id="D9404FE7-8125-E46C-C988-5DA42CDAF3C8">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:33:02 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="UpdateAt" id="4C186953-AFC1-D386-2442-BDF76AB80A47">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 09:33:02 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="3679FB88-AF8A-1852-51D7-B5F70E7E8293" name="User_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 17:00:10 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="AFB21320-926B-8DE2-48CC-05BDF43D0E03"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="2A47C02F-F62D-A65D-DFBF-23FA85D5993D" name="User_Rating_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 08:01:10 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+</ind_PK_UK>
+</indexes>
+</Table>

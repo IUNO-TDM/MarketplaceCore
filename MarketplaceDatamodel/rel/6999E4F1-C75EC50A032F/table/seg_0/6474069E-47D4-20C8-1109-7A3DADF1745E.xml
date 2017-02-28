@@ -1,0 +1,92 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="6474069E-47D4-20C8-1109-7A3DADF1745E" name="ComponentsTechnologies">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:04:39 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ComponentParentID" id="331A75A0-B939-DAD1-D242-E10A04CD762B">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:05:06 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>D656AA5A-824B-5CC0-13E3-88D990E91559</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="4D01A781-9698-0A0D-A9DC-9755CCF2F7F1" referredColumn="D656AA5A-824B-5CC0-13E3-88D990E91559"/>
+</associations>
+</Column>
+<Column name="ComponentChildID" id="0E063CA0-778C-6710-425E-C95EFE0B90C4">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:05:35 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>1A222A93-A814-BE9F-A61B-0CE00EEAD931</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="4D01A781-9698-0A0D-A9DC-9755CCF2F7F1" referredColumn="1A222A93-A814-BE9F-A61B-0CE00EEAD931"/>
+</associations>
+</Column>
+<Column name="TechnologyID" id="EF9BD64F-C680-C3A0-1E3D-973DF742288D">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:05:35 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>6F22DA6E-AF49-C4D6-B954-9E5BA3F8B3FD</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="9E544E59-A360-B6A8-B799-47F0D46CF2F6" referredColumn="6F22DA6E-AF49-C4D6-B954-9E5BA3F8B3FD"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="3FD11E39-1EDE-A745-08D9-2C7398B4A989" name="ComponentsTechnologies_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:05:06 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="331A75A0-B939-DAD1-D242-E10A04CD762B"/>
+<colUsage columnID="0E063CA0-778C-6710-425E-C95EFE0B90C4"/>
+<colUsage columnID="EF9BD64F-C680-C3A0-1E3D-973DF742288D"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="67AB9392-AB62-145C-12FB-3FC3B4EBCF82" name="ComponentsTechnologies_Components_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:05:39 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="331A75A0-B939-DAD1-D242-E10A04CD762B"/>
+<colUsage columnID="0E063CA0-778C-6710-425E-C95EFE0B90C4"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="9F661B6C-DF13-5ACD-F01D-211BB0BDEC7F" name="ComponentsTechnologies_Technologies_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:05:50 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="EF9BD64F-C680-C3A0-1E3D-973DF742288D"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

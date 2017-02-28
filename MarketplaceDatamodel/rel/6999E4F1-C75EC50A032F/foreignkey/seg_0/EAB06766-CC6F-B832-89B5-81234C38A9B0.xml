@@ -1,0 +1,14 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="EAB06766-CC6F-B832-89B5-81234C38A9B0" name="TechnologyDataOffer_Offers_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:48:57 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<containerWithKeyObject>D907E952-9457-B0A0-B00B-D7A5348294F9</containerWithKeyObject>
+<deleteRule>NO ACTION</deleteRule>
+<localFKIndex>93AB3341-1433-E1B7-93AB-068E87C5CD76</localFKIndex>
+<keyObject>8A4FF72B-8CA0-331D-161D-FB1A4FD214DD</keyObject>
+<mandatory>true</mandatory>
+<transferable>true</transferable>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

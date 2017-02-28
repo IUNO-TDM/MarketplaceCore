@@ -1,0 +1,95 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="A8C8F468-E352-C57C-5D10-B1587E6C1027" name="Offers">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 11:24:43 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="OfferID" id="79030CAF-D773-95C2-45AC-1BF75582B7D1">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-01 11:25:06 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="RequestID" id="129D1433-2484-F838-D431-18CF9244C650">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 09:50:33 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>F99E670F-D30D-9CCB-C8E0-BEC838DDBCCA</delegate>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="59D43FCA-012D-CDEE-5C72-29803B1B3057" referredColumn="F99E670F-D30D-9CCB-C8E0-BEC838DDBCCA"/>
+</associations>
+</Column>
+<Column name="Price" id="15009C2F-4DB7-8CBA-FF50-E4C789BC9010">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:47:25 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<dataTypePrecision>18</dataTypePrecision>
+<dataTypeScale>4</dataTypeScale>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="ExpirationDate" id="B4779881-AD78-B754-5A06-25AC3951A5DB">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:48:21 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT008</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="TechnologyDataID" id="E3076355-2357-9BB4-01EC-4A1BED5761A1">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:48:21 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="8A4FF72B-8CA0-331D-161D-FB1A4FD214DD" name="Offers_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 09:50:33 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="79030CAF-D773-95C2-45AC-1BF75582B7D1"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="571E80C2-D8AC-FB0E-20BF-EB1036A1C04D" name="Offers_Request_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-03 09:50:41 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="129D1433-2484-F838-D431-18CF9244C650"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

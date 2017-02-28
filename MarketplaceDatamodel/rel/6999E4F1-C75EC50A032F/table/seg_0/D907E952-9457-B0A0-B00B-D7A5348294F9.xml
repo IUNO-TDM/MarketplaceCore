@@ -1,0 +1,78 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="D907E952-9457-B0A0-B00B-D7A5348294F9" name="TechnologyDataOffer">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:48:41 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="OfferID" id="7BB96E77-8E99-B078-029D-20C0946324B1">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:48:57 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>79030CAF-D773-95C2-45AC-1BF75582B7D1</delegate>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="EAB06766-CC6F-B832-89B5-81234C38A9B0" referredColumn="79030CAF-D773-95C2-45AC-1BF75582B7D1"/>
+</associations>
+</Column>
+<Column name="TechnologyDataID" id="0CD16A44-2A31-1004-F1C0-4AB3886E7933">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:49:03 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<delegate>4566F100-B17A-58EC-6C93-BEAA7F73B364</delegate>
+<previousColumn>false</previousColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="0F294C9A-2948-33E4-3308-AD712717FF37" referredColumn="4566F100-B17A-58EC-6C93-BEAA7F73B364"/>
+</associations>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="C8C1ED05-DC55-EA21-AC3A-C9C6BC3BD9B7" name="TechnologyDataOffer_PK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 16:21:56 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="7BB96E77-8E99-B078-029D-20C0946324B1"/>
+<colUsage columnID="0CD16A44-2A31-1004-F1C0-4AB3886E7933"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="93AB3341-1433-E1B7-93AB-068E87C5CD76" name="TechnologyDataOffer_Offers_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:48:57 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="7BB96E77-8E99-B078-029D-20C0946324B1"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="3FC81283-F327-AC53-45C7-0EDA496D8D97" name="TechnologyDataOffer_TechnologyData_FK">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-02-06 12:49:03 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="0CD16A44-2A31-1004-F1C0-4AB3886E7933"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

@@ -1,0 +1,9 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<OSDM_Design class="oracle.dbtools.crest.model.design.Design" name="MarketplaceDatamodel" id="96E74775-BBA1-1605-420D-777FB5AE0113" version="3.5">
+<createdBy>ElyGomesMa</createdBy>
+<createdTime>2017-01-31 16:02:43 UTC</createdTime>
+<generatorID>Benutzergeneriert</generatorID>
+<ownerDesignName>MarketplaceDatamodel</ownerDesignName>
+<capitalNames>false</capitalNames>
+<designId>96E74775-BBA1-1605-420D-777FB5AE0113</designId>
+</OSDM_Design>
