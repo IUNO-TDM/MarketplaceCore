@@ -12,7 +12,7 @@ var db = pgp("postgres://postgres:Trumpf1234@localhost:5432/marketplacecore");
 var self = {};
 
 
-self.dosmth = function(){};
+
 
 //<editor-fold desc="Users">
 // GetAllUsers(userUUid)
@@ -21,7 +21,7 @@ self.dosmth = function(){};
 
 //<editor-fold desc="TechnologyData">
 // GetAllTechnologyData
-function GetAllTechnologyData(req, res, next)
+self.GetAllTechnologyData = function GetAllTechnologyData(req, res, next)
 {
     var userUUID = req.query['userUUID'];
     db.func('GetAllTechnologyData')
@@ -33,7 +33,7 @@ function GetAllTechnologyData(req, res, next)
         });
 }
 
-function GetTechnologyDataByID(req, res, next)
+self.GetTechnologyDataByID = function GetTechnologyDataByID(req, res, next)
 {
     var userUUID = req.query['userUUID'];
     var TechnologyDataUUID = req.params['technologyDataUUID'];
@@ -47,7 +47,7 @@ function GetTechnologyDataByID(req, res, next)
 }
 
 //Get TechnologyDataByParams
-function GetTechnologyDataByParams(req,res,next)
+self.GetTechnologyDataByParams = function GetTechnologyDataByParams(req,res,next)
 {
     var technologies = req.query['technologies'];
     var technologyData = req.query['technologyData'];
@@ -75,7 +75,7 @@ function GetTechnologyDataByParams(req,res,next)
 }
 
 //GetTechnologyDataByName
-function GetTechnologyDataByName(req,res,next)
+self.GetTechnologyDataByName = function GetTechnologyDataByName(req,res,next)
 {
     var technologyDataName = req.params['technologyDataName'];
     var userUUID = req.query['userUUID']
@@ -89,7 +89,7 @@ function GetTechnologyDataByName(req,res,next)
         });
 }
 
-function SetTechnologyData(req,res,next)
+self.SetTechnologyData = function SetTechnologyData(req,res,next)
 {
     var technologyDataName = req.query['technologyDataName'];
     var technologyData = req.query['technologyData'];
@@ -123,7 +123,7 @@ function SetTechnologyData(req,res,next)
 
 //<editor-fold desc="Technologies">
 //Get all Technologies
-function GetAllTechnologies(req, res, next)
+self.GetAllTechnologies = function GetAllTechnologies(req, res, next)
 {
     var userUUID = req.query['userUUID'];
     db.func('GetAllTechnologies')
@@ -136,7 +136,7 @@ function GetAllTechnologies(req, res, next)
 }
 
 //Get technology by ID
-function GetTechnologyByID(req, res, next)
+self.GetTechnologyByID = function GetTechnologyByID(req, res, next)
 {
     var userUUID = req.query['userUUID'];
     var technologyUUID = req.params['technologyUUID'];
@@ -150,7 +150,7 @@ function GetTechnologyByID(req, res, next)
 }
 
 //Get technology by name
-function GetTechnologyByName(req, res, next)
+self.GetTechnologyByName = function GetTechnologyByName(req, res, next)
 {
     var userUUID = req.query['userUUID'];
     var technologyName = req.params['technologyName'];
@@ -164,7 +164,7 @@ function GetTechnologyByName(req, res, next)
 }
 
 //Get technology by name
-function CreateTechnology(req, res, next)
+self.CreateTechnology =  function CreateTechnology(req, res, next)
 {
     var userUUID = req.query['userUUID'];
     var technologyName = req.query['technologyName'];
@@ -187,7 +187,7 @@ function CreateTechnology(req, res, next)
 
 //<editor-fold desc="Components">
 //Get all GetAllComponents
-function GetAllComponents(req, res, next)
+self.GetAllComponents =  function GetAllComponents(req, res, next)
 {
     var userUUID = req.query['userUUID'];
     db.func('GetAllComponents')
@@ -200,7 +200,7 @@ function GetAllComponents(req, res, next)
 }
 
 //Get component by ID
-function GetComponentByID(req, res, next)
+self.GetComponentByID = function GetComponentByID(req, res, next)
 {
     var userUUID = req.query['userUUID'];
     var componentUUID = req.params['componentUUID'];
@@ -214,7 +214,7 @@ function GetComponentByID(req, res, next)
 }
 
 //Get component by name
-function GetComponentByName(req, res, next)
+self.GetComponentByName = function GetComponentByName(req, res, next)
 {
     var userUUID = req.query['userUUID'];
     var componentName = req.params['componentName'];
@@ -228,7 +228,7 @@ function GetComponentByName(req, res, next)
 }
 
 //Create component
-function SetComponent(req, res, next)
+self.SetComponent = function SetComponent(req, res, next)
 {
     var userUUID = req.query['userUUID'];
     var componentName = req.query['componentName'];
