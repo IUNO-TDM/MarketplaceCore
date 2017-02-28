@@ -1532,59 +1532,63 @@ CREATE FUNCTION GetAttributeByName(vAttrName varchar(250))
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
--- CreatedAt: 2017-02-23
+-- CreatedAt: 2017-02-28
 -- Description: Script to get the offer based on the offerrequestid
 -- ##########################################################################
 Get a offer 
 Input paramteres: OfferRequestID uuid		
 Return Value: Table with a offer
-######################################################
+######################################################*/
 CREATE FUNCTION GetOfferByRequestID(vRequestID uuid) 
 	RETURNS TABLE
     	(
-    offeruuid uuid,
-    offerrequestuuid uuid,
-    paymentinvoiceuuid uuid 
+    offeruuid uuid, 
+    paymentinvoiceuuid uuid,
+    createdat timestamp without time zone,
+    createdby uuid 
         )
     AS $$ 
-	SELECT  ofr.offeruuid,
-            ofq.offerrequestuuid,
-	        paymentinvoiceuuid 
-	FROM offer ofr 
-	JOIN OfferRequest ofq
-	ON ofr.offerrequestid = ofq.offerrequestid
+	SELECT  ofr.offeruuid,                
+	        pm.paymentinvoiceuuid,
+	        ofr.createdat at time zone 'utc',
+	        ur.useruuid
+	FROM offer ofr 	
 	JOIN paymentinvoice pm 
 	ON ofr.paymentinvoiceid = pm.paymentinvoiceid
-	WHERE pm.paymentinvoiceuuid = vRequestID
-    $$ LANGUAGE SQL;*/
+	JOIN users ur 
+	ON ofr.createdby = ur.userid	
+	WHERE pm.offerrequestid = (select offerrequest.offerrequestid from offerrequest where offerrequestuuid = vRequestID)
+    $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
--- CreatedAt: 2017-02-23
+-- CreatedAt: 2017-02-28
 -- Description: Script to get the offer based on the offerid
 -- ##########################################################################
 Get a offer 
 Input paramteres: OfferUUID uuid		
 Return Value: Table with a offer
-######################################################
-CREATE FUNCTION GetOfferByOfferID(vOfferID uuid) 
+######################################################*/
+CREATE FUNCTION GetOfferByID(vOfferID uuid) 
 	RETURNS TABLE
     	(
-    offeruuid uuid,
-    offerrequestuuid uuid,
-    paymentinvoiceuuid uuid 
+    offeruuid uuid, 
+    paymentinvoiceuuid uuid,
+    createdat timestamp without time zone, 
+    createdby uuid
         )
     AS $$ 
-	SELECT  ofr.offeruuid,
-                ofq.offerrequestuuid,
-	        paymentinvoiceuuid 
-	FROM offer ofr 
-	JOIN OfferRequest ofq
-	ON ofr.offerrequestid = ofq.offerrequestid
-	JOIN payment pm 
+	SELECT  ofr.offeruuid,                
+	        pm.paymentinvoiceuuid,
+	        ofr.createdat at time zone 'utc',
+	        ur.useruuid
+	FROM offer ofr 	
+	JOIN paymentinvoice pm 
 	ON ofr.paymentinvoiceid = pm.paymentinvoiceid
+	JOIN users ur 
+	ON ofr.createdby = ur.userid	
 	WHERE ofr.offeruuid = vOfferID
-    $$ LANGUAGE SQL;*/
+    $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG

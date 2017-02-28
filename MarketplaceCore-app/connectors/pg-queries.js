@@ -273,8 +273,8 @@ self.GetAllAttributes = function(req, res, next)
 self.GetAttributeByID = function(req, res, next)
 {
     var userUUID = req.query['userUUID'];
-    var technologyUUID = req.params['attributeUUID'];
-    db.func('GetAttributeByID',[technologyUUID])
+    var attributeUUID = req.params['attributeUUID'];
+    db.func('GetAttributeByID',[attributeUUID])
         .then(function(data) {
             res.json(data);
         })
@@ -287,8 +287,8 @@ self.GetAttributeByID = function(req, res, next)
 self.GetAttributeByName = function(req, res, next)
 {
     var userUUID = req.query['userUUID'];
-    var technologyName = req.params['attributeName'];
-    db.func('GetAttributeByName',[technologyName])
+    var attributeName = req.params['attributeName'];
+    db.func('GetAttributeByName',[attributeName])
         .then(function(data) {
             res.json(data);
         })
@@ -335,8 +335,8 @@ self.GetAllOffers = function(req, res, next)
 self.GetOfferByID = function(req, res, next)
 {
     var userUUID = req.query['userUUID'];
-    var technologyUUID = req.params['attributeUUID'];
-    db.func('GetOfferByID',[technologyUUID])
+    var offerUUID = req.params['offerUUID'];
+    db.func('GetOfferByID',[offerUUID])
         .then(function(data) {
             res.json(data);
         })
@@ -349,8 +349,8 @@ self.GetOfferByID = function(req, res, next)
 self.GetOfferForRequest = function(req, res, next)
 {
     var userUUID = req.query['userUUID'];
-    var technologyName = req.params['attributeName'];
-    db.func('GetOfferByRequest',[technologyName])
+    var offerRequestUUID = req.params['offerRequestUUID'];
+    db.func('GetOfferByRequestID',[offerRequestUUID])
         .then(function(data) {
             res.json(data);
         })
@@ -363,8 +363,8 @@ self.GetOfferForRequest = function(req, res, next)
 self.GetOfferForPaymentInvoice = function(req, res, next)
 {
     var userUUID = req.query['userUUID'];
-    var technologyName = req.params['attributeName'];
-    db.func('GetOfferForPaymentInvoice',[technologyName])
+    var paymentInvoiceUUID = req.params['paymentInvoiceUUID'];
+    db.func('GetOfferForPaymentInvoice',[paymentInvoiceUUID])
         .then(function(data) {
             res.json(data);
         })
@@ -377,11 +377,9 @@ self.GetOfferForPaymentInvoice = function(req, res, next)
 self.CreateOffer =  function(req, res, next)
 {
     var userUUID = req.query['userUUID'];
-    var attributeName = req.query['attributeName'];
 
     db.func('CreateOffer',
         [
-            attributeName,
             userUUID
         ])
         .then(function(data) {

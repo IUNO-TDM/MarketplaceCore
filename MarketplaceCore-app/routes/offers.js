@@ -23,7 +23,7 @@ router.get('/offeruuid/:offerUUID', validate({query: require('../schema/offers_s
 
 });
 
-router.post('/offerrequest/:offerRequestUUID', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
+router.get('/offerrequest/:offerRequestUUID', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
     logger.debug(req);
 
     queries.GetOfferForRequest(req,res,next);
