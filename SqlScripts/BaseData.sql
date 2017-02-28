@@ -127,7 +127,7 @@ $$
             4.99,    			 				 -- <licensefee numeric>, 
             '{Delicious, Cherry, Mango, Yummy}', -- <taglist text[]>, 
             vUserUUID,    						 		 -- <createdby integer>, 
-            '{5,8}'    							 -- <componentlist integer[]>
+            '{Cherry Juice,Mango Juice}'    							 -- <componentlist integer[]>
          );
          -- Cherry with Cola
         perform public.settechnologydata(
@@ -138,7 +138,7 @@ $$
             1.99,    			 				 -- <licensefee numeric>, 
             '{Delicious, Cherry, Cola, Refreshing}', -- <taglist text[]>, 
             vUserUUID,    						 -- <createdby integer>, 
-            '{5,8}'    								 -- <componentlist integer[]>
+            '{Cherry Juice,Cola}'    								 -- <componentlist integer[]>
          );
           -- Ginger, Orange
         perform public.settechnologydata(
@@ -149,7 +149,7 @@ $$
             2.99,    			 				 -- <licensefee numeric>, 
             '{Delicious, Ginger, Orange}', -- <taglist text[]>, 
             vUserUUID,    						 -- <createdby integer>, 
-            '{2,6}'    								 -- <componentlist integer[]>
+            '{Ginger Sirup,Orange Juice}'    								 -- <componentlist integer[]>
          );
          -- Banana, Mango, Orange
         perform public.settechnologydata(
@@ -160,7 +160,7 @@ $$
             3.99,    			 				 -- <licensefee numeric>, 
             '{Delicious, Banana, Orange, Mango, Tasty}', -- <taglist text[]>, 
             vUserUUID,    						 -- <createdby integer>, 
-            '{2,5,7}'    								 -- <componentlist integer[]>
+            '{Banana Juice,Mango Juice,Orange Juice}'    								 -- <componentlist integer[]>
          );
 	END;
 $$

@@ -5,7 +5,9 @@
  -- Description: Schema for TechnologyData
  -- ##########################################################################*/
 
-var TechnologyData = {
+var self = {};
+
+self.TechnologyData = {
     type: 'object',
     properties: {
         userUUID: {
@@ -15,7 +17,7 @@ var TechnologyData = {
     }
 };
 
-var TechnologyDataParameters = {
+self.TechnologyDataParameters = {
     type: 'object',
     properties: {
         userUUID: {
@@ -25,7 +27,7 @@ var TechnologyDataParameters = {
     }
 };
 
-var SetTechnologyData = {
+self.SetTechnologyData = {
     type: 'object',
     properties: {
         technologyDataName:{
@@ -76,4 +78,4 @@ var SetTechnologyData = {
 };
 
 
-module.exports = {TechnologyData, TechnologyDataParameters, SetTechnologyData};
+module.exports = self;

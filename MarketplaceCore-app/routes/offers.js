@@ -1,51 +1,32 @@
-/**
- * Created by elygomesma on 15.02.17.
- */
+/* ##########################################################################
+ -- Author: Marcel Ely Gomes
+ -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+ -- CreatedAt: 2017-02-28
+ -- Description: Routing offers requests
+ -- ##########################################################################*/
 
 var express = require('express');
 var router = express.Router();
 var logger = require('../global/logger');
-var pgp = require('pg-promise')();
-var db = pgp("postgres://postgres:Trumpf1234@localhost:5432/Test");
+var validate = require('express-jsonschema').validate;
+var queries = require('../connectors/pg-queries');
 
-
-router.get('/', function (req, res, next) {
+router.get('/', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
     logger.debug(req);
-
-         db.func('GetAllOffers')
-            .then(function(data) {
-                res.json(data);
-            })
-            .catch(function (error) {
-                console.log("ERROR:", error.message || error); // print the error;
-            });
+       queries.GetAllOffers(req,res,next);
 });
 
-router.get('/:offerID', function (req, res, next) {
+router.get('/offeruuid/:offerUUID', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
     logger.debug(req);
 
-    var offerID = req.params['offerID'];
-    db.func('GetOffersByID', [offerID])
-        .then(function(data) {
-            res.json(data);
-        })
-        .catch(function (error) {
-            console.log("ERROR:", error.message || error); // print the error;
-        });
+    queries.GetOfferByID(req,res,next);
 
 });
 
-router.post('/:offerRequestID', function (req, res, next) {
+router.post('/offerrequest/:offerRequestUUID', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
     logger.debug(req);
 
-    var offerRequestID = req.params['offerRequestID'];
-    db.func('CreateOfferForRequest', [offerRequestID])
-        .then(function(data) {
-            res.json(data);
-        })
-        .catch(function (error) {
-            console.log("ERROR:", error.message || error); // print the error;
-        });
+    queries.GetOfferForRequest(req,res,next);
 
 });
 

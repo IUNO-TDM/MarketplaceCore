@@ -56,7 +56,7 @@ CREATE FUNCTION CreateLog(LogStatusID integer, LogMessage varchar(32672), LogObj
 -- ##############################################################################
 -- CreateUser
 CREATE FUNCTION CreateUser(UserFirstName varchar(250), UserLastName varchar(250), UserEmail varchar(250))
-  RETURNS INTEGER AS
+  RETURNS text AS
   $$
       DECLARE 	UserID integer := (select nextval('UserID'));      
 		UserUUID uuid := (select uuid_generate_v4()); 
@@ -73,7 +73,7 @@ CREATE FUNCTION CreateUser(UserFirstName varchar(250), UserLastName varchar(250)
                                 
         -- End Log if success
         -- Return UserUUID
-        RETURN UserUUID;
+        RETURN UserUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -84,7 +84,7 @@ CREATE FUNCTION CreateUser(UserFirstName varchar(250), UserLastName varchar(250)
                                 || UserEmail);
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql';
@@ -98,7 +98,7 @@ CREATE FUNCTION CreateTechnologyData (
   vTechnologyID integer,
   CreatedBy integer
  )
-  RETURNS INTEGER AS
+  RETURNS TEXT AS
   $$
       DECLARE 	TechnologyDataID integer := (select nextval('TechnologyDataID'));
 		TechnologyDataUUID uuid := (select uuid_generate_v4());       		   
@@ -117,7 +117,7 @@ CREATE FUNCTION CreateTechnologyData (
                                 
         -- End Log if success
         -- Return TechnologyDataUUID
-        RETURN TechnologyDataUUID;
+        RETURN TechnologyDataUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -130,7 +130,7 @@ CREATE FUNCTION CreateTechnologyData (
                                 || ', CreatedBy: ' || CreatedBy);
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql';
@@ -140,7 +140,7 @@ CREATE FUNCTION CreateTag (
   TagName varchar(250),  
   CreatedBy integer
  )
-  RETURNS INTEGER AS
+  RETURNS TEXT AS
   $$
       DECLARE 	TagID integer := (select nextval('TagID'));
 		TagUUID uuid := (select uuid_generate_v4());	
@@ -155,7 +155,7 @@ CREATE FUNCTION CreateTag (
                                 
         -- End Log if success
         -- Return TagUUID
-        RETURN TagUUID;
+        RETURN TagUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -164,7 +164,7 @@ CREATE FUNCTION CreateTag (
                                 || TagName);
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+       RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql';
@@ -174,7 +174,7 @@ CREATE FUNCTION CreateAttribute (
   AttributeName varchar(250), 
   CreatedBy uuid
  )
-  RETURNS INTEGER AS
+  RETURNS TEXT AS
   $$
       DECLARE 	AttributeID integer := (select nextval('AttributeID'));
 		AttributeUUID uuid := (select uuid_generate_v4());
@@ -190,7 +190,7 @@ CREATE FUNCTION CreateAttribute (
                                 
         -- End Log if success
         -- Return AttributeUUID
-        RETURN AttributeUUID;
+        RETURN AttributeUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -199,7 +199,7 @@ CREATE FUNCTION CreateAttribute (
                                 || AttributeName);
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql';
@@ -211,7 +211,7 @@ CREATE FUNCTION CreateComponent (
   ComponentDescription varchar(250),
   CreatedBy uuid
  )
-  RETURNS INTEGER AS
+  RETURNS TEXT AS
   $$
       DECLARE 	ComponentID integer := (select nextval('ComponentID'));
 		ComponentUUID uuid := (select uuid_generate_v4());		
@@ -233,7 +233,7 @@ CREATE FUNCTION CreateComponent (
                                 
         -- End Log if success
         -- Return ComponentUUID
-        RETURN ComponentUUID;
+        RETURN ComponentUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -248,7 +248,7 @@ CREATE FUNCTION CreateComponent (
                                 || cast(vUserID as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql'; 
@@ -259,7 +259,7 @@ CREATE FUNCTION CreatePaymentInvoice (
   vOfferRequestUUID uuid,
   vUserUUID uuid  
  )
-  RETURNS INTEGER AS
+  RETURNS TEXT AS
   $$
       DECLARE 			vPaymentInvoiceID integer := (select nextval('PaymentInvoiceID'));
 				vPaymentInvoiceUUID uuid := (select uuid_generate_v4()); 
@@ -283,7 +283,7 @@ CREATE FUNCTION CreatePaymentInvoice (
                                 
         -- End Log if success
         -- Return PaymentInvoiceUUID
-        RETURN vPaymentInvoiceUUID;
+        RETURN vPaymentInvoiceUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -294,7 +294,7 @@ CREATE FUNCTION CreatePaymentInvoice (
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql'; 
@@ -305,47 +305,48 @@ CREATE FUNCTION CreatePayment(
   BitcoinTransaction varchar(32672),
   vUserUUID uuid
  )
-  RETURNS INTEGER AS
+  RETURNS TEXT AS
   $$
       DECLARE 	vPaymentID integer := (select nextval('PaymentID')); 
 				vPaymentUUID uuid := (select uuid_generate_v4());
 				vPaymentInvoiceID integer := (select PaymentInvoiceID from paymentinvoice where PaymentInvoiceUUID = vPaymentInvoiceUUID);
 				vCreatedBy integer := (select userid from users where useruuid = vUserUUID);
       BEGIN        
-        INSERT INTO Payment(PaymentID, PaymentUUID, PaymentInvoiceID, PayDate, BitconTransaction, CreatedBy)
-        VALUES(vPaymentID, vPaymentUUID, vPaymentInvoiceID, now(), BitconTransaction, CreatedBy);
+        INSERT INTO Payment(PaymentID, PaymentUUID, PaymentInvoiceID, PayDate, BitcoinTransaction, CreatedBy)
+        VALUES(vPaymentID, vPaymentUUID, vPaymentInvoiceID, now(), BitcoinTransaction, vCreatedBy);
      
         -- Begin Log if success
         perform public.createlog(0,'Created PaymentInvoice sucessfully', 'CreatePayment', 
                                 'PaymentID: ' || cast(vPaymentID as varchar) 
 				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
-				|| ', BitcoinTransaction: ' || BitconTransaction
+				|| ', BitcoinTransaction: ' || BitcoinTransaction
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
                                 
         -- End Log if success
         -- Return PaymentID
-        RETURN vPaymentUUID;
+        RETURN vPaymentUUID::text;
         
         exception when others then 
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'CreatePayment', 
                                 'PaymentID: ' || cast(vPaymentID as varchar) 
 				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
-				|| ', BitcoinTransaction: ' || BitconTransaction
+				|| ', BitcoinTransaction: ' || BitcoinTransaction
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql'; 
 -- ##############################################################################    
 -- CreateLicenseOrder
-CREATE OR REPLACE FUNCTION CreateLicenseOrder (
+CREATE FUNCTION CreateLicenseOrder (
   vTicketID varchar(4000),
-  vOfferUUID uuid 
+  vOfferUUID uuid,
+  vUserUUID uuid
  )
-  RETURNS INTEGER AS
+  RETURNS TEXT AS
   $$
       DECLARE 			vLicenseOrderID integer := (select nextval('LicenseOrderID'));
 				vLicenseOrderUUID uuid := (select uuid_generate_v4()); 
@@ -354,7 +355,7 @@ CREATE OR REPLACE FUNCTION CreateLicenseOrder (
 				vTransactionID integer := (select transactionid from transactions where offerid = vOfferID);
       BEGIN        
         INSERT INTO LicenseOrder(LicenseOrderID, LicenseOrderUUID, TicketID, OfferID, ActivatedAt, CreatedBy, CreatedAt)
-        VALUES(vLicenseOrderID, vLicenseOrderUUID, vTicketID, vOfferID, vCreatedBy, now());
+        VALUES(vLicenseOrderID, vLicenseOrderUUID, vTicketID, vOfferID, now(), vCreatedBy, now());
 
 		-- Update Transactions table
         UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = vCreatedBy
@@ -369,7 +370,7 @@ CREATE OR REPLACE FUNCTION CreateLicenseOrder (
                                 
         -- End Log if success
         -- Return vLicenseOrderUUID
-        RETURN vLicenseOrderUUID;
+        RETURN vLicenseOrderUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -380,7 +381,7 @@ CREATE OR REPLACE FUNCTION CreateLicenseOrder (
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql'; 
@@ -390,7 +391,7 @@ CREATE FUNCTION createtechnology(
     technologyname character varying,
     technologydescription character varying,
     createdby uuid)
-  RETURNS integer AS
+  RETURNS TEXT AS
 $BODY$
       DECLARE 	TechnologyID integer := (select nextval('TechnologyID'));
 		TechnologyUUID uuid := (select uuid_generate_v4());
@@ -411,7 +412,7 @@ $BODY$
                                 
         -- End Log if success
         -- Return TechnologyUUID
-        RETURN TechnologyUUID;
+        RETURN TechnologyUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -425,7 +426,7 @@ $BODY$
                                 || cast(vUserID as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $BODY$
   LANGUAGE plpgsql;
@@ -456,7 +457,7 @@ CREATE FUNCTION CreateTechnologyDataComponents (
                                 
         -- End Log if success
         -- Return UserID
-        RETURN TechnologyDataID;
+        RETURN TechnologyDataID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -466,7 +467,7 @@ CREATE FUNCTION CreateTechnologyDataComponents (
                                 || cast(ComponentList as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql'; 
@@ -546,7 +547,7 @@ CREATE FUNCTION CreateComponentsAttribute (
                                 || cast(AttributeList as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql';
@@ -586,7 +587,7 @@ CREATE FUNCTION CreateComponentsTechnologies (
                                 || cast(TechnologyList as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql';
@@ -599,7 +600,7 @@ CREATE FUNCTION CreateOfferRequest (
   vUserUUID uuid,
   vBuyerUUID uuid
  )
-  RETURNS INTEGER AS
+  RETURNS TEXT AS
   $$
       DECLARE 	OfferRequestID integer := (select nextval('OfferRequestID'));
 		OfferRequestUUID uuid := (select uuid_generate_v4());
@@ -623,7 +624,7 @@ CREATE FUNCTION CreateOfferRequest (
                                 
         -- End Log if success
         -- Return OfferRequestUUID
-        RETURN OfferRequestUUID;
+        RETURN OfferRequestUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -633,7 +634,7 @@ CREATE FUNCTION CreateOfferRequest (
 				|| ', Amount: ' || cast(Amount as varchar) || ', HSMID: ' || HSMID);
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql'; 
@@ -643,7 +644,7 @@ CREATE OR REPLACE FUNCTION CreateOffer(
   vPaymentInvoiceUUID uuid,
   vUserUUID uuid
  )
-  RETURNS INTEGER AS
+  RETURNS TEXT AS
   $$
       DECLARE 	vOfferID integer := (select nextval('OfferID'));
 		vOfferUUID uuid := (select uuid_generate_v4());
@@ -666,7 +667,7 @@ CREATE OR REPLACE FUNCTION CreateOffer(
                                 
         -- End Log if success
         -- Return vOfferUUID
-        RETURN vOfferUUID;
+        RETURN vOfferUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -676,7 +677,7 @@ CREATE OR REPLACE FUNCTION CreateOffer(
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql'; 
@@ -711,7 +712,7 @@ CREATE FUNCTION SetComponent (
   TechnologyList text[],
   CreatedBy uuid
  )
-  RETURNS INTEGER AS
+  RETURNS TEXT AS
   $$    
       DECLARE 	vAttributeName text; 
         	vTechName text;
@@ -754,7 +755,7 @@ CREATE FUNCTION SetComponent (
                                 
         -- End Log if success
         -- Return UserID
-        RETURN vCompUUID;
+        RETURN vCompUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -764,7 +765,7 @@ CREATE FUNCTION SetComponent (
                                 || ', CreatedBy: ' || cast(CreatedBy as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $$
   LANGUAGE 'plpgsql';
@@ -804,7 +805,7 @@ Return Value:
     taglist text[],
     createdby uuid,
     componentlist text[])
-  RETURNS integer AS			
+  RETURNS TEXT AS			
 $BODY$    
       DECLARE 	vCompName text;
 				vTagName text; 
@@ -854,7 +855,7 @@ $BODY$
                                 
         -- End Log if success
         -- Return vTechnologyDataUUID
-        RETURN vTechnologyDataUUID;
+        RETURN vTechnologyDataUUID::text;
         
         exception when others then 
         -- Begin Log if error
@@ -865,7 +866,7 @@ $BODY$
                                 || ', CreatedBy: ' || cast(vUSerID as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN ((-1) * cast(SQLSTATE as integer))::text;
       END;
   $BODY$
   LANGUAGE plpgsql;
@@ -1426,6 +1427,33 @@ CREATE FUNCTION GetAllOffers()
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-02-23
+-- Description: Script to get all offers
+-- ##########################################################################
+Get all offers 
+Input paramteres: none		
+Return Value: Table with all offers
+######################################################*/
+CREATE FUNCTION GetAllOffers() 
+	RETURNS TABLE
+    	(
+    offeruuid uuid,    
+    paymentinvoiceuuid uuid,
+    createdat timestamp without time zone,
+    createdby uuid
+        )
+    AS $$ 
+	SELECT  offeruuid,                
+	        paymentinvoiceuuid,
+	        offr.createdat at time zone 'utc',
+	        ur.useruuid as createdby
+	FROM offer offr JOIN
+	paymentinvoice pi ON offr.paymentinvoiceid = pi.paymentinvoiceid	 
+	JOIN Users ur ON offr.createdby = ur.userid
+    $$ LANGUAGE SQL;
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
 -- CreatedAt: 2017-02-28
 -- Description: Script to get all attributes
 -- ##########################################################################
@@ -1615,10 +1643,91 @@ CREATE FUNCTION GetOfferByPaymentInvoiceID(vPayInvID uuid)
 	ON ofr.paymentinvoiceid = pm.paymentinvoiceid 
 	WHERE pm.paymentinvoiceuuid = vPayInvID
     $$ LANGUAGE SQL;*/
--- TODO
--- Create OfferRequest
 
--- Create Payment
--- Create Offer
--- Create LicenseOrder
--- Create Transaction
+/* ##########################################################################
+-- Source: http://www.sqlines.com/postgresql/how-to/datediff   
+-- Description: Get the diff between two dates
+-- ##########################################################################
+Input paramteres: units 	varchar(30)
+				  start_t 	timestamp
+				  end_t		timestamp	
+Return Value: Difference between dates in Seconds, Minutes, Hours, Months or Years
+######################################################*/
+CREATE FUNCTION DateDiff (units VARCHAR(30), start_t TIMESTAMP, end_t TIMESTAMP) 
+     RETURNS INT AS $$
+   DECLARE
+     diff_interval INTERVAL; 
+     diff INT = 0;
+     years_diff INT = 0;
+   BEGIN
+     IF units IN ('yy', 'yyyy', 'year', 'mm', 'm', 'month') THEN
+       years_diff = DATE_PART('year', end_t) - DATE_PART('year', start_t);
+ 
+       IF units IN ('yy', 'yyyy', 'year') THEN
+         -- SQL Server does not count full years passed (only difference between year parts)
+         RETURN years_diff;
+       ELSE
+         -- If end month is less than start month it will subtracted
+         RETURN years_diff * 12 + (DATE_PART('month', end_t) - DATE_PART('month', start_t)); 
+       END IF;
+     END IF;
+ 
+     -- Minus operator returns interval 'DDD days HH:MI:SS'  
+     diff_interval = end_t - start_t;
+ 
+     diff = diff + DATE_PART('day', diff_interval);
+ 
+     IF units IN ('wk', 'ww', 'week') THEN
+       diff = diff/7;
+       RETURN diff;
+     END IF;
+ 
+     IF units IN ('dd', 'd', 'day') THEN
+       RETURN diff;
+     END IF;
+ 
+     diff = diff * 24 + DATE_PART('hour', diff_interval); 
+ 
+     IF units IN ('hh', 'hour') THEN
+        RETURN diff;
+     END IF;
+ 
+     diff = diff * 60 + DATE_PART('minute', diff_interval);
+ 
+     IF units IN ('mi', 'n', 'minute') THEN
+        RETURN diff;
+     END IF;
+ 
+     diff = diff * 60 + DATE_PART('second', diff_interval);
+ 
+     RETURN diff;
+   END;
+   $$ LANGUAGE plpgsql;
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-02-28
+-- Description: Script Get amount of activated licenses by given time
+-- ##########################################################################
+Input paramteres: vTime  timestamp
+Return Value: Amount of activated licenses 
+######################################################*/
+CREATE FUNCTION GetActivatedLicensesAfter (vTime timestamp)
+RETURNS integer AS
+$$ 
+	;with activatedLinceses as(
+		select * from licenseorder lo
+		join offer of on lo.offerid = of.offerid
+		join paymentinvoice pi on
+		of.paymentinvoiceid = pi.paymentinvoiceid
+		join offerrequest oq on
+		pi.offerrequestid = oq.offerrequestid
+		join technologydata td on
+		oq.technologydataid = td.technologydataid
+		)
+	select count(*)::integer from activatedLinceses	where 
+	(select datediff('second',vTime::timestamp,activatedat::timestamp)) >= 0 AND
+	(select datediff('minute',vTime::timestamp,activatedat::timestamp)) >= 0 AND
+	(select datediff('hour',vTime::timestamp,activatedat::timestamp)) >= 0;
+ 
+$$ LANGUAGE SQL;
