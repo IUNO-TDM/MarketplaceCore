@@ -256,7 +256,65 @@ self.SetComponent = function SetComponent(req, res, next)
 //</editor-fold>
 
 //<editor-fold desc="Attributes">
+//Get all Technologies
+self.GetAllAttributes = function GetAllAttributes(req, res, next)
+{
+    var userUUID = req.query['userUUID'];
+    db.func('GetAllAttributes')
+        .then(function(data) {
+            res.json(data);
+        })
+        .catch(function (error) {
+            console.log("ERROR:", error.message || error); // print the error;
+        });
+}
 
+//Get technology by ID
+self.GetAttributeByID = function GetTechnologyByID(req, res, next)
+{
+    var userUUID = req.query['userUUID'];
+    var technologyUUID = req.params['attributeUUID'];
+    db.func('GetAttributeByID',[technologyUUID])
+        .then(function(data) {
+            res.json(data);
+        })
+        .catch(function (error) {
+            console.log("ERROR:", error.message || error); // print the error;
+        });
+}
+
+//Get technology by name
+self.GetAttributeByName = function GetTechnologyByName(req, res, next)
+{
+    var userUUID = req.query['userUUID'];
+    var technologyName = req.params['attributeName'];
+    db.func('GetAttributeByName',[technologyName])
+        .then(function(data) {
+            res.json(data);
+        })
+        .catch(function (error) {
+            console.log("ERROR:", error.message || error); // print the error;
+        });
+}
+
+//Get technology by name
+self.CreateAttribute =  function CreateTechnology(req, res, next)
+{
+    var userUUID = req.query['userUUID'];
+    var attributeName = req.query['attributeName'];
+
+    db.func('CreateAttribute',
+        [
+            attributeName,
+            userUUID
+        ])
+        .then(function(data) {
+            res.json(data);
+        })
+        .catch(function (error) {
+            console.log("ERROR:", error.message || error); // print the error;
+        });
+}
 //</editor-fold>
 
 //<editor-fold desc="Offer">
