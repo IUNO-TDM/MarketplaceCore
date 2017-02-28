@@ -1423,34 +1423,7 @@ CREATE FUNCTION GetAllOffers()
 	FROM offer offr JOIN
 	paymentinvoice pi ON offr.paymentinvoiceid = pi.paymentinvoiceid	 
 	JOIN Users ur ON offr.createdby = ur.userid
-    $$ LANGUAGE SQL;
-/* ##########################################################################
--- Author: Marcel Ely Gomes 
--- Company: Trumpf Werkzeugmaschine GmbH & Co KG
--- CreatedAt: 2017-02-23
--- Description: Script to get all offers
--- ##########################################################################
-Get all offers 
-Input paramteres: none		
-Return Value: Table with all offers
-######################################################*/
-CREATE FUNCTION GetAllOffers() 
-	RETURNS TABLE
-    	(
-    offeruuid uuid,    
-    paymentinvoiceuuid uuid,
-    createdat timestamp without time zone,
-    createdby uuid
-        )
-    AS $$ 
-	SELECT  offeruuid,                
-	        paymentinvoiceuuid,
-	        offr.createdat at time zone 'utc',
-	        ur.useruuid as createdby
-	FROM offer offr JOIN
-	paymentinvoice pi ON offr.paymentinvoiceid = pi.paymentinvoiceid	 
-	JOIN Users ur ON offr.createdby = ur.userid
-    $$ LANGUAGE SQL;
+    $$ LANGUAGE SQL; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG

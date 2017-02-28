@@ -12,8 +12,6 @@ var db = pgp("postgres://postgres:Trumpf1234@localhost:5432/marketplacecore");
 var self = {};
 
 
-
-
 //<editor-fold desc="Users">
 // GetAllUsers(userUUid)
 // GetUserByID(requestUserUUDID,userUUid)
