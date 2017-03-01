@@ -891,7 +891,7 @@ CREATE FUNCTION GetAllTechnologyData()
     licensefee numeric(21, 4),
     createdat timestamp  without time zone,
     createdby integer,
-    updateat timestamp  without time zone,
+    updatedat timestamp  without time zone,
     updatedby integer
         )
     AS $$ 
@@ -903,7 +903,7 @@ CREATE FUNCTION GetAllTechnologyData()
     		licensefee,
     		createdat  at time zone 'utc',
     		createdby,	
-    		updateat  at time zone 'utc',
+    		updatedat  at time zone 'utc',
     		updatedby
     FROM TechnologyData $$
     LANGUAGE SQL;
@@ -929,7 +929,7 @@ CREATE FUNCTION GetTechnologyDataByID(vTechnologyDataUUID uuid, vUserUUID uuid)
     licensefee numeric(21, 4),
     createdat timestamp  without time zone,
     createdby integer,
-    updateat timestamp  without time zone,
+    updatedat timestamp  without time zone,
     updatedby integer
         )
     AS $$ 
@@ -941,7 +941,7 @@ CREATE FUNCTION GetTechnologyDataByID(vTechnologyDataUUID uuid, vUserUUID uuid)
     		licensefee,
     		createdat  at time zone 'utc',
     		createdby,	
-    		updateat  at time zone 'utc',
+    		updatedat  at time zone 'utc',
     		updatedby
     FROM TechnologyData WHERE technologydatauuid = vTechnologyDataUUID
 	$$ LANGUAGE SQL;
@@ -967,7 +967,7 @@ CREATE FUNCTION GetTechnologyDataByName(vTechnologyDataName varchar(250), vUserU
     licensefee numeric(21, 4),
     createdat timestamp  without time zone,
     createdby integer,
-    updateat timestamp  without time zone,
+    updatedat timestamp  without time zone,
     updatedby integer
         )
     AS $$ 
@@ -979,7 +979,7 @@ CREATE FUNCTION GetTechnologyDataByName(vTechnologyDataName varchar(250), vUserU
     		licensefee,
     		createdat  at time zone 'utc',
     		createdby,	
-    		updateat  at time zone 'utc',
+    		updatedat  at time zone 'utc',
     		updatedby
     FROM TechnologyData WHERE TechnologyDataName = vTechnologyDataName
 	$$ LANGUAGE SQL;
@@ -1262,12 +1262,12 @@ CREATE FUNCTION GetTechnologyByName(vtechName varchar)
     		updatedby 
     FROM Technologies WHERE technologyname = vtechName;
     $$ LANGUAGE SQL;
-
 /*##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
 -- CreatedAt: 2017-02-16
 -- Description: Script to get all Technologies
+-- Change: insert new output values
 -- ##########################################################################
 Get all Technologies
 Input paramteres: none	
@@ -1277,16 +1277,34 @@ CREATE FUNCTION GetTechnologyDataByParams(
     	userUUID varchar, vtechdata varchar, vtechnologies varchar, vtags varchar, vcomponents varchar, vattributes varchar
 		) 
 	RETURNS TABLE
-    	(
-            technologydataname character varying,
-         	technologyname varchar,
-         	tagname character varying,
-         	componentname varchar,
-            attributename varchar
+    	(	
+		technologydatauuid uuid,		
+		technologydataname character varying,
+		technologydatadescription varchar,
+		technologydata varchar(32672),
+		licensefee numeric,
+		technologydatathumbnail bytea,
+		technologydataimgRef varchar,
+		useruuid uuid,
+		createdat timestamp without time zone,
+		updatedat timestamp without time zone,
+		technologyname varchar,
+        tagname character varying,
+        componentname varchar,
+		attributename varchar
         )
     AS $$ 
-    SELECT 
+    SELECT 	
+	td.technologydatauuid,
     	td.technologydataname as technologydataname,
+    	td.technologydatadescription,
+    	td.technologydata,
+    	td.licensefee,
+    	td.technologydatathumbnail,
+    	td.technologydataimgref,
+    	us.useruuid,
+    	td.createdat at time zone 'utc',
+    	td.updatedat at time zone 'utc',
         tc.technologyname as technologyname,
         tg.tagname as tagname,
         ct.componentname as componentname,
@@ -1299,6 +1317,7 @@ CREATE FUNCTION GetTechnologyDataByParams(
     JOIN technologies tc ON tc.technologyid = td.technologyid
     JOIN componentsattribute cta ON cta.componentid = ct.componentid
     JOIN attributes att ON att.attributeid = cta.attributeid
+    JOIN users us ON us.userid = td.createdby
     WHERE (vtechdata IS NULL OR td.technologydataname IN (vtechdata)) 
     AND (vtechnologies IS NULL OR tc.technologyname IN (vtechnologies)) 
     AND (vtags IS NULL OR tg.tagname IN (vtags)) 

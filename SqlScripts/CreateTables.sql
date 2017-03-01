@@ -1,5 +1,5 @@
 -- Generiert von Oracle SQL Developer Data Modeler 4.0.3.853
---   am/um:        2017-02-27 08:03:59 MEZ
+--   am/um:        2017-03-01 16:20:14 MEZ
 --   Site:      DB2/UDB 8.1
 --   Typ:      DB2/UDB 8.1
 
@@ -79,6 +79,12 @@ CREATE
   ) ;
 ALTER TABLE LogStatus ADD CONSTRAINT LogStatus_PK PRIMARY KEY ( LogStatusID ) ;
 
+/*TODO: Stammdata into other file 
+*/
+insert into logstatus(LogStatusID, LogStatus) values(0,'SUCESS');
+insert into logstatus(LogStatusID, LogStatus) values(1,'ERROR');
+insert into logstatus(LogStatusID, LogStatus) values(2,'PENDING');
+
 CREATE
   TABLE LogTable
   (
@@ -89,13 +95,6 @@ CREATE
     Parameters    VARCHAR (32672) ,
     CreatedAt     TIMESTAMP WITH TIME ZONE NOT NULL
   ) ;
-  
-/*TODO: Stammdata into other file 
-*/
-insert into logstatus(LogStatusID, LogStatus) values(0,'SUCESS');
-insert into logstatus(LogStatusID, LogStatus) values(1,'ERROR');
-insert into logstatus(LogStatusID, LogStatus) values(2,'PENDING');
-
 ALTER TABLE LogTable ADD CONSTRAINT LogTable_PK PRIMARY KEY ( LogID ) ;
 
 CREATE
@@ -130,7 +129,8 @@ CREATE
     PaymentUUID        UUID ,
     PaymentInvoiceID   INTEGER NOT NULL ,
     PayDate            TIMESTAMP WITH TIME ZONE ,
-    BitcoinTransaction VARCHAR (32672)
+    BitcoinTransaction VARCHAR (32672) ,
+    CreatedBy          UUID
   ) ;
 ALTER TABLE Payment ADD CONSTRAINT Payment_PK PRIMARY KEY ( PaymentID ) ;
 
@@ -185,12 +185,14 @@ CREATE
     TechnologyDataName        VARCHAR (250) NOT NULL ,
     TechnologyID              INTEGER NOT NULL ,
     TechnologyData            VARCHAR (32672) NOT NULL ,
-    TechnologyDataDescription VARCHAR (32672) ,
     LicenseFee                DECIMAL (21,4) NOT NULL ,
-    CreatedAt                 TIMESTAMP WITH TIME ZONE NOT NULL ,
-    CreatedBy                 INTEGER NOT NULL ,
-    UpdateAt                  TIMESTAMP WITH TIME ZONE ,
-    UpdatedBy                 INTEGER
+    TechnologyDataDescription VARCHAR (32672) ,
+    TechnologyDataThumbnail Bytea ,
+    TechnologyDataImgRef VARCHAR ,
+    CreatedAt            TIMESTAMP WITH TIME ZONE NOT NULL ,
+    CreatedBy            INTEGER NOT NULL ,
+    UpdatedAt            TIMESTAMP WITH TIME ZONE ,
+    UpdatedBy            INTEGER
   ) ;
 ALTER TABLE TechnologyData ADD CONSTRAINT TechnologyData_PK PRIMARY KEY (
 TechnologyDataID ) ;
@@ -242,7 +244,7 @@ CREATE
     UserFirstName VARCHAR (250) NOT NULL ,
     UserLastName  VARCHAR (250) NOT NULL ,
     UserEmail     VARCHAR (250) NOT NULL ,
-    Thumbnail Bytea,
+    Thumbnail Bytea ,
     ImgPath   VARCHAR ,
     CreatedAt TIMESTAMP WITH TIME ZONE NOT NULL ,
     UpdatedAt TIMESTAMP WITH TIME ZONE
@@ -311,6 +313,11 @@ DELETE
 
 ALTER TABLE OfferRequest ADD CONSTRAINT OfferRequest_Users_FK FOREIGN KEY (
 RequestedBy ) REFERENCES Users ( UserID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE Offer ADD CONSTRAINT Offer_PaymentInvoice_FK FOREIGN KEY (
+PaymentInvoiceID ) REFERENCES PaymentInvoice ( PaymentInvoiceID ) ON
 DELETE
   NO ACTION;
 
@@ -417,7 +424,7 @@ DELETE
 -- 
 -- CREATE TABLE                            18
 -- CREATE INDEX                             0
--- ALTER TABLE                             54
+-- ALTER TABLE                             55
 -- CREATE VIEW                              0
 -- CREATE PACKAGE                           0
 -- CREATE PACKAGE BODY                      0
