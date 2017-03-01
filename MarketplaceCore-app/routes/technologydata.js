@@ -12,32 +12,60 @@ var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
 
 
-router.get('/', validate({query: require('../schema/technologydata_schema').TechnologyData}), function (req, res, next) {
+router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
     logger.debug(req);
-        queries.GetAllTechnologyData(req, res, next);
+
+    if (req.query['name']) {
+        //TODO: Merge ByName and ByParams into a single method.
+        queries.GetTechnologyDataByName(req.query['userUUID'], req.query['name'], function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json([data]);
+            }
+        });
+    }
+    else {
+        queries.GetTechnologyDataByParams(req.query['userUUID'], req.query, function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+    }
 });
 
-router.get('/parameters/', validate({query: require('../schema/technologydata_schema').TechnologyDataParameters}), function (req, res, next) {
+router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
     logger.debug(req);
-        queries.GetTechnologyDataByParams(req,res,next);
+
+    queries.GetTechnologyDataByID(req.query['userUUID'], req.param['id'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
 
 });
 
-router.get('/technologydatauuid/:technologyDataUUID', validate({query: require('../schema/technologydata_schema')}),  function (req, res, next) {
+router.post('/', validate({
+    body: require('../schema/technologydata_schema').SaveDataBody,
+    query: require('../schema/technologydata_schema').SaveDataQuery
+}), function (req, res, next) {
     logger.debug(req);
-        queries.GetTechnologyDataByID(req,res,next);
+    queries.saveTechnologyData(req.query['userUUID'], req.body, function(err, data) {
+        if (err) {
+            next(err);
+        }
 
-});
-
-router.get('/technologydataname/:technologyDataName', validate({query: require('../schema/technologydata_schema')}),   function (req, res, next) {
-    logger.debug(req);
-        queries.GetTechnologyDataByName(req,res,next);
-
-});
-
-router.put('/technologydata', validate({query: require('../schema/technologydata_schema').SetTechnologyData}),   function (req, res, next) {
-    logger.debug(req);
-    queries.SetTechnologyData(req,res,next);
+        var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+        res.set('Location', fullUrl + data.id);
+        res.sendStatus(201);
+    });
 });
 
 module.exports = router;

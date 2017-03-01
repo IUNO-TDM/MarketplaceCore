@@ -7,7 +7,7 @@
 
 var express = require('express');
 var router = express.Router();
-var logger = require('../global/logger'); 
+var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
 
