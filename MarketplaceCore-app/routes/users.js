@@ -1,31 +1,66 @@
-/**
- * Created by elygomesma on 15.02.17.
- */
+/* ##########################################################################
+ -- Author: Marcel Ely Gomes
+ -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+ -- CreatedAt: 2017-03-02
+ -- Description: Routing service for TechnologyData
+ -- ##########################################################################*/
 
 var express = require('express');
 var router = express.Router();
 var logger = require('../global/logger');
-var pgp = require('pg-promise')();
-var db = pgp("postgres://postgres:Trumpf1234@localhost:5432/Test");
+var validate = require('express-jsonschema').validate;
+var queries = require('../connectors/pg-queries');
 
-
-router.post('/', function (req, res, next) {
+/*router.get('/', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
     logger.debug(req);
-
-    db.func('CreateUser',['test123','user','test.user1@de.trumpf.com'])
-        .then(function(data) {
+    queries.GetAllUsers(req.query['userUUID'], function(err, data){
+        if (err){
+            next(err);
+        }
+        else {
             res.json(data);
-            console.log(data);
-        })
-        .catch(function (error) {
-            console.log("ERROR:", error.message || error); // print the error;
-        });
+        }
+    });
+});*/
 
+router.get('/', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
+    logger.debug(req);
+    queries.GetUserByName(req.query['userUUID'], req.query['firstName'], req.query['lastName'], function(err, data){
+        if (err){
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
 });
 
-router.get('/:id', function (req, res, next) {
+router.get('/:id', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
+    logger.debug(req);
+    queries.GetUserByID(req.query['userUUID'], req.param['id'], function(err, data){
+        if (err){
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
+});
 
+router.post('/', validate({
+    body: require('../schema/users_schema').SaveDataBody,
+    query: require('../schema/users_schema').SaveDataQuery
+}), function (req, res, next) {
+    logger.debug(req);
+    queries.SaveUser(req.query['userUUID'], req.body, function(err, data) {
+        if (err) {
+            next(err);
+        }
 
+        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
+        res.set('Location', fullUrl + data[0]['createuser']);
+        res.sendStatus(201);
+    });
 });
 
 module.exports = router;

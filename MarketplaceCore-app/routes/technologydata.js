@@ -57,7 +57,7 @@ router.post('/', validate({
     query: require('../schema/technologydata_schema').SaveDataQuery
 }), function (req, res, next) {
     logger.debug(req);
-    queries.saveTechnologyData(req.query['userUUID'], req.body, function(err, data) {
+    queries.SaveTechnologyData(req.query['userUUID'], req.body, function(err, data) {
         if (err) {
             next(err);
         }
