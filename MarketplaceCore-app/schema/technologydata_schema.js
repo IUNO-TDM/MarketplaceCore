@@ -7,7 +7,49 @@
 
 var self = {};
 
-self.TechnologyData = {
+self.GetAll = {
+    type: 'object',
+    properties: {
+        userUUID: {
+            type: 'string',
+            required: true
+        },
+        name: {
+            type: 'string',
+            required: false
+        },
+        tags: {
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            required: false
+        },
+        components: {
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            required: false
+        },
+        technologies: {
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            required: false
+        },
+        attributes: {
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            required: false
+        }
+    }
+};
+
+self.GetSingle = {
     type: 'object',
     properties: {
         userUUID: {
@@ -17,28 +59,18 @@ self.TechnologyData = {
     }
 };
 
-self.TechnologyDataParameters = {
+self.SaveDataBody = {
     type: 'object',
     properties: {
-        userUUID: {
-            type: 'string',
-            required: true
-        }
-    }
-};
-
-self.SetTechnologyData = {
-    type: 'object',
-    properties: {
-        technologyDataName:{
+        technologyDataName: {
             type: 'string',
             required: true
         },
-        technologyData:{
+        technologyData: {
             type: 'string',
             required: true
         },
-        technologyDataDescription:{
+        technologyDataDescription: {
             type: 'string',
             required: true
         },
@@ -54,14 +86,10 @@ self.SetTechnologyData = {
             type: 'array',
             items: {
                 tagName: {
-                        type: 'string',
-                        required: true
+                    type: 'string',
+                    required: true
                 }
             },
-            required: true
-        },
-        userUUID: {
-            type: 'string',
             required: true
         },
         componentList: {
@@ -76,6 +104,16 @@ self.SetTechnologyData = {
         }
     }
 };
+
+self.SaveDataQuery = {
+    type: 'object',
+    userUUID: {
+        type: 'string',
+        required: true
+    }
+};
+
+self.saveTechnologyData = {};
 
 
 module.exports = self;
