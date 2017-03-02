@@ -11,23 +11,39 @@ var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
 
-router.get('/', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
-    logger.debug(req);
-       queries.GetAllOffers(req,res,next);
-});
-
-router.get('/offeruuid/:offerUUID', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
+router.get('/:id', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
     logger.debug(req);
 
-    queries.GetOfferByID(req,res,next);
+    queries.GetOfferByID(req.query['userUUID'], req.param['id'], function (err, data) {
+        if (err) {
+            next(err);
+        } else {
+            res.json(data);
+        }
+    });
 
 });
 
-router.get('/offerrequest/:offerRequestUUID', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
+router.post('/', validate({query: require('../schema/offers_schema').OfferRequest}), function (req, res, next) {
     logger.debug(req);
 
-    queries.GetOfferForRequest(req,res,next);
-
+    var userUUID = req.query['userUUID'];
+    var requestData = req.body;
+    //TODO: Create offer for request data
+    //TODO: Store offer in database
+    //TODO: Send offer back to the client
+    res.json({});
 });
+
+router.post('/:id/payment', validate({query: require('../schema/offers_schema').Payment}), function (req, res, next) {
+    logger.debug(req);
+
+    var userUUID = req.query['userUUID'];
+    var paymentData = req.body;
+    //TODO: Save payment for offer
+
+    res.sendStatus(200);
+});
+
 
 module.exports = router;
