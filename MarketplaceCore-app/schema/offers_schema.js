@@ -17,19 +17,46 @@ self.Offers = {
     }
 };
 
-self.CreateOffer = {
+self.OfferRequest = {
     type: 'object',
     properties: {
         userUUID: {
             type: 'string',
             required: true
         },
-        attributeName: {
+        items: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    dataId: {
+                        type: 'string',
+                        required: true
+                    },
+                    amount: {
+                        type: 'integer',
+                        required: true
+                    }
+                }
+            },
+            required: true
+        },
+        hsmId: {
             type: 'string',
             required: true
         }
     }
 };
 
+self.Payment = {
+    type: 'object',
+    properties: {
+        paymentBIP70: {
+            type: 'string',
+            required: true
+        }
+    },
+    required: true
+};
 
 module.exports = self;

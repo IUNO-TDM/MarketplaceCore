@@ -19,13 +19,15 @@ router.post('/', function (req, res, next) {
         })
         .catch(function (error) {
             console.log("ERROR:", error.message || error); // print the error;
+            next(error);
         });
 
 });
 
 router.get('/:id', function (req, res, next) {
-
-
+    //TODO: Get the user from the database
+    var user = {};
+    res.json(user);
 });
 
 module.exports = router;

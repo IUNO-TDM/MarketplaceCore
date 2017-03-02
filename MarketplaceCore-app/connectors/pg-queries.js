@@ -299,69 +299,66 @@ self.CreateAttribute = function (req, res, next) {
 
 //<editor-fold desc="Offer">
 //Get all Offers
-self.GetAllOffers = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
+self.GetAllOffers = function (userUUID, callback) {
     db.func('GetAllOffers')
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
             console.log("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
 //Get Offer by ID
-self.GetOfferByID = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var offerUUID = req.params['offerUUID'];
+self.GetOfferByID = function (userUUID, offerUUID, callback) {
     db.func('GetOfferByID', [offerUUID])
         .then(function (data) {
-            res.json(data);
+            callback(null, data)
         })
         .catch(function (error) {
             console.log("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
 //Get Offer for Request
-self.GetOfferForRequest = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var offerRequestUUID = req.params['offerRequestUUID'];
+self.GetOfferForRequest = function (userUUID, offerRequestUUID, callback) {
     db.func('GetOfferByRequestID', [offerRequestUUID])
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
             console.log("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
 //Get Offer for Request
-self.GetOfferForPaymentInvoice = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var paymentInvoiceUUID = req.params['paymentInvoiceUUID'];
+self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callback) {
     db.func('GetOfferForPaymentInvoice', [paymentInvoiceUUID])
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
             console.log("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
 //Create Offer
-self.CreateOffer = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
+self.CreateOffer = function (userUUID, params, callback) {
 
     db.func('CreateOffer',
         [
             userUUID
         ])
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
             console.log("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 //</editor-fold>
