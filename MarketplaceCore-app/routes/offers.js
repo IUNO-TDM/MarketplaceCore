@@ -11,7 +11,9 @@ var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
 
-router.get('/:id', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
+router.get('/:id', validate({
+    query: require('../schema/offers_schema').Offers
+}), function (req, res, next) {
     logger.debug(req);
 
     queries.GetOfferByID(req.query['userUUID'], req.param['id'], function (err, data) {
@@ -24,7 +26,10 @@ router.get('/:id', validate({query: require('../schema/offers_schema').Offers}),
 
 });
 
-router.post('/', validate({query: require('../schema/offers_schema').OfferRequest}), function (req, res, next) {
+router.post('/', validate({
+    query: require('../schema/offers_schema').Offers,
+    body: require('../schema/offers_schema').OfferRequestBody
+}), function (req, res, next) {
     logger.debug(req);
 
     var userUUID = req.query['userUUID'];
@@ -35,7 +40,10 @@ router.post('/', validate({query: require('../schema/offers_schema').OfferReques
     res.json({});
 });
 
-router.post('/:id/payment', validate({query: require('../schema/offers_schema').Payment}), function (req, res, next) {
+router.post('/:id/payment', validate({
+    query: require('../schema/offers_schema').Offers,
+    body: require('../schema/offers_schema').Payment
+}), function (req, res, next) {
     logger.debug(req);
 
     var userUUID = req.query['userUUID'];

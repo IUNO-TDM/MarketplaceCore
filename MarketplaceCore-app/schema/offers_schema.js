@@ -17,13 +17,9 @@ self.Offers = {
     }
 };
 
-self.OfferRequest = {
+self.OfferRequestBody = {
     type: 'object',
     properties: {
-        userUUID: {
-            type: 'string',
-            required: true
-        },
         items: {
             type: 'array',
             items: {
