@@ -5,7 +5,9 @@
  -- Description: Schema for TechnologyData
  -- ##########################################################################*/
 
-var Technologies = {
+var self = {};
+
+self.Technologies = {
     type: 'object',
     properties: {
         userUUID: {
@@ -15,7 +17,7 @@ var Technologies = {
     }
 };
 
-var TechnologyByID = {
+self.TechnologyByID = {
     type: 'object',
     properties: {
         userUUID: {
@@ -30,4 +32,4 @@ var TechnologyByID = {
 };
 
 
-module.exports = {Technologies, TechnologyByID};
+module.exports = self;
