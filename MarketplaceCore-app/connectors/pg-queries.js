@@ -399,7 +399,7 @@ self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callbac
 };
 
 //Create Offer
-self.CreateOffer = function (userUUID, params, callback) {
+self.CreateOffer = function (userUUID, invoice, callback) {
 
     db.func('CreateOffer',
         [
@@ -415,7 +415,7 @@ self.CreateOffer = function (userUUID, params, callback) {
 };
 //</editor-fold>
 
-//<editor-fold desc="OfferRequest">
+//<editor-fold desc="OfferRequestBody">
 //</editor-fold>
 
 //<editor-fold desc="Payment">

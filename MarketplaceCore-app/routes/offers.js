@@ -10,8 +10,11 @@ var router = express.Router();
 var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
+var invoiceService = require('../services/invoice_service');
 
-router.get('/:id', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
+router.get('/:id', validate({
+    query: require('../schema/offers_schema').Offers
+}), function (req, res, next) {
     logger.debug(req);
 
     queries.GetOfferByID(req.query['userUUID'], req.param['id'], function (err, data) {
@@ -24,18 +27,37 @@ router.get('/:id', validate({query: require('../schema/offers_schema').Offers}),
 
 });
 
-router.post('/', validate({query: require('../schema/offers_schema').OfferRequest}), function (req, res, next) {
+router.post('/', validate({
+    query: require('../schema/offers_schema').Offers,
+    body: require('../schema/offers_schema').OfferRequestBody
+}), function (req, res, next) {
     logger.debug(req);
 
     var userUUID = req.query['userUUID'];
     var requestData = req.body;
-    //TODO: Create offer for request data
-    //TODO: Store offer in database
-    //TODO: Send offer back to the client
-    res.json({});
+
+    invoiceService.generateInvoiceForRequest(requestData, function (err, invoice) {
+        if (err) {
+            next(err);
+        } else {
+            queries.CreateOffer(userUUID, invoice, function (err, offer) {
+                if (err) {
+                    next(err);
+                } else {
+                    var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+                    res.set('Location', fullUrl + offer.id);
+                    res.status(201);
+                    res.json(offer);
+                }
+            })
+        }
+    });
 });
 
-router.post('/:id/payment', validate({query: require('../schema/offers_schema').Payment}), function (req, res, next) {
+router.post('/:id/payment', validate({
+    query: require('../schema/offers_schema').Offers,
+    body: require('../schema/offers_schema').Payment
+}), function (req, res, next) {
     logger.debug(req);
 
     var userUUID = req.query['userUUID'];
