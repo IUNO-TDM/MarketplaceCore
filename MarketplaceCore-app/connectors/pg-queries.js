@@ -347,7 +347,7 @@ self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callbac
 };
 
 //Create Offer
-self.CreateOffer = function (userUUID, params, callback) {
+self.CreateOffer = function (userUUID, invoice, callback) {
 
     db.func('CreateOffer',
         [
