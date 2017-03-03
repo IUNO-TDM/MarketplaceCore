@@ -15,7 +15,7 @@ var invoiceService = require('../services/invoice_service');
 router.get('/:id', validate({
     query: require('../schema/offers_schema').Offers
 }), function (req, res, next) {
-    logger.debug(req);
+
 
     queries.GetOfferByID(req.query['userUUID'], req.param['id'], function (err, data) {
         if (err) {
@@ -31,34 +31,42 @@ router.post('/', validate({
     query: require('../schema/offers_schema').Offers,
     body: require('../schema/offers_schema').OfferRequestBody
 }), function (req, res, next) {
-    logger.debug(req);
+
 
     var userUUID = req.query['userUUID'];
     var requestData = req.body;
 
-    invoiceService.generateInvoiceForRequest(requestData, function (err, invoice) {
+    queries.CreateOfferRequest(userUUID, requestData, function(err, offerRequest) {
         if (err) {
             next(err);
         } else {
-            queries.CreateOffer(userUUID, invoice, function (err, offer) {
+            invoiceService.generateInvoiceForRequest(requestData, function (err, invoiceData) {
                 if (err) {
                     next(err);
                 } else {
-                    var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-                    res.set('Location', fullUrl + offer.id);
-                    res.status(201);
-                    res.json(offer);
+                    queries.SetPaymentInvoiceOffer(userUUID, invoiceData, offerRequest.id, function(err, offerId) {
+                       if (err) {
+                           next(err);
+                       } else {
+                           var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+                           res.set('Location', fullUrl + offerId);
+                           res.status(201);
+                           res.json({}); //TODO: Send offer json
+                       }
+                    });
                 }
-            })
+            });
         }
     });
+
+
 });
 
 router.post('/:id/payment', validate({
     query: require('../schema/offers_schema').Offers,
     body: require('../schema/offers_schema').Payment
 }), function (req, res, next) {
-    logger.debug(req);
+
 
     var userUUID = req.query['userUUID'];
     var paymentData = req.body;

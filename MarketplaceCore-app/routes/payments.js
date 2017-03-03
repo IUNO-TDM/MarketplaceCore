@@ -9,15 +9,15 @@ var pgp = require('pg-promise')();
 
 
 router.get('/', function (req, res, next) {
-    logger.debug(req);
 
-         db.func('GetAllComponents')
-            .then(function(data) {
-                res.json(data);
-            })
-            .catch(function (error) {
-                console.log("ERROR:", error.message || error); // print the error;
-            });
+
+    db.func('GetAllComponents')
+        .then(function (data) {
+            res.json(data);
+        })
+        .catch(function (error) {
+            console.log("ERROR:", error.message || error); // print the error;
+        });
 
 });
 

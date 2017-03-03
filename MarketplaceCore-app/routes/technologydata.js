@@ -13,7 +13,6 @@ var queries = require('../connectors/pg-queries');
 
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
-    logger.debug(req);
 
     if (req.query['name']) {
         //TODO: Merge ByName and ByParams into a single method.
@@ -39,7 +38,6 @@ router.get('/', validate({query: require('../schema/technologydata_schema').GetA
 });
 
 router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
-    logger.debug(req);
 
     queries.GetTechnologyDataByID(req.query['userUUID'], req.param['id'], function (err, data) {
         if (err) {
@@ -56,8 +54,7 @@ router.post('/', validate({
     body: require('../schema/technologydata_schema').SaveDataBody,
     query: require('../schema/technologydata_schema').SaveDataQuery
 }), function (req, res, next) {
-    logger.debug(req);
-    queries.SaveTechnologyData(req.query['userUUID'], req.body, function(err, data) {
+    queries.SetTechnologyData(req.query['userUUID'], req.body, function (err, data) {
         if (err) {
             next(err);
         }

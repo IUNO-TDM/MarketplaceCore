@@ -29,7 +29,7 @@ self.GetAllUsers = function (userUUID, callback) {
 
 // GetUserByID(userUUID, dataId)
 self.GetUserByID = function (userUUID, dataId, callback) {
-    db.func('GetUserByID',[dataId])
+    db.func('GetUserByID', [dataId])
         .then(function (data) {
             callback(null, data)
         })
@@ -41,7 +41,7 @@ self.GetUserByID = function (userUUID, dataId, callback) {
 
 // GetUserByID(userUUID, firstName, lastName)
 self.GetUserByName = function (userUUID, firstName, lastName, callback) {
-    db.func('GetUserByName',[firstName, lastName])
+    db.func('GetUserByName', [firstName, lastName])
         .then(function (data) {
             callback(null, data)
         })
@@ -52,12 +52,12 @@ self.GetUserByName = function (userUUID, firstName, lastName, callback) {
 };
 
 // CreateUser(userUUID, firstName, lastName, email)
-self.SaveUser = function (userUUID, data, callback) {
+self.CreateUser = function (userUUID, data, callback) {
 
     var firstName = data['firstName'];
     var lastName = data['lastName'];
     var emailAddress = data['emailAddress'];
-    db.func('CreateUser',[firstName, lastName, emailAddress])
+    db.func('CreateUser', [firstName, lastName, emailAddress])
         .then(function (data) {
             callback(null, data)
         })
@@ -134,7 +134,7 @@ self.GetTechnologyDataByName = function (userUUID, name, callback) {
         });
 };
 
-self.SaveTechnologyData = function (userUUID, data, callback) {
+self.SetTechnologyData = function (userUUID, data, callback) {
     var technologyDataName = data['technologyDataName'];
     var technologyData = data['technologyData'];
     var technologyDataDescription = data['technologyDataDescription'];
@@ -399,7 +399,7 @@ self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callbac
 };
 
 //Create Offer
-self.CreateOffer = function (userUUID, invoice, callback) {
+self.CreateOffer = function (userUUID, paymentInvoiceId, callback) {
 
     db.func('CreateOffer',
         [
@@ -416,12 +416,49 @@ self.CreateOffer = function (userUUID, invoice, callback) {
 //</editor-fold>
 
 //<editor-fold desc="OfferRequestBody">
+self.CreateOfferRequest = function (userUUID, requestData, callback) {
+    //TODO: A request should have more than one item
+    db.func('CreateOfferRequest',
+        [requestData.items[0].dataId,
+            requestData.items[0].amount,
+            requestData.hsmId,
+            userUUID,
+            userUUID //TODO: what is the buyer uuid?
+        ])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.debug("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
+
 //</editor-fold>
 
 //<editor-fold desc="Payment">
 //</editor-fold>
 
 //<editor-fold desc="PaymentInvoice">
+//</editor-fold>
+
+//<editor-fold desc="Offer and Invoice">
+self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, callback) {
+    db.func('CreatePaymentInvoice',
+        [offerRequestUUID,
+            invoice,
+            userUUID
+        ])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.debug("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
 //</editor-fold>
 
 //<editor-fold desc="Transactions">

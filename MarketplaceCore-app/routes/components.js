@@ -13,21 +13,19 @@ var queries = require('../connectors/pg-queries');
 
 
 router.get('/', validate({query: require('../schema/components_schema').Components}), function (req, res, next) {
-    logger.debug(req);
 
     queries.GetAllComponents(req,res,next);
 
 });
 
 router.get('/componentuuid/:componentUUID', validate({query: require('../schema/components_schema').Components}), function (req, res, next) {
-    logger.debug(req);
 
     queries.GetComponentByID(req,res,next);
 
 });
 
 router.get('/componentname/:componentName', validate({query: require('../schema/components_schema').Components}), function (req, res, next) {
-    logger.debug(req);
+
 
     queries.GetComponentByName(req,res,next);
 
@@ -35,7 +33,7 @@ router.get('/componentname/:componentName', validate({query: require('../schema/
 
 
 router.put('/component', validate({query: require('../schema/components_schema').SetComponent}), function (req, res, next) {
-    logger.debug(req);
+
 
     queries.SetComponent(req,res,next);
 

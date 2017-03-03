@@ -7,31 +7,31 @@
 
 var express = require('express');
 var router = express.Router();
-var logger = require('../global/logger'); 
+var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
 
 
 router.get('/', validate({query: require('../schema/technologies_schema').Technologies}), function (req, res, next) {
-    logger.debug(req);
-        queries.GetAllTechnologies(req, res, next);
+
+    queries.GetAllTechnologies(req, res, next);
 });
 
-router.get('/technologyuuid/:technologyUUID', validate({query: require('../schema/technologies_schema').Technologies}),  function (req, res, next) {
-    logger.debug(req);
-        queries.GetTechnologyByID(req,res,next);
+router.get('/technologyuuid/:technologyUUID', validate({query: require('../schema/technologies_schema').Technologies}), function (req, res, next) {
 
-});
-
-router.get('/technologyname/:technologyName', validate({query: require('../schema/technologies_schema')}),   function (req, res, next) {
-    logger.debug(req);
-        queries.GetTechnologyByName(req,res,next);
+    queries.GetTechnologyByID(req, res, next);
 
 });
 
-router.put('/technology', validate({query: require('../schema/technologies_schema')}),   function (req, res, next) {
-    logger.debug(req);
-    queries.CreateTechnology(req,res,next);
+router.get('/technologyname/:technologyName', validate({query: require('../schema/technologies_schema')}), function (req, res, next) {
+
+    queries.GetTechnologyByName(req, res, next);
+
+});
+
+router.put('/technology', validate({query: require('../schema/technologies_schema')}), function (req, res, next) {
+
+    queries.CreateTechnology(req, res, next);
 
 });
 
