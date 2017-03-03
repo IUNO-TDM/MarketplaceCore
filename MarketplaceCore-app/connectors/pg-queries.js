@@ -8,7 +8,7 @@
 
 var logger = require('../global/logger');
 var pgp = require('pg-promise')();
-var db = pgp("postgres://postgres:Trumpf123@192.168.8.2:5432/marketplacecore");
+var db = pgp("postgres://postgres:trumpf1234@192.168.8.2:5432/marketplacecore");
 
 var self = {};
 
@@ -123,7 +123,7 @@ self.GetTechnologyDataByParams = function (userUUID, params, callback) {
         ]
     )
         .then(function (data) {
-            logger.debug(data);
+            logger.debug(JSON.stringify(data));
             callback(null, data);
         })
         .catch(function (error) {
@@ -413,20 +413,6 @@ self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callbac
 };
 
 //Create Offer
-self.CreateOffer = function (userUUID, paymentInvoiceId, callback) {
-
-    db.func('CreateOffer',
-        [
-            userUUID
-        ])
-        .then(function (data) {
-            callback(null, data);
-        })
-        .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
-            callback(error);
-        });
-};
 //</editor-fold>
 
 //<editor-fold desc="OfferRequestBody">

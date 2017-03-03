@@ -44,12 +44,12 @@ router.post('/', validate({
                 if (err) {
                     next(err);
                 } else {
-                    queries.SetPaymentInvoiceOffer(userUUID, invoiceData, offerRequest.id, function(err, offerId) {
+                    queries.SetPaymentInvoiceOffer(userUUID, invoiceData, offerRequest.id, function(err, offer) {
                        if (err) {
                            next(err);
                        } else {
                            var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-                           res.set('Location', fullUrl + offerId);
+                           res.set('Location', fullUrl + offer.id);
                            res.status(201);
                            res.json({}); //TODO: Send offer json
                        }
