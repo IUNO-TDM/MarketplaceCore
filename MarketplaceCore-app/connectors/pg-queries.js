@@ -8,8 +8,7 @@
 
 var logger = require('../global/logger');
 var pgp = require('pg-promise')();
-//var db = pgp("postgres://postgres:Trumpf1234@192.168.8.101:5432/marketplacecore");
-var db = pgp("postgres://postgres:Trumpf1234@localhost:5432/marketplacecore");
+var db = pgp("postgres://postgres:Trumpf123@192.168.8.2:5432/marketplacecore");
 
 var self = {};
 
@@ -31,6 +30,10 @@ self.GetAllUsers = function (userUUID, callback) {
 self.GetUserByID = function (userUUID, dataId, callback) {
     db.func('GetUserByID', [dataId])
         .then(function (data) {
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data)
         })
         .catch(function (error) {
@@ -43,6 +46,10 @@ self.GetUserByID = function (userUUID, dataId, callback) {
 self.GetUserByName = function (userUUID, firstName, lastName, callback) {
     db.func('GetUserByName', [firstName, lastName])
         .then(function (data) {
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data)
         })
         .catch(function (error) {
@@ -86,6 +93,10 @@ self.GetTechnologyDataByID = function (userUUID, dataId, callback) {
 
     db.func('GetTechnologyDataByID', [dataId, userUUID])
         .then(function (data) {
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data);
         })
         .catch(function (error) {
@@ -125,7 +136,10 @@ self.GetTechnologyDataByParams = function (userUUID, params, callback) {
 self.GetTechnologyDataByName = function (userUUID, name, callback) {
     db.func('GetTechnologyDataByName', [name, userUUID])
         .then(function (data) {
-            logger.debug(data);
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data);
         })
         .catch(function (error) {

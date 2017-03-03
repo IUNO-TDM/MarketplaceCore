@@ -39,11 +39,12 @@ router.get('/', validate({query: require('../schema/technologydata_schema').GetA
 
 router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    queries.GetTechnologyDataByID(req.query['userUUID'], req.param['id'], function (err, data) {
+    queries.GetTechnologyDataByID(req.query['userUUID'], req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
         else {
+            logger.debug('TechDataResponse: ' + JSON.stringify(data));
             res.json(data);
         }
     });

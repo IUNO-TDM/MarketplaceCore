@@ -17,7 +17,7 @@ router.get('/:id', validate({
 }), function (req, res, next) {
 
 
-    queries.GetOfferByID(req.query['userUUID'], req.param['id'], function (err, data) {
+    queries.GetOfferByID(req.query['userUUID'], req.params['id'], function (err, data) {
         if (err) {
             next(err);
         } else {

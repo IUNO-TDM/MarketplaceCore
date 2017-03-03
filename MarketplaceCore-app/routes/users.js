@@ -35,7 +35,7 @@ router.get('/', validate({query: require('../schema/users_schema').GetSingle}), 
 });
 
 router.get('/:id', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
-    queries.GetUserByID(req.query['userUUID'], req.param['id'], function (err, data) {
+    queries.GetUserByID(req.query['userUUID'], req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
