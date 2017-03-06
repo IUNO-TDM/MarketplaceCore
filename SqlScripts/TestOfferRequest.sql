@@ -15,19 +15,20 @@ DECLARE
 
 	BEGIN
 	  -- Create Buyer 	
-	  vBuyerUUID := (select createuser('Buyer','Cool','buyer14.cool@coolinc.com'))::uuid;
+	  perform createuser('Buyer','Cool','buyer12.cool@coolinc.com');
+	  vBuyerUUID := (select useruuid from users limit 1);
 	  -- Create OfferRequest
 	  perform createofferrequest(vtechnologydatauuid,vAmount,vHSMID,vUserUUID,vBuyerUUID);
 	  -- Get OfferRequestUUID
 	  vOfferRequestUUID := (select offerrequestuuid from offerrequest limit 1)::uuid;
 	  -- Create PaymentInvoice
-	  perform createpaymentinvoice(vInvoice,vOfferRequestUUID,vUserUUID);
+	  perform SetPaymentInvoiceOrder(vOfferRequestUUID, vInvoice, vUserUUID);
 	  -- Get PaymentInvoiceUUID
 	  vPaymentInvoiceUUID := (select paymentinvoiceuuid from paymentinvoice limit 1)::uuid;
 	  -- Create Offer
-	  perform createoffer(vPaymentInvoiceUUID,vUserUUID);
+	  --perform createoffer(vPaymentInvoiceUUID,vUserUUID);
 	  -- Create Payment
-	  perform createpayment(vPaymentInvoiceUUID, vBitcoinTransaction, vUserUUID);
+	  perform createpayment(vPaymentInvoiceUUID::uuid, vBitcoinTransaction, vUserUUID);
 	  -- Get OfferUUID
 	  vOfferUUID := (select offeruuid from offer limit 1)::uuid;
 	  -- Create LicenseOrder
@@ -44,7 +45,4 @@ select * from offer;
 select * from transactions;
 select * from licenseorder;
 select * from payment;
- select * from users;
-
-select getactivatedlicensesafter('2017-02-28 17:32:00');
- 
+ select * from users; 

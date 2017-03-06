@@ -125,10 +125,12 @@ $$
             'Cherry with Mango', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             4.99,    			 				 -- <licensefee numeric>, 
-            '{Delicious, Cherry, Mango, Yummy}', -- <taglist text[]>, 
-            vUserUUID,    						 		 -- <createdby integer>, 
-            '{Cherry Juice,Mango Juice}'    							 -- <componentlist integer[]>
-         );
+            '{Delicious, Cherry, Mango, Yummy}', -- <taglist text[]>,            						 		 -- <createdby integer>, 
+            '{Cherry Juice,Mango Juice}',    							 -- <componentlist integer[]>
+			-- vUserUUID,
+			vUserUUID  
+		 
+		 );
          -- Cherry with Cola
         perform public.settechnologydata(
             'CheCo',		     				 -- <technologydataname character varying>, 
@@ -136,9 +138,10 @@ $$
             'Cherry with Mango', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             1.99,    			 				 -- <licensefee numeric>, 
-            '{Delicious, Cherry, Cola, Refreshing}', -- <taglist text[]>, 
-            vUserUUID,    						 -- <createdby integer>, 
-            '{Cherry Juice,Cola}'    								 -- <componentlist integer[]>
+            '{Delicious, Cherry, Cola, Refreshing}', -- <taglist text[]>,
+			'{Cherry Juice,Cola}',    		 -- <componentlist integer[]>			
+            -- vUserUUID,    						 -- <createdby integer>, 
+            vUserUUID
          );
           -- Ginger, Orange
         perform public.settechnologydata(
@@ -147,9 +150,10 @@ $$
             'Orange with Ginger', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             2.99,    			 				 -- <licensefee numeric>, 
-            '{Delicious, Ginger, Orange}', -- <taglist text[]>, 
-            vUserUUID,    						 -- <createdby integer>, 
-            '{Ginger Sirup,Orange Juice}'    								 -- <componentlist integer[]>
+            '{Delicious, Ginger, Orange}', -- <taglist text[]>,               						  
+            '{Ginger Sirup,Orange Juice}',    								 -- <componentlist integer[]>
+			-- vUserUUID, 
+			vUserUUID
          );
          -- Banana, Mango, Orange
         perform public.settechnologydata(
@@ -158,9 +162,48 @@ $$
             'Delicious Banana, Mango, Orange juice', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             3.99,    			 				 -- <licensefee numeric>, 
-            '{Delicious, Banana, Orange, Mango, Tasty}', -- <taglist text[]>, 
-            vUserUUID,    						 -- <createdby integer>, 
-            '{Banana Juice,Mango Juice,Orange Juice}'    								 -- <componentlist integer[]>
+            '{Delicious, Banana, Orange, Mango, Tasty}', -- <taglist text[]>,              
+            '{Banana Juice,Mango Juice,Orange Juice}',    								 -- <componentlist integer[]>
+			-- vUserUUID,   
+			vUserUUID
          );
 	END;
+$$;
+-- Create offerrequest, paymentinvoice, offer, payment and licenseorder
+DO
 $$
+DECLARE 
+	vtechnologydatauuid uuid := (select technologydatauuid from technologydata where technologydataid = (select max(technologydataid) from technologydata));
+	vAmount integer := 5;
+	vHSMID text := 'something';
+	vUserUUID uuid := (select useruuid from users limit 1);
+	vBuyerUUID uuid;
+	vInvoice text := '{2,another stuff}';
+	vOfferRequestUUID uuid;
+	vPaymentInvoiceUUID uuid;
+	vBitcoinTransaction text := 'Bitcoin';
+	vTickedID text := 'Some Ticket';
+	vOfferUUID uuid;
+
+	BEGIN
+	  -- Create Buyer 	
+	  perform createuser('Buyer','Cool','buyer10.cool@coolinc.com');
+	  vBuyerUUID := (select useruuid from users limit 1);
+	  -- Create OfferRequest
+	  perform createofferrequest(vtechnologydatauuid,vAmount,vHSMID,vUserUUID,vBuyerUUID);
+	  -- Get OfferRequestUUID
+	  vOfferRequestUUID := (select offerrequestuuid from offerrequest limit 1)::uuid;
+	  -- Create PaymentInvoice
+	  perform SetPaymentInvoiceOffer(vOfferRequestUUID, vInvoice, vUserUUID);
+	  -- Get PaymentInvoiceUUID
+	  vPaymentInvoiceUUID := (select paymentinvoiceuuid from paymentinvoice limit 1)::uuid;
+	  -- Create Offer
+	  --perform createoffer(vPaymentInvoiceUUID,vUserUUID);
+	  -- Create Payment
+	  perform createpayment(vPaymentInvoiceUUID::uuid, vBitcoinTransaction, vUserUUID);
+	  -- Get OfferUUID
+	  vOfferUUID := (select offeruuid from offer limit 1)::uuid;
+	  -- Create LicenseOrder
+	  perform createlicenseorder(vTickedID, vOfferUUID, vUserUUID);
+	END;
+$$;

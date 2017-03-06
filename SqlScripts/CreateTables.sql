@@ -1,10 +1,7 @@
 -- Generiert von Oracle SQL Developer Data Modeler 4.0.3.853
---   am/um:        2017-03-01 16:20:14 MEZ
+--   am/um:        2017-03-06 13:33:36 MEZ
 --   Site:      DB2/UDB 8.1
 --   Typ:      DB2/UDB 8.1
-
-
-
 
 CREATE
   TABLE Attributes
@@ -12,9 +9,9 @@ CREATE
     AttributeID   INTEGER NOT NULL ,
     AttributeUUID UUID ,
     AttributeName VARCHAR (250) NOT NULL ,
-    CreatedAt     TIMESTAMP WITH TIME ZONE NOT NULL ,
+    CreatedAt     TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
     CreatedBy     INTEGER NOT NULL ,
-    UpdatedAt     TIMESTAMP WITH TIME ZONE ,
+    UpdatedAt     TIMESTAMP WITHOUT TIME ZONE ,
     UpdatedBy     INTEGER
   ) ;
 ALTER TABLE Attributes ADD CONSTRAINT Attribubes_PK PRIMARY KEY ( AttributeID )
@@ -29,9 +26,9 @@ CREATE
     ComponentName        VARCHAR (250) ,
     ComponentParentID    INTEGER ,
     ComponentDescription VARCHAR (32672) ,
-    CreatedAt            TIMESTAMP WITH TIME ZONE NOT NULL ,
+    CreatedAt            TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
     CreatedBy            INTEGER NOT NULL ,
-    UpdatedAt            TIMESTAMP WITH TIME ZONE ,
+    UpdatedAt            TIMESTAMP WITHOUT TIME ZONE ,
     UpdatedBy            INTEGER
   ) ;
 ALTER TABLE Components ADD CONSTRAINT Components_PK PRIMARY KEY ( ComponentID )
@@ -63,8 +60,8 @@ CREATE
     LicenseOrderUUID UUID ,
     TicketID         VARCHAR (32672) ,
     OfferID          INTEGER NOT NULL ,
-    ActivatedAt      TIMESTAMP WITH TIME ZONE ,
-    CreatedAt        TIMESTAMP WITH TIME ZONE NOT NULL ,
+    ActivatedAt      TIMESTAMP WITHOUT TIME ZONE ,
+    CreatedAt        TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
     CreatedBy        INTEGER NOT NULL
   ) ;
 ALTER TABLE LicenseOrder ADD CONSTRAINT LicenseOrder_PK PRIMARY KEY (
@@ -79,11 +76,9 @@ CREATE
   ) ;
 ALTER TABLE LogStatus ADD CONSTRAINT LogStatus_PK PRIMARY KEY ( LogStatusID ) ;
 
-/*TODO: Stammdata into other file 
-*/
-insert into logstatus(LogStatusID, LogStatus) values(0,'SUCESS');
-insert into logstatus(LogStatusID, LogStatus) values(1,'ERROR');
-insert into logstatus(LogStatusID, LogStatus) values(2,'PENDING');
+INSERT INTO LogStatus VALUES (0,'Sucessed','Operation has successed');
+INSERT INTO LogStatus VALUES (1,'ERROR','Operation has failed');
+INSERT INTO LogStatus VALUES (2,'PENDING','Operation is pending');
 
 CREATE
   TABLE LogTable
@@ -93,7 +88,7 @@ CREATE
     LogMessage    VARCHAR (32672) NOT NULL ,
     LogObjectName VARCHAR (250) ,
     Parameters    VARCHAR (32672) ,
-    CreatedAt     TIMESTAMP WITH TIME ZONE NOT NULL
+    CreatedAt     TIMESTAMP WITHOUT TIME ZONE NOT NULL
   ) ;
 ALTER TABLE LogTable ADD CONSTRAINT LogTable_PK PRIMARY KEY ( LogID ) ;
 
@@ -103,7 +98,7 @@ CREATE
     OfferID          INTEGER NOT NULL ,
     OfferUUID        UUID ,
     PaymentInvoiceID INTEGER NOT NULL ,
-    CreatedAt        TIMESTAMP WITH TIME ZONE ,
+    CreatedAt        TIMESTAMP WITHOUT TIME ZONE ,
     CreatedBy        INTEGER NOT NULL
   ) ;
 ALTER TABLE Offer ADD CONSTRAINT Offer_PK PRIMARY KEY ( OfferID ) ;
@@ -116,7 +111,7 @@ CREATE
     TechnologyDataID INTEGER NOT NULL ,
     Amount           INTEGER ,
     HSMID            VARCHAR ,
-    CreatedAt        TIMESTAMP WITH TIME ZONE ,
+    CreatedAt        TIMESTAMP WITHOUT TIME ZONE ,
     RequestedBy      INTEGER NOT NULL
   ) ;
 ALTER TABLE OfferRequest ADD CONSTRAINT OfferRequest_PK PRIMARY KEY (
@@ -128,9 +123,9 @@ CREATE
     PaymentID          INTEGER NOT NULL ,
     PaymentUUID        UUID ,
     PaymentInvoiceID   INTEGER NOT NULL ,
-    PayDate            TIMESTAMP WITH TIME ZONE ,
+    PayDate            TIMESTAMP WITHOUT TIME ZONE ,
     BitcoinTransaction VARCHAR (32672) ,
-    CreatedBy          UUID
+    CreatedBy          INTEGER
   ) ;
 ALTER TABLE Payment ADD CONSTRAINT Payment_PK PRIMARY KEY ( PaymentID ) ;
 
@@ -141,7 +136,7 @@ CREATE
     PaymentInvoiceUUID UUID ,
     OfferRequestID     INTEGER NOT NULL ,
     Invoice            VARCHAR (32672) ,
-    CreatedAt          TIMESTAMP WITH TIME ZONE ,
+    CreatedAt          TIMESTAMP WITHOUT TIME ZONE ,
     CreatedBy          INTEGER
   ) ;
 ALTER TABLE PaymentInvoice ADD CONSTRAINT PaymentInvoice_PK PRIMARY KEY (
@@ -153,9 +148,9 @@ CREATE
     TagID     INTEGER NOT NULL ,
     TagUUID   UUID ,
     TagName   VARCHAR (250) NOT NULL ,
-    CreatedAt TIMESTAMP WITH TIME ZONE NOT NULL ,
+    CreatedAt TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
     CreatedBy INTEGER NOT NULL ,
-    UpdatedAt TIMESTAMP WITH TIME ZONE ,
+    UpdatedAt TIMESTAMP WITHOUT TIME ZONE ,
     UpdatedBy INTEGER
   ) ;
 ALTER TABLE Tags ADD CONSTRAINT Tags_PK PRIMARY KEY ( TagID ) ;
@@ -167,9 +162,9 @@ CREATE
     TechnologyUUID        UUID ,
     TechnologyName        VARCHAR (250) NOT NULL ,
     TechnologyDescription VARCHAR (32672) ,
-    CreatedAt             TIMESTAMP WITH TIME ZONE NOT NULL ,
+    CreatedAt             TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
     CreatedBy             INTEGER NOT NULL ,
-    UpdatedAt             TIMESTAMP WITH TIME ZONE ,
+    UpdatedAt             TIMESTAMP WITHOUT TIME ZONE ,
     UpdatedBy             INTEGER
   ) ;
 ALTER TABLE Technologies ADD CONSTRAINT Technologies_PK PRIMARY KEY (
@@ -189,9 +184,9 @@ CREATE
     TechnologyDataDescription VARCHAR (32672) ,
     TechnologyDataThumbnail Bytea ,
     TechnologyDataImgRef VARCHAR ,
-    CreatedAt            TIMESTAMP WITH TIME ZONE NOT NULL ,
+    CreatedAt            TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
     CreatedBy            INTEGER NOT NULL ,
-    UpdatedAt            TIMESTAMP WITH TIME ZONE ,
+    UpdatedAt            TIMESTAMP WITHOUT TIME ZONE ,
     UpdatedBy            INTEGER
   ) ;
 ALTER TABLE TechnologyData ADD CONSTRAINT TechnologyData_PK PRIMARY KEY (
@@ -228,9 +223,9 @@ CREATE
     PaymentID        INTEGER ,
     PaymentInvoiceID INTEGER ,
     LicenseOrderID   INTEGER ,
-    CreatedAt        TIMESTAMP WITH TIME ZONE ,
+    CreatedAt        TIMESTAMP WITHOUT TIME ZONE ,
     CreatedBy        INTEGER NOT NULL ,
-    UpdatedAt        TIMESTAMP WITH TIME ZONE ,
+    UpdatedAt        TIMESTAMP WITHOUT TIME ZONE ,
     UpdatedBy        INTEGER
   ) ;
 ALTER TABLE Transactions ADD CONSTRAINT Transactions_PK PRIMARY KEY (
@@ -246,8 +241,8 @@ CREATE
     UserEmail     VARCHAR (250) NOT NULL ,
     Thumbnail Bytea ,
     ImgPath   VARCHAR ,
-    CreatedAt TIMESTAMP WITH TIME ZONE NOT NULL ,
-    UpdatedAt TIMESTAMP WITH TIME ZONE
+    CreatedAt TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
+    UpdatedAt TIMESTAMP WITHOUT TIME ZONE
   ) ;
 ALTER TABLE Users ADD CONSTRAINT Users_PK PRIMARY KEY ( UserID ) ;
 ALTER TABLE Users ADD CONSTRAINT Users__UN UNIQUE ( UserEmail ) ;

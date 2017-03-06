@@ -54,221 +54,648 @@ CREATE FUNCTION CreateLog(LogStatusID integer, LogMessage varchar(32672), LogObj
   $$
   LANGUAGE 'plpgsql';
 -- ##############################################################################
--- CreateUser
-CREATE FUNCTION CreateUser(UserFirstName varchar(250), UserLastName varchar(250), UserEmail varchar(250))
-  RETURNS text AS
+-- CreateUser 
+CREATE FUNCTION CreateUser(vUserFirstName varchar(250), vUserLastName varchar(250), vUserEmail varchar(250))
+  RETURNS TABLE (
+	oUserUUID uuid,
+	oUserFirstName varchar(250),
+	oUserLastName varchar(250), 
+	oUserEmail varchar(250),
+	oCreatedAt timestamp with time zone,
+	oUpdatedAt timestamp with time zone
+  )
+  
+ AS
   $$
-      DECLARE 	UserID integer := (select nextval('UserID'));      
-		UserUUID uuid := (select uuid_generate_v4()); 
+      DECLARE 	vUserID integer := (select nextval('UserID'));      
+		vUserUUID uuid := (select uuid_generate_v4()); 
       BEGIN        
         INSERT INTO Users(UserID, UserUUID, UserFirstName, UserLastName, UserEmail, CreatedAt)
-        VALUES(UserID, UserUUID, UserFirstName, UserLastName, UserEmail, now());        
+        VALUES(vUserID, vUserUUID, vUserFirstName, vUserLastName, vUserEmail, now());        
         
         -- Begin Log if success
         perform public.createlog(0,'Created User sucessfully', 'CreateUser', 
-                                'UserID: ' || cast(UserID as varchar) || ', UserFirstName: ' 
-                                || UserFirstName || ', UserLastName: ' || UserLastName 
+                                'UserID: ' || cast(vUserID as varchar) || ', UserFirstName: ' 
+                                || vUserFirstName || ', UserLastName: ' || vUserLastName 
                                 || ', ' 
-                                || UserEmail);
+                                || vUserEmail);
                                 
         -- End Log if success
-        -- Return UserUUID
-        RETURN UserUUID::text;
+	-- RETURN
+	RETURN QUERY (select 	users.useruuid,
+				users.userfirstname,
+				users.userlastname,
+				users.useremail,
+				users.createdat at time zone 'utc',
+				users.updatedat at time zone 'utc'
+			from users where users.useruuid = vUserUUID);      
+         
         
         exception when others then 
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateUser', 
-                                'UserID: ' || cast(UserID as varchar) || ', UserFirstName: ' 
-                                || UserFirstName || ', UserLastName: ' || UserLastName 
+                                'UserID: ' || cast(vUserID as varchar) || ', UserFirstName: ' 
+                                || vUserFirstName || ', UserLastName: ' || vUserLastName 
                                 || ', ' 
-                                || UserEmail);
-        -- End Log if error
-        -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
+                                || vUserEmail);
+        -- End Log if error 
       END;
   $$
   LANGUAGE 'plpgsql';
 -- ##############################################################################    
--- CreateTechnologyData
 CREATE FUNCTION CreateTechnologyData (
-  TechnologyDataName varchar(250), 
-  TechnologyData varchar(32672), 
-  TechnologyDataDescription varchar(32672), 
-  LicenseFee decimal(21,4),  
-  vTechnologyID integer,
-  CreatedBy integer
+	  vTechnologyDataName varchar(250), 
+	  vTechnologyData varchar(32672), 
+	  vTechnologyDataDescription varchar(32672), 
+	  -- vTechnologyDataAuthor uuid,
+	  vLicenseFee decimal(21,4),  
+	  vTechnologyUUID uuid,
+	  vCreatedBy uuid
  )
-  RETURNS TEXT AS
+  RETURNS TABLE (
+	oTechnologyDataUUID uuid,
+	oTechnologyDataName varchar(250),
+	oTechnologyUUID uuid,
+	oTechnologyData varchar(32672),
+	oLicenseFee numeric(21,4),
+	oTechnologyDataDescription varchar(32672),
+	oTechnologyDataThumbnail bytea,
+	oTechnologyDataImgRef character varying,
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid
+  ) AS
   $$
-      DECLARE 	TechnologyDataID integer := (select nextval('TechnologyDataID'));
-		TechnologyDataUUID uuid := (select uuid_generate_v4());       		   
+      DECLARE 	vTechnologyDataID integer := (select nextval('TechnologyDataID'));
+		vTechnologyDataUUID uuid := (select uuid_generate_v4());     
+		vTechnologyID integer := (select technologyid from technologies where technologyuuid = vTechnologyUUID);
+		vUserID integer := (select userid from users where useruuid = vCreatedby);
+		-- vTechAuthor integer := (select userid from users where useruuid = vTechnologyDataAuthor);		
       BEGIN        
         INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, TechnologyID, CreatedBy, CreatedAt)
-        VALUES(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, vTechnologyID, CreatedBy, now());
+        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vTechnologyID, vUserID, now());
      
         -- Begin Log if success
         perform public.createlog(0,'Created TechnologyData sucessfully', 'CreateTechnologyData', 
-                                'TechnologyDataID: ' || cast(TechnologyDataID as varchar) || ', TechnologyDataName: ' 
-                                || TechnologyDataName || ', TechnologyData: ' || TechnologyData 
-                                || ', TechnologyDataDescription: ' || TechnologyDataDescription
+                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: ' 
+                                || vTechnologyDataName || ', TechnologyData: ' || vTechnologyData 
+                                || ', TechnologyDataDescription: ' || vTechnologyDataDescription
+				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar) 
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
-                                || ', LicenseFee: ' || cast(LicenseFee as varchar)
-                                || ', CreatedBy: ' || CreatedBy);
+                                || ', LicenseFee: ' || cast(vLicenseFee as varchar)
+                                || ', CreatedBy: ' || vUserID);
                                 
         -- End Log if success
-        -- Return TechnologyDataUUID
-        RETURN TechnologyDataUUID::text;
+        -- Return 
+        RETURN QUERY (
+		select 	td.TechnologyDataUUID,
+			td.TechnologyDataName,
+			tc.TechnologyUUID,
+			td.TechnologyData,
+			td.LicenseFee,
+			td.TechnologyDataDescription,
+			td.TechnologyDataThumbnail,
+			td.TechnologyDataImgRef,
+			td.CreatedAt at time zone 'utc',
+			vCreatedby as CreateBy
+		from technologydata td
+		join technologies tc on
+		td.technologyid = tc.technologyid 
+		where td.technologydatauuid = vTechnologyDataUUID
+        );
         
         exception when others then 
         -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateTechnologyData', 
-                                'TechnologyDataID: ' || cast(TechnologyDataID as varchar) || ', TechnologyDataName: ' 
-                                || TechnologyDataName || ', TechnologyData: ' || TechnologyData 
-                                || ', TechnologyDataDescription: ' || TechnologyDataDescription
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'CreateTechnologyData', 
+                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: ' 
+                                || vTechnologyDataName || ', TechnologyData: ' || vTechnologyData 
+                                || ', TechnologyDataDescription: ' || vTechnologyDataDescription
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
-                                || ', LicenseFee: ' || cast(LicenseFee as varchar)
-                                || ', CreatedBy: ' || CreatedBy);
+                                || ', LicenseFee: ' || cast(vLicenseFee as varchar)
+                                || ', CreatedBy: ' || vUserID);
         -- End Log if error
         -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
+        RETURN;
       END;
   $$
   LANGUAGE 'plpgsql';
 -- ##############################################################################    
 -- CreateTag
-CREATE FUNCTION CreateTag (
-  TagName varchar(250),  
-  CreatedBy integer
+ CREATE FUNCTION CreateTag (
+  vTagName varchar(250),  
+  vCreatedBy uuid
  )
-  RETURNS TEXT AS
+  RETURNS TABLE (
+	oTagUUID uuid,
+	oTagName varchar(250),
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid 
+  ) AS
   $$
-      DECLARE 	TagID integer := (select nextval('TagID'));
-		TagUUID uuid := (select uuid_generate_v4());	
+      DECLARE 	vTagID integer := (select nextval('TagID'));
+		vTagUUID uuid := (select uuid_generate_v4());	
+		vUserID integer := (select userid from users where useruuid = vCreatedBy);
       BEGIN        
         INSERT INTO Tags(TagID, TagUUID, TagName, CreatedBy, CreatedAt)
-        VALUES(TagID, TagUUID, TagName, CreatedBy, now());
+        VALUES(vTagID, vTagUUID, vTagName, vUserID, now());
      
         -- Begin Log if success
         perform public.createlog(0,'Created Tag sucessfully', 'CreateTag', 
-                                'TagID: ' || cast(TagID as varchar) || ', TagName: ' 
-                                || TagName);
+                                'TagID: ' || cast(vTagID as varchar) 
+				|| ', TagName: ' || vTagName 
+				|| ', CreatedBy: ' || cast(vUserID as varchar));
                                 
         -- End Log if success
-        -- Return TagUUID
-        RETURN TagUUID::text;
+        -- Return 
+        RETURN QUERY (
+		select 	TagUUID,
+			TagName,
+			CreatedAt at time zone 'utc',
+			vCreatedBy 
+		from tags tg
+		where taguuid = vTagUUID
+        );
         
         exception when others then 
         -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateTag', 
-                                'TagID: ' || cast(TagID as varchar) || ', TagName: ' 
-                                || TagName);
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'CreateTag', 
+                                'TagID: ' || cast(vTagID as varchar) 
+				|| ', TagName: ' || vTagName 
+				|| ', CreatedBy: ' || cast(vUserID as varchar));
         -- End Log if error
         -- Return Error Code * -1
-       RETURN ((-1) * cast(SQLSTATE as integer))::text;
+       RETURN;
       END;
   $$
   LANGUAGE 'plpgsql';
--- ##############################################################################    
--- CreateAttribute
-CREATE FUNCTION CreateAttribute (
-  AttributeName varchar(250), 
-  CreatedBy uuid
+-- ##############################################################################  
+-- CreateTechnologyDataTags 
+CREATE FUNCTION CreateTechnologyDataTags (
+  vTechnologyDataUUID uuid, 
+  vTagList text[]
  )
-  RETURNS TEXT AS
-  $$
-      DECLARE 	AttributeID integer := (select nextval('AttributeID'));
-		AttributeUUID uuid := (select uuid_generate_v4());
-		vUserID integer := (select userid from users where useruuid = createdby);
-      BEGIN        
-        INSERT INTO public.Attributes(AttributeID, AttributeUUID, AttributeName, CreatedBy, CreatedAt)
-        VALUES(AttributeID, AttributeUUID, AttributeName, vUserID, now());
+  RETURNS TABLE (
+	oTechnologyDataUUID uuid,
+	oTagList uuid[]
+  ) AS
+  $$    
+  	DECLARE vTagName text;
+		vtagID integer;
+		vTechnologyDataID integer := (select technologydataid from technologydata where technologydatauuid = vTechnologyDataUUID);
+		
+      BEGIN     
+         FOREACH vTagName in array vTagList          	
+        LOOP 
+        	 vtagID := (select tags.tagID from tags where tagName = vTagName); 
+         	 INSERT INTO TechnologyDataTags(TechnologyDataID, tagID)
+			VALUES (vTechnologyDataID, vtagID);
+			
+        END LOOP; 
      
         -- Begin Log if success
-        perform public.createlog(0,'Created Attribute sucessfully', 'CreateAttribute', 
-                                'AttributeID: ' || cast(AttributeID as varchar) || ', AttributeName: ' 
-                                || AttributeName);
+        perform public.createlog(0,'Created relation from Tags to TechnologyData sucessfully', 'CreateTechnologyDataTags', 
+                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
+                                || ', TagList: ' 
+                                || cast(vTagList as varchar));
                                 
         -- End Log if success
-        -- Return AttributeUUID
-        RETURN AttributeUUID::text;
+        -- Return
+        RETURN QUERY (
+		select  vTechnologyDataUUID,
+			array_agg(taguuid)
+		from technologydatatags td
+		join tags tg on td.tagid = tg.tagid
+		where td.technologydataid = vTechnologyDataID
+        );
         
         exception when others then 
         -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'CreateAttribute', 
-                                'AttributeID: ' || cast(AttributeID as varchar) || ', AttributeName: ' 
-                                || AttributeName);
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE || cast(vtagID as varchar), 'CreateTechnologyDataTags', 
+                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
+                                || ', TagList: ' 
+                                || cast(vTagList as varchar));
+        -- End Log if error 
+        RETURN;
+      END;
+  $$
+  LANGUAGE 'plpgsql';  
+-- ##############################################################################    
+-- CreateAttribute
+CREATE FUNCTION CreateAttribute (
+  vAttributeName varchar(250), 
+  vCreatedBy uuid
+ )
+  RETURNS TABLE (
+	oAttributeUUID uuid,
+	oAttributeName varchar(250),
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid 
+  ) AS
+  $$
+      DECLARE 	vAttributeID integer := (select nextval('AttributeID'));
+		vAttributeUUID uuid := (select uuid_generate_v4());
+		vUserID integer := (select userid from users where useruuid = vCreatedby);
+      BEGIN        
+        INSERT INTO public.Attributes(AttributeID, AttributeUUID, AttributeName, CreatedBy, CreatedAt)
+        VALUES(vAttributeID, vAttributeUUID, vAttributeName, vUserID, now());
+     
+        -- Begin Log if success
+        perform public.createlog(0,'Created Attribute sucessfully', 'CreateAttribute', 
+                                'AttributeID: ' || cast(vAttributeID as varchar) 
+				|| ', AttributeName: ' || vAttributeName
+				|| ', CreatedBy: ' || cast(vUserID as varchar));
+                                
+        -- End Log if success
+        -- Return  
+        RETURN QUERY (
+		select	AttributeUUID,
+			AttributeName,
+			CreatedAt at time zone 'utc',
+			vCreatedby  
+		from attributes
+		where attributeuuid = vAttributeUUID
+        );
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'CreateAttribute', 
+                                'AttributeID: ' || cast(vAttributeID as varchar) 
+				|| ', AttributeName: ' || vAttributeName
+				|| ', CreatedBy: ' || cast(vUserID as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
+        RETURN;
       END;
   $$
   LANGUAGE 'plpgsql';
 -- ##############################################################################    
 -- CreateComponents
-CREATE FUNCTION CreateComponent (
-  ComponentParentID integer, 
-  ComponentName varchar(250),
-  ComponentDescription varchar(250),
-  CreatedBy uuid
+CREATE OR REPLACE FUNCTION CreateComponent (
+  vComponentParentUUID uuid, 
+  vComponentName varchar(250),
+  vComponentDescription varchar(250),
+  vCreatedBy uuid
  )
-  RETURNS TEXT AS
+  RETURNS TABLE (
+	oComponentUUID uuid,
+	oComponentName varchar(250),
+	oComponentParentName varchar(250),
+	oComponentParentUUID uuid,
+	oComponentDecription varchar(32672),
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid
+  ) AS
   $$
-      DECLARE 	ComponentID integer := (select nextval('ComponentID'));
-		ComponentUUID uuid := (select uuid_generate_v4());		
-		vUserID integer := (select userid from users where useruuid = createdby);
+      DECLARE 	vComponentID integer := (select nextval('ComponentID'));
+		vComponentUUID uuid := (select uuid_generate_v4());		
+		vUserID integer := (select userid from users where useruuid = vCreatedBy);
+		vComponentParentID integer := (select componentid from components where componentuuid = vComponentParentUUID);
       BEGIN        
         INSERT INTO components(ComponentID, ComponentUUID, ComponentParentID, ComponentName, ComponentDescription, CreatedBy, CreatedAt)
-        VALUES(ComponentID, ComponentUUID, ComponentParentID, ComponentName, ComponentDescription, vUserID, now());
+        VALUES(vComponentID, vComponentUUID, vComponentParentID, vComponentName, vComponentDescription, vUserID, now());
      
         -- Begin Log if success
         perform public.createlog(0,'Created Component sucessfully', 'CreateComponent', 
-                                'ComponentID: ' || cast(ComponentID as varchar) || ', '  
-                                || 'ComponentParentID: ' || cast(ComponentParentID as varchar) 
+                                'ComponentID: ' || cast(vComponentID as varchar) || ', '  
+                                || 'ComponentParentID: ' || cast(vComponentParentID as varchar) 
                                 || ', ComponentName: ' 
-                                || ComponentName 
+                                || vComponentName 
                                 || ', ComponentDescription: ' 
-                                || ComponentDescription 
+                                || vComponentDescription 
                                 || ', CreatedBy: ' 
                                 || cast(vUserID as varchar));
                                 
         -- End Log if success
-        -- Return ComponentUUID
-        RETURN ComponentUUID::text;
+        -- Return 
+        RETURN QUERY (
+		select 	co.ComponentUUID,
+			co.ComponentName,
+			cs.ComponentName as componentParentName,
+			cs.ComponentUUID as componentParentUUID,
+			co.ComponentDescription,
+			co.CreatedAt at time zone 'utc',
+			vCreatedBy
+		from components co
+		left outer join components cs
+		on co.componentparentid = cs.componentid
+		where co.componentuuid = vComponentUUID
+        );
         
         exception when others then 
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateComponent', 
-                                'ComponentID: ' || cast(ComponentID as varchar) || ', '  
-                                || 'ComponentParentID: ' || cast(ComponentParentID as varchar) 
+                                'ComponentID: ' || cast(vComponentID as varchar) || ', '  
+                                || 'ComponentParentID: ' || cast(vComponentParentID as varchar) 
                                 || ', ComponentName: ' 
-                                || ComponentName 
+                                || vComponentName 
                                 || ', ComponentDescription: ' 
-                                || ComponentDescription
+                                || vComponentDescription 
                                 || ', CreatedBy: ' 
                                 || cast(vUserID as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
+        RETURN;
+      END;
+  $$
+  LANGUAGE 'plpgsql'; 
+-- ##############################################################################    
+-- CreateTechnologies
+CREATE FUNCTION createtechnology(
+    vTechnologyname character varying,
+    vTechnologydescription character varying,
+    vCreatedby uuid)
+  RETURNS TABLE (
+	oTechnologyUUID uuid,
+	oTechnologyName varchar(250),
+	oTechnologyDescription varchar(32672),
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid
+  ) AS
+$$
+      DECLARE 	vTechnologyID integer := (select nextval('TechnologyID'));
+		vTechnologyUUID uuid := (select uuid_generate_v4());
+		vUserID integer := (select userid from users where useruuid = vCreatedby);
+      BEGIN        
+        INSERT INTO Technologies(TechnologyID, TechnologyUUID, TechnologyName, TechnologyDescription, CreatedBy, CreatedAt)
+        VALUES(vTechnologyID, vTechnologyUUID, vTechnologyName, vTechnologyDescription, vUserID, now());
+     
+        -- Begin Log if success
+        perform public.createlog(0,'Created Technology sucessfully', 'CreateTechnology', 
+                                'TechnologyID: ' || cast(vTechnologyID as varchar) 
+                                || ', TechnologyName: ' 
+                                || vTechnologyName 
+                                || ', TechnologyDescription: ' 
+                                || vTechnologyDescription 
+                                || ', CreatedBy: ' 
+                                || cast(vUserID as varchar));
+                                
+        -- End Log if success
+        -- Return 
+        RETURN QUERY (
+		select 	TechnologyUUID,
+			TechnologyName,
+			TechnologyDescription,
+			CreatedAt at time zone 'utc',
+			vCreatedBy
+		from technologies 
+		where technologyuuid = vTechnologyUUID
+        );
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateTechnology', 
+                                'TechnologyID: ' || cast(vTechnologyID as varchar) 
+                                || ', TechnologyName: ' 
+                                || vTechnologyName 
+                                || ', TechnologyDescription: ' 
+                                || vTechnologyDescription 
+                                || ', CreatedBy: ' 
+                                || cast(vUserID as varchar));
+        -- End Log if error
+        -- Return Error Code * -1
+        RETURN;
+      END;
+  $$
+  LANGUAGE plpgsql;
+-- ##############################################################################    
+-- CreateTechnologyDataComponents 
+CREATE FUNCTION CreateTechnologyDataComponents (
+  vTechnologyDataUUID uuid, 
+  vComponentList text[]
+ )
+  RETURNS TABLE (
+	oTechnologyDataUUID uuid,
+	oComponentList uuid[]
+  ) AS
+  $$    
+  	DECLARE vCompName text;
+		vCompID integer;
+		vTechnologyDataID integer := (select technologydataid from technologydata where technologydatauuid = vTechnologyDataUUID);
+      BEGIN     
+         FOREACH vCompName in array vComponentList 		
+        LOOP 
+		vCompID := (select componentID from components where componentName = vCompName);
+		
+         	INSERT INTO TechnologyDataComponents(technologydataid, componentid)
+		VALUES (vTechnologyDataID, vCompID);
+        END LOOP; 
+     
+        -- Begin Log if success
+        perform public.createlog(0,'Created relation from Componets to TechnologyData sucessfully', 'CreateTechnologyDataComponents', 
+                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
+                                || ', ComponentList: ' || cast(vComponentList as varchar));
+                                
+        -- End Log if success
+        -- Return 
+        RETURN QUERY (
+		select 	vTechnologyDataUUID,
+			array_agg(ComponentUUID)
+		from technologydatacomponents tc join
+		components co on tc.componentid = co.componentid
+		where technologydataid = vTechnologyDataID
+        );
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'CreateTechnologyDataComponents', 
+                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
+                                || ', ComponentList: ' || cast(vComponentList as varchar));
+        -- End Log if error
+        -- Return 
+        RETURN;
+      END;
+  $$
+  LANGUAGE 'plpgsql'; 
+-- ##############################################################################       
+-- CreateComponentsAttribute
+CREATE FUNCTION CreateComponentsAttribute (
+  vComponentUUID uuid, 
+  vAttributeList text[]
+ )
+  RETURNS TABLE (
+	oComponentUUID uuid,
+	oAttributeList uuid[]
+  ) AS
+  $$    
+  	DECLARE vAttributeName text;
+		vAttrID int;
+		vComponentID integer := (select componentid from components where componentuuid = vComponentUUID);
+      BEGIN     
+         FOREACH vAttributeName in array vAttributeList          	
+        LOOP 
+        	 vAttrID := (select attributes.attributeID from public.attributes where attributename = vAttributeName); 
+         	 INSERT INTO ComponentsAttribute(ComponentID, AttributeID)
+             VALUES (vComponentID, vAttrID);
+        END LOOP; 
+     
+        -- Begin Log if success
+        perform public.createlog(0,'Created relation from component to attributes sucessfully', 'CreateComponentsAttribute', 
+                                'ComponentID: ' || cast(vComponentID as varchar)
+                                || ', AttributeList: ' 
+                                || cast(vAttributeList as varchar));
+                                
+        -- End Log if success
+        -- Return
+        RETURN QUERY (
+		select 	vComponentUUId,
+				array_agg(att.AttributeUUID)
+		from componentsattribute ca
+		join attributes att
+		on ca.attributeid = att.attributeid 
+		where componentid = vComponentID
+        );
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateComponentsAttribute', 
+                                'ComponentID: ' || cast(vComponentID as varchar)
+                                || ', AttributeList: ' 
+                                || cast(vAttributeList as varchar));
+        -- End Log if error
+        -- Return Error Code * -1
+        RETURN;
+      END;
+  $$
+  LANGUAGE 'plpgsql';
+-- ##############################################################################    
+-- CreateComponentsTechnologies
+CREATE FUNCTION CreateComponentsTechnologies (
+  vComponentUUID uuid, 
+  vTechnologyList text[]
+ )
+  RETURNS TABLE (
+	oComponentUUID uuid,
+	oTechnologyList uuid[]
+  ) AS
+  $$    
+    DECLARE 	vTechName text;
+		vTechID integer;
+		vComponentID integer := (select componentid from components where componentuuid = vComponentUUID);
+      BEGIN     
+         FOREACH vTechName in array vTechnologyList          	
+        LOOP 
+		vTechID := (select technologyid from technologies where technologyname = vTechName);
+         	 INSERT INTO ComponentsTechnologies(ComponentID, TechnologyID)
+             VALUES (vComponentID, vTechID);
+        END LOOP; 
+     
+        -- Begin Log if success
+        perform public.createlog(0,'Created relation from component to attributes sucessfully', 'CreateComponentsTechnologies', 
+                                'ComponentID: ' || cast(vComponentID as varchar)
+                                || ', TechnologyList: ' 
+                                || cast(vTechnologyList as varchar));
+                                
+        -- End Log if success
+        -- Return 
+        RETURN QUERY (
+		select 	vComponentUUID,
+			array_agg(technologyUUID)
+		from componentstechnologies ct
+		join technologies th on ct.technologyid = th.technologyid
+		where componentid = vComponentID
+        );
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateComponentsTechnologies', 
+                                'ComponentID: ' || cast(vComponentID as varchar)
+                                || ', TechnologyList: ' 
+                                || cast(vTechnologyList as varchar));
+        -- End Log if error
+        -- Return Error Code * -1
+        RETURN;
+      END;
+  $$
+  LANGUAGE 'plpgsql';
+-- ##############################################################################
+--  CreateOfferRequest
+CREATE FUNCTION CreateOfferRequest (
+  vTechnologyDataUUID uuid,
+  vAmount integer,
+  vHSMID varchar,
+  vUserUUID uuid,
+  vBuyerUUID uuid
+ )
+  RETURNS TABLE (
+	OfferRequestUUID uuid,
+	TechnologyDataUUID uuid,
+	Amount integer,
+	HMSID varchar(32672),
+	CreatedAt timestamp with time zone,
+	RequestedBy uuid	
+  )	
+ AS
+  $$
+      DECLARE 	vOfferRequestID integer := (select nextval('OfferRequestID'));
+		vOfferRequestUUID uuid := (select uuid_generate_v4());
+		vTechnologyDataID integer := (select technologydata.technologydataid from technologydata where technologydata.technologydatauuid = vTechnologyDataUUID);	
+		vRequestedBy integer := (select userid from users where useruuid = vUserUUID);
+		vTransactionID integer := (select nextval('TransactionID'));
+		vTransactionUUID uuid := (select uuid_generate_v4());
+		vBuyerID integer := (select userid from users where useruuid = vBuyerUUID);
+      BEGIN        
+        INSERT INTO OfferRequest(OfferRequestID, OfferRequestUUID, TechnologyDataID, Amount, HSMID, RequestedBy, CreatedAt)
+        VALUES(vOfferRequestID, vOfferRequestUUID, vTechnologyDataID, vAmount, vHSMID, vRequestedBy, now());
+
+        INSERT INTO Transactions(TransactionID, TransactionUUID, OfferRequestID, BuyerID, CreatedBy, CreatedAt)
+		VALUES (vTransactionID, vTransactionUUID, vOfferRequestID, vBuyerID, vRequestedBy, now());
+     
+        -- Begin Log if success
+        perform public.createlog(0,'Created OfferRequest sucessfully', 'CreateOfferRequest', 
+                                'OfferRequestID: ' || cast(vOfferRequestID as varchar) 
+				|| ', TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
+				|| ', Amount: ' || cast(vAmount as varchar) || ', HSMID: ' || vHSMID);
+                                
+        -- End Log if success
+        -- Return OfferRequestUUID
+        RETURN QUERY (
+				select	ofr.OfferRequestUUID,
+						td.TechnologyDataUUID,
+						ofr.Amount,
+						ofr.HSMID,
+						ofr.CreatedAt at time zone 'utc',
+						us.useruuid as RequestedBy
+						from offerrequest ofr 
+						join technologydata td 
+						on ofr.technologydataid = td.technologydataid
+						join users us on us.userid = ofr.requestedby
+				where ofr.offerrequestuuid = vOfferRequestUUID
+        );
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateOfferRequest', 
+                                'OfferRequestID: ' || cast(vOfferRequestID as varchar) 
+				|| ', TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
+				|| ', Amount: ' || cast(vAmount as varchar) || ', HSMID: ' || vHSMID);
+        -- End Log if error
+        -- Return Error Code * -1
+        RETURN;
       END;
   $$
   LANGUAGE 'plpgsql'; 
 -- ##############################################################################    
 -- CreatePaymentInvoice
 CREATE FUNCTION CreatePaymentInvoice (
-  Invoice varchar(32672), 
+  vInvoice varchar(32672), 
   vOfferRequestUUID uuid,
   vUserUUID uuid  
  )
-  RETURNS TEXT AS
+  RETURNS TABLE (
+	oPaymentInvoiceUUID uuid,
+	oOfferRequestUUID uuid,
+	oInvoice varchar(32672),
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid
+  ) AS
   $$
-      DECLARE 			vPaymentInvoiceID integer := (select nextval('PaymentInvoiceID'));
-				vPaymentInvoiceUUID uuid := (select uuid_generate_v4()); 
-				vOfferReqID integer := (select offerrequestid from offerrequest where offerrequestuuid = vOfferRequestUUID);
-				vCreatedBy integer := (select userid from users where useruuid = vUserUUID);
-				vTransactionID integer := (select transactionid from transactions where offerrequestid = vOfferReqID);
+	DECLARE vPaymentInvoiceID integer := (select nextval('PaymentInvoiceID'));
+		vPaymentInvoiceUUID uuid := (select uuid_generate_v4()); 
+		vOfferReqID integer := (select offerrequestid from offerrequest where offerrequestuuid = vOfferRequestUUID);
+		vCreatedBy integer := (select userid from users where useruuid = vUserUUID);
+		vTransactionID integer := (select transactionid from transactions where offerrequestid = vOfferReqID);
       BEGIN        
         INSERT INTO PaymentInvoice(PaymentInvoiceID, PaymentInvoiceUUID, OfferRequestID, Invoice, CreatedBy, CreatedAt)
-        VALUES(vPaymentInvoiceID, vPaymentInvoiceUUID, vOfferReqID, Invoice, vCreatedBy, now());
+        VALUES(vPaymentInvoiceID, vPaymentInvoiceUUID, vOfferReqID, vInvoice, vCreatedBy, now());
 
 		-- Update Transactions table
         UPDATE Transactions SET PaymentInvoiceID = vPaymentInvoiceID, UpdatedAt = now(), UpdatedBy = vCreatedBy
@@ -278,373 +705,49 @@ CREATE FUNCTION CreatePaymentInvoice (
         perform public.createlog(0,'Created PaymentInvoice sucessfully', 'CreatePaymentInvoice', 
                                 'PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
 				|| ', OfferRequestID: ' || cast(vOfferReqID as varchar)
-				|| ', Invoice: ' || Invoice
+				|| ', Invoice: ' || vInvoice
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
                                 
         -- End Log if success
-        -- Return PaymentInvoiceUUID
-        RETURN vPaymentInvoiceUUID::text;
+        -- Return 
+        RETURN QUERY (
+		select	pi.PaymentInvoiceUUID,
+			oq.OfferRequestUUID,
+			pi.Invoice,
+			pi.CreatedAt at time zone 'utc',
+			ur.useruuid as CreatedBy
+		from paymentinvoice pi
+		join offerrequest oq 
+		on pi.offerrequestid = oq.offerrequestid
+		join users ur on ur.userid = pi.createdby		
+		where pi.paymentinvoiceuuid = vPaymentInvoiceUUID
+        );
         
         exception when others then 
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreatePaymentInvoice', 
                                 'PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
 				|| ', OfferRequestID: ' || cast(vOfferReqID as varchar)
-				|| ', Invoice: ' || Invoice
+				|| ', Invoice: ' || vInvoice
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
-      END;
-  $$
-  LANGUAGE 'plpgsql'; 
--- ##############################################################################    
--- CreatePayment
-CREATE FUNCTION CreatePayment(  
-  vPaymentInvoiceUUID uuid,
-  BitcoinTransaction varchar(32672),
-  vUserUUID uuid
- )
-  RETURNS TEXT AS
-  $$
-      DECLARE 	vPaymentID integer := (select nextval('PaymentID')); 
-				vPaymentUUID uuid := (select uuid_generate_v4());
-				vPaymentInvoiceID integer := (select PaymentInvoiceID from paymentinvoice where PaymentInvoiceUUID = vPaymentInvoiceUUID);
-				vCreatedBy integer := (select userid from users where useruuid = vUserUUID);
-      BEGIN        
-        INSERT INTO Payment(PaymentID, PaymentUUID, PaymentInvoiceID, PayDate, BitcoinTransaction, CreatedBy)
-        VALUES(vPaymentID, vPaymentUUID, vPaymentInvoiceID, now(), BitcoinTransaction, vCreatedBy);
-     
-        -- Begin Log if success
-        perform public.createlog(0,'Created PaymentInvoice sucessfully', 'CreatePayment', 
-                                'PaymentID: ' || cast(vPaymentID as varchar) 
-				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
-				|| ', BitcoinTransaction: ' || BitcoinTransaction
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
-                                
-        -- End Log if success
-        -- Return PaymentID
-        RETURN vPaymentUUID::text;
-        
-        exception when others then 
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'CreatePayment', 
-                                'PaymentID: ' || cast(vPaymentID as varchar) 
-				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
-				|| ', BitcoinTransaction: ' || BitcoinTransaction
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
-        -- End Log if error
-        -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
-      END;
-  $$
-  LANGUAGE 'plpgsql'; 
--- ##############################################################################    
--- CreateLicenseOrder
-CREATE FUNCTION CreateLicenseOrder (
-  vTicketID varchar(4000),
-  vOfferUUID uuid,
-  vUserUUID uuid
- )
-  RETURNS TEXT AS
-  $$
-      DECLARE 			vLicenseOrderID integer := (select nextval('LicenseOrderID'));
-				vLicenseOrderUUID uuid := (select uuid_generate_v4()); 
-				vOfferID integer := (select offerid from offer where offeruuid = vOfferUUID);
-				vCreatedBy integer := (select userid from users where useruuid = vUserUUID);
-				vTransactionID integer := (select transactionid from transactions where offerid = vOfferID);
-      BEGIN        
-        INSERT INTO LicenseOrder(LicenseOrderID, LicenseOrderUUID, TicketID, OfferID, ActivatedAt, CreatedBy, CreatedAt)
-        VALUES(vLicenseOrderID, vLicenseOrderUUID, vTicketID, vOfferID, now(), vCreatedBy, now());
-
-		-- Update Transactions table
-        UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = vCreatedBy
-        WHERE TransactionID = vTransactionID;
-     
-        -- Begin Log if success
-        perform public.createlog(0,'Created CreateLicenseOrder sucessfully', 'CreateLicenseOrder', 
-                                'PaymentInvoiceID: ' || cast(vLicenseOrderID as varchar) 
-				|| ', TicketID: ' || vTicketID
-				|| ', OfferID: ' || cast(vOfferID as varchar)
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
-                                
-        -- End Log if success
-        -- Return vLicenseOrderUUID
-        RETURN vLicenseOrderUUID::text;
-        
-        exception when others then 
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateLicenseOrder', 
-                                'PaymentInvoiceID: ' || cast(vLicenseOrderID as varchar) 
-				|| ', TicketID: ' || vTicketID
-				|| ', OfferID: ' || cast(vOfferID as varchar)
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
-        -- End Log if error
-        -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
-      END;
-  $$
-  LANGUAGE 'plpgsql'; 
--- ##############################################################################    
--- CreateTechnologies
-CREATE FUNCTION createtechnology(
-    technologyname character varying,
-    technologydescription character varying,
-    createdby uuid)
-  RETURNS TEXT AS
-$BODY$
-      DECLARE 	TechnologyID integer := (select nextval('TechnologyID'));
-		TechnologyUUID uuid := (select uuid_generate_v4());
-		vUserID integer := (select userid from users where useruuid = createdby);
-      BEGIN        
-        INSERT INTO Technologies(TechnologyID, TechnologyUUID, TechnologyName, TechnologyDescription, CreatedBy, CreatedAt)
-        VALUES(TechnologyID, TechnologyUUID, TechnologyName, TechnologyDescription, vUserID, now());
-     
-        -- Begin Log if success
-        perform public.createlog(0,'Created Technology sucessfully', 'CreateTechnology', 
-                                'TechnologyID: ' || cast(TechnologyID as varchar) 
-                                || ', TechnologyName: ' 
-                                || TechnologyName 
-                                || ', TechnologyDescription: ' 
-                                || TechnologyDescription 
-                                || ', CreatedBy: ' 
-                                || cast(vUserID as varchar));
-                                
-        -- End Log if success
-        -- Return TechnologyUUID
-        RETURN TechnologyUUID::text;
-        
-        exception when others then 
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateTechnology', 
-                                'TechnologyID: ' || cast(TechnologyID as varchar) 
-                                || ', TechnologyName: ' 
-                                || TechnologyName 
-                                || ', TechnologyDescription: ' 
-                                || TechnologyDescription 
-                                || ', CreatedBy: ' 
-                                || cast(vUserID as varchar));
-        -- End Log if error
-        -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
-      END;
-  $BODY$
-  LANGUAGE plpgsql;
--- ##############################################################################    
--- CreateTechnologyDataComponents 
-CREATE FUNCTION CreateTechnologyDataComponents (
-  TechnologyDataID integer, 
-  ComponentList text[]
- )
-  RETURNS INTEGER AS
-  $$    
-  	DECLARE compName text;
-		compID integer;
-      BEGIN     
-         FOREACH compName in array ComponentList 		
-        LOOP 
-		compID := (select componentID from components where componentName = compName);
-		
-         	INSERT INTO TechnologyDataComponents(technologydataid, componentid)
-		VALUES (technologydataid, compID);
-        END LOOP; 
-     
-        -- Begin Log if success
-        perform public.createlog(0,'Created relation from Componets to TechnologyData sucessfully', 'CreateTechnologyDataComponents', 
-                                'TechnologyDataID: ' || cast(TechnologyDataID as varchar)
-                                || ', ComponentList: ' 
-                                || cast(ComponentList as varchar));
-                                
-        -- End Log if success
-        -- Return UserID
-        RETURN TechnologyDataID::text;
-        
-        exception when others then 
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateTechnologyDataComponents', 
-                                'TechnologyDataID: ' || cast(TechnologyDataID as varchar)
-                                || ', ComponentList: ' 
-                                || cast(ComponentList as varchar));
-        -- End Log if error
-        -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
-      END;
-  $$
-  LANGUAGE 'plpgsql'; 
--- ##############################################################################    
--- CreateTechnologyDataTags
-CREATE FUNCTION CreateTechnologyDataTags (
-  TechnologyDataID integer, 
-  TagList text[]
- )
-  RETURNS INTEGER AS
-  $$    
-  	DECLARE vTagName text;
-    DECLARE tagID int;
-      BEGIN     
-         FOREACH vTagName in array TagList          	
-        LOOP 
-        	 tagID := (select tags.tagID from tags where tagName = vTagName); 
-         	 INSERT INTO TechnologyDataTags(TechnologyDataID, tagID)
-             VALUES (TechnologyDataID, tagID);
-        END LOOP; 
-     
-        -- Begin Log if success
-        perform public.createlog(0,'Created relation from Tags to TechnologyData sucessfully', 'CreateTechnologyDataTags', 
-                                'TechnologyDataID: ' || cast(TechnologyDataID as varchar)
-                                || ', TagList: ' 
-                                || cast(TagList as varchar));
-                                
-        -- End Log if success
-        -- Return UserID
-        RETURN TechnologyDataID;
-        
-        exception when others then 
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE || cast(tagID as varchar), 'CreateTechnologyDataTags', 
-                                'TechnologyDataID: ' || cast(TechnologyDataID as varchar)
-                                || ', TagList: ' 
-                                || cast(TagList as varchar));
-        -- End Log if error
-        -- Return Error Code * -1
-        RETURN (-1) * cast(SQLSTATE as integer);
+        RETURN;
       END;
   $$
   LANGUAGE 'plpgsql';
 -- ##############################################################################    
--- CreateComponentsAttribute
-CREATE FUNCTION CreateComponentsAttribute (
-  ComponentID integer, 
-  AttributeList text[]
- )
-  RETURNS INTEGER AS
-  $$    
-  	DECLARE vAttributeName text;
-    DECLARE vAttrID int;
-      BEGIN     
-         FOREACH vAttributeName in array AttributeList          	
-        LOOP 
-        	 vAttrID := (select attributes.attributeID from public.attributes where attributename = vAttributeName); 
-         	 INSERT INTO ComponentsAttribute(ComponentID, AttributeID)
-             VALUES (ComponentID, vAttrID);
-        END LOOP; 
-     
-        -- Begin Log if success
-        perform public.createlog(0,'Created relation from component to attributes sucessfully', 'CreateComponentsAttribute', 
-                                'ComponentID: ' || cast(ComponentID as varchar)
-                                || ', AttributeList: ' 
-                                || cast(AttributeList as varchar));
-                                
-        -- End Log if success
-        -- Return UserID
-        RETURN ComponentID;
-        
-        exception when others then 
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateComponentsAttribute', 
-                                'ComponentID: ' || cast(ComponentID as varchar)
-                                || ', AttributeList: ' 
-                                || cast(AttributeList as varchar));
-        -- End Log if error
-        -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
-      END;
-  $$
-  LANGUAGE 'plpgsql';
--- ##############################################################################    
--- CreateComponentsTechnologies
-CREATE FUNCTION CreateComponentsTechnologies (
-  ComponentID integer, 
-  TechnologyList text[]
- )
-  RETURNS INTEGER AS
-  $$    
-    DECLARE 	vTechName text;
-		vTechID integer;
-      BEGIN     
-         FOREACH vTechName in array TechnologyList          	
-        LOOP 
-		vTechID := (select technologyid from technologies where technologyname = vTechName);
-         	 INSERT INTO ComponentsTechnologies(ComponentID, TechnologyID)
-             VALUES (ComponentID, vTechID);
-        END LOOP; 
-     
-        -- Begin Log if success
-        perform public.createlog(0,'Created relation from component to attributes sucessfully', 'CreateComponentsTechnologies', 
-                                'ComponentID: ' || cast(ComponentID as varchar)
-                                || ', TechnologyList: ' 
-                                || cast(TechnologyList as varchar));
-                                
-        -- End Log if success
-        -- Return ComponentID
-        RETURN ComponentID;
-        
-        exception when others then 
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateComponentsTechnologies', 
-                                'ComponentID: ' || cast(ComponentID as varchar)
-                                || ', TechnologyList: ' 
-                                || cast(TechnologyList as varchar));
-        -- End Log if error
-        -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
-      END;
-  $$
-  LANGUAGE 'plpgsql';
- -- ##############################################################################    
--- CreateOfferRequest
-CREATE FUNCTION CreateOfferRequest (
-  vTechnologyDataUUID uuid,
-  Amount integer,
-  HSMID varchar,
-  vUserUUID uuid,
-  vBuyerUUID uuid
- )
-  RETURNS TEXT AS
-  $$
-      DECLARE 	OfferRequestID integer := (select nextval('OfferRequestID'));
-		OfferRequestUUID uuid := (select uuid_generate_v4());
-		TechnologyDataID integer := (select technologydataid from technologydata where technologydatauuid = vTechnologyDataUUID);	
-		RequestedBy integer := (select userid from users where useruuid = vUserUUID);
-		TransactionID integer := (select nextval('TransactionID'));
-		TransactionUUID uuid := (select uuid_generate_v4());
-		BuyerID integer := (select userid from users where useruuid = vBuyerUUID);
-      BEGIN        
-        INSERT INTO OfferRequest(OfferRequestID, OfferRequestUUID, TechnologyDataID, Amount, HSMID, RequestedBy, CreatedAt)
-        VALUES(OfferRequestID, OfferRequestUUID, TechnologyDataID, Amount, HSMID, RequestedBy, now());
-
-        INSERT INTO Transactions(TransactionID, TransactionUUID, OfferRequestID, BuyerID, CreatedBy, CreatedAt)
-		VALUES (TransactionID, TransactionUUID, OfferRequestID, BuyerID, RequestedBy, now());
-     
-        -- Begin Log if success
-        perform public.createlog(0,'Created OfferRequest sucessfully', 'CreateOfferRequest', 
-                                'OfferRequestID: ' || cast(OfferRequestID as varchar) 
-				|| ', TechnologyDataID: ' || cast(TechnologyDataID as varchar)
-				|| ', Amount: ' || cast(Amount as varchar) || ', HSMID: ' || HSMID);
-                                
-        -- End Log if success
-        -- Return OfferRequestUUID
-        RETURN OfferRequestUUID::text;
-        
-        exception when others then 
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateOfferRequest', 
-                                'OfferRequestID: ' || cast(OfferRequestID as varchar) 
-				|| ', TechnologyDataID: ' || cast(TechnologyDataID as varchar)
-				|| ', Amount: ' || cast(Amount as varchar) || ', HSMID: ' || HSMID);
-        -- End Log if error
-        -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
-      END;
-  $$
-  LANGUAGE 'plpgsql'; 
--- ##############################################################################    
--- CreateOffer 
-CREATE OR REPLACE FUNCTION CreateOffer(
+-- CreateOffer   
+CREATE FUNCTION CreateOffer(
   vPaymentInvoiceUUID uuid,
   vUserUUID uuid
  )
-  RETURNS TEXT AS
+  RETURNS TABLE (
+	oOfferUUID uuid,
+	oPaymentInvoiceUUID uuid,
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid	
+  ) AS
   $$
       DECLARE 	vOfferID integer := (select nextval('OfferID'));
 		vOfferUUID uuid := (select uuid_generate_v4());
@@ -667,7 +770,13 @@ CREATE OR REPLACE FUNCTION CreateOffer(
                                 
         -- End Log if success
         -- Return vOfferUUID
-        RETURN vOfferUUID::text;
+        RETURN QUERY (
+		select 	OfferUUID,
+			vPaymentInvoiceUUID,
+			CreatedAt at time zone 'utc',
+			vUserUUID
+		from offer where offeruuid = vOfferUUID	
+        );
         
         exception when others then 
         -- Begin Log if error
@@ -677,7 +786,124 @@ CREATE OR REPLACE FUNCTION CreateOffer(
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
+        RETURN;
+      END;
+  $$
+  LANGUAGE 'plpgsql';   
+-- ##############################################################################
+-- CreateLicenseOrder  
+CREATE FUNCTION CreateLicenseOrder (
+  vTicketID varchar(4000),
+  vOfferUUID uuid,
+  vUserUUID uuid
+ )
+  RETURNS TABLE (
+	oLicenseOrderUUID uuid,
+	oTicketID varchar(4000),
+	oOfferUUID uuid,
+	oActivatedAt timestamp with time zone,
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid
+  ) AS
+  $$
+      DECLARE 			vLicenseOrderID integer := (select nextval('LicenseOrderID'));
+				vLicenseOrderUUID uuid := (select uuid_generate_v4()); 
+				vOfferID integer := (select offerid from offer where offeruuid = vOfferUUID);
+				vCreatedBy integer := (select userid from users where useruuid = vUserUUID);
+				vTransactionID integer := (select transactionid from transactions where offerid = vOfferID);
+      BEGIN        
+        INSERT INTO LicenseOrder(LicenseOrderID, LicenseOrderUUID, TicketID, OfferID, ActivatedAt, CreatedBy, CreatedAt)
+        VALUES(vLicenseOrderID, vLicenseOrderUUID, vTicketID, vOfferID, now(), vCreatedBy, now());
+
+		-- Update Transactions table
+        UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = vCreatedBy
+        WHERE TransactionID = vTransactionID;
+     
+        -- Begin Log if success
+        perform public.createlog(0,'Created CreateLicenseOrder sucessfully', 'CreateLicenseOrder', 
+                                'PaymentInvoiceID: ' || cast(vLicenseOrderID as varchar) 
+				|| ', TicketID: ' || vTicketID
+				|| ', OfferID: ' || cast(vOfferID as varchar)
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+                                
+        -- End Log if success
+        -- Return 
+        RETURN QUERY (
+		select 	LicenseOrderUUID,
+			TicketID,
+			vOfferUUID,
+			ActivatedAt at time zone 'utc',
+			CreatedAt at time zone 'utc',
+			vUserUUID
+		from licenseorder 
+		where licenseorderuuid = vLicenseOrderUUID
+        );
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateLicenseOrder', 
+                                'PaymentInvoiceID: ' || cast(vLicenseOrderID as varchar) 
+				|| ', TicketID: ' || vTicketID
+				|| ', OfferID: ' || cast(vOfferID as varchar)
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+        -- End Log if error
+        -- Return Error Code * -1
+        RETURN;
+      END;
+  $$
+  LANGUAGE 'plpgsql';     
+-- ##############################################################################    
+-- CreatePayment  
+CREATE FUNCTION CreatePayment(  
+  vPaymentInvoiceUUID uuid,
+  vBitcoinTransaction varchar(32672),
+  vUserUUID uuid
+ )
+  RETURNS TABLE (
+	oPaymentUUID uuid,
+	oPaymentInvoiceUUID uuid,
+	oPayDate timestamp with time zone,
+	oBitcoinTransation varchar(32672),
+	oCreatedBy uuid
+  ) AS
+  $$
+      DECLARE 	vPaymentID integer := (select nextval('PaymentID')); 
+				vPaymentUUID uuid := (select uuid_generate_v4());
+				vPaymentInvoiceID integer := (select PaymentInvoiceID from paymentinvoice where PaymentInvoiceUUID = vPaymentInvoiceUUID);
+				vCreatedBy integer := (select userid from users where useruuid = vUserUUID);
+      BEGIN        
+        INSERT INTO Payment(PaymentID, PaymentUUID, PaymentInvoiceID, PayDate, BitcoinTransaction, CreatedBy)
+        VALUES(vPaymentID, vPaymentUUID, vPaymentInvoiceID, now(), vBitcoinTransaction, vCreatedBy);
+     
+        -- Begin Log if success
+        perform public.createlog(0,'Created PaymentInvoice sucessfully', 'CreatePayment', 
+                                'PaymentID: ' || cast(vPaymentID as varchar) 
+				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
+				|| ', BitcoinTransaction: ' || vBitcoinTransaction
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+                                
+        -- End Log if success
+        -- Return PaymentID
+        RETURN QUERY (
+		select 	PaymentUUID,
+			vPaymentInvoiceUUID,
+			paydate at time zone 'utc',
+			bitcointransaction,
+			vUserUUID
+		from payment where paymentuuid = vPaymentUUID
+			
+        );
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'CreatePayment', 
+                                'PaymentID: ' || cast(vPaymentID as varchar) 
+				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
+				|| ', BitcoinTransaction: ' || vBitcoinTransaction
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+        -- End Log if error
+        -- Return Error Code * -1
+        RETURN ;
       END;
   $$
   LANGUAGE 'plpgsql'; 
@@ -703,26 +929,36 @@ Return Value:
  Step 4: Set components to technologies relation
  TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
 ######################################################*/
--- SetComponent
-CREATE FUNCTION SetComponent (
+-- SetComponent   
+CREATE OR REPLACE FUNCTION SetComponent (
   vComponentName varchar(250), 
   vComponentParentName varchar(250), 
-  ComponentDescription varchar(32672),
-  AttributeList text[], 
-  TechnologyList text[],
-  CreatedBy uuid
+  vComponentDescription varchar(32672),
+  vAttributeList text[], 
+  vTechnologyList text[],
+  vCreatedBy uuid
  )
-  RETURNS TEXT AS
+  RETURNS TABLE (
+	oComponentUUID uuid,
+	oComponentName varchar(250),
+	oComponentParentName varchar(250),
+	oComponentParentUUID uuid,
+	oComponentDescription varchar(32672),
+	oAttributeList uuid[],
+	oTechnologyList uuid[],
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid	
+  ) AS
   $$    
       DECLARE 	vAttributeName text; 
         	vTechName text;
 		vCompID integer;
 		vCompUUID uuid;
-		vCompParentID integer := (select case when (vComponentParentName = 'Root') then 1 else componentparentid end from components where componentname = vComponentParentName);
+		vCompParentUUID uuid := (select case when (vComponentParentName = 'Root') then uuid_generate_v4() else componentuuid end from components where componentname = vComponentParentName);
       BEGIN      
         -- Proof if all technologies are avaiable
         -- Proof if all components are avaiable      
-        FOREACH vTechName in array TechnologyList 
+        FOREACH vTechName in array vTechnologyList 
         LOOP 
          	 if not exists (select technologyid from technologies where technologyname = vTechName) then
                  raise exception using
@@ -731,41 +967,67 @@ CREATE FUNCTION SetComponent (
          	 end if;
         END LOOP;
         -- Proof if all Attributes are avaiable     
-        FOREACH vAttributeName in array AttributeList 
+        FOREACH vAttributeName in array vAttributeList 
         LOOP 
          	 if not exists (select attributeid from public.attributes where attributename = vAttributeName) then
-               perform public.createattribute(vAttributeName,CreatedBy);
+               perform public.createattribute(vAttributeName,vCreatedBy);
         	 end if;
         END LOOP;
         
         -- Create new Component
-        vCompUUID := (select public.createcomponent(vCompParentID,vComponentName, componentdescription, createdby));    
-        vCompID := (select componentid from components where componentuuid = vCompUUID);
-        -- Create relation from Components to TechnologyData 
-        perform public.CreateComponentsAttribute(vCompID, AttributeList);  
+        perform public.createcomponent(vCompParentUUID,vComponentName, vComponentdescription, vCreatedby);
+		vCompID := (select currval('ComponentID')); 
+		vCompUUID := (select componentuuid from components where componentID = vCompID);
         
         -- Create relation from Components to TechnologyData 
-        perform public.CreateComponentsTechnologies(vCompID, TechnologyList); 
+        perform public.CreateComponentsAttribute(vCompUUID, vAttributeList);  
+        
+        -- Create relation from Components to TechnologyData 
+        perform public.CreateComponentsTechnologies(vCompUUID, vTechnologyList); 
      	
         -- Begin Log if success
-        perform public.createlog(0,'Set Component sucessfully', 'SetComponent', 
+        perform public.createlog(0,'Set Component sucessfully','SetComponent', 
                                 'ComponentID: ' || cast(vCompID as varchar) || ', componentname: ' 
-                                || vComponentName || ', componentdescription: ' || componentdescription 
-                                || ', CreatedBy: ' || cast(CreatedBy as varchar));
+                                || vComponentName || ', componentdescription: ' || vComponentDescription 
+                                || ', CreatedBy: ' || cast(vCreatedBy as varchar));
                                 
         -- End Log if success
         -- Return UserID
-        RETURN vCompUUID::text;
+        RETURN QUERY (
+		select 	co.ComponentUUID,
+			co.ComponentName,
+			cs.ComponentName as componentParentName,
+			cs.ComponentUUID as componentParentUUID,
+			co.ComponentDescription,
+			array_agg(att.attributeuuid),
+			array_agg(tc.technologyuuid),
+			co.CreatedAt at time zone 'utc',
+			vCreatedBy as CreatedBy
+		from components co
+		left outer join components cs
+		on co.componentparentid = cs.componentid
+		join componentsattribute ca 
+		on cs.componentid = ca.componentid
+		join attributes att 
+		on ca.attributeid = att.attributeid
+		join componentstechnologies ct 
+		on cs.componentid = ct.componentid
+		join technologies tc 
+		on tc.technologyid = ct.technologyid		
+		where co.componentid = vCompID
+		group by co.ComponentUUID, co.ComponentName, cs.ComponentName,  
+			cs.ComponentUUID, co.ComponentDescription, co.createdat
+        );
         
         exception when others then 
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'SetComponent', 
                                 'ComponentID: ' || cast(vCompID as varchar) || ', componentname: ' 
-                                || vComponentName || ', componentdescription: ' || componentdescription 
-                                || ', CreatedBy: ' || cast(CreatedBy as varchar));
+                                || vComponentName || ', componentdescription: ' || vComponentDescription 
+                                || ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
+        RETURN;
       END;
   $$
   LANGUAGE 'plpgsql';
@@ -795,27 +1057,41 @@ Return Value:
  Step 6: Set tags to technologydata relation
  TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
 ######################################################*/
--- Set TechnologyData
- CREATE FUNCTION public.settechnologydata(
-    technologydataname character varying,
-    technologydata character varying,
-    technologydatadescription character varying,
-    vtechnologyuuid uuid,
-    licensefee numeric,
-    taglist text[],
-    createdby uuid,
-    componentlist text[])
-  RETURNS TEXT AS			
+-- Set TechnologyData  
+ CREATE OR REPLACE FUNCTION public.settechnologydata(  
+	vTechnologyDataName varchar(250), 
+	vTechnologyData varchar(32672), 
+	vTechnologyDataDescription varchar(32672), 
+	vtechnologyuuid uuid,
+	vLicensefee numeric,
+	vTaglist text[],	
+	vComponentlist text[],
+	-- vTechnologyDataAuthor uuid,
+	vCreatedby uuid)
+  RETURNS TABLE (
+	oTechnologyDataUUID uuid,
+	oTechnologyDataName varchar(250),
+	oTechnologyUUID uuid,
+	oTechnologyData varchar(32672),
+	oLicenseFee numeric(21,4),
+	oTechnologyDataDescription varchar(32672),
+	oTechnologyDataThumbnail bytea,
+	oTechnologyDataImgRef character varying,
+	oTagList uuid[],
+	oComponentList uuid[],
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid
+  ) AS	  
 $BODY$    
       DECLARE 	vCompName text;
 				vTagName text; 
 				vTechnologyDataID int; 
 				vTechnologyDataUUID uuid;
-				vUSerID integer := (select userid from users where useruuid = createdby);
+				vUserID integer := (select userid from users where useruuid = vCreatedby);
 				vTechnologyID integer := (select technologyID from technologies where technologyUUID = vTechnologyUUID);
       BEGIN        
         -- Proof if all components are avaiable      
-        FOREACH vCompName in array componentlist 
+        FOREACH vCompName in array vComponentlist 
         LOOP 
          	 if not exists (select componentid from components where componentname = vCompName) then
                  raise exception using
@@ -824,10 +1100,10 @@ $BODY$
          	 end if;
         END LOOP;
         -- Proof if all Tags are avaiable     
-        FOREACH vTagName in array TagList 
+        FOREACH vTagName in array vTagList 
         LOOP 
          	 if not exists (select tagID from tags where tagname = vTagName) then
-			perform public.createtag(vTagName,vUSerID);
+			perform public.createtag(vTagName,vCreatedby);
         	 end if;
         END LOOP;
         -- Proof if technology is avaiable  
@@ -837,39 +1113,142 @@ $BODY$
             message = 'There is no technology with TechnologyID: ' || vTechnologyID::text; 
         end if;
         
-        -- Create new TechnologyData
-        vTechnologyDataUUID := (select public.createtechnologydata(TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, vTechnologyID, vUSerID));    
-        vTechnologyDataID := (select technologydataid from technologydata where technologydatauuid = vTechnologyDataUUID);
+        -- Create new TechnologyData  
+		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vTechnologyUUID, vCreatedBy); 		
+        vTechnologyDataID := (select currval('TechnologyDataID'));
+        vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
         -- Create relation from Components to TechnologyData 
-        perform public.CreateTechnologyDataComponents(vTechnologyDataID, ComponentList);
+        perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList);
         
         -- Create relation from Tags to TechnologyData 
-        perform public.CreateTechnologyDataTags(vTechnologyDataID, TagList);
+        perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList);
      	
         -- Begin Log if success
         perform public.createlog(0,'Set TechnologyData sucessfully', 'SetTechnologyData', 
                                 'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: ' 
-                                || TechnologyDataName || ', TechnologyData: ' || TechnologyData 
-                                || ', TechnologyDataDescription: ' || TechnologyDataDescription 
-                                || ', CreatedBy: ' || cast(vUSerID as varchar));
+                                || vTechnologyDataName || ', TechnologyData: ' || vTechnologyData 
+                                || ', TechnologyDataDescription: ' || vTechnologyDataDescription 
+                                || ', CreatedBy: ' || cast(vUserID as varchar));
                                 
         -- End Log if success
         -- Return vTechnologyDataUUID
-        RETURN vTechnologyDataUUID::text;
+        RETURN QUERY (
+		select 	TechnologyDataUUID,
+			TechnologyDataName,
+			vTechnologyUUID,
+			TechnologyData,
+			LicenseFee,
+			TechnologyDataDescription,
+			TechnologyDataThumbnail,
+			TechnologyDataImgRef,
+			array_agg(tg.taguuid) as TagList,
+			array_agg(co.componentuuid) as ComponentList,
+			td.CreatedAt at time zone 'utc',
+			vCreatedBy as CreatedBy
+		from technologydata td
+		join technologydatatags tt on
+		td.technologydataid = tt.technologydataid
+		join tags tg on tt.tagid = tg.tagid
+		join technologydatacomponents tc 
+		on tc.technologydataid = td.technologydataid
+		join components co 
+		on co.componentid = tc.componentid
+		where td.technologydataid = vTechnologyDataID
+		group by technologydatauuid, technologydataname, technologydata,
+			 licensefee, technologydatadescription, technologydatathumbnail,
+			 TechnologyDataImgRef, td.createdat, td.createdby
+        );
         
         exception when others then 
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'SetTechnologyData', 
                                 'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: ' 
-                                || TechnologyDataName || ', TechnologyData: ' || TechnologyData 
-                                || ', TechnologyDataDescription: ' || TechnologyDataDescription 
-                                || ', CreatedBy: ' || cast(vUSerID as varchar));
+                                || vTechnologyDataName || ', TechnologyData: ' || vTechnologyData 
+                                || ', TechnologyDataDescription: ' || vTechnologyDataDescription 
+                                || ', CreatedBy: ' || cast(vUserID as varchar));
         -- End Log if error
         -- Return Error Code * -1
-        RETURN ((-1) * cast(SQLSTATE as integer))::text;
+        RETURN;
       END;
   $BODY$
   LANGUAGE plpgsql;
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-02-14
+-- Description: Script to set a new PaymentInvoice inclusiv Offer
+-- ##########################################################################
+Create a complete PaymentInvoice with Offer
+Input paramteres:  
+Return Value:
+ ***********************************************
+ Step 1:  
+ TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
+######################################################*/
+-- SetPaymentInvoiceOffer  
+CREATE OR REPLACE FUNCTION SetPaymentInvoiceOffer ( 
+	vOfferRequestUUID uuid,
+	vInvoice varchar(32672),
+	vCreatedBy uuid	
+ )
+  RETURNS TABLE (
+	paymentinvoiceuuid uuid, 
+	invoice varchar(32672),
+	offeruuid uuid,	
+	paymentcreatedat timestamp with time zone,
+	paymentcreatedby uuid,
+	offercreatedat timestamp with time zone,
+	offercreatedby uuid
+	)
+  
+   AS
+  $$    
+      DECLARE  
+		vPaymentInvoiceID integer;
+		vPaymentInvoiceUUID uuid;
+		vUserID integer := (select userid from users where useruuid = vCreatedBy);
+      BEGIN      
+        -- Create PaymentInvoice
+        perform createpaymentinvoice(vInvoice,vOfferRequestUUID,vCreatedBy);
+        vPaymentInvoiceID := (select currval('PaymentInvoiceID'));
+        vPaymentInvoiceUUID := (select paymentinvoice.paymentinvoiceuuid from paymentinvoice where paymentinvoiceid = vPaymentInvoiceID);
+		
+	-- Create Offer
+	perform createoffer(vPaymentInvoiceUUID, vCreatedBy);
+
+        -- Begin Log if success
+        perform public.createlog(0,'Set SetPaymentInvoiceOffer sucessfully', 'SetPaymentInvoiceOffer', 
+                                'OfferRequestID: ' || cast(vOfferRequestUUID as varchar)
+				|| ', invoice: ' || vInvoice  
+                                || ', CreatedBy: ' || cast(vUserID as varchar));
+                                
+        -- End Log if success
+        -- Return
+        RETURN QUERY (
+		select 	pi.paymentinvoiceuuid, 
+			pi.invoice,
+			ofr.offeruuid,
+			pi.createdat at time zone 'utc' as paymentCreatedAt,
+			vCreatedBy as paymentCreatedBy,
+			ofr.createdat at time zone 'utc' as offerCreatedAt,
+			vCreatedBy as offerCreatedBy			
+		from paymentinvoice pi 
+		join offer ofr ON pi.paymentinvoiceid = ofr.paymentinvoiceid
+		where pi.paymentinvoiceuuid = vPaymentInvoiceUUID			
+        ); 
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'SetPaymentInvoiceOffer', 
+                                'OfferRequestID: ' || cast(vOfferRequestUUID as varchar)
+				|| ', invoice: ' || vInvoice  
+                                || ', CreatedBy: ' || cast(vUserID as varchar));
+        -- End Log if error
+        -- Return Error Code * -1
+        RETURN;
+      END;
+  $$
+  LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -883,30 +1262,39 @@ Return Value: Table with all TechnologyData
 CREATE FUNCTION GetAllTechnologyData() 
 	RETURNS TABLE
     	(
-    technologydatauuid uuid,
-    technologyid integer,
-    technologydataname character varying(250),
-    technologydata character varying(32672),
-    technologydatadescription character varying(32672),
-    licensefee numeric(21, 4),
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+			technologydatauuid uuid,
+			technologyuuid uuid,    		
+			technologydataname varchar(250),
+			technologydata varchar(32672),
+			technologydatadescription varchar(32672),
+			licensefee numeric,
+			technologydatathumbnail bytea,
+			technologydataimgref varchar(4000),
+			createdat timestamp with time zone,
+			createdby uuid,	
+			updatedat timestamp with time zone,
+			useruuid uuid
         )
     AS $$ 
-    SELECT  technologydatauuid,
-    		technologyid,
-    		technologydataname,
-    		technologydata,
-    		technologydatadescription,
-    		licensefee,
-    		createdat  at time zone 'utc',
-    		createdby,	
-    		updatedat  at time zone 'utc',
-    		updatedby
-    FROM TechnologyData $$
-    LANGUAGE SQL;
+    	SELECT 	technologydatauuid,
+				tc.technologyuuid,    		
+				technologydataname,
+				technologydata,
+				technologydatadescription,
+				licensefee,
+				technologydatathumbnail,
+				technologydataimgref,
+				td.createdat  at time zone 'utc',
+				ur.useruuid as createdby,	
+				td.updatedat  at time zone 'utc',
+				us.useruuid as UpdatedBy
+		FROM TechnologyData td
+		join technologies tc 
+		on td.technologyid = tc.technologyid
+		join users ur on td.createdby = ur.userid
+		left outer join users us 
+		on td.updatedby = us.userid
+	$$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -918,33 +1306,45 @@ Input paramteres: technologyUUID uuid
 				  userUUID uuid
 Return Value: Table with all TechnologyData 
 ######################################################*/
-CREATE FUNCTION GetTechnologyDataByID(vTechnologyDataUUID uuid, vUserUUID uuid) 
-	RETURNS TABLE
+  CREATE OR REPLACE FUNCTION public.gettechnologydatabyid(
+    vtechnologydatauuid uuid,
+    vuseruuid uuid)
+RETURNS TABLE
     	(
-    technologydatauuid uuid,
-    technologyid integer,
-    technologydataname character varying(250),
-    technologydata character varying(32672),
-    technologydatadescription character varying(32672),
-    licensefee numeric(21, 4),
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+			technologydatauuid uuid,
+			technologyuuid uuid,    		
+			technologydataname varchar(250),
+			technologydata varchar(32672),
+			technologydatadescription varchar(32672),
+			licensefee numeric,
+			technologydatathumbnail bytea,
+			technologydataimgref varchar(4000),
+			createdat timestamp with time zone,
+			createdby uuid,	
+			updatedat timestamp with time zone,
+			useruuid uuid
         )
     AS $$ 
-    SELECT  technologydatauuid,
-    		technologyid,
-    		technologydataname,
-    		technologydata,
-    		technologydatadescription,
-    		licensefee,
-    		createdat  at time zone 'utc',
-    		createdby,	
-    		updatedat  at time zone 'utc',
-    		updatedby
-    FROM TechnologyData WHERE technologydatauuid = vTechnologyDataUUID
-	$$ LANGUAGE SQL;
+    	SELECT 	technologydatauuid,
+				tc.technologyuuid,    		
+				technologydataname,
+				technologydata,
+				technologydatadescription,
+				licensefee,
+				technologydatathumbnail,
+				technologydataimgref,
+				td.createdat  at time zone 'utc',
+				ur.useruuid as createdby,	
+				td.updatedat  at time zone 'utc',
+				us.useruuid as UpdatedBy
+		FROM TechnologyData td
+		join technologies tc 
+		on td.technologyid = tc.technologyid
+		join users ur on td.createdby = ur.userid
+		left outer join users us 
+		on td.updatedby = us.userid
+		where technologydatauuid = vtechnologydatauuid;
+	$$ LANGUAGE SQL; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -956,33 +1356,46 @@ Input paramteres: technologyDataNane varchar(250)
 				  userUUID uuid
 Return Value: Table with all TechnologyData 
 ######################################################*/
-CREATE FUNCTION GetTechnologyDataByName(vTechnologyDataName varchar(250), vUserUUID uuid) 
-	RETURNS TABLE
+CREATE FUNCTION GetTechnologyDataByName(
+		vTechnologyDataName varchar(250),
+		vUserUUID uuid
+		) 
+RETURNS TABLE
     	(
-    technologydatauuid uuid,
-    technologyid integer,
-    technologydataname character varying(250),
-    technologydata character varying(32672),
-    technologydatadescription character varying(32672),
-    licensefee numeric(21, 4),
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+			technologydatauuid uuid,
+			technologyuuid uuid,    		
+			technologydataname varchar(250),
+			technologydata varchar(32672),
+			technologydatadescription varchar(32672),
+			licensefee numeric,
+			technologydatathumbnail bytea,
+			technologydataimgref varchar(4000),
+			createdat timestamp with time zone,
+			createdby uuid,	
+			updatedat timestamp with time zone,
+			useruuid uuid
         )
     AS $$ 
-    SELECT  technologydatauuid,
-    		technologyid,
-    		technologydataname,
-    		technologydata,
-    		technologydatadescription,
-    		licensefee,
-    		createdat  at time zone 'utc',
-    		createdby,	
-    		updatedat  at time zone 'utc',
-    		updatedby
-    FROM TechnologyData WHERE TechnologyDataName = vTechnologyDataName
-	$$ LANGUAGE SQL;
+    	SELECT 	technologydatauuid,
+				tc.technologyuuid,    		
+				technologydataname,
+				technologydata,
+				technologydatadescription,
+				licensefee,
+				technologydatathumbnail,
+				technologydataimgref,
+				td.createdat  at time zone 'utc',
+				ur.useruuid as createdby,	
+				td.updatedat  at time zone 'utc',
+				us.useruuid as UpdatedBy
+		FROM TechnologyData td
+		join technologies tc 
+		on td.technologyid = tc.technologyid
+		join users ur on td.createdby = ur.userid
+		left outer join users us 
+		on td.updatedby = us.userid
+		where technologydataname = vTechnologyDataName;
+	$$ LANGUAGE SQL; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1000,21 +1413,23 @@ CREATE FUNCTION GetAllComponents()
     componentname character varying(250),
     componentparentuuid integer,
     componentdescription character varying(32672), 
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+    createdat timestamp  with time zone,
+    createdby uuid,
+    updatedat timestamp  with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  componentuuid,
     		componentname,
     		componentparentid,
 		componentdescription, 
-    		createdat  at time zone 'utc',
-    		createdby,
-    		updatedat  at time zone 'utc',
-    		updatedby 
-    FROM Components 
+    		cp.createdat  at time zone 'utc',
+    		ur.useruuid as createdby,
+    		cp.updatedat  at time zone 'utc',
+    		us.useruuid as updatedby 
+    FROM Components cp
+    join users ur on cp.createdby = ur.userid
+    left outer join users us on cp.updatedby = ur.userid
     $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
@@ -1031,23 +1446,26 @@ CREATE FUNCTION GetComponentByID(vCompUUID uuid)
     	(
     componentuuid uuid,
     componentname character varying(250),
-    componentparentid integer,
+    componentparentuuid integer,
     componentdescription character varying(32672), 
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+    createdat timestamp  with time zone,
+    createdby uuid,
+    updatedat timestamp  with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  componentuuid,
     		componentname,
     		componentparentid,
 		componentdescription, 
-    		createdat  at time zone 'utc',
-    		createdby,
-    		updatedat  at time zone 'utc',
-    		updatedby 
-    FROM Components WHERE componentuuid = vCompUUID;
+    		cp.createdat  at time zone 'utc',
+    		ur.useruuid as createdby,
+    		cp.updatedat  at time zone 'utc',
+    		us.useruuid as updatedby 
+    FROM Components cp
+    join users ur on cp.createdby = ur.userid
+    left outer join users us on cp.updatedby = ur.userid 
+    WHERE componentuuid = vCompUUID;
     $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
@@ -1064,23 +1482,26 @@ CREATE FUNCTION GetComponentByName(vCompName varchar(250))
     	(
     componentuuid uuid,
     componentname character varying(250),
-    componentparentid integer,
+    componentparentuuid integer,
     componentdescription character varying(32672), 
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+    createdat timestamp  with time zone,
+    createdby uuid,
+    updatedat timestamp  with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  componentuuid,
     		componentname,
     		componentparentid,
 		componentdescription, 
-    		createdat at time zone 'utc',
-    		createdby,
-    		updatedat at time zone 'utc',
-    		updatedby 
-    FROM Components WHERE componentname = vCompName;
+    		cp.createdat  at time zone 'utc',
+    		ur.useruuid as createdby,
+    		cp.updatedat  at time zone 'utc',
+    		us.useruuid as updatedby 
+    FROM Components cp
+    join users ur on cp.createdby = ur.userid
+    left outer join users us on cp.updatedby = ur.userid
+    WHERE componentname = vCompName;
     $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
@@ -1097,20 +1518,22 @@ CREATE FUNCTION GetAllTags()
     	(
     taguuid uuid,
     tagname character varying(250),    
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+    createdat timestamp  with time zone,
+    createdby uuid,
+    updatedat timestamp  with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  taguuid,
     		tagname, 
-    		createdat  at time zone 'utc',
-    		createdby,
-    		updatedat  at time zone 'utc',
-    		updatedby 
-    FROM Tags $$
-    LANGUAGE SQL;
+    		tg.createdat  at time zone 'utc',
+    		ur.useruuid as createdby,
+    		tg.updatedat  at time zone 'utc',
+    		us.useruuid as updatedby 
+    FROM tags tg
+    join users ur on tg.createdby = ur.userid
+    left outer join users us on tg.updatedby = ur.userid
+    $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1124,21 +1547,24 @@ Return Value: Table with all Tags
 CREATE FUNCTION GetTagByID(vTagID uuid) 
 	RETURNS TABLE
     	(
-    tagudid uuid,
+    taguuid uuid,
     tagname character varying(250),    
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+    createdat timestamp  with time zone,
+    createdby uuid,
+    updatedat timestamp  with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  taguuid,
     		tagname, 
-    		createdat  at time zone 'utc',
-    		createdby,
-    		updatedat  at time zone 'utc',
-    		updatedby 
-    FROM Tags WHERE tagUUID = vTagID;
+    		tg.createdat  at time zone 'utc',
+    		ur.useruuid as createdby,
+    		tg.updatedat  at time zone 'utc',
+    		us.useruuid as updatedby 
+    FROM tags tg
+    join users ur on tg.createdby = ur.userid
+    left outer join users us on tg.updatedby = ur.userid
+    WHERE tagUUID = vTagID;
     $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
@@ -1155,19 +1581,22 @@ CREATE FUNCTION GetTagByName(vTagName varchar(250))
     	(
     taguuid uuid,
     tagname character varying(250),    
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+    createdat timestamp  with time zone,
+    createdby uuid,
+    updatedat timestamp  with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  taguuid,
     		tagname, 
-    		createdat at time zone 'utc',
-    		createdby,
-    		updatedat at time zone 'utc',
-    		updatedby 
-    FROM Tags WHERE tagName = vTagName;
+    		tg.createdat  at time zone 'utc',
+    		ur.useruuid as createdby,
+    		tg.updatedat  at time zone 'utc',
+    		us.useruuid as updatedby 
+    FROM tags tg
+    join users ur on tg.createdby = ur.userid
+    left outer join users us on tg.updatedby = ur.userid
+	WHERE tagName = vTagName;
     $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
@@ -1185,21 +1614,23 @@ CREATE FUNCTION GetAllTechnologies()
     technologyuuid uuid,
     technologyname character varying(250),
     technologydescription character varying(32672),            
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+    createdat timestamp  with time zone,
+    createdby uuid,
+    updatedat timestamp  with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  technologyuuid,
     		technologyname, 
 		technologydescription, 
-    		createdat at time zone 'utc',
-    		createdby,
-    		updatedat at time zone 'utc',
-    		updatedby 
-    FROM Technologies $$
-    LANGUAGE SQL;
+    		tg.createdat at time zone 'utc',
+    		ur.useruuid as createdby,
+    		tg.updatedat at time zone 'utc',
+    		us.useruuid as updatedby 
+    FROM Technologies tg
+    JOIN users ur ON tg.createdby = ur.userid
+    LEFT OUTER JOIN users us ON tg.updatedby = us.userid
+    $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1216,20 +1647,23 @@ CREATE FUNCTION GetTechnologyByID(vtechUUID uuid)
     technologyuuid uuid,
     technologyname character varying(250),
     technologydescription character varying(32672),            
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+    createdat timestamp  with time zone,
+    createdby uuid,
+    updatedat timestamp  with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  technologyuuid,
     		technologyname, 
 		technologydescription, 
-    		createdat at time zone 'utc',
-    		createdby,
-    		updatedat at time zone 'utc',
-    		updatedby 
-    FROM Technologies WHERE technologyuuid = vtechUUID;
+    		tg.createdat at time zone 'utc',
+    		ur.useruuid as createdby,
+    		tg.updatedat at time zone 'utc',
+    		us.useruuid as updatedby 
+    FROM Technologies tg
+    JOIN users ur ON tg.createdby = ur.userid
+    LEFT OUTER JOIN users us ON tg.updatedby = us.userid
+	WHERE technologyuuid = vtechUUID;
     $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
@@ -1244,23 +1678,26 @@ Return Value: Table with the Technology filter by TechnologyName
 CREATE FUNCTION GetTechnologyByName(vtechName varchar) 
 	RETURNS TABLE
     	(
-    technologyguuid uuid,
+    technologyuuid uuid,
     technologyname character varying(250),
     technologydescription character varying(32672),            
-    createdat timestamp  without time zone,
-    createdby integer,
-    updatedat timestamp  without time zone,
-    updatedby integer
+    createdat timestamp  with time zone,
+    createdby uuid,
+    updatedat timestamp  with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  technologyuuid,
     		technologyname, 
 		technologydescription, 
-    		createdat at time zone 'utc',
-    		createdby,
-    		updatedat at time zone 'utc',
-    		updatedby 
-    FROM Technologies WHERE technologyname = vtechName;
+    		tg.createdat at time zone 'utc',
+    		ur.useruuid as createdby,
+    		tg.updatedat at time zone 'utc',
+    		us.useruuid as updatedby 
+    FROM Technologies tg
+    JOIN users ur ON tg.createdby = ur.userid
+    LEFT OUTER JOIN users us ON tg.updatedby = us.userid
+	WHERE technologyname = vtechName;
     $$ LANGUAGE SQL;
 /*##########################################################################
 -- Author: Marcel Ely Gomes 
@@ -1286,8 +1723,8 @@ CREATE FUNCTION GetTechnologyDataByParams(
 		technologydatathumbnail bytea,
 		technologydataimgRef varchar,
 		useruuid uuid,
-		createdat timestamp without time zone,
-		updatedat timestamp without time zone,
+		createdat timestamp with time zone,
+		updatedat timestamp with time zone,
 		technologyname varchar,
         tagname character varying,
         componentname varchar,
@@ -1342,8 +1779,8 @@ CREATE FUNCTION GetAllUsers()
     userfirstname character varying(250),
     userlastname character varying(250),            
     useremail character varying(250),            
-    createdat timestamp  without time zone,       
-    updatedat timestamp  without time zone
+    createdat timestamp  with time zone,       
+    updatedat timestamp  with time zone
         )
     AS $$ 
 	SELECT  useruuid uuid,
@@ -1354,7 +1791,6 @@ CREATE FUNCTION GetAllUsers()
 		updatedat at time zone 'utc'
     FROM Users;
     $$ LANGUAGE SQL;
-
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1372,8 +1808,8 @@ CREATE FUNCTION GetUserByID(vUserUUID uuid)
     userfirstname character varying(250),
     userlastname character varying(250),            
     useremail character varying(250),            
-    createdat timestamp  without time zone,       
-    updatedat timestamp  without time zone
+    createdat timestamp  with time zone,       
+    updatedat timestamp  with time zone
         )
     AS $$ 
 	SELECT  useruuid uuid,
@@ -1402,8 +1838,8 @@ CREATE FUNCTION GetUserByName(vUserFirstName varchar(250), vUserLastName varchar
     userfirstname character varying(250),
     userlastname character varying(250),            
     useremail character varying(250),            
-    createdat timestamp  without time zone,       
-    updatedat timestamp  without time zone
+    createdat timestamp  with time zone,       
+    updatedat timestamp  with time zone
         )
     AS $$ 
 	SELECT  useruuid uuid,
@@ -1431,7 +1867,7 @@ CREATE FUNCTION GetAllOffers()
     	(
     offeruuid uuid,    
     paymentinvoiceuuid uuid,
-    createdat timestamp without time zone,
+    createdat timestamp with time zone,
     createdby uuid
         )
     AS $$ 
@@ -1458,16 +1894,21 @@ CREATE FUNCTION GetAllAttributes()
     	(
     attributeuuid uuid,    
     attributename varchar(250),
-    createdat timestamp without time zone,
-    createdby uuid
+    createdat timestamp with time zone,
+    createdby uuid,
+    updatedat timestamp with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  attributeuuid,                
 	        attributename,
 	        att.createdat at time zone 'utc',
-	        ur.useruuid as createdby
+	        ur.useruuid as createdby,
+	        att.updatedat at time zone 'utc',
+	        us.useruuid as updatedby
 	FROM attributes att
-	JOIN Users ur ON att.createdby = ur.userid    
+	JOIN users ur ON att.createdby = ur.userid 
+	LEFT OUTER JOIN users us ON att.updatedby = us.userid    
     $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
@@ -1483,16 +1924,21 @@ CREATE FUNCTION GetAttributeByID(vAttrUUID uuid)
     	(
     attributeuuid uuid,    
     attributename varchar(250),
-    createdat timestamp without time zone,
-    createdby uuid
+    createdat timestamp with time zone,
+    createdby uuid,
+    updatedat timestamp with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  attributeuuid,                
 	        attributename,
 	        att.createdat at time zone 'utc',
-	        ur.useruuid as createdby
+	        ur.useruuid as createdby,
+	        att.updatedat at time zone 'utc',
+	        us.useruuid as updatedby
 	FROM attributes att
-	JOIN Users ur ON att.createdby = ur.userid
+	JOIN users ur ON att.createdby = ur.userid 
+	LEFT OUTER JOIN users us ON att.updatedby = us.userid 
 	WHERE attributeUUID = vAttrUUID;
     $$ LANGUAGE SQL;
 /* ##########################################################################
@@ -1509,16 +1955,21 @@ CREATE FUNCTION GetAttributeByName(vAttrName varchar(250))
     	(
     attributeuuid uuid,    
     attributename varchar(250),
-    createdat timestamp without time zone,
-    createdby uuid
+    createdat timestamp with time zone,
+    createdby uuid,
+    updatedat timestamp with time zone,
+    updatedby uuid
         )
     AS $$ 
 	SELECT  attributeuuid,                
 	        attributename,
 	        att.createdat at time zone 'utc',
-	        ur.useruuid as createdby
+	        ur.useruuid as createdby,
+	        att.updatedat at time zone 'utc',
+	        us.useruuid as updatedby
 	FROM attributes att
-	JOIN Users ur ON att.createdby = ur.userid
+	JOIN users ur ON att.createdby = ur.userid 
+	LEFT OUTER JOIN users us ON att.updatedby = us.userid 
 	WHERE attributeName = vAttrName;
     $$ LANGUAGE SQL;
 /* ##########################################################################
@@ -1536,7 +1987,7 @@ CREATE FUNCTION GetOfferByRequestID(vRequestID uuid)
     	(
     offeruuid uuid, 
     paymentinvoiceuuid uuid,
-    createdat timestamp without time zone,
+    createdat timestamp with time zone,
     createdby uuid 
         )
     AS $$ 
@@ -1566,7 +2017,7 @@ CREATE FUNCTION GetOfferByID(vOfferID uuid)
     	(
     offeruuid uuid, 
     paymentinvoiceuuid uuid,
-    createdat timestamp without time zone, 
+    createdat timestamp with time zone, 
     createdby uuid
         )
     AS $$ 
