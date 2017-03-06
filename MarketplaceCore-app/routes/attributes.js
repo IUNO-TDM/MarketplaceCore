@@ -13,24 +13,20 @@ var queries = require('../connectors/pg-queries');
 
 
 router.get('/', validate({query: require('../schema/attributes_schema')}), function (req, res, next) {
-    logger.debug(req);
         queries.GetAllAttributes(req, res, next);
 });
 
 router.get('/attributeuuid/:attributeUUID', validate({query: require('../schema/attributes_schema')}),  function (req, res, next) {
-    logger.debug(req);
         queries.GetAttributeByID(req,res,next);
 
 });
 
 router.get('/attributename/:attributeName', validate({query: require('../schema/attributes_schema')}),   function (req, res, next) {
-    logger.debug(req);
         queries.GetAttributeByName(req,res,next);
 
 });
 
 router.put('/attribute', validate({query: require('../schema/attributes_schema')}),   function (req, res, next) {
-    logger.debug(req);
     queries.CreateAttribute(req,res,next);
 
 });

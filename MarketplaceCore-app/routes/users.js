@@ -12,21 +12,20 @@ var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
 
 /*router.get('/', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
-    logger.debug(req);
-    queries.GetAllUsers(req.query['userUUID'], function(err, data){
-        if (err){
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
-});*/
+ logger.debug(req);
+ queries.GetAllUsers(req.query['userUUID'], function(err, data){
+ if (err){
+ next(err);
+ }
+ else {
+ res.json(data);
+ }
+ });
+ });*/
 
 router.get('/', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
-    logger.debug(req);
-    queries.GetUserByName(req.query['userUUID'], req.query['firstName'], req.query['lastName'], function(err, data){
-        if (err){
+    queries.GetUserByName(req.query['userUUID'], req.query['firstName'], req.query['lastName'], function (err, data) {
+        if (err) {
             next(err);
         }
         else {
@@ -36,9 +35,8 @@ router.get('/', validate({query: require('../schema/users_schema').GetSingle}), 
 });
 
 router.get('/:id', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
-    logger.debug(req);
-    queries.GetUserByID(req.query['userUUID'], req.param['id'], function(err, data){
-        if (err){
+    queries.GetUserByID(req.query['userUUID'], req.params['id'], function (err, data) {
+        if (err) {
             next(err);
         }
         else {
@@ -51,8 +49,7 @@ router.post('/', validate({
     body: require('../schema/users_schema').SaveDataBody,
     query: require('../schema/users_schema').SaveDataQuery
 }), function (req, res, next) {
-    logger.debug(req);
-    queries.SaveUser(req.query['userUUID'], req.body, function(err, data) {
+    queries.CreateUser(req.query['userUUID'], req.body, function (err, data) {
         if (err) {
             next(err);
         }

@@ -8,8 +8,7 @@
 
 var logger = require('../global/logger');
 var pgp = require('pg-promise')();
-//var db = pgp("postgres://postgres:Trumpf1234@192.168.8.101:5432/marketplacecore");
-var db = pgp("postgres://postgres:Trumpf1234@localhost:5432/marketplacecore");
+var db = pgp("postgres://postgres:trumpf1234@192.168.8.2:5432/marketplacecore");
 
 var self = {};
 
@@ -29,8 +28,12 @@ self.GetAllUsers = function (userUUID, callback) {
 
 // GetUserByID(userUUID, dataId)
 self.GetUserByID = function (userUUID, dataId, callback) {
-    db.func('GetUserByID',[dataId])
+    db.func('GetUserByID', [dataId])
         .then(function (data) {
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data)
         })
         .catch(function (error) {
@@ -41,8 +44,12 @@ self.GetUserByID = function (userUUID, dataId, callback) {
 
 // GetUserByID(userUUID, firstName, lastName)
 self.GetUserByName = function (userUUID, firstName, lastName, callback) {
-    db.func('GetUserByName',[firstName, lastName])
+    db.func('GetUserByName', [firstName, lastName])
         .then(function (data) {
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data)
         })
         .catch(function (error) {
@@ -52,12 +59,12 @@ self.GetUserByName = function (userUUID, firstName, lastName, callback) {
 };
 
 // CreateUser(userUUID, firstName, lastName, email)
-self.SaveUser = function (userUUID, data, callback) {
+self.CreateUser = function (userUUID, data, callback) {
 
     var firstName = data['firstName'];
     var lastName = data['lastName'];
     var emailAddress = data['emailAddress'];
-    db.func('CreateUser',[firstName, lastName, emailAddress])
+    db.func('CreateUser', [firstName, lastName, emailAddress])
         .then(function (data) {
             callback(null, data)
         })
@@ -86,6 +93,10 @@ self.GetTechnologyDataByID = function (userUUID, dataId, callback) {
 
     db.func('GetTechnologyDataByID', [dataId, userUUID])
         .then(function (data) {
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data);
         })
         .catch(function (error) {
@@ -112,7 +123,7 @@ self.GetTechnologyDataByParams = function (userUUID, params, callback) {
         ]
     )
         .then(function (data) {
-            logger.debug(data);
+            logger.debug(JSON.stringify(data));
             callback(null, data);
         })
         .catch(function (error) {
@@ -125,7 +136,10 @@ self.GetTechnologyDataByParams = function (userUUID, params, callback) {
 self.GetTechnologyDataByName = function (userUUID, name, callback) {
     db.func('GetTechnologyDataByName', [name, userUUID])
         .then(function (data) {
-            logger.debug(data);
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data);
         })
         .catch(function (error) {
@@ -134,7 +148,7 @@ self.GetTechnologyDataByName = function (userUUID, name, callback) {
         });
 };
 
-self.SaveTechnologyData = function (userUUID, data, callback) {
+self.SetTechnologyData = function (userUUID, data, callback) {
     var technologyDataName = data['technologyDataName'];
     var technologyData = data['technologyData'];
     var technologyDataDescription = data['technologyDataDescription'];
@@ -399,13 +413,20 @@ self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callbac
 };
 
 //Create Offer
-self.CreateOffer = function (userUUID, params, callback) {
+//</editor-fold>
 
-    db.func('CreateOffer',
-        [
-            userUUID
+//<editor-fold desc="OfferRequestBody">
+self.CreateOfferRequest = function (userUUID, requestData, callback) {
+    //TODO: A request should have more than one item
+    db.func('CreateOfferRequest',
+        [requestData.items[0].dataId,
+            requestData.items[0].amount,
+            requestData.hsmId,
+            userUUID,
+            userUUID //TODO: what is the buyer uuid?
         ])
         .then(function (data) {
+            logger.debug(data);
             callback(null, data);
         })
         .catch(function (error) {
@@ -413,15 +434,31 @@ self.CreateOffer = function (userUUID, params, callback) {
             callback(error);
         });
 };
-//</editor-fold>
 
-//<editor-fold desc="OfferRequest">
 //</editor-fold>
 
 //<editor-fold desc="Payment">
 //</editor-fold>
 
 //<editor-fold desc="PaymentInvoice">
+//</editor-fold>
+
+//<editor-fold desc="Offer and Invoice">
+self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, callback) {
+    db.func('CreatePaymentInvoice',
+        [offerRequestUUID,
+            invoice,
+            userUUID
+        ])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.debug("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
 //</editor-fold>
 
 //<editor-fold desc="Transactions">

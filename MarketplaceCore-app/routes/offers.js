@@ -10,11 +10,14 @@ var router = express.Router();
 var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
+var invoiceService = require('../services/invoice_service');
 
-router.get('/:id', validate({query: require('../schema/offers_schema').Offers}), function (req, res, next) {
-    logger.debug(req);
+router.get('/:id', validate({
+    query: require('../schema/offers_schema').Offers
+}), function (req, res, next) {
 
-    queries.GetOfferByID(req.query['userUUID'], req.param['id'], function (err, data) {
+
+    queries.GetOfferByID(req.query['userUUID'], req.params['id'], function (err, data) {
         if (err) {
             next(err);
         } else {
@@ -24,19 +27,46 @@ router.get('/:id', validate({query: require('../schema/offers_schema').Offers}),
 
 });
 
-router.post('/', validate({query: require('../schema/offers_schema').OfferRequest}), function (req, res, next) {
-    logger.debug(req);
+router.post('/', validate({
+    query: require('../schema/offers_schema').Offers,
+    body: require('../schema/offers_schema').OfferRequestBody
+}), function (req, res, next) {
+
 
     var userUUID = req.query['userUUID'];
     var requestData = req.body;
-    //TODO: Create offer for request data
-    //TODO: Store offer in database
-    //TODO: Send offer back to the client
-    res.json({});
+
+    queries.CreateOfferRequest(userUUID, requestData, function(err, offerRequest) {
+        if (err) {
+            next(err);
+        } else {
+            invoiceService.generateInvoiceForRequest(requestData, function (err, invoiceData) {
+                if (err) {
+                    next(err);
+                } else {
+                    queries.SetPaymentInvoiceOffer(userUUID, invoiceData, offerRequest.id, function(err, offer) {
+                       if (err) {
+                           next(err);
+                       } else {
+                           var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+                           res.set('Location', fullUrl + offer.id);
+                           res.status(201);
+                           res.json({}); //TODO: Send offer json
+                       }
+                    });
+                }
+            });
+        }
+    });
+
+
 });
 
-router.post('/:id/payment', validate({query: require('../schema/offers_schema').Payment}), function (req, res, next) {
-    logger.debug(req);
+router.post('/:id/payment', validate({
+    query: require('../schema/offers_schema').Offers,
+    body: require('../schema/offers_schema').Payment
+}), function (req, res, next) {
+
 
     var userUUID = req.query['userUUID'];
     var paymentData = req.body;
