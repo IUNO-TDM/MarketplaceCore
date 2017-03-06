@@ -8,7 +8,7 @@
 
 var logger = require('../global/logger');
 var pgp = require('pg-promise')();
-var connectionString = require('../config/private_config_marketplacecore').connectionString;
+var connectionString = require('../config/private_config_local').connectionString;
 var db = pgp(connectionString);
 
 var self = {};
@@ -473,6 +473,44 @@ self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, cal
 //</editor-fold>
 
 //<editor-fold desc="Tags">
+//</editor-fold>
+
+//<editor-fold desc="Reports">
+self.GetAmountActivatedLicensesSince = function (userUUID, time, callback) {
+    db.func('GetActivatedLicensesSince',[time])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.debug("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+self.GetTopTechnologyDataEver = function(userUUID, topValue, callback){
+    db.func('GetActivatedLicensesSince', [topValue])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.debug("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+self.GetTopTechnologyDataSince = function(userUUID, topValue, callback){
+    db.func('GetActivatedLicensesSince', [topValue])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.debug("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
 //</editor-fold>
 
 //<editor-fold desc="Misc">

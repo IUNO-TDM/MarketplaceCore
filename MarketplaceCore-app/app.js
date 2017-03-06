@@ -23,6 +23,7 @@ app.use('/payments', require('./routes/payments'));
 app.use('/technologies', require('./routes/technologies'));
 app.use('/attributes', require('./routes/attributes'));
 app.use('/offers', require('./routes/offers'));
+app.use('/reports', require('./routes/reports'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
