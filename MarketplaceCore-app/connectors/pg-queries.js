@@ -8,7 +8,8 @@
 
 var logger = require('../global/logger');
 var pgp = require('pg-promise')();
-var db = pgp("postgres://postgres:trumpf1234@192.168.8.2:5432/marketplacecore");
+var connectionString = require('../config/private_config_marketplacecore').connectionString;
+var db = pgp(connectionString);
 
 var self = {};
 
@@ -100,7 +101,7 @@ self.GetTechnologyDataByID = function (userUUID, dataId, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };
@@ -114,7 +115,7 @@ self.GetTechnologyDataByParams = function (userUUID, params, callback) {
     var attributes = params['attributes'];
 
     db.func('GetTechnologyDataByParams',
-        [userUUID,
+        [   userUUID,
             technologyData,
             technologies,
             tags,
@@ -127,7 +128,7 @@ self.GetTechnologyDataByParams = function (userUUID, params, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };
@@ -143,7 +144,7 @@ self.GetTechnologyDataByName = function (userUUID, name, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };
@@ -172,7 +173,7 @@ self.SetTechnologyData = function (userUUID, data, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };
@@ -181,40 +182,41 @@ self.SetTechnologyData = function (userUUID, data, callback) {
 
 //<editor-fold desc="Technologies">
 //Get all Technologies
-self.GetAllTechnologies = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    db.func('GetAllTechnologies')
+self.GetAllTechnologies = function (userUUID, dataId, callback) {
+
+    db.func('GetAllTechnologies', [dataId])
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
 //Get technology by ID
-self.GetTechnologyByID = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var technologyUUID = req.params['technologyUUID'];
-    db.func('GetTechnologyByID', [technologyUUID])
+self.GetTechnologyByID = function (userUUID, dataId, callback) {
+
+    db.func('GetTechnologyByID', [dataId])
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
-//Get technology by name
-self.GetTechnologyByName = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var technologyName = req.params['technologyName'];
-    db.func('GetTechnologyByName', [technologyName])
+//Get technology by ID
+self.GetTechnologyByName = function (userUUID, dataName, callback) {
+
+    db.func('GetTechnologyByID', [dataName])
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
@@ -234,7 +236,7 @@ self.CreateTechnology = function (req, res, next) {
             res.json(data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
         });
 };
 //</editor-fold>
@@ -248,7 +250,7 @@ self.GetAllComponents = function (req, res, next) {
             res.json(data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
         });
 };
 
@@ -261,7 +263,7 @@ self.GetComponentByID = function (req, res, next) {
             res.json(data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
         });
 };
 
@@ -274,7 +276,7 @@ self.GetComponentByName = function (req, res, next) {
             res.json(data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
         });
 };
 
@@ -300,7 +302,7 @@ self.SetComponent = function (req, res, next) {
             res.json(data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
         });
 };
 //</editor-fold>
@@ -314,7 +316,7 @@ self.GetAllAttributes = function (req, res, next) {
             res.json(data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
         });
 };
 
@@ -327,7 +329,7 @@ self.GetAttributeByID = function (req, res, next) {
             res.json(data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
         });
 };
 
@@ -340,7 +342,7 @@ self.GetAttributeByName = function (req, res, next) {
             res.json(data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
         });
 };
 
@@ -358,7 +360,7 @@ self.CreateAttribute = function (req, res, next) {
             res.json(data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
         });
 };
 //</editor-fold>
@@ -371,7 +373,7 @@ self.GetAllOffers = function (userUUID, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };
@@ -383,7 +385,7 @@ self.GetOfferByID = function (userUUID, offerUUID, callback) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };
@@ -395,7 +397,7 @@ self.GetOfferForRequest = function (userUUID, offerRequestUUID, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };
@@ -407,7 +409,7 @@ self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callbac
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };
@@ -430,7 +432,7 @@ self.CreateOfferRequest = function (userUUID, requestData, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };

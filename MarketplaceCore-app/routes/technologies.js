@@ -13,25 +13,45 @@ var queries = require('../connectors/pg-queries');
 
 
 router.get('/', validate({query: require('../schema/technologies_schema').Technologies}), function (req, res, next) {
-
-    queries.GetAllTechnologies(req, res, next);
+    logger.debug(req);
+        queries.GetAllTechnologies(req, res, function(err,data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
 });
 
-router.get('/technologyuuid/:technologyUUID', validate({query: require('../schema/technologies_schema').Technologies}), function (req, res, next) {
+router.get('/:id', validate({query: require('../schema/technologies_schema').Technologies}),  function (req, res, next) {
+    logger.debug(req);
+    queries.GetTechnologyByID(req.query['userUUID'], req.param['id'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
+});
 
-    queries.GetTechnologyByID(req, res, next);
+router.get('/:name', validate({query: require('../schema/technologies_schema')}),   function (req, res, next) {
+    logger.debug(req);
+    queries.GetTechnologyByName(req.query['userUUID'], req.param['name'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
 
 });
 
-router.get('/technologyname/:technologyName', validate({query: require('../schema/technologies_schema')}), function (req, res, next) {
-
-    queries.GetTechnologyByName(req, res, next);
-
-});
-
-router.put('/technology', validate({query: require('../schema/technologies_schema')}), function (req, res, next) {
-
-    queries.CreateTechnology(req, res, next);
+router.post('/technology', validate({query: require('../schema/technologies_schema')}),   function (req, res, next) {
+    logger.debug(req);
+    queries.CreateTechnology(req,res,next);
 
 });
 
