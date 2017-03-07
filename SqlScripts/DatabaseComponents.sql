@@ -2159,7 +2159,7 @@ CREATE FUNCTION DateDiff (units VARCHAR(30), start_t TIMESTAMP, end_t TIMESTAMP)
 Input paramteres: vTime  timestamp
 Return Value: Amount of activated licenses 
 ######################################################*/
-CREATE FUNCTION GetActivatedLicensesAfter (vTime timestamp)
+CREATE FUNCTION GetActivatedLicensesSince (vTime timestamp)
 RETURNS integer AS
 $$ 
 	;with activatedLinceses as(
@@ -2178,3 +2178,126 @@ $$
 	(select datediff('hour',vTime::timestamp,activatedat::timestamp)) >= 0;
  
 $$ LANGUAGE SQL;
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-07
+-- Description: Script Get Top x since given Date
+-- ##########################################################################
+Input paramteres: vSinceDate  timestamp
+				  vTopValue integer
+Return Value: TechnologyDataName, Rank value 
+######################################################*/
+CREATE FUNCTION GetTopTechnologyDataSince(
+		vSinceDate timestamp without time zone,
+		vTopValue integer
+	)
+RETURNS TABLE (
+	oTechnologyDataName varchar(250),
+	oRank integer
+	) AS 
+$$	 
+	;with activatedLinceses as(
+		select * from licenseorder lo
+		join offer of on lo.offerid = of.offerid
+		join paymentinvoice pi on
+		of.paymentinvoiceid = pi.paymentinvoiceid
+		join offerrequest oq on
+		pi.offerrequestid = oq.offerrequestid
+		join technologydata td on
+		oq.technologydataid = td.technologydataid
+		),
+	rankTable as (
+	select technologydataname, count(technologydataname) as rank from activatedLinceses where 
+	(select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+	(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+	(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+	group by technologydataname)
+	select technologydataname::varchar(250), rank::integer from rankTable
+	order by rank desc limit vTopValue;	
+$$ LANGUAGE SQL; 
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-07
+-- Description: Script Get most used components since given Date
+-- ##########################################################################
+Input paramteres: vSinceDate  timestamp
+				  vTopValue integer
+Return Value: ComponentName, Amount
+######################################################*/
+CREATE FUNCTION GetMostUsedComponents(
+		vSinceDate timestamp without time zone,
+		vTopValue integer
+	)
+RETURNS TABLE (
+	oComponentName varchar(250),
+	oAmount integer
+) AS
+$$
+	;with activatedLinceses as(
+		select * from licenseorder lo
+		join offer of on lo.offerid = of.offerid
+		join paymentinvoice pi on
+		of.paymentinvoiceid = pi.paymentinvoiceid
+		join offerrequest oq on
+		pi.offerrequestid = oq.offerrequestid
+		join technologydata td on
+		oq.technologydataid = td.technologydataid
+		join technologydatacomponents tc on 
+		tc.technologydataid = td.technologydataid
+		join components co on 
+		co.componentid = tc.componentid
+		),
+	rankTable as (
+	select componentname, count(componentname) as rank from activatedLinceses where 
+	(select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+	(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+	(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+	group by componentname)
+	select componentname::varchar(250), rank::integer from rankTable
+	order by rank desc limit vTopValue;	
+ $$ LANGUAGE SQL;
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-07
+-- Description: Script Get workload since given time
+-- ##########################################################################
+Input paramteres: vSinceDate  timestamp 
+Return Value: TechnologyDataName, Date, Amount, DayHour
+######################################################*/
+ CREATE OR REPLACE FUNCTION GetWorkloadSince(
+		vSinceDate timestamp without time zone		
+	)
+RETURNS TABLE (
+	  oTechnologyDataName varchar(250),
+	  oDate date,
+	  oAmount integer,
+	  oDayHour integer
+	) AS
+$$
+	;with activatedLicenses as(
+		select * from licenseorder lo
+		join offer of on lo.offerid = of.offerid
+		join paymentinvoice pi on
+		of.paymentinvoiceid = pi.paymentinvoiceid
+		join offerrequest oq on
+		pi.offerrequestid = oq.offerrequestid
+		join technologydata td on
+		oq.technologydataid = td.technologydataid
+		join technologydatacomponents tc on 
+		tc.technologydataid = td.technologydataid
+		),
+	rankTable as (
+	select technologydataname, activatedat, 
+	activatedat::date as dateValue, 
+	date_part('hour',activatedat) as dayhour from activatedLicenses where 
+	(select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+	(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+	(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+	group by technologydataname, activatedat )
+	select technologydataname, dateValue, count(dayhour)::integer as amount, dayhour::integer from rankTable		
+	group by technologydataname,dateValue, dayhour	 
+	order by dayhour asc;	
+$$ LANGUAGE SQL; 
