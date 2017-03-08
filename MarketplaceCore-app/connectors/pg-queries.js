@@ -476,8 +476,8 @@ self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, cal
 //</editor-fold>
 
 //<editor-fold desc="Reports">
-self.GetAmountActivatedLicensesSince = function (userUUID, time, callback) {
-    db.func('GetActivatedLicensesSince',[time])
+self.GetActivatedLicensesSince = function (userUUID, sinceDate, callback) {
+    db.func('GetActivatedLicensesSince',[sinceDate])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -488,8 +488,8 @@ self.GetAmountActivatedLicensesSince = function (userUUID, time, callback) {
         });
 };
 
-self.GetTopTechnologyDataEver = function(userUUID, topValue, callback){
-    db.func('GetActivatedLicensesSince', [topValue])
+self.GetTopTechnologyDataSince = function(userUUID, sinceDate, topValue, callback){
+    db.func('GetTopTechnologyDataSince', [sinceDate, topValue])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -500,8 +500,20 @@ self.GetTopTechnologyDataEver = function(userUUID, topValue, callback){
         });
 };
 
-self.GetTopTechnologyDataSince = function(userUUID, topValue, callback){
-    db.func('GetActivatedLicensesSince', [topValue])
+self.GetWorkloadSince = function(userUUID, sinceDate, callback){
+    db.func('GetWorkloadSince', [sinceDate])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.debug("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+self.GetMostUsedComponents = function(userUUID, sinceDate, topValue, callback){
+    db.func('GetMostUsedComponents', [sinceDate, topValue])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
