@@ -24,25 +24,26 @@ var queries = require('../connectors/pg-queries');
  });*/
 
 router.get('/', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
-    queries.GetUserByName(req.query['userUUID'], req.query['firstName'], req.query['lastName'], function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
-});
-
-router.get('/:id', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
-    queries.GetUserByID(req.query['userUUID'], req.params['id'], function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
+    if(req.query['firstName'] && req.query['lastName']){
+        queries.GetUserByName(req.query['userUUID'], req.query['firstName'], req.query['lastName'], function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+    }
+    else {
+        queries.GetUserByID(req.query['userUUID'], function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+    }
 });
 
 router.post('/', validate({
@@ -55,7 +56,7 @@ router.post('/', validate({
         }
 
         var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
-        res.set('Location', fullUrl + data[0]['createuser']);
+        res.set('Location', fullUrl + data[0]['ouseruuid']);
         res.sendStatus(201);
     });
 });

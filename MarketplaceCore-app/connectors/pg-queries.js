@@ -28,8 +28,8 @@ self.GetAllUsers = function (userUUID, callback) {
 };
 
 // GetUserByID(userUUID, dataId)
-self.GetUserByID = function (userUUID, dataId, callback) {
-    db.func('GetUserByID', [dataId])
+self.GetUserByID = function (userUUID, callback) {
+    db.func('GetUserByID', [userUUID])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {
@@ -48,6 +48,7 @@ self.GetUserByName = function (userUUID, firstName, lastName, callback) {
     db.func('GetUserByName', [firstName, lastName])
         .then(function (data) {
             //Only return the first element
+            //TODO: Correction has to be made. It's is possible to have many users with the same name, e.g. Michael Mueller
             if (data && data.length) {
                 data = data[0];
             }
@@ -182,14 +183,14 @@ self.SetTechnologyData = function (userUUID, data, callback) {
 
 //<editor-fold desc="Technologies">
 //Get all Technologies
-self.GetAllTechnologies = function (userUUID, dataId, callback) {
+self.GetAllTechnologies = function (userUUID, callback) {
 
-    db.func('GetAllTechnologies', [dataId])
+    db.func('GetAllTechnologies')
         .then(function (data) {
-            callback(null, data);
+            callback(null, data)
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.debug("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };
@@ -210,7 +211,7 @@ self.GetTechnologyByID = function (userUUID, dataId, callback) {
 //Get technology by ID
 self.GetTechnologyByName = function (userUUID, dataName, callback) {
 
-    db.func('GetTechnologyByID', [dataName])
+    db.func('GetTechnologyByName', [dataName])
         .then(function (data) {
             callback(null, data);
         })
@@ -221,77 +222,76 @@ self.GetTechnologyByName = function (userUUID, dataName, callback) {
 };
 
 //Get technology by name
-self.CreateTechnology = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var technologyName = req.query['technologyName'];
-    var technologyDescription = req.query['technologyDescription'];
+self.CreateTechnology = function (userUUID, data, callback) {
+        var technologyName = data['technologyName'];
+        var technologyDescription = data['technologyDescription'];
 
-    db.func('CreateTechnology',
-        [
-            technologyName,
-            technologyDescription,
-            userUUID
-        ])
-        .then(function (data) {
-            res.json(data);
-        })
-        .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
-        });
-};
+        db.func('CreateTechnology',
+            [   technologyName,
+                technologyDescription,
+                userUUID
+            ])
+            .then(function (data) {
+                logger.debug(data);
+                callback(null, data);
+            })
+            .catch(function (error) {
+                logger.crit("ERROR:", error.message || error); // print the error;
+                callback(error);
+            });
+    };
 //</editor-fold>
 
 //<editor-fold desc="Components">
 //Get all GetAllComponents
-self.GetAllComponents = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
+self.GetAllComponents = function (userUUID, callback) {
+
     db.func('GetAllComponents')
         .then(function (data) {
-            res.json(data);
+            callback(null, data)
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.debug("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
-//Get component by ID
-self.GetComponentByID = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var componentUUID = req.params['componentUUID'];
-    db.func('GetComponentByID', [componentUUID])
+//Get Component by ID
+self.GetComponentByID = function (userUUID, dataId, callback) {
+
+    db.func('GetComponentByID', [dataId])
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
             logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
-//Get component by name
-self.GetComponentByName = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var componentName = req.params['componentName'];
-    db.func('GetComponentByName', [componentName])
+//Get Component by Name
+self.GetComponentByName = function (userUUID, dataName, callback) {
+
+    db.func('GetComponentByName', [dataName])
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
             logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
-//Create component
-self.SetComponent = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var componentName = req.query['componentName'];
-    var componentDescription = req.query['componentDescription'];
-    var componentParentName = req.query['componentParentName'];
-    var attributeList = req.query['attributeList'];
-    var technologyList = req.query['technologyList'];
+//Set component
+self.SetComponent = function (userUUID, data, callback) {
+    var componentName = data['componentName'];
+    var componentParentName = data['componentParentName'];
+    var componentDescription = data['componentDescription'];
+    var attributeList = data['attributeList'];
+    var technologyList = data['technologyList'];
 
     db.func('SetComponent',
-        [
-            componentName,
+        [   componentName,
             componentParentName,
             componentDescription,
             attributeList,
@@ -299,68 +299,71 @@ self.SetComponent = function (req, res, next) {
             userUUID
         ])
         .then(function (data) {
-            res.json(data);
+            logger.debug(data);
+            callback(null, data);
         })
         .catch(function (error) {
             logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 //</editor-fold>
 
 //<editor-fold desc="Attributes">
-//Get all Technologies
-self.GetAllAttributes = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
+//Get all GetAllAttributes
+self.GetAllAttributes = function (userUUID, callback) {
+
     db.func('GetAllAttributes')
         .then(function (data) {
-            res.json(data);
+            callback(null, data)
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.debug("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
-//Get technology by ID
-self.GetAttributeByID = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var attributeUUID = req.params['attributeUUID'];
-    db.func('GetAttributeByID', [attributeUUID])
+//Get Attribute by ID
+self.GetAttributeByID = function (userUUID, dataId, callback) {
+
+    db.func('GetAttributeByID', [dataId])
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
             logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
-//Get technology by name
-self.GetAttributeByName = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var attributeName = req.params['attributeName'];
-    db.func('GetAttributeByName', [attributeName])
+//Get Attribute by Name
+self.GetAttributeByName = function (userUUID, dataName, callback) {
+
+    db.func('GetAttributeByName', [dataName])
         .then(function (data) {
-            res.json(data);
+            callback(null, data);
         })
         .catch(function (error) {
             logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 
-//Get technology by name
-self.CreateAttribute = function (req, res, next) {
-    var userUUID = req.query['userUUID'];
-    var attributeName = req.query['attributeName'];
+//Create Attribute
+self.CreateAttribute = function (userUUID, data, callback) {
+    var attributeName = data['attributeName'];
 
     db.func('CreateAttribute',
-        [
-            attributeName,
+        [   attributeName,
             userUUID
         ])
         .then(function (data) {
-            res.json(data);
+            logger.debug(data);
+            callback(null, data);
         })
         .catch(function (error) {
             logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
         });
 };
 //</editor-fold>

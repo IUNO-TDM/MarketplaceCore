@@ -1,7 +1,7 @@
 /* ##########################################################################
  -- Author: Marcel Ely Gomes
  -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
- -- CreatedAt: 2017-02-28
+ -- CreatedAt: 2017-03-08
  -- Description: Routing requests for components
  -- ##########################################################################*/
 
@@ -12,31 +12,55 @@ var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
 
 
-router.get('/', validate({query: require('../schema/components_schema').Components}), function (req, res, next) {
+router.get('/', validate({query: require('../schema/components_schema').GetAll}), function (req, res, next) {
 
-    queries.GetAllComponents(req,res,next);
-
+    if(req.query['componentName']) {
+        queries.GetComponentByName(req.query['userUUID'], req.query['componentName'], function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+    }
+    else {
+        queries.GetAllComponents(req.query['userUUID'], function(err,data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+    }
 });
 
-router.get('/componentuuid/:componentUUID', validate({query: require('../schema/components_schema').Components}), function (req, res, next) {
-
-    queries.GetComponentByID(req,res,next);
-
+router.get('/:id', validate({query: require('../schema/components_schema').GetSingle}),  function (req, res, next) {
+    logger.debug(req);
+    queries.GetComponentByID(req.query['userUUID'], req.params['id'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
 });
 
-router.get('/componentname/:componentName', validate({query: require('../schema/components_schema').Components}), function (req, res, next) {
+router.post('/', validate({
+    body: require('../schema/components_schema').SaveDataBody,
+    query: require('../schema/components_schema').SaveDataQuery
+}), function (req, res, next) {
+    queries.SetComponent(req.query['userUUID'], req.body, function (err, data) {
+        if (err) {
+            next(err);
+        }
 
-
-    queries.GetComponentByName(req,res,next);
-
-});
-
-
-router.put('/component', validate({query: require('../schema/components_schema').SetComponent}), function (req, res, next) {
-
-
-    queries.SetComponent(req,res,next);
-
+        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
+        res.set('Location', fullUrl + data[0]['ocomponentuuid']);
+        res.sendStatus(201);
+    });
 });
 
 module.exports = router;

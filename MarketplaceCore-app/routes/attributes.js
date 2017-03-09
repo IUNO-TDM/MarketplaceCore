@@ -12,23 +12,55 @@ var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
 
 
-router.get('/', validate({query: require('../schema/attributes_schema')}), function (req, res, next) {
-        queries.GetAllAttributes(req, res, next);
+router.get('/', validate({query: require('../schema/attributes_schema').GetAll}), function (req, res, next) {
+
+    if(req.query['attributeName']) {
+        queries.GetAttributeByName(req.query['userUUID'], req.query['attributeName'], function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+    }
+    else {
+        queries.GetAllAttributes(req.query['userUUID'], function(err,data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+    }
 });
 
-router.get('/attributeuuid/:attributeUUID', validate({query: require('../schema/attributes_schema')}),  function (req, res, next) {
-        queries.GetAttributeByID(req,res,next);
-
+router.get('/:id', validate({query: require('../schema/attributes_schema').GetSingle}),  function (req, res, next) {
+    logger.debug(req);
+    queries.GetAttributeByID(req.query['userUUID'], req.params['id'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
 });
 
-router.get('/attributename/:attributeName', validate({query: require('../schema/attributes_schema')}),   function (req, res, next) {
-        queries.GetAttributeByName(req,res,next);
+router.post('/', validate({
+    body: require('../schema/attributes_schema').SaveDataBody,
+    query: require('../schema/attributes_schema').SaveDataQuery
+}), function (req, res, next) {
+    queries.CreateAttribute(req.query['userUUID'], req.body, function (err, data) {
+        if (err) {
+            next(err);
+        }
 
-});
-
-router.put('/attribute', validate({query: require('../schema/attributes_schema')}),   function (req, res, next) {
-    queries.CreateAttribute(req,res,next);
-
+        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
+        res.set('Location', fullUrl + data[0]['oattributeuuid']);
+        res.sendStatus(201);
+    });
 });
 
 module.exports = router;

@@ -7,7 +7,7 @@
 
 var self = {};
 
-self.Attributes = {
+self.GetAll = {
     type: 'object',
     properties: {
         userUUID: {
@@ -17,19 +17,35 @@ self.Attributes = {
     }
 };
 
-self.CreateAttribute = {
+self.GetSingle = {
     type: 'object',
     properties: {
         userUUID: {
             type: 'string',
             required: true
-        },
+        }
+    }
+};
+
+self.SaveDataBody = {
+    type: 'object',
+    properties: {
         attributeName: {
             type: 'string',
             required: true
         }
     }
 };
+
+self.SaveDataQuery = {
+    type: 'object',
+    userUUID: {
+        type: 'string',
+        required: true
+    }
+};
+
+self.saveTechnologyData = {};
 
 
 module.exports = self;
