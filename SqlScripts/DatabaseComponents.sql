@@ -1743,8 +1743,8 @@ CREATE FUNCTION GetTechnologyDataByParams(
     	td.createdat at time zone 'utc',
     	td.updatedat at time zone 'utc',
         tc.technologyname as technologyname,
-        tg.tagname as tagname,
-        ct.componentname as componentname,
+        array_agg(tg.tagname) as tagname,
+        array_agg(ct.componentname) as componentname,
         att.attributename
     FROM technologydata td 
     JOIN technologydatatags tdt ON td.technologydataid = tdt.technologydataid
@@ -1759,7 +1759,19 @@ CREATE FUNCTION GetTechnologyDataByParams(
     AND (vtechnologies IS NULL OR tc.technologyname IN (vtechnologies)) 
     AND (vtags IS NULL OR tg.tagname IN (vtags)) 
     AND (vcomponents IS NULL OR ct.componentname in (vcomponents))
-    AND (vattributes IS NULL OR att.attributename in (vattributes));
+    AND (vattributes IS NULL OR att.attributename in (vattributes))
+    GROUP BY 	td.technologydatauuid,
+		td.technologydataname,
+		td.technologydatadescription,
+		td.technologydata,
+		td.licensefee,
+		td.technologydatathumbnail,
+		td.technologydataimgref,
+		us.useruuid,
+		td.createdat,
+		td.updatedat,
+		tc.technologyname,
+		att.attributename;
     
     $$ LANGUAGE SQL;
 /* ##########################################################################
@@ -2300,4 +2312,61 @@ $$
 	select technologydataname, dateValue, count(dayhour)::integer as amount, dayhour::integer from rankTable		
 	group by technologydataname,dateValue, dayhour	 
 	order by dayhour asc;	
+$$ LANGUAGE SQL; 
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Payment for given OfferRequest
+-- ##########################################################################
+Input paramteres: vOfferRequestUUID uuid 
+######################################################*/
+CREATE FUNCTION GetPaymentInvoiceForOfferRequest(
+		vOfferRequestUUID uuid
+	)
+RETURNS TABLE (
+	oPaymentInvoiceUUID uuid,
+	oOfferRequestUUID uuid,
+	oInvoice varchar(32672),
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid
+	) AS 
+$$	 
+	select 	pi.paymentinvoiceuuid,
+		oq.offerrequestuuid,
+		pi.invoice,		
+		pi.createdat at time zone 'utc',
+		us.useruuid as createdby
+	from PaymentInvoice pi
+	join offerrequest oq 
+	on pi.offerrequestid = oq.offerrequestid
+	join users us on us.userid = pi.createdby
+	where oq.offerRequestUUID = vOfferRequestUUID
+$$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Offer for given PaymentInvoice
+-- ##########################################################################
+Input paramteres: vPaymentInvoiceUUID uuid 
+######################################################*/
+CREATE FUNCTION GetOfferForPaymentInvoice(
+		vPaymentInvoiceUUID uuid
+	)
+RETURNS TABLE (
+	oOfferUUID uuid,
+	oPaymentInvoiceUUID uuid,	
+	oCreatedAt timestamp with time zone,
+	oCreatedBy uuid
+	) AS 
+$$	 
+	select 	ofr.offerUUID,
+		pi.PaymentInvoiceUUID,			
+		pi.createdat at time zone 'utc',
+		us.useruuid as createdby
+	from Offer ofr
+	join paymentinvoice pi 
+	on ofr.paymentinvoiceid = pi.paymentinvoiceid
+	join users us on us.userid = ofr.createdby	
 $$ LANGUAGE SQL; 
