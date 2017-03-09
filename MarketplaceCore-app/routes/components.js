@@ -48,6 +48,18 @@ router.get('/:id', validate({query: require('../schema/components_schema').GetSi
     });
 });
 
+router.get('/:id/technology', validate({query: require('../schema/components_schema').GetSingle}),  function (req, res, next) {
+    logger.debug(req);
+    queries.GetComponentsByTechnology(req.query['userUUID'], req.params['id'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
+});
+
 router.post('/', validate({
     body: require('../schema/components_schema').SaveDataBody,
     query: require('../schema/components_schema').SaveDataQuery

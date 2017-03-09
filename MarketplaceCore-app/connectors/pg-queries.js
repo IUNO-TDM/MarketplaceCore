@@ -282,6 +282,19 @@ self.GetComponentByName = function (userUUID, dataName, callback) {
         });
 };
 
+//Get Component by Technology
+self.GetComponentsByTechnology = function (userUUID, dataID, callback) {
+
+    db.func('GetComponentsByTechnology', [dataID])
+        .then(function (data) {
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
+
 //Set component
 self.SetComponent = function (userUUID, data, callback) {
     var componentName = data['componentName'];
