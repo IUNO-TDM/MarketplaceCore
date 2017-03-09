@@ -416,15 +416,13 @@ self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callbac
             callback(error);
         });
 };
-
-//Create Offer
 //</editor-fold>
 
 //<editor-fold desc="OfferRequestBody">
 self.CreateOfferRequest = function (userUUID, requestData, callback) {
     //TODO: A request should have more than one item
     db.func('CreateOfferRequest',
-        [requestData.items[0].dataId,
+        [   requestData.items[0].dataId,
             requestData.items[0].amount,
             requestData.hsmId,
             userUUID,
@@ -443,6 +441,17 @@ self.CreateOfferRequest = function (userUUID, requestData, callback) {
 //</editor-fold>
 
 //<editor-fold desc="Payment">
+// GetPaymentForOfferRequest
+self.GetPaymentInvoiceForOfferRequest = function(userUUID, offerRequestUUID, callback){
+    db.func('GetPaymentInvoiceForOfferRequest', [offerRequestUUID])
+        .then(function (data) {
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+}
 //</editor-fold>
 
 //<editor-fold desc="PaymentInvoice">
@@ -450,8 +459,8 @@ self.CreateOfferRequest = function (userUUID, requestData, callback) {
 
 //<editor-fold desc="Offer and Invoice">
 self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, callback) {
-    db.func('CreatePaymentInvoice',
-        [offerRequestUUID,
+    db.func('SetPaymentInvoiceOffer',
+        [   offerRequestUUID,
             invoice,
             userUUID
         ])
@@ -476,6 +485,18 @@ self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, cal
 //</editor-fold>
 
 //<editor-fold desc="Tags">
+//Get Tag for given technologydata
+//TODO: Implementation
+self.GetTagsForTechnologyData = function (userUUID, data, callback){
+        db.func('GetTagsForTechnologyData', [data])
+            .then(function (data) {
+                callback(null, data);
+            })
+            .catch(function (error) {
+                logger.crit("ERROR:", error.message || error); // print the error;
+                callback(error);
+            });
+};
 //</editor-fold>
 
 //<editor-fold desc="Reports">
@@ -526,9 +547,6 @@ self.GetMostUsedComponents = function(userUUID, sinceDate, topValue, callback){
             callback(error);
         });
 };
-//</editor-fold>
-
-//<editor-fold desc="Misc">
 //</editor-fold>
 
 module.exports = self;

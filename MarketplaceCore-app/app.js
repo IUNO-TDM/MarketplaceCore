@@ -19,11 +19,11 @@ app.use('/technologydata', require('./routes/technologydata'));
 app.use('/users', require('./routes/users'));
 app.use('/components', require('./routes/components'));
 app.use('/offers', require('./routes/offers'));
-app.use('/payments', require('./routes/payments'));
 app.use('/technologies', require('./routes/technologies'));
 app.use('/attributes', require('./routes/attributes'));
 app.use('/offers', require('./routes/offers'));
 app.use('/reports', require('./routes/reports'));
+app.use('/paymentinvoice', require('./routes/paymentinvoice'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

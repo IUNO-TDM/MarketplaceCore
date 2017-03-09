@@ -15,8 +15,6 @@ var invoiceService = require('../services/invoice_service');
 router.get('/:id', validate({
     query: require('../schema/offers_schema').Offers
 }), function (req, res, next) {
-
-
     queries.GetOfferByID(req.query['userUUID'], req.params['id'], function (err, data) {
         if (err) {
             next(err);
@@ -27,11 +25,35 @@ router.get('/:id', validate({
 
 });
 
+router.get('/offerrequest/:id', validate({
+    query: require('../schema/offers_schema').Offers
+}), function (req, res, next) {
+    queries.GetOfferForRequest(req.query['userUUID'], req.params['id'], function (err, data) {
+        if (err) {
+            next(err);
+        } else {
+            res.json(data);
+        }
+    });
+
+});
+
+router.get('/paymentinvoice/:id', validate({
+    query: require('../schema/offers_schema').Offers
+}), function (req, res, next) {
+    queries.GetOfferForPaymentInvoice(req.query['userUUID'], req.params['id'], function (err, data) {
+        if (err) {
+            next(err);
+        } else {
+            res.json(data);
+        }
+    });
+});
+
 router.post('/', validate({
     query: require('../schema/offers_schema').Offers,
     body: require('../schema/offers_schema').OfferRequestBody
 }), function (req, res, next) {
-
 
     var userUUID = req.query['userUUID'];
     var requestData = req.body;
