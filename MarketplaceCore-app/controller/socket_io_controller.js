@@ -12,6 +12,11 @@ function onIOLicenseConnect(socket) {
 
         socket.join(hsmid);
     });
+    socket.on('leave', function(hsmid) {
+        logger.debug('Client leaves room: ' + hsmid);
+
+        socket.leave(hsmid);
+    });
 
     socket.on('disconnect', function () {
         logger.debug('Client for Licenses disconnected: ' + socket.id);
@@ -22,6 +27,7 @@ module.exports = function (io) {
 
     var namespace = io.of('/licenses');
     namespace.on('connection', onIOLicenseConnect);
+    registerLicenseEvents();
 
 };
 
