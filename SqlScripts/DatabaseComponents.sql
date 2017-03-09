@@ -1306,7 +1306,7 @@ Input paramteres: technologyUUID uuid
 				  userUUID uuid
 Return Value: Table with all TechnologyData 
 ######################################################*/
-  CREATE OR REPLACE FUNCTION public.gettechnologydatabyid(
+  CREATE FUNCTION public.GetTechnologyDataByID(
     vtechnologydatauuid uuid,
     vuseruuid uuid)
 RETURNS TABLE
@@ -2368,5 +2368,238 @@ $$
 	from Offer ofr
 	join paymentinvoice pi 
 	on ofr.paymentinvoiceid = pi.paymentinvoiceid
+	join users us on us.userid = ofr.createdby	
+$$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Components for given TechnologyUUID
+-- ##########################################################################
+Input paramteres: vTechnologyUUID uuid 
+######################################################*/
+CREATE FUNCTION GetComponentsByTechnology(
+		vTechnologyUUID uuid
+	)
+RETURNS TABLE (
+		oComponentUUID uuid,		
+		oComponentName varchar(250),
+		oComponentParentUUID uuid, 
+		oComponentParentName varchar(250),
+		oComponentDescription varchar(32672),
+		oCreatedat timestamp with time zone,
+		oCreatedby uuid,
+		oUpdatedat timestamp with time zone,
+		oUseruuid uuid
+	) AS 
+$$	 
+	select 	co.componentUUID,		
+		co.componentName,
+		cs.componentUUID as componentParentUUID, 
+		cs.componentName as componentParentName,
+		co.componentDescription,
+		co.createdat at time zone 'utc',
+		us.useruuid as createdby,
+		co.updatedat at time zone 'utc',
+		ur.useruuid as updatedby
+	from components co
+	join componentstechnologies ct
+	on co.componentid = ct.componentid
+	join technologies tc
+	on tc.technologyid = ct.technologyid
+	join users us on us.userid = co.createdby
+	left outer join users ur on ur.userid = co.updatedby
+	left outer join components cs 
+	on co.componentparentid = cs.componentid
+	where tc.technologyuuid = vTechnologyUUID	
+$$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Technology for given OfferRequestUUID
+-- ##########################################################################
+Input paramteres: vOfferRequestUUID uuid 
+######################################################*/
+CREATE FUNCTION GetTechnologyForOfferRequest(
+		vOfferRequestUUID uuid
+	)
+RETURNS TABLE (
+		oTechnologyuuid uuid,
+		oTechnologyName varchar(250),
+		oTechnologyDescription varchar(32672),
+		oCreatedat timestamp with time zone,
+		oCreatedby uuid,
+		oUpdatedat timestamp with time zone,
+		oUpdatedby uuid
+	) AS 
+$$	 
+	select 	tc.technologyuuid,
+		tc.technologyName,
+		tc.technologyDescription,
+		tc.createdat at time zone 'utc',
+		us.useruuid as createdby,
+		tc.updatedat at time zone 'utc',
+		ur.useruuid as updatedby
+	from technologydata td	
+	join offerrequest oq
+	on oq.technologydataid = td.technologydataid
+	join technologies tc
+	on tc.technologyid = td.technologyid
+	join users us on us.userid = tc.createdby
+	left outer join users ur on ur.userid = tc.updatedby
+	where oq.offerrequestuuid = vOfferRequestUUID
+$$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get LicenseFee for given TransactionUUID
+-- ##########################################################################
+Input paramteres: vTransactionUUID uuid 
+######################################################*/
+CREATE FUNCTION GetLicenseFeeByTransaction(
+		vTransactionUUID uuid
+	) 
+RETURNS TABLE (
+		oLicenseFee numeric(21,4)
+	) AS 
+$$	 
+	select	td.licenseFee
+	from transactions ts
+	join offerrequest oq
+	on oq.offerrequestid = ts.offerrequestid
+	join technologydata td
+	on oq.technologydataid = td.technologydataid
+	where ts.transactionuuid = vTransactionUUID
+$$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Transaction for given OfferRequestUUID
+-- ##########################################################################
+Input paramteres: vOfferRequestUUID uuid 
+######################################################*/
+CREATE FUNCTION GetTransactionByOfferRequest(
+		vOfferRequestUUID uuid
+	)
+RETURNS TABLE (
+		oTransactionUUID uuid
+	) AS 
+$$	 
+	select	ts.transactionuuid
+	from transactions ts
+	join offerrequest oq
+	on ts.offerrequestid = oq.offerrequestid
+	and oq.offerrequestuuid = vOfferRequestUUID
+$$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get TechnologyData for given OfferRequestUUID
+-- ##########################################################################
+Input paramteres: vOfferRequestUUID uuid 
+######################################################*/
+CREATE FUNCTION GetTechnologyDataByOfferRequest(
+		vOfferRequestUUID uuid
+		) 
+RETURNS TABLE
+    	(
+			technologydatauuid uuid,
+			technologyuuid uuid,    		
+			technologydataname varchar(250),
+			technologydata varchar(32672),
+			technologydatadescription varchar(32672),
+			licensefee numeric,
+			technologydatathumbnail bytea,
+			technologydataimgref varchar(4000),
+			createdat timestamp with time zone,
+			createdby uuid,	
+			updatedat timestamp with time zone,
+			useruuid uuid
+        )
+    AS $$ 
+    	SELECT 	technologydatauuid,
+		tc.technologyuuid,    		
+		technologydataname,
+		technologydata,
+		technologydatadescription,
+		licensefee,
+		technologydatathumbnail,
+		technologydataimgref,
+		td.createdat  at time zone 'utc',
+		ur.useruuid as createdby,	
+		td.updatedat  at time zone 'utc',
+		us.useruuid as UpdatedBy
+		FROM TechnologyData td
+		join technologies tc 
+		on td.technologyid = tc.technologyid
+		join offerrequest oq 
+		on oq.technologydataid = td.technologydataid
+		and oq.offerrequestuuid = vOfferRequestUUID
+		join users ur on td.createdby = ur.userid
+		left outer join users us 
+		on td.updatedby = us.userid;
+	$$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Offer for given TransactionUUID
+-- ##########################################################################
+Input paramteres: vTransactionUUID uuid 
+######################################################*/	
+CREATE FUNCTION GetOfferForTransaction(
+		vTransactionUUID uuid
+	)
+RETURNS TABLE (
+		oOfferUUID uuid,
+		oPaymentInvoiceUUID uuid,	
+		oCreatedAt timestamp with time zone,
+		oCreatedBy uuid
+	) AS 
+$$	 
+	select 	ofr.offerUUID,
+		pi.PaymentInvoiceUUID,			
+		pi.createdat at time zone 'utc',
+		us.useruuid as createdby
+	from Offer ofr
+	join paymentinvoice pi 
+	on ofr.paymentinvoiceid = pi.paymentinvoiceid
+	join transactions ts 
+	on ts.offerid = ofr.offerid
+	and ts.transactionuuid = vTransactionUUID
+	join users us on us.userid = ofr.createdby	
+$$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Offer for given TicketID
+-- ##########################################################################
+Input paramteres: vTicketID varchar(4000) 
+######################################################*/	
+CREATE FUNCTION GetOfferForTicket(
+		vTicketID varchar(4000)
+	)
+RETURNS TABLE (
+		oOfferUUID uuid,
+		oPaymentInvoiceUUID uuid,	
+		oCreatedAt timestamp with time zone,
+		oCreatedBy uuid
+	) AS 
+$$	 
+	select 	ofr.offerUUID,
+		pi.PaymentInvoiceUUID,			
+		pi.createdat at time zone 'utc',
+		us.useruuid as createdby
+	from Offer ofr
+	join paymentinvoice pi 
+	on ofr.paymentinvoiceid = pi.paymentinvoiceid
+	join licenseorder lo
+	on lo.offerid = ofr.offerid
+	and lo.ticketid = vTicketID
 	join users us on us.userid = ofr.createdby	
 $$ LANGUAGE SQL; 

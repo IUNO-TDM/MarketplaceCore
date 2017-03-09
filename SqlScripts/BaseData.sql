@@ -135,7 +135,7 @@ $$
         perform public.settechnologydata(
             'CheCo',		     				 -- <technologydataname character varying>, 
             '123456789',	     				 -- <technologydata character varying>, 
-            'Cherry with Mango', 				 -- <technologydatadescription character varying>, 
+            'Cherry with Cola', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             1.99,    			 				 -- <licensefee numeric>, 
             '{Delicious, Cherry, Cola, Refreshing}', -- <taglist text[]>,
