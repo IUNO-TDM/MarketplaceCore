@@ -1,7 +1,10 @@
 -- Generiert von Oracle SQL Developer Data Modeler 4.0.3.853
---   am/um:        2017-03-06 13:33:36 MEZ
+--   am/um:        2017-03-10 15:45:10 MEZ
 --   Site:      DB2/UDB 8.1
 --   Typ:      DB2/UDB 8.1
+
+
+
 
 CREATE
   TABLE Attributes
@@ -180,7 +183,9 @@ CREATE
     TechnologyDataName        VARCHAR (250) NOT NULL ,
     TechnologyID              INTEGER NOT NULL ,
     TechnologyData            VARCHAR (32672) NOT NULL ,
-    LicenseFee                DECIMAL (21,4) NOT NULL ,
+    LicenseFee                INTEGER NOT NULL ,
+    RetailPrice               INTEGER ,
+    LicenseProductCode        INTEGER ,
     TechnologyDataDescription VARCHAR (32672) ,
     TechnologyDataThumbnail Bytea ,
     TechnologyDataImgRef VARCHAR ,

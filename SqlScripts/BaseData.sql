@@ -124,7 +124,8 @@ $$
             '123456789',	     				 -- <technologydata character varying>, 
             'Cherry with Mango', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
-            4.99,    			 				 -- <licensefee numeric>, 
+            50000,
+			150000,
             '{Delicious, Cherry, Mango, Yummy}', -- <taglist text[]>,            						 		 -- <createdby integer>, 
             '{Cherry Juice,Mango Juice}',    							 -- <componentlist integer[]>
 			-- vUserUUID,
@@ -137,7 +138,8 @@ $$
             '123456789',	     				 -- <technologydata character varying>, 
             'Cherry with Cola', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
-            1.99,    			 				 -- <licensefee numeric>, 
+            75000,
+			200000,  			 			 
             '{Delicious, Cherry, Cola, Refreshing}', -- <taglist text[]>,
 			'{Cherry Juice,Cola}',    		 -- <componentlist integer[]>			
             -- vUserUUID,    						 -- <createdby integer>, 
@@ -149,7 +151,8 @@ $$
             '123456789',	     				 -- <technologydata character varying>, 
             'Orange with Ginger', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
-            2.99,    			 				 -- <licensefee numeric>, 
+            100000,
+			175000,    			 				 -- <licensefee numeric>, 
             '{Delicious, Ginger, Orange}', -- <taglist text[]>,               						  
             '{Ginger Sirup,Orange Juice}',    								 -- <componentlist integer[]>
 			-- vUserUUID, 
@@ -161,7 +164,8 @@ $$
             '123456789',	     				 -- <technologydata character varying>, 
             'Delicious Banana, Mango, Orange juice', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
-            3.99,    			 				 -- <licensefee numeric>, 
+            50000,
+			200000,
             '{Delicious, Banana, Orange, Mango, Tasty}', -- <taglist text[]>,              
             '{Banana Juice,Mango Juice,Orange Juice}',    								 -- <componentlist integer[]>
 			-- vUserUUID,   

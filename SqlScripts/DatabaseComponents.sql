@@ -106,9 +106,9 @@ CREATE FUNCTION CreateUser(vUserFirstName varchar(250), vUserLastName varchar(25
 CREATE FUNCTION CreateTechnologyData (
 	  vTechnologyDataName varchar(250), 
 	  vTechnologyData varchar(32672), 
-	  vTechnologyDataDescription varchar(32672), 
-	  -- vTechnologyDataAuthor uuid,
-	  vLicenseFee decimal(21,4),  
+	  vTechnologyDataDescription varchar(32672),
+	  vLicenseFee integer,  
+	  vRetailPrice integer,
 	  vTechnologyUUID uuid,
 	  vCreatedBy uuid
  )
@@ -117,7 +117,8 @@ CREATE FUNCTION CreateTechnologyData (
 	oTechnologyDataName varchar(250),
 	oTechnologyUUID uuid,
 	oTechnologyData varchar(32672),
-	oLicenseFee numeric(21,4),
+	oLicenseFee integer,
+	ORetailPrice integer,
 	oTechnologyDataDescription varchar(32672),
 	oTechnologyDataThumbnail bytea,
 	oTechnologyDataImgRef character varying,
@@ -131,8 +132,8 @@ CREATE FUNCTION CreateTechnologyData (
 		vUserID integer := (select userid from users where useruuid = vCreatedby);
 		-- vTechAuthor integer := (select userid from users where useruuid = vTechnologyDataAuthor);		
       BEGIN        
-        INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, TechnologyID, CreatedBy, CreatedAt)
-        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vTechnologyID, vUserID, now());
+        INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, RetailPrice, TechnologyID, CreatedBy, CreatedAt)
+        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyID, vUserID, now());
      
         -- Begin Log if success
         perform public.createlog(0,'Created TechnologyData sucessfully', 'CreateTechnologyData', 
@@ -142,6 +143,7 @@ CREATE FUNCTION CreateTechnologyData (
 				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar) 
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
+								|| ', RetailPrice: ' || cast(vRetailPrice as varchar)
                                 || ', CreatedBy: ' || vUserID);
                                 
         -- End Log if success
@@ -152,6 +154,7 @@ CREATE FUNCTION CreateTechnologyData (
 			tc.TechnologyUUID,
 			td.TechnologyData,
 			td.LicenseFee,
+			td.RetailPrice,
 			td.TechnologyDataDescription,
 			td.TechnologyDataThumbnail,
 			td.TechnologyDataImgRef,
@@ -165,12 +168,14 @@ CREATE FUNCTION CreateTechnologyData (
         
         exception when others then 
         -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'CreateTechnologyData', 
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateTechnologyData', 
                                 'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: ' 
                                 || vTechnologyDataName || ', TechnologyData: ' || vTechnologyData 
                                 || ', TechnologyDataDescription: ' || vTechnologyDataDescription
+				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar) 
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
+								|| ', RetailPrice: ' || cast(vRetailPrice as varchar)
                                 || ', CreatedBy: ' || vUserID);
         -- End Log if error
         -- Return Error Code * -1
@@ -1042,7 +1047,7 @@ Input paramteres:
 	- TechnologyDataName: String
     - TechnologyData: String
     - TechnologyDataDescription: String
-	- LicenseFee: Decimal (21,4)
+	- LicenseFee: integer
     - TagList: List of Strings
     - UserID: UUID
     - TechnologyName: String
@@ -1063,7 +1068,8 @@ Return Value:
 	vTechnologyData varchar(32672), 
 	vTechnologyDataDescription varchar(32672), 
 	vtechnologyuuid uuid,
-	vLicensefee numeric,
+	vLicensefee integer,
+	vRetailPrice integer,
 	vTaglist text[],	
 	vComponentlist text[],
 	-- vTechnologyDataAuthor uuid,
@@ -1073,7 +1079,8 @@ Return Value:
 	oTechnologyDataName varchar(250),
 	oTechnologyUUID uuid,
 	oTechnologyData varchar(32672),
-	oLicenseFee numeric(21,4),
+	oLicenseFee integer,
+	oRetailPrice integer,
 	oTechnologyDataDescription varchar(32672),
 	oTechnologyDataThumbnail bytea,
 	oTechnologyDataImgRef character varying,
@@ -1114,7 +1121,7 @@ $BODY$
         end if;
         
         -- Create new TechnologyData  
-		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vTechnologyUUID, vCreatedBy); 		
+		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyUUID, vCreatedBy); 		
         vTechnologyDataID := (select currval('TechnologyDataID'));
         vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
         -- Create relation from Components to TechnologyData 
@@ -1138,6 +1145,7 @@ $BODY$
 			vTechnologyUUID,
 			TechnologyData,
 			LicenseFee,
+			RetailPrice,
 			TechnologyDataDescription,
 			TechnologyDataThumbnail,
 			TechnologyDataImgRef,
@@ -1155,7 +1163,7 @@ $BODY$
 		on co.componentid = tc.componentid
 		where td.technologydataid = vTechnologyDataID
 		group by technologydatauuid, technologydataname, technologydata,
-			 licensefee, technologydatadescription, technologydatathumbnail,
+			 licensefee, retailprice, technologydatadescription, technologydatathumbnail,
 			 TechnologyDataImgRef, td.createdat, td.createdby
         );
         
@@ -1267,7 +1275,8 @@ CREATE FUNCTION GetAllTechnologyData()
 			technologydataname varchar(250),
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
-			licensefee numeric,
+			licensefee integer,
+			retailprice integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
 			createdat timestamp with time zone,
@@ -1281,7 +1290,8 @@ CREATE FUNCTION GetAllTechnologyData()
 				technologydataname,
 				technologydata,
 				technologydatadescription,
-				licensefee,
+				licensefee,				
+				retailprice,
 				technologydatathumbnail,
 				technologydataimgref,
 				td.createdat  at time zone 'utc',
@@ -1316,7 +1326,8 @@ RETURNS TABLE
 			technologydataname varchar(250),
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
-			licensefee numeric,
+			licensefee integer,
+			retailprice integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
 			createdat timestamp with time zone,
@@ -1331,6 +1342,7 @@ RETURNS TABLE
 				technologydata,
 				technologydatadescription,
 				licensefee,
+				retailprice,
 				technologydatathumbnail,
 				technologydataimgref,
 				td.createdat  at time zone 'utc',
@@ -1367,7 +1379,8 @@ RETURNS TABLE
 			technologydataname varchar(250),
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
-			licensefee numeric,
+			licensefee integer,
+			retailprice integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
 			createdat timestamp with time zone,
@@ -1382,6 +1395,7 @@ RETURNS TABLE
 				technologydata,
 				technologydatadescription,
 				licensefee,
+				retailprice,
 				technologydatathumbnail,
 				technologydataimgref,
 				td.createdat  at time zone 'utc',
@@ -1719,15 +1733,16 @@ CREATE FUNCTION GetTechnologyDataByParams(
 		technologydataname character varying,
 		technologydatadescription varchar,
 		technologydata varchar(32672),
-		licensefee numeric,
+		licensefee integer,
+		retailprice integer,
 		technologydatathumbnail bytea,
 		technologydataimgRef varchar,
 		useruuid uuid,
 		createdat timestamp with time zone,
 		updatedat timestamp with time zone,
 		technologyname varchar,
-        tagname character varying,
-        componentname varchar,
+        tagname varchar[],
+        componentname varchar[],
 		attributename varchar
         )
     AS $$ 
@@ -1737,6 +1752,7 @@ CREATE FUNCTION GetTechnologyDataByParams(
     	td.technologydatadescription,
     	td.technologydata,
     	td.licensefee,
+		td.retailprice,
     	td.technologydatathumbnail,
     	td.technologydataimgref,
     	us.useruuid,
@@ -1765,6 +1781,7 @@ CREATE FUNCTION GetTechnologyDataByParams(
 		td.technologydatadescription,
 		td.technologydata,
 		td.licensefee,
+		td.retailprice,
 		td.technologydatathumbnail,
 		td.technologydataimgref,
 		us.useruuid,
@@ -2462,7 +2479,7 @@ CREATE FUNCTION GetLicenseFeeByTransaction(
 		vTransactionUUID uuid
 	) 
 RETURNS TABLE (
-		oLicenseFee numeric(21,4)
+		oLicenseFee integer
 	) AS 
 $$	 
 	select	td.licenseFee
@@ -2481,18 +2498,47 @@ $$ LANGUAGE SQL;
 -- ##########################################################################
 Input paramteres: vOfferRequestUUID uuid 
 ######################################################*/
-CREATE FUNCTION GetTransactionByOfferRequest(
+CREATE OR REPLACE FUNCTION GetTransactionByOfferRequest(
 		vOfferRequestUUID uuid
 	)
 RETURNS TABLE (
-		oTransactionUUID uuid
+		oTransactionuuid uuid,
+		oBuyer uuid,
+		oOfferuuid uuid,
+		oOfferrequestuuid uuid,
+		oPaymentuuid uuid,
+		oPaymentinvoiceid uuid,
+		oLicenseorderuuid uuid,
+		oCreatedat timestamp with time zone,
+		oCreatedby uuid,
+		oUpdatedat timestamp with time zone,
+		oUpdatedby uuid
 	) AS 
 $$	 
-	select	ts.transactionuuid
+	select	ts.transactionuuid,
+		us.useruuid as buyer,
+		ofr.offeruuid,
+		oq.offerrequestuuid,
+		py.paymentuuid,
+		pi.paymentinvoiceuuid,
+		li.licenseorderuuid,
+		ts.createdat at time zone 'utc',
+		ur.useruuid as createdby,
+		ts.updatedat at time zone 'utc',
+		uu.useruuid as updatedby
 	from transactions ts
 	join offerrequest oq
 	on ts.offerrequestid = oq.offerrequestid
 	and oq.offerrequestuuid = vOfferRequestUUID
+	left outer join users us on us.userid = ts.buyerid
+	left outer join offer ofr on ofr.offerid = ts.offerid
+	left outer join payment py on py.paymentid = ts.paymentid
+	left outer join paymentinvoice pi 
+	on pi.paymentinvoiceid = ts.paymentinvoiceid
+	left outer join licenseorder li 
+	on li.licenseorderid = ts.licenseorderid
+	left outer join users ur on ur.userid = ts.createdby
+	left outer join users uu on uu.userid = ts.updatedby
 $$ LANGUAGE SQL; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
@@ -2512,7 +2558,8 @@ RETURNS TABLE
 			technologydataname varchar(250),
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
-			licensefee numeric,
+			licensefee integer,
+			retailprice integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
 			createdat timestamp with time zone,
@@ -2527,6 +2574,7 @@ RETURNS TABLE
 		technologydata,
 		technologydatadescription,
 		licensefee,
+		retailprice,
 		technologydatathumbnail,
 		technologydataimgref,
 		td.createdat  at time zone 'utc',
