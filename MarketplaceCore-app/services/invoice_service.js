@@ -2,6 +2,7 @@
  * Created by beuttlerma on 03.03.17.
  */
 
+var queries = require('../connectors/pg-queries');
 var self = {};
 
 //TODO: Remove this function
@@ -11,11 +12,10 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-self.generateInvoiceForRequest = function (request, callback) {
-
+self.generateInvoice = function (request,transaction, callback) {
     var invoice = {
         totalAmount: 100000 ,
-        referenceId: request.offerId,
+        referenceId: transaction.otransactionuuid,
         expiration: new Date(new Date().getTime() + (2 * 60 * 60 * 1000)).toISOString(),
         transfers: [
 
