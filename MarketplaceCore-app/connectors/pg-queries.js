@@ -91,9 +91,9 @@ self.GetAllTechnologyData = function (userUUID, callback) {
         });
 };
 
-self.GetTechnologyDataByID = function (userUUID, dataId, callback) {
+self.GetTechnologyDataByID = function (userUUID, technologyDataUUID, callback) {
 
-    db.func('GetTechnologyDataByID', [dataId, userUUID])
+    db.func('GetTechnologyDataByID', [technologyDataUUID, userUUID])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {
@@ -135,13 +135,39 @@ self.GetTechnologyDataByParams = function (userUUID, params, callback) {
 };
 
 //GetTechnologyDataByName
-self.GetTechnologyDataByName = function (userUUID, name, callback) {
-    db.func('GetTechnologyDataByName', [name, userUUID])
+self.GetTechnologyDataByName = function (userUUID, technologyDataName, callback) {
+
+    db.func('GetTechnologyDataByName', [technologyDataName, userUUID])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {
                 data = data[0];
             }
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+//GetTechnologyDataByName
+self.GetTechnologyDataByOfferRequest = function (userUUID, offerRequestUUID, callback) {
+
+    db.func('GetTechnologyDataByOfferRequest', [offerRequestUUID])
+        .then(function (data) {
+            callback(null, data)
+        })
+        .catch(function (error) {
+            logger.debug("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+//Get all transaction by given OfferRequest
+self.GetLicenseFeeByTransaction = function (userUUID, transactionUUID, callback) {
+    db.func('GetLicenseFeeByTransaction', [transactionUUID])
+        .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
@@ -196,9 +222,9 @@ self.GetAllTechnologies = function (userUUID, callback) {
 };
 
 //Get technology by ID
-self.GetTechnologyByID = function (userUUID, dataId, callback) {
+self.GetTechnologyByID = function (userUUID, technologyUUID, callback) {
 
-    db.func('GetTechnologyByID', [dataId])
+    db.func('GetTechnologyByID', [technologyUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -208,10 +234,35 @@ self.GetTechnologyByID = function (userUUID, dataId, callback) {
         });
 };
 
-//Get technology by ID
-self.GetTechnologyByName = function (userUUID, dataName, callback) {
+//Get technology by OfferRequest
+self.GetTechnologyForOfferRequest = function (userUUID, offerRequestUUID, callback) {
 
-    db.func('GetTechnologyByName', [dataName])
+    db.func('GetTechnologyForOfferRequest', [offerRequestUUID])
+        .then(function (data) {
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+self.GetComponentByID = function (userUUID, componentUUID, callback) {
+
+    db.func('GetComponentByID', [componentUUID])
+        .then(function (data) {
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+//Get Component by Name
+self.GetComponentByName = function (userUUID, componentName, callback) {
+
+    db.func('GetComponentByName', [componentName])
         .then(function (data) {
             callback(null, data);
         })
@@ -257,9 +308,9 @@ self.GetAllComponents = function (userUUID, callback) {
 };
 
 //Get Component by ID
-self.GetComponentByID = function (userUUID, dataId, callback) {
+self.GetComponentByID = function (userUUID, componentUUID, callback) {
 
-    db.func('GetComponentByID', [dataId])
+    db.func('GetComponentByID', [componentUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -270,9 +321,9 @@ self.GetComponentByID = function (userUUID, dataId, callback) {
 };
 
 //Get Component by Name
-self.GetComponentByName = function (userUUID, dataName, callback) {
+self.GetComponentByName = function (userUUID, componentName, callback) {
 
-    db.func('GetComponentByName', [dataName])
+    db.func('GetComponentByName', [componentName])
         .then(function (data) {
             callback(null, data);
         })
@@ -283,9 +334,9 @@ self.GetComponentByName = function (userUUID, dataName, callback) {
 };
 
 //Get Component by Technology
-self.GetComponentsByTechnology = function (userUUID, dataID, callback) {
+self.GetComponentsByTechnology = function (userUUID, technologyUUID, callback) {
 
-    db.func('GetComponentsByTechnology', [dataID])
+    db.func('GetComponentsByTechnology', [technologyUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -337,9 +388,9 @@ self.GetAllAttributes = function (userUUID, callback) {
 };
 
 //Get Attribute by ID
-self.GetAttributeByID = function (userUUID, dataId, callback) {
+self.GetAttributeByID = function (userUUID, attributeUUID, callback) {
 
-    db.func('GetAttributeByID', [dataId])
+    db.func('GetAttributeByID', [attributeUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -350,9 +401,9 @@ self.GetAttributeByID = function (userUUID, dataId, callback) {
 };
 
 //Get Attribute by Name
-self.GetAttributeByName = function (userUUID, dataName, callback) {
+self.GetAttributeByName = function (userUUID, attributeName, callback) {
 
-    db.func('GetAttributeByName', [dataName])
+    db.func('GetAttributeByName', [attributeName])
         .then(function (data) {
             callback(null, data);
         })
@@ -429,6 +480,18 @@ self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callbac
             callback(error);
         });
 };
+
+//Get Offer for Request
+self.GetOfferForTransaction = function (userUUID, transactionUUID, callback) {
+    db.func('GetOfferForTransaction', [transactionUUID])
+        .then(function (data) {
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
 //</editor-fold>
 
 //<editor-fold desc="OfferRequestBody">
@@ -489,12 +552,17 @@ self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, cal
 //</editor-fold>
 
 //<editor-fold desc="Transactions">
-//</editor-fold>
-
-//<editor-fold desc="LicenseOrder">
-//</editor-fold>
-
-//<editor-fold desc="LicenseOrder">
+//Get all transaction by given OfferRequest
+self.GetTransactionByOfferRequest = function (userUUID, offerRequestUUID, callback) {
+    db.func('GetTransactionByOfferRequest', [offerRequestUUID])
+        .then(function (data) {
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
 //</editor-fold>
 
 //<editor-fold desc="Tags">
