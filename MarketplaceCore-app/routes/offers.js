@@ -62,22 +62,32 @@ router.post('/', validate({
         if (err) {
             next(err);
         } else {
-            invoiceService.generateInvoiceForRequest(requestData, function (err, invoiceData) {
+            queries.GetTransactionByOfferRequest(userUUID,offerRequest[0].offerrequestuuid, function (err, transaction) {
                 if (err) {
                     next(err);
                 } else {
-                    queries.SetPaymentInvoiceOffer(userUUID, invoiceData, offerRequest.id, function(err, offer) {
-                       if (err) {
-                           next(err);
-                       } else {
-                           var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-                           res.set('Location', fullUrl + offer.id);
-                           res.status(201);
-                           res.json({}); //TODO: Send offer json
-                       }
+                    invoiceService.generateInvoice(offerRequest[0],transaction[0], function (err, invoiceData) {
+                        if (err) {
+                            next(err);
+                        } else {
+                            queries.SetPaymentInvoiceOffer(userUUID, invoiceData, offerRequest[0].offerrequestuuid, function (err, offer) {
+                                if (err) {
+                                    next(err);
+                                } else {
+                                    var fullUrl = req.protocol + '://' + req.get('host') + req.baseurl + '/';
+                                    res.set('Location', fullUrl + offer[0].offeruuid);
+                                    res.status(201);
+                                    res.json({'id': offer[0].offeruuid, 'invoice': JSON.parse(offer[0].invoice) }); //TODO: Send offer json
+                                }
+                            });
+                        }
                     });
                 }
             });
+
+
+
+
         }
     });
 

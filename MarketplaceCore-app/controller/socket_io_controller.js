@@ -27,12 +27,12 @@ module.exports = function (io) {
 
     var namespace = io.of('/licenses');
     namespace.on('connection', onIOLicenseConnect);
-    registerLicenseEvents();
+    registerLicenseEvents(namespace);
 
 };
 
-function registerLicenseEvents(){
+function registerLicenseEvents(namespace){
     license_service.on('updateAvailable', function(offerId,hsmId){
-        socket.to(hsmId).emit('updateAvailable',{hsmId: hsmId, offerId: offerId});
+        namespace.to(hsmId).emit('updateAvailable',{hsmId: hsmId, offerId: offerId});
     })
 }
