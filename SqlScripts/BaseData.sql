@@ -5,6 +5,88 @@
 -- Description: Create Base Data for the MarketplaceCode Database
 -- Changes:
 -- ##########################################################################
+-- Create Roles
+DO
+$$
+	BEGIN
+		perform createrole('Public','Public users');  -- 1
+		perform createrole('ExternalService','External services such as WebService');  -- 2
+		perform createrole('InternalService','Internal services such as PaymentService');  -- 4
+		perform createrole('Admin','System administrator');  -- 8
+		perform createrole('DBUser','Database user');  -- 16
+	END;
+$$;
+--Create Permissions
+DO
+$$
+	BEGIN
+		perform createpermission(16,'uuid_nil');
+		perform createpermission(16,'uuid_ns_dns');
+		perform createpermission(16,'uuid_ns_url');
+		perform createpermission(16,'uuid_ns_oid');
+		perform createpermission(16,'uuid_ns_x500');
+		perform createpermission(16,'uuid_generate_v1');
+		perform createpermission(16,'uuid_generate_v1mc');
+		perform createpermission(16,'uuid_generate_v3');
+		perform createpermission(16,'uuid_generate_v4');
+		perform createpermission(16,'uuid_generate_v5');
+		perform createpermission(16,'createlog');
+		perform createpermission(30,'createuser');
+		perform createpermission(31,'createtechnologydata');
+		perform createpermission(31,'createtag');
+		perform createpermission(30,'gettagbyname');
+		perform createpermission(30,'createtechnologydatatags');
+		perform createpermission(31,'createattribute');
+		perform createpermission(30,'createcomponent');
+		perform createpermission(30,'createtechnology');
+		perform createpermission(28,'createpaymentinvoice');
+		perform createpermission(16,'createtechnologydatacomponents');
+		perform createpermission(16,'createcomponentsattribute');
+		perform createpermission(16,'createcomponentstechnologies');
+		perform createpermission(28,'createofferrequest');
+		perform createpermission(30,'gettagbyid');
+		perform createpermission(28,'createoffer');
+		perform createpermission(28,'createlicenseorder');
+		perform createpermission(28,'createpayment');
+		perform createpermission(30,'setcomponent');
+		perform createpermission(16,'settechnologydata');
+		perform createpermission(28,'setpaymentinvoiceoffer');
+		perform createpermission(28,'getalltechnologydata');
+		perform createpermission(28,'gettechnologydatabyid');
+		perform createpermission(28,'gettechnologydatabyname');
+		perform createpermission(30,'getallcomponents');
+		perform createpermission(28,'getcomponentbyid');
+		perform createpermission(28,'getcomponentbyname');
+		perform createpermission(30,'getalltags');
+		perform createpermission(30,'getalltechnologies');
+		perform createpermission(28,'gettechnologybyid');
+		perform createpermission(28,'gettechnologybyname');
+		perform createpermission(28,'gettechnologydatabyparams');
+		perform createpermission(30,'getallusers');
+		perform createpermission(28,'getuserbyid');
+		perform createpermission(28,'getuserbyname');
+		perform createpermission(28,'getalloffers');
+		perform createpermission(28,'getallattributes');
+		perform createpermission(28,'getattributebyid');
+		perform createpermission(28,'getattributebyname');
+		perform createpermission(28,'getofferbyrequestid');
+		perform createpermission(28,'getofferbyid');
+		perform createpermission(16,'datediff');
+		perform createpermission(30,'getactivatedlicensessince');
+		perform createpermission(30,'gettoptechnologydatasince');
+		perform createpermission(30,'getmostusedcomponents');
+		perform createpermission(28,'getofferfortransaction');
+		perform createpermission(30,'getworkloadsince');
+		perform createpermission(28,'getpaymentinvoiceforofferrequest');
+		perform createpermission(28,'getofferforpaymentinvoice');
+		perform createpermission(28,'getcomponentsbytechnology');
+		perform createpermission(28,'gettechnologyforofferrequest');
+		perform createpermission(28,'getlicensefeebytransaction');
+		perform createpermission(28,'gettransactionbyofferrequest');
+		perform createpermission(28,'gettechnologydatabyofferrequest');
+		perform createpermission(28,'getofferforticket');	
+	END;
+$$;
 -- Insert System User
 DO
  $$
@@ -108,9 +190,7 @@ DO
          );
    END;
  $$;
- 
--- select * from components;
- 
+
 DO 
 $$
 -- Get UserID

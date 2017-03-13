@@ -40,6 +40,10 @@ CREATE SEQUENCE PaymentID START 1;
 CREATE SEQUENCE TransactionID START 1;
 -- LicenseOderID
 CREATE SEQUENCE LicenseOrderID START 1;
+-- RoleID
+CREATE SEQUENCE RoleID START 1;
+-- PermissionID
+CREATE SEQUENCE PermissionID START 1;
 -- ##########################################################################
 -- Create Functions
 -- CreateLog
@@ -68,7 +72,7 @@ CREATE FUNCTION CreateUser(vUserFirstName varchar(250), vUserLastName varchar(25
  AS
   $$
       DECLARE 	vUserID integer := (select nextval('UserID'));      
-		vUserUUID uuid := (select uuid_generate_v4()); 
+				vUserUUID uuid := (select uuid_generate_v4()); 
       BEGIN        
         INSERT INTO Users(UserID, UserUUID, UserFirstName, UserLastName, UserEmail, CreatedAt)
         VALUES(vUserID, vUserUUID, vUserFirstName, vUserLastName, vUserEmail, now());        
@@ -2650,4 +2654,127 @@ $$
 	on lo.offerid = ofr.offerid
 	and lo.ticketid = vTicketID
 	join users us on us.userid = ofr.createdby	
+$$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-13
+-- Description: Create Roles
+-- ##########################################################################
+Input paramteres: vRoleName varchar(250)
+				  vRoleDescription varchar(32672)
+######################################################*/
+create function createrole(vRoleName varchar(250), vRoleDescription varchar(32672)) 
+returns void as
+$$
+	Declare vRoleID integer := (select nextval('RoleID'));
+		vRoleUUID uuid := (select uuid_generate_v4());
+		vRoleBit integer := (select max(RoleBit)*2 from Roles);
+		
+	BEGIN
+		vRoleBit  := (select case when(vRoleBit is null) then 1 else vRoleBit end);
+		insert into roles (RoleID, RoleUUID, RoleBit, RoleName, RoleDescription)
+		values (vRoleID, vRoleUUID, vRoleBit, vRoleName, vRoleDescription);
+
+	 -- Begin Log if success
+        perform public.createlog(0,'Created Role sucessfully', 'CreateRole', 
+                                'RoleID: ' || cast(vRoleID as varchar) || ', RoleBit: ' 
+                                || cast(vRoleBit as varchar) || ', vRoleName: ' || vRoleName 
+                                || ', RoleDescription: ' 
+                                || vRoleDescription);
+
+	 exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateRole', 
+                                'RoleID: ' || cast(vRoleID as varchar) || ', RoleBit: ' 
+                                || cast(vRoleBit as varchar) || ', vRoleName: ' || vRoleName 
+                                || ', RoleDescription: ' 
+                                || vRoleDescription);
+        -- End Log if error 
+	END;
+$$ LANGUAGE PLPGSQL;
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-13
+-- Description: Create permissions for Roles
+-- ##########################################################################
+Input paramteres: vRoles integer, 
+				  vFunctionName varchar(250)
+######################################################*/
+create function CreatePermission(
+		vRoles integer, 
+		vFunctionName varchar(250)
+	) 
+RETURNS void AS
+$$
+	DECLARE
+		vPermissionID integer := (select nextval('PermissionID'));
+		vPermissionUUID uuid := (select uuid_generate_v4());
+	BEGIN
+		insert into permissions (PermissionID, PermissionUUID, Roles, FunctionName)
+		values (vPermissionID, vPermissionUUID, vRoles, vFunctionName);
+
+	-- Begin Log if success
+        perform public.createlog(0,'Created Permission sucessfully', 'CreatePermission', 
+                                'PermissionID: ' || cast(vPermissionID as varchar) || ', Roles: ' 
+                                || vRoles || ', FunctionName: ' || vFunctionName);
+
+	 exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreatePermission', 
+                                'PermissionID: ' || cast(vPermissionID as varchar) || ', Roles: ' 
+                                || vRoles || ', FunctionName: ' || vFunctionName);
+        -- End Log if error 
+	END;
+$$ LANGUAGE PLPGSQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-13
+-- Description: Get Transaction by TransactionUUID
+-- ##########################################################################
+Input paramteres: vTransactionUUID uuid
+######################################################*/
+CREATE FUNCTION GetTransactionByID(
+		vTransactionUUID uuid
+	)
+RETURNS TABLE (
+		oTransactionuuid uuid,
+		oBuyer uuid,
+		oOfferuuid uuid,
+		oOfferrequestuuid uuid,
+		oPaymentuuid uuid,
+		oPaymentinvoiceid uuid,
+		oLicenseorderuuid uuid,
+		oCreatedat timestamp with time zone,
+		oCreatedby uuid,
+		oUpdatedat timestamp with time zone,
+		oUpdatedby uuid
+	) AS 
+$$	 
+	select	ts.transactionuuid,
+		us.useruuid as buyer,
+		ofr.offeruuid,
+		oq.offerrequestuuid,
+		py.paymentuuid,
+		pi.paymentinvoiceuuid,
+		li.licenseorderuuid,
+		ts.createdat at time zone 'utc',
+		ur.useruuid as createdby,
+		ts.updatedat at time zone 'utc',
+		uu.useruuid as updatedby
+	from transactions ts
+	join offerrequest oq
+	on ts.offerrequestid = oq.offerrequestid
+	and ts.transactionuuid = vTransactionUUID
+	left outer join users us on us.userid = ts.buyerid
+	left outer join offer ofr on ofr.offerid = ts.offerid
+	left outer join payment py on py.paymentid = ts.paymentid
+	left outer join paymentinvoice pi 
+	on pi.paymentinvoiceid = ts.paymentinvoiceid
+	left outer join licenseorder li 
+	on li.licenseorderid = ts.licenseorderid
+	left outer join users ur on ur.userid = ts.createdby
+	left outer join users uu on uu.userid = ts.updatedby
 $$ LANGUAGE SQL; 
