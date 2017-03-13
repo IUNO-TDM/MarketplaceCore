@@ -8,22 +8,7 @@ const http = require('http');
 
 var logger = require('../global/logger');
 var io = require('socket.io-client');
-socket = io('http://localhost:8080/invoices',{transports: ['websocket']});
 
-socket.connect();
-socket.on('connect', function(){
-    logger.debug("connected to paymentservice");
-});
-
-socket.on('StateChange', function(data){
-    logger.debug("StateChange",data);
-    payment_service.emit('StateChange', JSON.parse(data));
-});
-
-
-socket.on('disconnect', function(){
-    logger.debug("disconnect");
-});
 var PaymentService = function () {
     console.log('a new instance of PaymentService');
 
@@ -31,6 +16,23 @@ var PaymentService = function () {
 
 const payment_service = new PaymentService();
 util.inherits(PaymentService, EventEmitter);
+
+
+payment_service.socket =  io.connect('http://localhost:8080/invoices',{transports: ['websocket']});
+
+payment_service.socket.on('connect', function(){
+    logger.debug("connected to paymentservice");
+});
+
+payment_service.socket.on('StateChange', function(data){
+    logger.debug("StateChange",data);
+    payment_service.emit('StateChange', JSON.parse(data));
+});
+
+
+payment_service.socket.on('disconnect', function(){
+    logger.debug("disconnect");
+});
 
 payment_service.createLocalInvoice = function(invoice, callback){
     body = JSON.stringify(invoice);
@@ -75,10 +77,10 @@ payment_service.getInvoiceTransfers = function(invoice, callback){
 
 
 payment_service.registerStateChangeUpdates = function(invoiceId){
-    socket.emit('room',invoiceId);
+    payment_service.socket.emit('room',invoiceId);
 };
 payment_service.unregisterStateChangeUpdates = function(invoiceId){
-    socket.emit('leave',invoiceId);
+    payment_service.socket.emit('leave',invoiceId);
 };
 
 module.exports = payment_service;
