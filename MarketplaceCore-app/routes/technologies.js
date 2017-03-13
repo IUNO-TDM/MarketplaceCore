@@ -14,29 +14,17 @@ var queries = require('../connectors/pg-queries');
 
 router.get('/', validate({query: require('../schema/technologies_schema').GetAll}), function (req, res, next) {
 
-    if(req.query['technologyName']) {
-        queries.GetTechnologyByName(req.query['userUUID'], req.query['technologyName'], function (err, data) {
-            if (err) {
-                next(err);
-            }
-            else {
-                res.json(data);
-            }
-        });
-    }
-    else {
-        queries.GetAllTechnologies(req.query['userUUID'], function(err,data) {
-            if (err) {
-                next(err);
-            }
-            else {
-                res.json(data);
-            }
-        });
-    }
+    queries.GetAllTechnologies(req.query['userUUID'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
 });
 
-router.get('/:id', validate({query: require('../schema/technologies_schema').GetSingle}),  function (req, res, next) {
+router.get('/:id', validate({query: require('../schema/technologies_schema').GetSingle}), function (req, res, next) {
     logger.debug(req);
     queries.GetTechnologyByID(req.query['userUUID'], req.params['id'], function (err, data) {
         if (err) {
