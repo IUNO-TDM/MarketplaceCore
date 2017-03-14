@@ -12,14 +12,14 @@ util.inherits(LicenseService, EventEmitter);
 payment_service.on('StateChange', function(state){
     if(state.state == 'pending' || state.state == 'building'){
         var transactionUuid = state.referenceId;
-        
+
         queries.GetOfferForTransaction(config.CONFIG.USER_UUID, transactionUuid, function (err, data) {
-            if (queries.!err) {
+            if (!err) {
 
 
 
                 // var hsmId = data.hsmId;
-                license_service.emit('updateAvailable',data[0].oofferuuid, '');
+                license_service.emit('updateAvailable',data[0].oofferuuid, 'TW552HSM');
             }
         });
     }

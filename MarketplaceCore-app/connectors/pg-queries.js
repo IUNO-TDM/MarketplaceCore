@@ -496,6 +496,7 @@ self.GetOfferForTransaction = function (userUUID, transactionUUID, callback) {
 
 //<editor-fold desc="OfferRequestBody">
 self.CreateOfferRequest = function (userUUID, requestData, callback) {
+    logger.debug('User UUID: ' +  userUUID);
     //TODO: A request should have more than one item
     db.func('CreateOfferRequest',
         [   requestData.items[0].dataId,

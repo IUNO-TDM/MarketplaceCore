@@ -58,15 +58,22 @@ router.post('/', validate({
     var userUUID = req.query['userUUID'];
     var requestData = req.body;
 
-    queries.CreateOfferRequest(userUUID, requestData, function(err, offerRequest) {
+    queries.CreateOfferRequest(userUUID, requestData, function (err, offerRequest) {
         if (err) {
             next(err);
         } else {
-            queries.GetTransactionByOfferRequest(userUUID,offerRequest[0].offerrequestuuid, function (err, transaction) {
+            if (!offerRequest || offerRequest.length <= 0) {
+                next({
+                    statusCode: 500,
+                    message: 'Error when creating offer request in marketplace'
+                });
+            }
+
+            queries.GetTransactionByOfferRequest(userUUID, offerRequest[0].offerrequestuuid, function (err, transaction) {
                 if (err) {
                     next(err);
                 } else {
-                    invoiceService.generateInvoice(offerRequest[0],transaction[0], function (err, invoiceData) {
+                    invoiceService.generateInvoice(offerRequest[0], transaction[0], function (err, invoiceData) {
                         if (err) {
                             next(err);
                         } else {
@@ -77,15 +84,18 @@ router.post('/', validate({
                                     var fullUrl = req.protocol + '://' + req.get('host') + req.baseurl + '/';
                                     res.set('Location', fullUrl + offer[0].offeruuid);
                                     res.status(201);
-                                    res.json({'id': offer[0].offeruuid, 'invoice': JSON.parse(offer[0].invoice) }); //TODO: Send offer json
+                                    var invoiceIn  = JSON.parse(offer[0].invoice);
+                                    var invoiceOut = {
+                                        expiration: invoiceIn.expiration,
+                                        transfers: invoiceIn.transfers
+                                    };
+                                    res.json({'id': offer[0].offeruuid, 'invoice': invoiceOut}); //TODO: Send offer json
                                 }
                             });
                         }
                     });
                 }
             });
-
-
 
 
         }

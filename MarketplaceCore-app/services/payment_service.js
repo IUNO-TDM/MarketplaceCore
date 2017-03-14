@@ -25,7 +25,7 @@ payment_service.socket.on('connect', function(){
 });
 
 payment_service.socket.on('StateChange', function(data){
-    logger.debug("StateChange",data);
+    logger.debug("StateChange: " + data);
     payment_service.emit('StateChange', JSON.parse(data));
 });
 

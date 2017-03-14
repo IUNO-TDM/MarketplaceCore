@@ -5,7 +5,7 @@
 const self = {
     CONFIG: {
         LOG_LEVEL: 'debug',
-        USER_UUID: '473fe8cc-141d-419d-9ff6-c63caeb5e9b7'
+        USER_UUID: '16f69912-d6be-4ef0-ada8-2c1c75578b51'
     }
 };
 
