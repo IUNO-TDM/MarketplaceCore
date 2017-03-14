@@ -49,7 +49,7 @@ User.prototype.FindSingle = function (id, callback) {
             callback(error);
         });
 };
-User.prototype.Create = function () {
+User.prototype.Create = function (callback) {
     db.func('CreateUser', [this.userfirstname, this.userlastname, this.useremail])
         .then(function (data) {
             callback(null, new User(data));
