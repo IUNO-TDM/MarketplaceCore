@@ -14,7 +14,7 @@ self.generateInvoice = function (request,transaction, callback) {
 
     var invoice = {
         totalAmount: 100000 ,
-        referenceId: transaction.otransactionuuid,
+        referenceId: transaction.transactionuuid,
         expiration: new Date(new Date().getTime() + (2 * 60 * 60 * 1000)).toISOString(),
         transfers: []
     };

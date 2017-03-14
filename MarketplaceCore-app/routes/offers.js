@@ -67,37 +67,35 @@ router.post('/', validate({
                     statusCode: 500,
                     message: 'Error when creating offer request in marketplace'
                 });
+            }else{
+                queries.GetTransactionByOfferRequest(userUUID, offerRequest[0].offerrequestuuid, function (err, transaction) {
+                    if (err) {
+                        next(err);
+                    } else {
+                        invoiceService.generateInvoice(offerRequest[0], transaction[0], function (err, invoiceData) {
+                            if (err) {
+                                next(err);
+                            } else {
+                                queries.SetPaymentInvoiceOffer(userUUID, invoiceData, offerRequest[0].offerrequestuuid, function (err, offer) {
+                                    if (err) {
+                                        next(err);
+                                    } else {
+                                        var fullUrl = req.protocol + '://' + req.get('host') + req.baseurl + '/';
+                                        res.set('Location', fullUrl + offer[0].offeruuid);
+                                        res.status(201);
+                                        var invoiceIn  = JSON.parse(offer[0].invoice);
+                                        var invoiceOut = {
+                                            expiration: invoiceIn.expiration,
+                                            transfers: invoiceIn.transfers
+                                        };
+                                        res.json({'id': offer[0].offeruuid, 'invoice': invoiceOut}); //TODO: Send offer json
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
             }
-
-            queries.GetTransactionByOfferRequest(userUUID, offerRequest[0].offerrequestuuid, function (err, transaction) {
-                if (err) {
-                    next(err);
-                } else {
-                    invoiceService.generateInvoice(offerRequest[0], transaction[0], function (err, invoiceData) {
-                        if (err) {
-                            next(err);
-                        } else {
-                            queries.SetPaymentInvoiceOffer(userUUID, invoiceData, offerRequest[0].offerrequestuuid, function (err, offer) {
-                                if (err) {
-                                    next(err);
-                                } else {
-                                    var fullUrl = req.protocol + '://' + req.get('host') + req.baseurl + '/';
-                                    res.set('Location', fullUrl + offer[0].offeruuid);
-                                    res.status(201);
-                                    var invoiceIn  = JSON.parse(offer[0].invoice);
-                                    var invoiceOut = {
-                                        expiration: invoiceIn.expiration,
-                                        transfers: invoiceIn.transfers
-                                    };
-                                    res.json({'id': offer[0].offeruuid, 'invoice': invoiceOut}); //TODO: Send offer json
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-
-
         }
     });
 
