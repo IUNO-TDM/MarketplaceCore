@@ -61,16 +61,17 @@ CREATE FUNCTION CreateLog(LogStatusID integer, LogMessage varchar(32672), LogObj
 -- CreateUser 
 CREATE FUNCTION CreateUser(vUserFirstName varchar(250), vUserLastName varchar(250), vUserEmail varchar(250))
   RETURNS TABLE (
-	oUserUUID uuid,
-	oUserFirstName varchar(250),
-	oUserLastName varchar(250), 
-	oUserEmail varchar(250),
-	oCreatedAt timestamp with time zone,
-	oUpdatedAt timestamp with time zone
+	UserUUID uuid,
+	UserFirstName varchar(250),
+	UserLastName varchar(250), 
+	UserEmail varchar(250),
+	CreatedAt timestamp with time zone,
+	UpdatedAt timestamp with time zone
   )
   
  AS
   $$
+		#variable_conflict use_column
       DECLARE 	vUserID integer := (select nextval('UserID'));      
 				vUserUUID uuid := (select uuid_generate_v4()); 
       BEGIN        
@@ -117,19 +118,20 @@ CREATE FUNCTION CreateTechnologyData (
 	  vCreatedBy uuid
  )
   RETURNS TABLE (
-	oTechnologyDataUUID uuid,
-	oTechnologyDataName varchar(250),
-	oTechnologyUUID uuid,
-	oTechnologyData varchar(32672),
-	oLicenseFee integer,
-	ORetailPrice integer,
-	oTechnologyDataDescription varchar(32672),
-	oTechnologyDataThumbnail bytea,
-	oTechnologyDataImgRef character varying,
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid
+	TechnologyDataUUID uuid,
+	TechnologyDataName varchar(250),
+	TechnologyUUID uuid,
+	TechnologyData varchar(32672),
+	LicenseFee integer,
+	etailPrice integer,
+	TechnologyDataDescription varchar(32672),
+	TechnologyDataThumbnail bytea,
+	TechnologyDataImgRef character varying,
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid
   ) AS
   $$
+	#variable_conflict use_column
       DECLARE 	vTechnologyDataID integer := (select nextval('TechnologyDataID'));
 		vTechnologyDataUUID uuid := (select uuid_generate_v4());     
 		vTechnologyID integer := (select technologyid from technologies where technologyuuid = vTechnologyUUID);
@@ -194,12 +196,13 @@ CREATE FUNCTION CreateTechnologyData (
   vCreatedBy uuid
  )
   RETURNS TABLE (
-	oTagUUID uuid,
-	oTagName varchar(250),
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid 
+	TagUUID uuid,
+	TagName varchar(250),
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid 
   ) AS
   $$
+	#variable_conflict use_column
       DECLARE 	vTagID integer := (select nextval('TagID'));
 		vTagUUID uuid := (select uuid_generate_v4());	
 		vUserID integer := (select userid from users where useruuid = vCreatedBy);
@@ -243,10 +246,11 @@ CREATE FUNCTION CreateTechnologyDataTags (
   vTagList text[]
  )
   RETURNS TABLE (
-	oTechnologyDataUUID uuid,
-	oTagList uuid[]
+	TechnologyDataUUID uuid,
+	TagList uuid[]
   ) AS
-  $$    
+  $$
+	#variable_conflict use_column
   	DECLARE vTagName text;
 		vtagID integer;
 		vTechnologyDataID integer := (select technologydataid from technologydata where technologydatauuid = vTechnologyDataUUID);
@@ -294,12 +298,13 @@ CREATE FUNCTION CreateAttribute (
   vCreatedBy uuid
  )
   RETURNS TABLE (
-	oAttributeUUID uuid,
-	oAttributeName varchar(250),
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid 
+	AttributeUUID uuid,
+	AttributeName varchar(250),
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid 
   ) AS
   $$
+	#variable_conflict use_column
       DECLARE 	vAttributeID integer := (select nextval('AttributeID'));
 		vAttributeUUID uuid := (select uuid_generate_v4());
 		vUserID integer := (select userid from users where useruuid = vCreatedby);
@@ -345,15 +350,16 @@ CREATE OR REPLACE FUNCTION CreateComponent (
   vCreatedBy uuid
  )
   RETURNS TABLE (
-	oComponentUUID uuid,
-	oComponentName varchar(250),
-	oComponentParentName varchar(250),
-	oComponentParentUUID uuid,
-	oComponentDecription varchar(32672),
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid
+	ComponentUUID uuid,
+	ComponentName varchar(250),
+	ComponentParentName varchar(250),
+	ComponentParentUUID uuid,
+	ComponentDecription varchar(32672),
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid
   ) AS
   $$
+	#variable_conflict use_column
       DECLARE 	vComponentID integer := (select nextval('ComponentID'));
 		vComponentUUID uuid := (select uuid_generate_v4());		
 		vUserID integer := (select userid from users where useruuid = vCreatedBy);
@@ -413,13 +419,14 @@ CREATE FUNCTION createtechnology(
     vTechnologydescription character varying,
     vCreatedby uuid)
   RETURNS TABLE (
-	oTechnologyUUID uuid,
-	oTechnologyName varchar(250),
-	oTechnologyDescription varchar(32672),
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid
+	TechnologyUUID uuid,
+	TechnologyName varchar(250),
+	TechnologyDescription varchar(32672),
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid
   ) AS
 $$
+	#variable_conflict use_column
       DECLARE 	vTechnologyID integer := (select nextval('TechnologyID'));
 		vTechnologyUUID uuid := (select uuid_generate_v4());
 		vUserID integer := (select userid from users where useruuid = vCreatedby);
@@ -472,10 +479,11 @@ CREATE FUNCTION CreateTechnologyDataComponents (
   vComponentList text[]
  )
   RETURNS TABLE (
-	oTechnologyDataUUID uuid,
-	oComponentList uuid[]
+	TechnologyDataUUID uuid,
+	ComponentList uuid[]
   ) AS
-  $$    
+  $$
+	#variable_conflict use_column
   	DECLARE vCompName text;
 		vCompID integer;
 		vTechnologyDataID integer := (select technologydataid from technologydata where technologydatauuid = vTechnologyDataUUID);
@@ -521,10 +529,11 @@ CREATE FUNCTION CreateComponentsAttribute (
   vAttributeList text[]
  )
   RETURNS TABLE (
-	oComponentUUID uuid,
-	oAttributeList uuid[]
+	ComponentUUID uuid,
+	AttributeList uuid[]
   ) AS
-  $$    
+  $$
+	#variable_conflict use_column
   	DECLARE vAttributeName text;
 		vAttrID int;
 		vComponentID integer := (select componentid from components where componentuuid = vComponentUUID);
@@ -572,10 +581,11 @@ CREATE FUNCTION CreateComponentsTechnologies (
   vTechnologyList text[]
  )
   RETURNS TABLE (
-	oComponentUUID uuid,
-	oTechnologyList uuid[]
+	ComponentUUID uuid,
+	TechnologyList uuid[]
   ) AS
-  $$    
+  $$
+	#variable_conflict use_column
     DECLARE 	vTechName text;
 		vTechID integer;
 		vComponentID integer := (select componentid from components where componentuuid = vComponentUUID);
@@ -634,6 +644,7 @@ CREATE FUNCTION CreateOfferRequest (
   )	
  AS
   $$
+	#variable_conflict use_column
       DECLARE 	vOfferRequestID integer := (select nextval('OfferRequestID'));
 		vOfferRequestUUID uuid := (select uuid_generate_v4());
 		vTechnologyDataID integer := (select technologydata.technologydataid from technologydata where technologydata.technologydatauuid = vTechnologyDataUUID);	
@@ -690,13 +701,14 @@ CREATE FUNCTION CreatePaymentInvoice (
   vUserUUID uuid  
  )
   RETURNS TABLE (
-	oPaymentInvoiceUUID uuid,
-	oOfferRequestUUID uuid,
-	oInvoice varchar(32672),
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid
+	PaymentInvoiceUUID uuid,
+	OfferRequestUUID uuid,
+	Invoice varchar(32672),
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid
   ) AS
   $$
+	#variable_conflict use_column
 	DECLARE vPaymentInvoiceID integer := (select nextval('PaymentInvoiceID'));
 		vPaymentInvoiceUUID uuid := (select uuid_generate_v4()); 
 		vOfferReqID integer := (select offerrequestid from offerrequest where offerrequestuuid = vOfferRequestUUID);
@@ -752,12 +764,13 @@ CREATE FUNCTION CreateOffer(
   vUserUUID uuid
  )
   RETURNS TABLE (
-	oOfferUUID uuid,
-	oPaymentInvoiceUUID uuid,
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid	
+	OfferUUID uuid,
+	PaymentInvoiceUUID uuid,
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid	
   ) AS
   $$
+	#variable_conflict use_column
       DECLARE 	vOfferID integer := (select nextval('OfferID'));
 		vOfferUUID uuid := (select uuid_generate_v4());
 		vPaymentInvoiceID integer := (select paymentinvoiceid from paymentinvoice where paymentinvoiceuuid = vPaymentInvoiceUUID);	
@@ -807,14 +820,15 @@ CREATE FUNCTION CreateLicenseOrder (
   vUserUUID uuid
  )
   RETURNS TABLE (
-	oLicenseOrderUUID uuid,
-	oTicketID varchar(4000),
-	oOfferUUID uuid,
-	oActivatedAt timestamp with time zone,
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid
+	LicenseOrderUUID uuid,
+	TicketID varchar(4000),
+	OfferUUID uuid,
+	ActivatedAt timestamp with time zone,
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid
   ) AS
   $$
+	#variable_conflict use_column
       DECLARE 			vLicenseOrderID integer := (select nextval('LicenseOrderID'));
 				vLicenseOrderUUID uuid := (select uuid_generate_v4()); 
 				vOfferID integer := (select offerid from offer where offeruuid = vOfferUUID);
@@ -869,13 +883,14 @@ CREATE FUNCTION CreatePayment(
   vUserUUID uuid
  )
   RETURNS TABLE (
-	oPaymentUUID uuid,
-	oPaymentInvoiceUUID uuid,
-	oPayDate timestamp with time zone,
-	oBitcoinTransation varchar(32672),
-	oCreatedBy uuid
+	PaymentUUID uuid,
+	PaymentInvoiceUUID uuid,
+	PayDate timestamp with time zone,
+	BitcoinTransation varchar(32672),
+	CreatedBy uuid
   ) AS
   $$
+	#variable_conflict use_column
       DECLARE 	vPaymentID integer := (select nextval('PaymentID')); 
 				vPaymentUUID uuid := (select uuid_generate_v4());
 				vPaymentInvoiceID integer := (select PaymentInvoiceID from paymentinvoice where PaymentInvoiceUUID = vPaymentInvoiceUUID);
@@ -948,17 +963,18 @@ CREATE OR REPLACE FUNCTION SetComponent (
   vCreatedBy uuid
  )
   RETURNS TABLE (
-	oComponentUUID uuid,
-	oComponentName varchar(250),
-	oComponentParentName varchar(250),
-	oComponentParentUUID uuid,
-	oComponentDescription varchar(32672),
-	oAttributeList uuid[],
-	oTechnologyList uuid[],
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid	
+	ComponentUUID uuid,
+	ComponentName varchar(250),
+	ComponentParentName varchar(250),
+	ComponentParentUUID uuid,
+	ComponentDescription varchar(32672),
+	AttributeList uuid[],
+	TechnologyList uuid[],
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid	
   ) AS
-  $$    
+  $$
+	#variable_conflict use_column
       DECLARE 	vAttributeName text; 
         	vTechName text;
 		vCompID integer;
@@ -1067,7 +1083,7 @@ Return Value:
  TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
 ######################################################*/
 -- Set TechnologyData  
- CREATE OR REPLACE FUNCTION public.settechnologydata(  
+ CREATE FUNCTION public.settechnologydata(  
 	vTechnologyDataName varchar(250), 
 	vTechnologyData varchar(32672), 
 	vTechnologyDataDescription varchar(32672), 
@@ -1079,21 +1095,22 @@ Return Value:
 	-- vTechnologyDataAuthor uuid,
 	vCreatedby uuid)
   RETURNS TABLE (
-	oTechnologyDataUUID uuid,
-	oTechnologyDataName varchar(250),
-	oTechnologyUUID uuid,
-	oTechnologyData varchar(32672),
-	oLicenseFee integer,
-	oRetailPrice integer,
-	oTechnologyDataDescription varchar(32672),
-	oTechnologyDataThumbnail bytea,
-	oTechnologyDataImgRef character varying,
-	oTagList uuid[],
-	oComponentList uuid[],
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid
+	TechnologyDataUUID uuid,
+	TechnologyDataName varchar(250),
+	TechnologyUUID uuid,
+	TechnologyData varchar(32672),
+	LicenseFee integer,
+	RetailPrice integer,
+	TechnologyDataDescription varchar(32672),
+	TechnologyDataThumbnail bytea,
+	TechnologyDataImgRef character varying,
+	TagList uuid[],
+	ComponentList uuid[],
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid
   ) AS	  
-$BODY$    
+$$    
+	#variable_conflict use_column
       DECLARE 	vCompName text;
 				vTagName text; 
 				vTechnologyDataID int; 
@@ -1182,7 +1199,7 @@ $BODY$
         -- Return Error Code * -1
         RETURN;
       END;
-  $BODY$
+  $$
   LANGUAGE plpgsql;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
@@ -1198,7 +1215,7 @@ Return Value:
  TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
 ######################################################*/
 -- SetPaymentInvoiceOffer  
-CREATE OR REPLACE FUNCTION SetPaymentInvoiceOffer ( 
+CREATE FUNCTION SetPaymentInvoiceOffer ( 
 	vOfferRequestUUID uuid,
 	vInvoice varchar(32672),
 	vCreatedBy uuid	
@@ -1214,7 +1231,8 @@ CREATE OR REPLACE FUNCTION SetPaymentInvoiceOffer (
 	)
   
    AS
-  $$    
+  $$  
+	#variable_conflict use_column
       DECLARE  
 		vPaymentInvoiceID integer;
 		vPaymentInvoiceUUID uuid;
@@ -1440,7 +1458,7 @@ CREATE FUNCTION GetAllComponents()
 	SELECT  componentuuid,
     		componentname,
     		componentparentid,
-		componentdescription, 
+			componentdescription, 
     		cp.createdat  at time zone 'utc',
     		ur.useruuid as createdby,
     		cp.updatedat  at time zone 'utc',
@@ -1707,7 +1725,7 @@ CREATE FUNCTION GetTechnologyByName(vtechName varchar)
     AS $$ 
 	SELECT  technologyuuid,
     		technologyname, 
-		technologydescription, 
+			technologydescription, 
     		tg.createdat at time zone 'utc',
     		ur.useruuid as createdby,
     		tg.updatedat at time zone 'utc',
@@ -2226,8 +2244,8 @@ CREATE FUNCTION GetTopTechnologyDataSince(
 		vTopValue integer
 	)
 RETURNS TABLE (
-	oTechnologyDataName varchar(250),
-	oRank integer
+	TechnologyDataName varchar(250),
+	Rank integer
 	) AS 
 $$	 
 	;with activatedLinceses as(
@@ -2264,8 +2282,8 @@ CREATE FUNCTION GetMostUsedComponents(
 		vTopValue integer
 	)
 RETURNS TABLE (
-	oComponentName varchar(250),
-	oAmount integer
+	ComponentName varchar(250),
+	Amount integer
 ) AS
 $$
 	;with activatedLinceses as(
@@ -2304,10 +2322,10 @@ Return Value: TechnologyDataName, Date, Amount, DayHour
 		vSinceDate timestamp without time zone		
 	)
 RETURNS TABLE (
-	  oTechnologyDataName varchar(250),
-	  oDate date,
-	  oAmount integer,
-	  oDayHour integer
+	  TechnologyDataName varchar(250),
+	  Date date,
+	  Amount integer,
+	  DayHour integer
 	) AS
 $$
 	;with activatedLicenses as(
@@ -2346,11 +2364,11 @@ CREATE FUNCTION GetPaymentInvoiceForOfferRequest(
 		vOfferRequestUUID uuid
 	)
 RETURNS TABLE (
-	oPaymentInvoiceUUID uuid,
-	oOfferRequestUUID uuid,
-	oInvoice varchar(32672),
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid
+	PaymentInvoiceUUID uuid,
+	OfferRequestUUID uuid,
+	Invoice varchar(32672),
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid
 	) AS 
 $$	 
 	select 	pi.paymentinvoiceuuid,
@@ -2376,10 +2394,10 @@ CREATE FUNCTION GetOfferForPaymentInvoice(
 		vPaymentInvoiceUUID uuid
 	)
 RETURNS TABLE (
-	oOfferUUID uuid,
-	oPaymentInvoiceUUID uuid,	
-	oCreatedAt timestamp with time zone,
-	oCreatedBy uuid
+	OfferUUID uuid,
+	PaymentInvoiceUUID uuid,	
+	CreatedAt timestamp with time zone,
+	CreatedBy uuid
 	) AS 
 $$	 
 	select 	ofr.offerUUID,
@@ -2403,15 +2421,15 @@ CREATE FUNCTION GetComponentsByTechnology(
 		vTechnologyUUID uuid
 	)
 RETURNS TABLE (
-		oComponentUUID uuid,		
-		oComponentName varchar(250),
-		oComponentParentUUID uuid, 
-		oComponentParentName varchar(250),
-		oComponentDescription varchar(32672),
-		oCreatedat timestamp with time zone,
-		oCreatedby uuid,
-		oUpdatedat timestamp with time zone,
-		oUseruuid uuid
+		ComponentUUID uuid,		
+		ComponentName varchar(250),
+		ComponentParentUUID uuid, 
+		ComponentParentName varchar(250),
+		ComponentDescription varchar(32672),
+		Createdat timestamp with time zone,
+		Createdby uuid,
+		Updatedat timestamp with time zone,
+		Useruuid uuid
 	) AS 
 $$	 
 	select 	co.componentUUID,		
@@ -2446,13 +2464,13 @@ CREATE FUNCTION GetTechnologyForOfferRequest(
 		vOfferRequestUUID uuid
 	)
 RETURNS TABLE (
-		oTechnologyuuid uuid,
-		oTechnologyName varchar(250),
-		oTechnologyDescription varchar(32672),
-		oCreatedat timestamp with time zone,
-		oCreatedby uuid,
-		oUpdatedat timestamp with time zone,
-		oUpdatedby uuid
+		Technologyuuid uuid,
+		TechnologyName varchar(250),
+		TechnologyDescription varchar(32672),
+		Createdat timestamp with time zone,
+		Createdby uuid,
+		Updatedat timestamp with time zone,
+		Updatedby uuid
 	) AS 
 $$	 
 	select 	tc.technologyuuid,
@@ -2483,7 +2501,7 @@ CREATE FUNCTION GetLicenseFeeByTransaction(
 		vTransactionUUID uuid
 	) 
 RETURNS TABLE (
-		oLicenseFee integer
+		LicenseFee integer
 	) AS 
 $$	 
 	select	td.licenseFee
@@ -2506,17 +2524,17 @@ CREATE OR REPLACE FUNCTION GetTransactionByOfferRequest(
 		vOfferRequestUUID uuid
 	)
 RETURNS TABLE (
-		oTransactionuuid uuid,
-		oBuyer uuid,
-		oOfferuuid uuid,
-		oOfferrequestuuid uuid,
-		oPaymentuuid uuid,
-		oPaymentinvoiceid uuid,
-		oLicenseorderuuid uuid,
-		oCreatedat timestamp with time zone,
-		oCreatedby uuid,
-		oUpdatedat timestamp with time zone,
-		oUpdatedby uuid
+		Transactionuuid uuid,
+		Buyer uuid,
+		Offeruuid uuid,
+		Offerrequestuuid uuid,
+		Paymentuuid uuid,
+		Paymentinvoiceid uuid,
+		Licenseorderuuid uuid,
+		Createdat timestamp with time zone,
+		Createdby uuid,
+		Updatedat timestamp with time zone,
+		Updatedby uuid
 	) AS 
 $$	 
 	select	ts.transactionuuid,
@@ -2607,12 +2625,12 @@ CREATE FUNCTION GetOfferForTransaction(
 		vTransactionUUID uuid
 	)
 RETURNS TABLE (
-		oOfferUUID uuid,
-		oPaymentInvoiceUUID uuid,	
-		oCreatedAt timestamp with time zone,
-		oCreatedBy uuid
+		OfferUUID uuid,
+		PaymentInvoiceUUID uuid,	
+		CreatedAt timestamp with time zone,
+		CreatedBy uuid
 	) AS 
-$$	 
+$$	 	
 	select 	ofr.offerUUID,
 		pi.PaymentInvoiceUUID,			
 		pi.createdat at time zone 'utc',
@@ -2637,12 +2655,12 @@ CREATE FUNCTION GetOfferForTicket(
 		vTicketID varchar(4000)
 	)
 RETURNS TABLE (
-		oOfferUUID uuid,
-		oPaymentInvoiceUUID uuid,	
-		oCreatedAt timestamp with time zone,
-		oCreatedBy uuid
+		OfferUUID uuid,
+		PaymentInvoiceUUID uuid,	
+		CreatedAt timestamp with time zone,
+		CreatedBy uuid
 	) AS 
-$$	 
+$$	 	 
 	select 	ofr.offerUUID,
 		pi.PaymentInvoiceUUID,			
 		pi.createdat at time zone 'utc',
@@ -2740,19 +2758,19 @@ CREATE FUNCTION GetTransactionByID(
 		vTransactionUUID uuid
 	)
 RETURNS TABLE (
-		oTransactionuuid uuid,
-		oBuyer uuid,
-		oOfferuuid uuid,
-		oOfferrequestuuid uuid,
-		oPaymentuuid uuid,
-		oPaymentinvoiceid uuid,
-		oLicenseorderuuid uuid,
-		oCreatedat timestamp with time zone,
-		oCreatedby uuid,
-		oUpdatedat timestamp with time zone,
-		oUpdatedby uuid
+		Transactionuuid uuid,
+		Buyer uuid,
+		Offeruuid uuid,
+		Offerrequestuuid uuid,
+		Paymentuuid uuid,
+		Paymentinvoiceid uuid,
+		Licenseorderuuid uuid,
+		Createdat timestamp with time zone,
+		Createdby uuid,
+		Updatedat timestamp with time zone,
+		Updatedby uuid
 	) AS 
-$$	 
+$$	  
 	select	ts.transactionuuid,
 		us.useruuid as buyer,
 		ofr.offeruuid,
