@@ -564,6 +564,18 @@ self.GetTransactionByOfferRequest = function (userUUID, offerRequestUUID, callba
             callback(error);
         });
 };
+
+//Get all transaction by given OfferRequest
+self.GetTransactionByID = function (userUUID, transactionUUID, callback) {
+    db.func('GetTransactionByID', [transactionUUID])
+        .then(function (data) {
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:", error.message || error); // print the error;
+            callback(error);
+        });
+};
 //</editor-fold>
 
 //<editor-fold desc="Tags">

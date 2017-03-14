@@ -1,5 +1,5 @@
 -- Generiert von Oracle SQL Developer Data Modeler 4.0.3.853
---   am/um:        2017-03-10 15:45:10 MEZ
+--   am/um:        2017-03-13 14:53:09 MEZ
 --   Site:      DB2/UDB 8.1
 --   Typ:      DB2/UDB 8.1
 
@@ -146,6 +146,26 @@ ALTER TABLE PaymentInvoice ADD CONSTRAINT PaymentInvoice_PK PRIMARY KEY (
 PaymentInvoiceID ) ;
 
 CREATE
+  TABLE Permissions
+  (
+    PermissionID   INTEGER ,
+    PermissionUUID UUID ,
+    Roles          INTEGER NOT NULL ,
+    FunctionName   VARCHAR (250)
+  ) ;
+
+CREATE
+  TABLE Roles
+  (
+    RoleID          INTEGER NOT NULL ,
+    RoleUUID        UUID ,
+    RoleBit         INTEGER ,
+    RoleName        VARCHAR (250) ,
+    RoleDescription VARCHAR
+  ) ;
+ALTER TABLE Roles ADD CONSTRAINT Roles_PK PRIMARY KEY ( RoleID ) ;
+
+CREATE
   TABLE Tags
   (
     TagID     INTEGER NOT NULL ,
@@ -251,6 +271,13 @@ CREATE
   ) ;
 ALTER TABLE Users ADD CONSTRAINT Users_PK PRIMARY KEY ( UserID ) ;
 ALTER TABLE Users ADD CONSTRAINT Users__UN UNIQUE ( UserEmail ) ;
+
+CREATE
+  TABLE UsersRoles
+  (
+    UserID INTEGER NOT NULL ,
+    RoleID INTEGER NOT NULL
+  ) ;
 
 ALTER TABLE Attributes ADD CONSTRAINT Attribubes_Users_FK FOREIGN KEY (
 CreatedBy ) REFERENCES Users ( UserID ) ON
@@ -419,12 +446,22 @@ UpdatedBy ) REFERENCES Users ( UserID ) ON
 DELETE
   NO ACTION;
 
+ALTER TABLE UsersRoles ADD CONSTRAINT UsersRoles_Roles_FK FOREIGN KEY ( RoleID
+) REFERENCES Roles ( RoleID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE UsersRoles ADD CONSTRAINT UsersRoles_Users_FK FOREIGN KEY ( UserID
+) REFERENCES Users ( UserID ) ON
+DELETE
+  NO ACTION;
+
 
 -- Zusammenfassungsbericht für Oracle SQL Developer Data Modeler: 
 -- 
--- CREATE TABLE                            18
+-- CREATE TABLE                            21
 -- CREATE INDEX                             0
--- ALTER TABLE                             55
+-- ALTER TABLE                             58
 -- CREATE VIEW                              0
 -- CREATE PACKAGE                           0
 -- CREATE PACKAGE BODY                      0
