@@ -80,15 +80,15 @@ router.post('/', validate({
                                     if (err) {
                                         next(err);
                                     } else {
-                                        var fullUrl = req.protocol + '://' + req.get('host') + req.baseurl + '/';
-                                        res.set('Location', fullUrl + offer[0].offeruuid);
+                                        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl;
+                                        res.set('Location', fullUrl + '/'  +offer[0].offeruuid);
                                         res.status(201);
                                         var invoiceIn  = JSON.parse(offer[0].invoice);
                                         var invoiceOut = {
                                             expiration: invoiceIn.expiration,
                                             transfers: invoiceIn.transfers
                                         };
-                                        res.json({'id': offer[0].offeruuid, 'invoice': invoiceOut}); //TODO: Send offer json
+                                        res.json({'id': offer[0].offeruuid, 'invoice': invoiceOut});
                                     }
                                 });
                             }
