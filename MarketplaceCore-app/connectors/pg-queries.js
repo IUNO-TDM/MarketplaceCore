@@ -110,18 +110,12 @@ self.GetTechnologyDataByID = function (userUUID, technologyDataUUID, callback) {
 //Get TechnologyDataByParams
 self.GetTechnologyDataByParams = function (userUUID, params, callback) {
     var technologies = params['technologies'];
-    var technologyData = params['technologyData'];
-    var tags = params['tags'];
     var components = params['components'];
-    var attributes = params['attributes'];
 
     db.func('GetTechnologyDataByParams',
-        [   userUUID,
-            technologyData,
+        [   components,
             technologies,
-            tags,
-            components,
-            attributes
+            userUUID
         ]
     )
         .then(function (data) {
