@@ -15,11 +15,7 @@ payment_service.on('StateChange', function(state){
 
         queries.GetOfferForTransaction(config.CONFIG.USER_UUID, transactionUuid, function (err, data) {
             if (!err) {
-
-
-
-                // var hsmId = data.hsmId;
-                license_service.emit('updateAvailable',data[0].oofferuuid, 'TW552HSM');
+                license_service.emit('updateAvailable',data[0].offeruuid, 'TW552HSM');
             }
         });
     }

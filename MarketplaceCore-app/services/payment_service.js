@@ -47,7 +47,7 @@ payment_service.createLocalInvoice = function(invoice, callback){
         }
     };
     var req = http.request(options, function (res) {
-            console.log(res.statusCode + ' ' + res.statusMessage);
+            console.log("Got answer from PS for CreateLocalInvoice:" + res.statusCode + ' ' + res.statusMessage);
             res.on('data', function(data){
                 var invoice = JSON.parse(data);
                 payment_service.registerStateChangeUpdates(invoice.invoiceId);
@@ -66,7 +66,7 @@ payment_service.getInvoiceTransfers = function(invoice, callback){
         method: 'GET'
     };
     var req = http.request(options, function (res) {
-            console.log(res.statusCode + ' ' + res.statusMessage);
+            console.log("Got answer from PS for GetInvoiceTransfer:" + res.statusCode + ' ' + res.statusMessage);
             res.on('data', function(data){
                 var transfers = JSON.parse(data.toString());
                 callback(null, transfers);
