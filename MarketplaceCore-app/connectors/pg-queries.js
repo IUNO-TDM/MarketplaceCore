@@ -116,7 +116,7 @@ self.GetTechnologyDataByParams = function (userUUID, params, callback) {
         [   components,
             technologies,
             userUUID
-        ]
+        ], 1
     )
         .then(function (data) {
             logger.debug(JSON.stringify(data));
