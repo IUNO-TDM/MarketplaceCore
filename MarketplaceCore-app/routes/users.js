@@ -11,39 +11,17 @@ var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
 
-/*router.get('/', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
- logger.debug(req);
- queries.GetAllUsers(req.query['userUUID'], function(err, data){
- if (err){
- next(err);
- }
- else {
- res.json(data);
- }
- });
- });*/
+router.get('/:id', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
 
-router.get('/', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
-    if(req.query['firstName'] && req.query['lastName']){
-        queries.GetUserByName(req.query['userUUID'], req.query['firstName'], req.query['lastName'], function (err, data) {
-            if (err) {
-                next(err);
-            }
-            else {
-                res.json(data);
-            }
-        });
-    }
-    else {
-        queries.GetUserByID(req.query['userUUID'], function (err, data) {
-            if (err) {
-                next(err);
-            }
-            else {
-                res.json(data);
-            }
-        });
-    }
+    queries.GetUserByID(req.query['userUUID'], req.params['id'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
+
 });
 
 router.post('/', validate({
