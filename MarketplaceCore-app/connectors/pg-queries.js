@@ -120,7 +120,7 @@ self.GetTechnologyDataByParams = function (userUUID, params, callback) {
     )
         .then(function (data) {
             logger.debug(JSON.stringify(data));
-            callback(null, data);
+            callback(null, data.result);
         })
         .catch(function (error) {
             logger.crit("ERROR:", error.message || error); // print the error;
