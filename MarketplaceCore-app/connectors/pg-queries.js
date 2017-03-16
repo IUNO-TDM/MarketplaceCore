@@ -29,7 +29,7 @@ self.GetAllUsers = function (userUUID, callback) {
 
 // GetUserByID(userUUID, dataId)
 self.GetUserByID = function (userUUID, id, callback) {
-    db.func('GetUserByID', [id])
+    db.func('GetUserByID', [id, userUUID])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {

@@ -72,6 +72,10 @@ router.get('/:id/image', validate({query: require('../schema/users_schema').GetS
                     res.send(fileBuffer);
                 });
             }
+            else {
+                logger.info('No image found for user');
+                res.sendStatus(404);
+            }
 
         }
     });
