@@ -9,82 +9,82 @@
 DO
 $$
 	BEGIN
-		perform createrole('Public','Public users');  -- 1
-		perform createrole('ExternalService','External services such as WebService');  -- 2
-		perform createrole('InternalService','Internal services such as PaymentService');  -- 4
-		perform createrole('Admin','System administrator');  -- 8
-		perform createrole('DBUser','Database user');  -- 16
+		perform createrole('Public','Public users',null);  -- 1
+		perform createrole('ExternalService','External services such as WebService',null);  -- 2
+		perform createrole('InternalService','Internal services such as PaymentService',null);  -- 4
+		perform createrole('Admin','System administrator',null);  -- 8
+		perform createrole('DBUser','Database user',null);  -- 16
 	END;
 $$;
 --Create Permissions
 DO
 $$
 	BEGIN
-		perform createpermission(16,'uuid_nil');
-		perform createpermission(16,'uuid_ns_dns');
-		perform createpermission(16,'uuid_ns_url');
-		perform createpermission(16,'uuid_ns_oid');
-		perform createpermission(16,'uuid_ns_x500');
-		perform createpermission(16,'uuid_generate_v1');
-		perform createpermission(16,'uuid_generate_v1mc');
-		perform createpermission(16,'uuid_generate_v3');
-		perform createpermission(16,'uuid_generate_v4');
-		perform createpermission(16,'uuid_generate_v5');
-		perform createpermission(16,'createlog');
-		perform createpermission(30,'createuser');
-		perform createpermission(31,'createtechnologydata');
-		perform createpermission(31,'createtag');
-		perform createpermission(30,'gettagbyname');
-		perform createpermission(30,'createtechnologydatatags');
-		perform createpermission(31,'createattribute');
-		perform createpermission(30,'createcomponent');
-		perform createpermission(30,'createtechnology');
-		perform createpermission(28,'createpaymentinvoice');
-		perform createpermission(16,'createtechnologydatacomponents');
-		perform createpermission(16,'createcomponentsattribute');
-		perform createpermission(16,'createcomponentstechnologies');
-		perform createpermission(28,'createofferrequest');
-		perform createpermission(30,'gettagbyid');
-		perform createpermission(28,'createoffer');
-		perform createpermission(28,'createlicenseorder');
-		perform createpermission(28,'createpayment');
-		perform createpermission(30,'setcomponent');
-		perform createpermission(16,'settechnologydata');
-		perform createpermission(28,'setpaymentinvoiceoffer');
-		perform createpermission(28,'getalltechnologydata');
-		perform createpermission(28,'gettechnologydatabyid');
-		perform createpermission(28,'gettechnologydatabyname');
-		perform createpermission(30,'getallcomponents');
-		perform createpermission(28,'getcomponentbyid');
-		perform createpermission(28,'getcomponentbyname');
-		perform createpermission(30,'getalltags');
-		perform createpermission(30,'getalltechnologies');
-		perform createpermission(28,'gettechnologybyid');
-		perform createpermission(28,'gettechnologybyname');
-		perform createpermission(28,'gettechnologydatabyparams');
-		perform createpermission(30,'getallusers');
-		perform createpermission(28,'getuserbyid');
-		perform createpermission(28,'getuserbyname');
-		perform createpermission(28,'getalloffers');
-		perform createpermission(28,'getallattributes');
-		perform createpermission(28,'getattributebyid');
-		perform createpermission(28,'getattributebyname');
-		perform createpermission(28,'getofferbyrequestid');
-		perform createpermission(28,'getofferbyid');
-		perform createpermission(16,'datediff');
-		perform createpermission(30,'getactivatedlicensessince');
-		perform createpermission(30,'gettoptechnologydatasince');
-		perform createpermission(30,'getmostusedcomponents');
-		perform createpermission(28,'getofferfortransaction');
-		perform createpermission(30,'getworkloadsince');
-		perform createpermission(28,'getpaymentinvoiceforofferrequest');
-		perform createpermission(28,'getofferforpaymentinvoice');
-		perform createpermission(28,'getcomponentsbytechnology');
-		perform createpermission(28,'gettechnologyforofferrequest');
-		perform createpermission(28,'getlicensefeebytransaction');
-		perform createpermission(28,'gettransactionbyofferrequest');
-		perform createpermission(28,'gettechnologydatabyofferrequest');
-		perform createpermission(28,'getofferforticket');	
+		perform createpermission(16,'uuid_nil',null);
+		perform createpermission(16,'uuid_ns_dns',null);
+		perform createpermission(16,'uuid_ns_url',null);
+		perform createpermission(16,'uuid_ns_oid',null);
+		perform createpermission(16,'uuid_ns_x500',null);
+		perform createpermission(16,'uuid_generate_v1',null);
+		perform createpermission(16,'uuid_generate_v1mc',null);
+		perform createpermission(16,'uuid_generate_v3',null);
+		perform createpermission(16,'uuid_generate_v4',null);
+		perform createpermission(16,'uuid_generate_v5',null);
+		perform createpermission(16,'createlog',null);
+		perform createpermission(30,'createuser',null);
+		perform createpermission(31,'createtechnologydata',null);
+		perform createpermission(31,'createtag',null);
+		perform createpermission(30,'gettagbyname',null);
+		perform createpermission(30,'createtechnologydatatags',null);
+		perform createpermission(31,'createattribute',null);
+		perform createpermission(30,'createcomponent',null);
+		perform createpermission(30,'createtechnology',null);
+		perform createpermission(28,'createpaymentinvoice',null);
+		perform createpermission(16,'createtechnologydatacomponents',null);
+		perform createpermission(16,'createcomponentsattribute',null);
+		perform createpermission(16,'createcomponentstechnologies',null);
+		perform createpermission(28,'createofferrequest',null);
+		perform createpermission(30,'gettagbyid',null);
+		perform createpermission(28,'createoffer',null);
+		perform createpermission(28,'createlicenseorder',null);
+		perform createpermission(28,'createpayment',null);
+		perform createpermission(30,'setcomponent',null);
+		perform createpermission(16,'settechnologydata',null);
+		perform createpermission(28,'setpaymentinvoiceoffer',null);
+		perform createpermission(28,'getalltechnologydata',null);
+		perform createpermission(28,'gettechnologydatabyid',null);
+		perform createpermission(28,'gettechnologydatabyname',null);
+		perform createpermission(30,'getallcomponents',null);
+		perform createpermission(28,'getcomponentbyid',null);
+		perform createpermission(28,'getcomponentbyname',null);
+		perform createpermission(30,'getalltags',null);
+		perform createpermission(30,'getalltechnologies',null);
+		perform createpermission(28,'gettechnologybyid',null);
+		perform createpermission(28,'gettechnologybyname',null);
+		perform createpermission(28,'gettechnologydatabyparams',null);
+		perform createpermission(30,'getallusers',null);
+		perform createpermission(28,'getuserbyid',null);
+		perform createpermission(28,'getuserbyname',null);
+		perform createpermission(28,'getalloffers',null);
+		perform createpermission(28,'getallattributes',null);
+		perform createpermission(28,'getattributebyid',null);
+		perform createpermission(28,'getattributebyname',null);
+		perform createpermission(28,'getofferbyrequestid',null);
+		perform createpermission(28,'getofferbyid',null);
+		perform createpermission(16,'datediff',null);
+		perform createpermission(30,'getactivatedlicensessince',null);
+		perform createpermission(30,'gettoptechnologydatasince',null);
+		perform createpermission(30,'getmostusedcomponents',null);
+		perform createpermission(28,'getofferfortransaction',null);
+		perform createpermission(30,'getworkloadsince',null);
+		perform createpermission(28,'getpaymentinvoiceforofferrequest',null);
+		perform createpermission(28,'getofferforpaymentinvoice',null);
+		perform createpermission(28,'getcomponentsbytechnology',null);
+		perform createpermission(28,'gettechnologyforofferrequest',null);
+		perform createpermission(28,'getlicensefeebytransaction',null);
+		perform createpermission(28,'gettransactionbyofferrequest',null);
+		perform createpermission(28,'gettechnologydatabyofferrequest',null);
+		perform createpermission(28,'getofferforticket',null);	
 	END;
 $$;
 -- Insert System User
@@ -104,9 +104,11 @@ DO
         perform public.createuser(
             'System', 		-- <UserFirstName>
             'Admin', 		-- <UserLastName>
-            'system@admin.com' -- <EmailAddress>
+            'system@admin.com', -- <EmailAddress>
+			null
         );	
 		
+		update users set useruuid = '16f69912-d6be-4ef0-ada8-2c1c75578b51'::uuid where userid = 1;
         -- Create Technologies
             -- Get UserID
             vUserID := (select useruuid from users where userid = 1);            
@@ -258,7 +260,7 @@ DO
 $$
 DECLARE 
 	vtechnologydatauuid uuid := (select technologydatauuid from technologydata where technologydataid = (select max(technologydataid) from technologydata));
-	vAmount integer := 5;
+	vAmount integer := 5; 
 	vHSMID text := 'something';
 	vUserUUID uuid := (select useruuid from users limit 1);
 	vBuyerUUID uuid;
@@ -271,7 +273,7 @@ DECLARE
 
 	BEGIN
 	  -- Create Buyer 	
-	  perform createuser('Buyer','Cool','buyer10.cool@coolinc.com');
+	  perform createuser('Buyer','Cool','buyer10.cool@coolinc.com', null);
 	  vBuyerUUID := (select useruuid from users limit 1);
 	  -- Create OfferRequest
 	  perform createofferrequest(vtechnologydatauuid,vAmount,vHSMID,vUserUUID,vBuyerUUID);
