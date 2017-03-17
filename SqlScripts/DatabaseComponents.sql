@@ -73,12 +73,12 @@ $BODY$
       BEGIN       
 		set role dblink_loguser;
 		if(not vConnExist or vConnExist is null) then				
-				perform dblink_connect(vConnName,'fdtest'); 
+				perform dblink_connect(vConnName,'fdtest');  
 			else			
-				set role dblink_loguser;				 
-				perform dblink(vConnName,vSqlCmd);
-				perform dblink_disconnect(vConnName);  
+				set role dblink_loguser;		 
 		end if;	
+				perform dblink(vConnName,vSqlCmd);
+				perform dblink_disconnect(vConnName); 
 				set role postgres;        
       END;
   $BODY$
