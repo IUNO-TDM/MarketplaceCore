@@ -24,6 +24,7 @@ router.get('/:id', validate({query: require('../schema/users_schema').GetSingle}
 
 });
 
+//TODO: past image to it
 router.post('/', validate({
     body: require('../schema/users_schema').SaveDataBody,
     query: require('../schema/users_schema').SaveDataQuery
