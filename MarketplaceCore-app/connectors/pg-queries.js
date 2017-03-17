@@ -17,7 +17,7 @@ var self = {};
 //<editor-fold desc="Users">
 // GetAllUsers(userUUID)
 self.GetAllUsers = function (userUUID, callback) {
-    db.func('GetAllUsers')
+    db.func('GetAllUsers',[userUUID])
         .then(function (data) {
             callback(null, data)
         })
@@ -45,7 +45,7 @@ self.GetUserByID = function (userUUID, id, callback) {
 
 // GetUserByID(userUUID, firstName, lastName)
 self.GetUserByName = function (userUUID, firstName, lastName, callback) {
-    db.func('GetUserByName', [firstName, lastName])
+    db.func('GetUserByName', [firstName, lastName, userUUID])
         .then(function (data) {
             //Only return the first element
             //TODO: Correction has to be made. It's is possible to have many users with the same name, e.g. Michael Mueller
@@ -66,7 +66,7 @@ self.CreateUser = function (userUUID, data, callback) {
     var firstName = data['firstName'];
     var lastName = data['lastName'];
     var emailAddress = data['emailAddress'];
-    db.func('CreateUser', [firstName, lastName, emailAddress])
+    db.func('CreateUser', [firstName, lastName, emailAddress, userUUID])
         .then(function (data) {
             callback(null, data)
         })
@@ -81,7 +81,7 @@ self.CreateUser = function (userUUID, data, callback) {
 //<editor-fold desc="TechnologyData">
 // GetAllTechnologyData
 self.GetAllTechnologyData = function (userUUID, callback) {
-    db.func('GetAllTechnologyData')
+    db.func('GetAllTechnologyData', [userUUID])
         .then(function (data) {
             callback(null, data)
         })
@@ -148,7 +148,7 @@ self.GetTechnologyDataByName = function (userUUID, technologyDataName, callback)
 //GetTechnologyDataByName
 self.GetTechnologyDataByOfferRequest = function (userUUID, offerRequestUUID, callback) {
 
-    db.func('GetTechnologyDataByOfferRequest', [offerRequestUUID])
+    db.func('GetTechnologyDataByOfferRequest', [offerRequestUUID, userUUID])
         .then(function (data) {
             callback(null, data)
         })
@@ -160,7 +160,7 @@ self.GetTechnologyDataByOfferRequest = function (userUUID, offerRequestUUID, cal
 
 //Get all transaction by given OfferRequest
 self.GetLicenseFeeByTransaction = function (userUUID, transactionUUID, callback) {
-    db.func('GetLicenseFeeByTransaction', [transactionUUID])
+    db.func('GetLicenseFeeByTransaction', [transactionUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -205,7 +205,7 @@ self.SetTechnologyData = function (userUUID, data, callback) {
 //Get all Technologies
 self.GetAllTechnologies = function (userUUID, callback) {
 
-    db.func('GetAllTechnologies')
+    db.func('GetAllTechnologies', [userUUID])
         .then(function (data) {
             callback(null, data)
         })
@@ -218,7 +218,7 @@ self.GetAllTechnologies = function (userUUID, callback) {
 //Get technology by ID
 self.GetTechnologyByID = function (userUUID, technologyUUID, callback) {
 
-    db.func('GetTechnologyByID', [technologyUUID])
+    db.func('GetTechnologyByID', [technologyUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -231,7 +231,7 @@ self.GetTechnologyByID = function (userUUID, technologyUUID, callback) {
 //Get technology by OfferRequest
 self.GetTechnologyForOfferRequest = function (userUUID, offerRequestUUID, callback) {
 
-    db.func('GetTechnologyForOfferRequest', [offerRequestUUID])
+    db.func('GetTechnologyForOfferRequest', [offerRequestUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -243,7 +243,7 @@ self.GetTechnologyForOfferRequest = function (userUUID, offerRequestUUID, callba
 
 self.GetComponentByID = function (userUUID, componentUUID, callback) {
 
-    db.func('GetComponentByID', [componentUUID])
+    db.func('GetComponentByID', [componentUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -256,7 +256,7 @@ self.GetComponentByID = function (userUUID, componentUUID, callback) {
 //Get Component by Name
 self.GetComponentByName = function (userUUID, componentName, callback) {
 
-    db.func('GetComponentByName', [componentName])
+    db.func('GetComponentByName', [componentName, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -291,7 +291,7 @@ self.CreateTechnology = function (userUUID, data, callback) {
 //Get all GetAllComponents
 self.GetAllComponents = function (userUUID, callback) {
 
-    db.func('GetAllComponents')
+    db.func('GetAllComponents', [userUUID])
         .then(function (data) {
             callback(null, data)
         })
@@ -304,7 +304,7 @@ self.GetAllComponents = function (userUUID, callback) {
 //Get Component by ID
 self.GetComponentByID = function (userUUID, componentUUID, callback) {
 
-    db.func('GetComponentByID', [componentUUID])
+    db.func('GetComponentByID', [componentUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -317,7 +317,7 @@ self.GetComponentByID = function (userUUID, componentUUID, callback) {
 //Get Component by Name
 self.GetComponentByName = function (userUUID, componentName, callback) {
 
-    db.func('GetComponentByName', [componentName])
+    db.func('GetComponentByName', [componentName, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -330,7 +330,7 @@ self.GetComponentByName = function (userUUID, componentName, callback) {
 //Get Component by Technology
 self.GetComponentsByTechnology = function (userUUID, technologyUUID, callback) {
 
-    db.func('GetComponentsByTechnology', [technologyUUID])
+    db.func('GetComponentsByTechnology', [technologyUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -371,7 +371,7 @@ self.SetComponent = function (userUUID, data, callback) {
 //Get all GetAllAttributes
 self.GetAllAttributes = function (userUUID, callback) {
 
-    db.func('GetAllAttributes')
+    db.func('GetAllAttributes', userUUID)
         .then(function (data) {
             callback(null, data)
         })
@@ -384,7 +384,7 @@ self.GetAllAttributes = function (userUUID, callback) {
 //Get Attribute by ID
 self.GetAttributeByID = function (userUUID, attributeUUID, callback) {
 
-    db.func('GetAttributeByID', [attributeUUID])
+    db.func('GetAttributeByID', [attributeUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -397,7 +397,7 @@ self.GetAttributeByID = function (userUUID, attributeUUID, callback) {
 //Get Attribute by Name
 self.GetAttributeByName = function (userUUID, attributeName, callback) {
 
-    db.func('GetAttributeByName', [attributeName])
+    db.func('GetAttributeByName', [attributeName, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -429,7 +429,7 @@ self.CreateAttribute = function (userUUID, data, callback) {
 //<editor-fold desc="Offer">
 //Get all Offers
 self.GetAllOffers = function (userUUID, callback) {
-    db.func('GetAllOffers')
+    db.func('GetAllOffers', [userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -441,7 +441,7 @@ self.GetAllOffers = function (userUUID, callback) {
 
 //Get Offer by ID
 self.GetOfferByID = function (userUUID, offerUUID, callback) {
-    db.func('GetOfferByID', [offerUUID])
+    db.func('GetOfferByID', [offerUUID, userUUID])
         .then(function (data) {
             callback(null, data)
         })
@@ -453,7 +453,7 @@ self.GetOfferByID = function (userUUID, offerUUID, callback) {
 
 //Get Offer for Request
 self.GetOfferForRequest = function (userUUID, offerRequestUUID, callback) {
-    db.func('GetOfferByRequestID', [offerRequestUUID])
+    db.func('GetOfferByRequestID', [offerRequestUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -465,7 +465,7 @@ self.GetOfferForRequest = function (userUUID, offerRequestUUID, callback) {
 
 //Get Offer for Request
 self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callback) {
-    db.func('GetOfferForPaymentInvoice', [paymentInvoiceUUID])
+    db.func('GetOfferForPaymentInvoice', [paymentInvoiceUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -477,7 +477,7 @@ self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callbac
 
 //Get Offer for Request
 self.GetOfferForTransaction = function (userUUID, transactionUUID, callback) {
-    db.func('GetOfferForTransaction', [transactionUUID])
+    db.func('GetOfferForTransaction', [transactionUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -514,7 +514,7 @@ self.CreateOfferRequest = function (userUUID, requestData, callback) {
 //<editor-fold desc="Payment">
 // GetPaymentForOfferRequest
 self.GetPaymentInvoiceForOfferRequest = function(userUUID, offerRequestUUID, callback){
-    db.func('GetPaymentInvoiceForOfferRequest', [offerRequestUUID])
+    db.func('GetPaymentInvoiceForOfferRequest', [offerRequestUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -549,7 +549,7 @@ self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, cal
 //<editor-fold desc="Transactions">
 //Get all transaction by given OfferRequest
 self.GetTransactionByOfferRequest = function (userUUID, offerRequestUUID, callback) {
-    db.func('GetTransactionByOfferRequest', [offerRequestUUID])
+    db.func('GetTransactionByOfferRequest', [offerRequestUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -561,7 +561,7 @@ self.GetTransactionByOfferRequest = function (userUUID, offerRequestUUID, callba
 
 //Get all transaction by given OfferRequest
 self.GetTransactionByID = function (userUUID, transactionUUID, callback) {
-    db.func('GetTransactionByID', [transactionUUID])
+    db.func('GetTransactionByID', [transactionUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
@@ -576,7 +576,7 @@ self.GetTransactionByID = function (userUUID, transactionUUID, callback) {
 //Get Tag for given technologydata
 //TODO: Implementation
 self.GetTagsForTechnologyData = function (userUUID, data, callback){
-        db.func('GetTagsForTechnologyData', [data])
+        db.func('GetTagsForTechnologyData', [data, userUUID])
             .then(function (data) {
                 callback(null, data);
             })
@@ -589,7 +589,7 @@ self.GetTagsForTechnologyData = function (userUUID, data, callback){
 
 //<editor-fold desc="Reports">
 self.GetActivatedLicensesSince = function (userUUID, sinceDate, callback) {
-    db.func('GetActivatedLicensesSince',[sinceDate])
+    db.func('GetActivatedLicensesSince',[sinceDate, userUUID])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -601,7 +601,7 @@ self.GetActivatedLicensesSince = function (userUUID, sinceDate, callback) {
 };
 
 self.GetTopTechnologyDataSince = function(userUUID, sinceDate, topValue, callback){
-    db.func('GetTopTechnologyDataSince', [sinceDate, topValue])
+    db.func('GetTopTechnologyDataSince', [sinceDate, topValue, userUUID])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -613,7 +613,7 @@ self.GetTopTechnologyDataSince = function(userUUID, sinceDate, topValue, callbac
 };
 
 self.GetWorkloadSince = function(userUUID, sinceDate, callback){
-    db.func('GetWorkloadSince', [sinceDate])
+    db.func('GetWorkloadSince', [sinceDate, userUUID])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -625,7 +625,7 @@ self.GetWorkloadSince = function(userUUID, sinceDate, callback){
 };
 
 self.GetMostUsedComponents = function(userUUID, sinceDate, topValue, callback){
-    db.func('GetMostUsedComponents', [sinceDate, topValue])
+    db.func('GetMostUsedComponents', [sinceDate, topValue, userUUID])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);

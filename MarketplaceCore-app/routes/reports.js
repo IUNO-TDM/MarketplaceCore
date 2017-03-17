@@ -10,7 +10,6 @@ var router = express.Router();
 var logger = require('../global/logger');
 var queries = require('../connectors/pg-queries');
 
-
 router.get('/', function (req, res, next) {
        if(req.query['sinceDate'] && req.query['topValue']) {
            queries.GetTopTechnologyDataSince(req.query['userUUID'], req.query['sinceDate'], req.query['topValue'], function (err, data) {
@@ -36,7 +35,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/favorit/', function (req, res, next) {
-    queries.GetMostUsedComponents(req.query['userUUID'], req.params['sinceDate'], req.params['topValue'], function (err, data) {
+    queries.GetMostUsedComponents(req.query['userUUID'], req.query['sinceDate'], req.query['topValue'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -48,7 +47,7 @@ router.get('/favorit/', function (req, res, next) {
 });
 
 router.get('/workload/', function (req, res, next) {
-    queries.GetWorkloadSince(req.query['userUUID'], req.params['sinceDate'], function (err, data) {
+    queries.GetWorkloadSince(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -59,7 +58,5 @@ router.get('/workload/', function (req, res, next) {
     });
 
 });
-
-
 
 module.exports = router;

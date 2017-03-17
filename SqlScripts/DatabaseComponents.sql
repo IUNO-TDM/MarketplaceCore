@@ -47,6 +47,9 @@ CREATE SEQUENCE RoleID START 1;
 -- PermissionID
 CREATE SEQUENCE PermissionID START 1;
 -- ##########################################################################
+-- Create Indexes
+CREATE UNIQUE INDEX invoice_idx ON paymentinvoice (invoice);
+-- ##########################################################################
 -- Create Functions
 -- CreateLog
 CREATE FUNCTION public.createlog(
