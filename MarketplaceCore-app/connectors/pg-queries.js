@@ -176,18 +176,20 @@ self.SetTechnologyData = function (userUUID, data, callback) {
     var technologyDataDescription = data['technologyDataDescription'];
     var technologyUUID = data['technologyUUID'];
     var licenseFee = data['licenseFee'];
+    var retailPrice = data['retailPrice'];
     var tagList = data['tagList'];
     var componentList = data['componentList'];
 
     db.func('SetTechnologyData',
-        [technologyDataName,
+        [   technologyDataName,
             technologyData,
             technologyDataDescription,
             technologyUUID,
             licenseFee,
+            retailPrice,
             tagList,
-            userUUID,
-            componentList
+            componentList,
+            userUUID
         ])
         .then(function (data) {
             logger.debug(data);
