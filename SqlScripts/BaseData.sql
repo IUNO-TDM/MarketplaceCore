@@ -226,8 +226,46 @@ $$
         DECLARE  vUserUUID uuid := (select useruuid from users where userid = 1);
 				 vTechnologyUUID uuid := (select technologyuuid from technologies where technologyid = 1);
   BEGIN
-  		-- Create TechnologyData      
-        -- Cherry with Mango
+  		-- Create TechnologyData   
+		-- Cherry with Mango
+        perform public.settechnologydata(
+            'CheMa',		     				 -- <technologydataname character varying>, 
+            '{
+			  ""recipe"": {
+				""id"": ""TestProgram"",
+				""lines"": [
+				  {
+					""components"": [
+					  {
+						""ingredient"": ""Orangensaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Apfelsaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Johannisbeersaft"",
+						""amount"": 5
+					  }
+					],
+					""timing"": 1,
+					""sleep"": 0
+				  }
+				]
+			  }
+			}',	     				 -- <technologydata character varying>, 
+            'Cherry with Mango', 				 -- <technologydatadescription character varying>, 
+            vTechnologyUUID,    								 -- <vtechnologyid integer>, 
+            50000,
+			150000,
+            '{Delicious, Cherry, Mango, Yummy}', -- <taglist text[]>,            						 		 -- <createdby integer>, 
+            '{Cherry Juice,Mango Juice}',    							 -- <componentlist integer[]>
+			-- vUserUUID,
+			vUserUUID  
+		 
+		 ); 
+		-- Other Juice
         perform public.settechnologydata(
             'CSaefte',		     				 -- <technologydataname character varying>, 
             '{
