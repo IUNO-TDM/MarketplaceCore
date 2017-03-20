@@ -59,6 +59,8 @@ self.GetSingle = {
     }
 };
 
+
+//TODO: Verify this schema
 self.SaveDataBody = {
     type: 'object',
     properties: {
@@ -79,7 +81,11 @@ self.SaveDataBody = {
             required: false
         },
         licenseFee: {
-            type: 'string',
+            type: 'number',
+            required: false
+        },
+        retailPrice: {
+            type: 'number',
             required: false
         },
         tagList: {

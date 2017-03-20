@@ -58,7 +58,7 @@ router.post('/', validate({
         }
 
         var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
-        res.set('Location', fullUrl + data[0]['oattributeuuid']);
+        res.set('Location', fullUrl + data[0]['attributeuuid']);
         res.sendStatus(201);
     });
 });

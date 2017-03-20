@@ -60,8 +60,8 @@ router.post('/', validate({
             next(err);
         }
 
-        var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        res.set('Location', fullUrl + data.id);
+        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
+        res.set('Location', fullUrl + data[0]['technologydatauuid']);
         res.sendStatus(201);
     });
 });

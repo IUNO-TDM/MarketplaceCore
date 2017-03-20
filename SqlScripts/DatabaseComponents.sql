@@ -13,6 +13,8 @@
     CONNECTION LIMIT = -1;*/
 -- Install Extension UUID-OSSP
 CREATE EXTENSION "uuid-ossp";
+-- Install Extension dblink
+CREATE EXTENSION "dblink";
 -- Create Sequences
 -- UserID
 CREATE SEQUENCE UserID START 1;
@@ -45,21 +47,45 @@ CREATE SEQUENCE RoleID START 1;
 -- PermissionID
 CREATE SEQUENCE PermissionID START 1;
 -- ##########################################################################
+-- Create Indexes
+CREATE UNIQUE INDEX invoice_idx ON paymentinvoice (invoice);
+-- ##########################################################################
 -- Create Functions
 -- CreateLog
-CREATE FUNCTION CreateLog(LogStatusID integer, LogMessage varchar(32672), LogObjectName varchar(250), Parameters varchar(32672))
-  RETURNS VOID AS
-  $$      
-      DECLARE LogID integer:= (select nextval('LogID'));
-      BEGIN        
-        INSERT INTO LogTable(LogID, LogStatusID, LogMessage, LogObjectName, Parameters,CreatedAt)
-        VALUES(LogID, LogStatusID, LogMessage, LogObjectName, Parameters, now());                
+CREATE FUNCTION public.createlog(
+    vlogstatusid integer,
+    vlogmessage character varying,
+    vlogobjectname character varying,
+    vparameters character varying)
+  RETURNS void AS
+$BODY$      
+      DECLARE vLogID integer:= (select nextval('LogID'));	      
+	      vSqlCmd varchar := 'INSERT INTO LogTable(LogID, LogStatusID, LogMessage, LogObjectName, Parameters,CreatedAt)'
+				 || 'VALUES( '
+				 || cast(vLogID as varchar)
+				 || ', ' || cast(vLogStatusID as varchar)
+				 || ', ''' || vLogMessage
+				 || ''', ''' || vLogObjectName
+				 || ''', ''' || vParameters
+				 || ''', ' || 'now())';
+		 vConnName text := 'conn';
+	      vConnExist bool := (select ('{' || vConnName || '}')::text[] <@ (select dblink_get_connections()));
+      BEGIN       
+		set role dblink_loguser;
+		if(not vConnExist or vConnExist is null) then				
+				perform dblink_connect(vConnName,'fdtest');  
+			else			
+				set role dblink_loguser;		 
+		end if;	
+				perform dblink(vConnName,vSqlCmd);
+				perform dblink_disconnect(vConnName); 
+				set role postgres;        
       END;
-  $$
-  LANGUAGE 'plpgsql';
+  $BODY$
+  LANGUAGE plpgsql;
 -- ##############################################################################
 -- CreateUser 
-CREATE FUNCTION CreateUser(vUserFirstName varchar(250), vUserLastName varchar(250), vUserEmail varchar(250))
+CREATE FUNCTION CreateUser(vUserFirstName varchar(250), vUserLastName varchar(250), vUserEmail varchar(250), vCreatedBy uuid)
   RETURNS TABLE (
 	UserUUID uuid,
 	UserFirstName varchar(250),
@@ -103,6 +129,7 @@ CREATE FUNCTION CreateUser(vUserFirstName varchar(250), vUserLastName varchar(25
                                 || vUserFirstName || ', UserLastName: ' || vUserLastName 
                                 || ', ' 
                                 || vUserEmail);
+		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateUser';
         -- End Log if error 
       END;
   $$
@@ -184,7 +211,7 @@ CREATE FUNCTION CreateTechnologyData (
 								|| ', RetailPrice: ' || cast(vRetailPrice as varchar)
                                 || ', CreatedBy: ' || vUserID);
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyData';
         RETURN;
       END;
   $$
@@ -234,16 +261,17 @@ CREATE FUNCTION CreateTechnologyData (
 				|| ', TagName: ' || vTagName 
 				|| ', CreatedBy: ' || cast(vUserID as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTag'; 
        RETURN;
       END;
   $$
-  LANGUAGE 'plpgsql';
+  LANGUAGE 'plpgsql'; 
 -- ##############################################################################  
 -- CreateTechnologyDataTags 
 CREATE FUNCTION CreateTechnologyDataTags (
   vTechnologyDataUUID uuid, 
-  vTagList text[]
+  vTagList text[],
+  vCreatedBy uuid
  )
   RETURNS TABLE (
 	TechnologyDataUUID uuid,
@@ -287,6 +315,7 @@ CREATE FUNCTION CreateTechnologyDataTags (
                                 || ', TagList: ' 
                                 || cast(vTagList as varchar));
         -- End Log if error 
+		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyDataTags';
         RETURN;
       END;
   $$
@@ -337,6 +366,7 @@ CREATE FUNCTION CreateAttribute (
 				|| ', CreatedBy: ' || cast(vUserID as varchar));
         -- End Log if error
         -- Return Error Code * -1
+		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateAttribute';
         RETURN;
       END;
   $$
@@ -407,7 +437,7 @@ CREATE OR REPLACE FUNCTION CreateComponent (
                                 || ', CreatedBy: ' 
                                 || cast(vUserID as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateComponent';
         RETURN;
       END;
   $$
@@ -467,7 +497,7 @@ $$
                                 || ', CreatedBy: ' 
                                 || cast(vUserID as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnology';
         RETURN;
       END;
   $$
@@ -476,7 +506,7 @@ $$
 -- CreateTechnologyDataComponents 
 CREATE FUNCTION CreateTechnologyDataComponents (
   vTechnologyDataUUID uuid, 
-  vComponentList text[]
+  vComponentList text[] 
  )
   RETURNS TABLE (
 	TechnologyDataUUID uuid,
@@ -517,7 +547,7 @@ CREATE FUNCTION CreateTechnologyDataComponents (
                                 'TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
                                 || ', ComponentList: ' || cast(vComponentList as varchar));
         -- End Log if error
-        -- Return 
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyDataComponents';
         RETURN;
       END;
   $$
@@ -569,7 +599,7 @@ CREATE FUNCTION CreateComponentsAttribute (
                                 || ', AttributeList: ' 
                                 || cast(vAttributeList as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateComponentsAttribute';
         RETURN;
       END;
   $$
@@ -620,7 +650,7 @@ CREATE FUNCTION CreateComponentsTechnologies (
                                 || ', TechnologyList: ' 
                                 || cast(vTechnologyList as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateComponentsTechnologies';
         RETURN;
       END;
   $$
@@ -688,7 +718,7 @@ CREATE FUNCTION CreateOfferRequest (
 				|| ', TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
 				|| ', Amount: ' || cast(vAmount as varchar) || ', HSMID: ' || vHSMID);
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateOfferRequest';
         RETURN;
       END;
   $$
@@ -752,7 +782,7 @@ CREATE FUNCTION CreatePaymentInvoice (
 				|| ', Invoice: ' || vInvoice
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreatePaymentInvoice';
         RETURN;
       END;
   $$
@@ -807,7 +837,7 @@ CREATE FUNCTION CreateOffer(
 				|| ', PaymentInvoiceUUID: ' || cast(vPaymentInvoiceUUID as varchar)
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateOffer';
         RETURN;
       END;
   $$
@@ -870,7 +900,7 @@ CREATE FUNCTION CreateLicenseOrder (
 				|| ', OfferID: ' || cast(vOfferID as varchar)
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateLicenseOrder';
         RETURN;
       END;
   $$
@@ -926,7 +956,7 @@ CREATE FUNCTION CreatePayment(
 				|| ', BitcoinTransaction: ' || vBitcoinTransaction
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreatePayment';
         RETURN ;
       END;
   $$
@@ -1051,7 +1081,7 @@ CREATE OR REPLACE FUNCTION SetComponent (
                                 || vComponentName || ', componentdescription: ' || vComponentDescription 
                                 || ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetComponent';
         RETURN;
       END;
   $$
@@ -1149,7 +1179,7 @@ $$
         perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList);
         
         -- Create relation from Tags to TechnologyData 
-        perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList);
+        perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList, CreatedBy);
      	
         -- Begin Log if success
         perform public.createlog(0,'Set TechnologyData sucessfully', 'SetTechnologyData', 
@@ -1196,7 +1226,7 @@ $$
                                 || ', TechnologyDataDescription: ' || vTechnologyDataDescription 
                                 || ', CreatedBy: ' || cast(vUserID as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetTechnologyData';
         RETURN;
       END;
   $$
@@ -1274,7 +1304,7 @@ CREATE FUNCTION SetPaymentInvoiceOffer (
 				|| ', invoice: ' || vInvoice  
                                 || ', CreatedBy: ' || cast(vUserID as varchar));
         -- End Log if error
-        -- Return Error Code * -1
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetPaymentInvoiceOffer';
         RETURN;
       END;
   $$
@@ -1341,36 +1371,33 @@ Return Value: Table with all TechnologyData
   CREATE FUNCTION public.GetTechnologyDataByID(
     vtechnologydatauuid uuid,
     vuseruuid uuid)
-RETURNS TABLE
-    	(
-			technologydatauuid uuid,
-			technologyuuid uuid,    		
-			technologydataname varchar(250),
-			technologydata varchar(32672),
-			technologydatadescription varchar(32672),
-			licensefee integer,
-			retailprice integer,
-			technologydatathumbnail bytea,
-			technologydataimgref varchar(4000),
-			createdat timestamp with time zone,
-			createdby uuid,	
-			updatedat timestamp with time zone,
-			useruuid uuid
-        )
-    AS $$ 
+  RETURNS TABLE(technologydatauuid uuid, 
+		technologyuuid uuid, 
+		technologydataname character varying, 
+		technologydata character varying, 
+		technologydatadescription character varying, 
+		licensefee integer, 
+		retailprice integer, 
+		technologydatathumbnail bytea, 
+		technologydataimgref character varying, 
+		createdat timestamp with time zone, 
+		createdby uuid, 
+		updatedat timestamp with time zone,
+		updatedyby uuid) AS
+$$ 
     	SELECT 	technologydatauuid,
-				tc.technologyuuid,    		
-				technologydataname,
-				technologydata,
-				technologydatadescription,
-				licensefee,
-				retailprice,
-				technologydatathumbnail,
-				technologydataimgref,
-				td.createdat  at time zone 'utc',
-				ur.useruuid as createdby,	
-				td.updatedat  at time zone 'utc',
-				us.useruuid as UpdatedBy
+		tc.technologyuuid,    		
+		technologydataname,
+		technologydata,
+		technologydatadescription,
+		licensefee,
+		retailprice,
+		technologydatathumbnail,
+		technologydataimgref,
+		td.createdat  at time zone 'utc',
+		ur.useruuid as createdby,	
+		td.updatedat  at time zone 'utc',
+		us.useruuid as UpdatedBy
 		FROM TechnologyData td
 		join technologies tc 
 		on td.technologyid = tc.technologyid
@@ -1442,7 +1469,7 @@ Get all Components
 Input paramteres: none	
 Return Value: Table with all Components 
 ######################################################*/
-CREATE FUNCTION GetAllComponents() 
+CREATE FUNCTION GetAllComponents(vUserUUID uuid) 
 	RETURNS TABLE
     	(
     componentuuid uuid,
@@ -1477,7 +1504,7 @@ Get a Component
 Input paramteres: componentuuid: uuid
 Return Value: Table with all Components 
 ######################################################*/
-CREATE FUNCTION GetComponentByID(vCompUUID uuid) 
+CREATE FUNCTION GetComponentByID(vCompUUID uuid, vUserUUID uuid) 
 	RETURNS TABLE
     	(
     componentuuid uuid,
@@ -1513,7 +1540,7 @@ Get a Component
 Input paramteres: componentname: string
 Return Value: Table with all Components 
 ######################################################*/
-CREATE FUNCTION GetComponentByName(vCompName varchar(250)) 
+CREATE FUNCTION GetComponentByName(vCompName varchar(250), vUserUUID uuid) 
 	RETURNS TABLE
     	(
     componentuuid uuid,
@@ -1549,7 +1576,7 @@ Get all Tags
 Input paramteres: none	
 Return Value: Table with all Tags 
 ######################################################*/
-CREATE FUNCTION GetAllTags() 
+CREATE FUNCTION GetAllTags(vUserUUID uuid) 
 	RETURNS TABLE
     	(
     taguuid uuid,
@@ -1580,7 +1607,7 @@ Get a Tag
 Input paramteres: TagUUID: uuid	
 Return Value: Table with all Tags 
 ######################################################*/
-CREATE FUNCTION GetTagByID(vTagID uuid) 
+CREATE FUNCTION GetTagByID(vTagID uuid, vUserUUID uuid) 
 	RETURNS TABLE
     	(
     taguuid uuid,
@@ -1612,7 +1639,7 @@ Get a Tag
 Input paramteres: TagName: string
 Return Value: Table with all Tags 
 ######################################################*/
-CREATE FUNCTION GetTagByName(vTagName varchar(250)) 
+CREATE FUNCTION GetTagByName(vTagName varchar(250), vUserUUID uuid) 
 	RETURNS TABLE
     	(
     taguuid uuid,
@@ -1644,7 +1671,7 @@ Get all Technologies
 Input paramteres: none	
 Return Value: Table with all Technologies
 ######################################################*/
-CREATE FUNCTION GetAllTechnologies() 
+CREATE FUNCTION GetAllTechnologies(vUserUUID uuid) 
 	RETURNS TABLE
     	(
     technologyuuid uuid,
@@ -1677,7 +1704,7 @@ Get all Technologies
 Input paramteres: TechnologyUUID: uuid	
 Return Value: Table with the Technology filter by TechnologyUUID
 ######################################################*/
-CREATE FUNCTION GetTechnologyByID(vtechUUID uuid) 
+CREATE FUNCTION GetTechnologyByID(vtechUUID uuid, vUserUUID uuid) 
 	RETURNS TABLE
     	(
     technologyuuid uuid,
@@ -1711,7 +1738,7 @@ Get all Technologies
 Input paramteres: TechnologyName: string
 Return Value: Table with the Technology filter by TechnologyName
 ######################################################*/
-CREATE FUNCTION GetTechnologyByName(vtechName varchar) 
+CREATE FUNCTION GetTechnologyByName(vtechName varchar, vUserUUID uuid) 
 	RETURNS TABLE
     	(
     technologyuuid uuid,
@@ -1746,73 +1773,94 @@ Get all Technologies
 Input paramteres: none	
 Return Value: Table with all Technologies
 ######################################################*/
-CREATE FUNCTION GetTechnologyDataByParams(
-    	userUUID varchar, vtechdata varchar, vtechnologies varchar, vtags varchar, vcomponents varchar, vattributes varchar
-		) 
-	RETURNS TABLE
-    	(	
-		technologydatauuid uuid,		
-		technologydataname character varying,
-		technologydatadescription varchar,
-		technologydata varchar(32672),
-		licensefee integer,
-		retailprice integer,
-		technologydatathumbnail bytea,
-		technologydataimgRef varchar,
-		useruuid uuid,
-		createdat timestamp with time zone,
-		updatedat timestamp with time zone,
-		technologyname varchar,
-        tagname varchar[],
-        componentname varchar[],
-		attributename varchar
-        )
-    AS $$ 
-    SELECT 	
-	td.technologydatauuid,
-    	td.technologydataname as technologydataname,
-    	td.technologydatadescription,
-    	td.technologydata,
-    	td.licensefee,
-		td.retailprice,
-    	td.technologydatathumbnail,
-    	td.technologydataimgref,
-    	us.useruuid,
-    	td.createdat at time zone 'utc',
-    	td.updatedat at time zone 'utc',
-        tc.technologyname as technologyname,
-        array_agg(tg.tagname) as tagname,
-        array_agg(ct.componentname) as componentname,
-        att.attributename
-    FROM technologydata td 
-    JOIN technologydatatags tdt ON td.technologydataid = tdt.technologydataid
-    JOIN tags tg ON tdt.tagid = tg.tagid
-    JOIN technologydatacomponents tdc ON tdc.technologydataid = td.technologydataid
-    JOIN components ct ON ct.componentid = tdc.componentid
-    JOIN technologies tc ON tc.technologyid = td.technologyid
-    JOIN componentsattribute cta ON cta.componentid = ct.componentid
-    JOIN attributes att ON att.attributeid = cta.attributeid
-    JOIN users us ON us.userid = td.createdby
-    WHERE (vtechdata IS NULL OR td.technologydataname IN (vtechdata)) 
-    AND (vtechnologies IS NULL OR tc.technologyname IN (vtechnologies)) 
-    AND (vtags IS NULL OR tg.tagname IN (vtags)) 
-    AND (vcomponents IS NULL OR ct.componentname in (vcomponents))
-    AND (vattributes IS NULL OR att.attributename in (vattributes))
-    GROUP BY 	td.technologydatauuid,
-		td.technologydataname,
-		td.technologydatadescription,
-		td.technologydata,
-		td.licensefee,
-		td.retailprice,
-		td.technologydatathumbnail,
-		td.technologydataimgref,
-		us.useruuid,
-		td.createdat,
-		td.updatedat,
-		tc.technologyname,
-		att.attributename;
-    
-    $$ LANGUAGE SQL;
+CREATE OR REPLACE FUNCTION public.gettechnologydatabyparams(
+    vcomponents text[], 
+    vtechnologyuuid uuid,
+    vCreatedBy uuid,
+    out result json)
+	AS
+$BODY$	 
+		 ;with tg as (
+			select tg.tagid, tg.tagname from tags tg
+			join technologydatatags ts
+			on tg.tagid = ts.tagid
+			join technologydata td
+			on ts.technologydataid = td.technologydataid
+			join technologies tt 
+			on td.technologyid = tt.technologyid 			
+			group by tg.tagid, tg.tagname
+		),
+		 att as (
+			select ab.attributeid, attributename from components co
+			join componentsattribute ca on
+			co.componentid = ca.componentid
+			join attributes ab on
+			ca.attributeid = ab.attributeid
+			join technologydatacomponents tc
+			on tc.componentid = co.componentid			 
+			group by ab.attributeid 
+		), 
+		comp as (
+		select co.componentuuid, co.componentid, co.componentname, array_to_json(array_agg(t.*)) as attributes from att t
+		join componentsattribute ca on t.attributeid = ca.attributeid
+		join components co on co.componentid = ca.componentid
+		group by co.componentname, co.componentid, co.componentuuid
+		),
+		techData as (	
+			select td.technologydatauuid,
+				td.technologydataname,
+				tt.technologyuuid,
+				td.technologydata,
+				td.licensefee,
+				td.retailprice,
+				td.licenseproductcode,
+				td.technologydatadescription,
+				td.technologydatathumbnail,
+				td.technologydataimgref,
+				td.createdat at time zone 'utc',
+				us.useruuid as CreatedBy,
+				td.updatedat at time zone 'utc',
+				ur.useruuid as UpdatedBy,
+				array_to_json(array_agg(co.*)) ComponentsWithAttribute
+			from comp co join technologydatacomponents tc
+			on co.componentid = tc.componentid
+			join technologydata td on
+			td.technologydataid = tc.technologydataid
+			join components cm on cm.componentid = co.componentid  
+			join technologies tt on 
+			tt.technologyid = td.technologyid
+			join users us on us.userid = td.createdby
+			left outer join users ur on ur.userid = td.updatedby
+			group by td.technologydatauuid,
+				td.technologydataname,
+				tt.technologyuuid,
+				td.technologydata,
+				td.licensefee,
+				td.retailprice,
+				td.licenseproductcode,
+				td.technologydatadescription,
+				td.technologydatathumbnail,
+				td.technologydataimgref,
+				td.createdat,				
+				us.useruuid,
+				td.updatedat,
+				ur.useruuid	
+		),
+		compIn as (
+			select	technologydataname, array_agg(componentuuid order by componentuuid asc) comp 
+			from components co
+			join technologydatacomponents tc
+			on co.componentid = tc.componentid
+			join technologydata td on
+			td.technologydataid = tc.technologydataid
+			group by technologydataname	 			
+		)
+		select array_to_json(array_agg(td.*)) from techData	td
+		join compIn co on co.technologydataname = td.technologydataname
+		where co.comp::text[] <@ vComponents;
+		$BODY$
+  LANGUAGE sql VOLATILE
+  COST 100;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1823,13 +1871,15 @@ Get all Users
 Input paramteres: none
 Return Value: Table with all users
 ######################################################*/
-CREATE FUNCTION GetAllUsers() 
+CREATE OR REPLACE FUNCTION GetAllUsers(vUserUUID uuid) 
 	RETURNS TABLE
     	(
     useruuid uuid,
     userfirstname character varying(250),
     userlastname character varying(250),            
-    useremail character varying(250),            
+    useremail character varying(250),  
+    thumbnail bytea,
+    imgpath character varying(250), 
     createdat timestamp  with time zone,       
     updatedat timestamp  with time zone
         )
@@ -1837,7 +1887,9 @@ CREATE FUNCTION GetAllUsers()
 	SELECT  useruuid uuid,
 		userfirstname,
 		userlastname,            
-		useremail,            
+		useremail, 
+		thumbnail,
+		imgpath,           
 		createdat at time zone 'utc',       
 		updatedat at time zone 'utc'
     FROM Users;
@@ -1852,13 +1904,15 @@ Get a User based on the given useruuid
 Input paramteres: UserUUID uuid
 Return Value: Table with a user
 ######################################################*/
-CREATE FUNCTION GetUserByID(vUserUUID uuid) 
+CREATE FUNCTION GetUserByID(vUserUUID uuid, vUserRequesterUUID uuid) 
 	RETURNS TABLE
     	(
     useruuid uuid,
     userfirstname character varying(250),
     userlastname character varying(250),            
-    useremail character varying(250),            
+    useremail character varying(250),  
+    thumbnail bytea,
+    imgpath character varying(250), 
     createdat timestamp  with time zone,       
     updatedat timestamp  with time zone
         )
@@ -1866,7 +1920,9 @@ CREATE FUNCTION GetUserByID(vUserUUID uuid)
 	SELECT  useruuid uuid,
 		userfirstname,
 		userlastname,            
-		useremail,            
+		useremail, 
+		thumbnail,
+		imgpath,           
 		createdat at time zone 'utc',       
 		updatedat at time zone 'utc'
     FROM Users WHERE UserUUID = vUserUUID;
@@ -1882,13 +1938,15 @@ Input paramteres: UserFirstName  varchar(250) OR
 		  UserLastName  varchar(250) 		
 Return Value: Table with all users that match the input parameters
 ######################################################*/
-CREATE FUNCTION GetUserByName(vUserFirstName varchar(250), vUserLastName varchar(250)) 
+ CREATE FUNCTION GetUserByName(vUserFirstName varchar(250), vUserLastName varchar(250), vUserUUID uuid) 
 	RETURNS TABLE
     	(
     useruuid uuid,
     userfirstname character varying(250),
     userlastname character varying(250),            
-    useremail character varying(250),            
+    useremail character varying(250),  
+    thumbnail bytea,
+    imgpath character varying(250), 
     createdat timestamp  with time zone,       
     updatedat timestamp  with time zone
         )
@@ -1896,7 +1954,9 @@ CREATE FUNCTION GetUserByName(vUserFirstName varchar(250), vUserLastName varchar
 	SELECT  useruuid uuid,
 		userfirstname,
 		userlastname,            
-		useremail,            
+		useremail, 
+		thumbnail,
+		imgpath,           
 		createdat at time zone 'utc',       
 		updatedat at time zone 'utc'
 	FROM Users
@@ -1913,7 +1973,7 @@ Get all offers
 Input paramteres: none		
 Return Value: Table with all offers
 ######################################################*/
-CREATE FUNCTION GetAllOffers() 
+CREATE FUNCTION GetAllOffers(vUserUUID uuid) 
 	RETURNS TABLE
     	(
     offeruuid uuid,    
@@ -1940,7 +2000,7 @@ Get all attributes
 Input paramteres: none		
 Return Value: Table with all attributes
 ######################################################*/
-CREATE FUNCTION GetAllAttributes() 
+CREATE FUNCTION GetAllAttributes(vUserUUID uuid) 
 	RETURNS TABLE
     	(
     attributeuuid uuid,    
@@ -1970,7 +2030,7 @@ CREATE FUNCTION GetAllAttributes()
 Input paramteres: attributeUUID uuid		
 Return Value: Table with a attribute
 ######################################################*/
-CREATE FUNCTION GetAttributeByID(vAttrUUID uuid) 
+CREATE FUNCTION GetAttributeByID(vAttrUUID uuid, vUserUUID uuid) 
 	RETURNS TABLE
     	(
     attributeuuid uuid,    
@@ -2001,7 +2061,7 @@ CREATE FUNCTION GetAttributeByID(vAttrUUID uuid)
 Input paramteres: attributeName varchar(250)
 Return Value: Table with a attribute
 ######################################################*/
-CREATE FUNCTION GetAttributeByName(vAttrName varchar(250)) 
+CREATE FUNCTION GetAttributeByName(vAttrName varchar(250), vUserUUID uuid) 
 	RETURNS TABLE
     	(
     attributeuuid uuid,    
@@ -2033,7 +2093,7 @@ Get a offer
 Input paramteres: OfferRequestID uuid		
 Return Value: Table with a offer
 ######################################################*/
-CREATE FUNCTION GetOfferByRequestID(vRequestID uuid) 
+CREATE FUNCTION GetOfferByRequestID(vRequestID uuid, vUserUUID uuid) 
 	RETURNS TABLE
     	(
     offeruuid uuid, 
@@ -2063,7 +2123,7 @@ Get a offer
 Input paramteres: OfferUUID uuid		
 Return Value: Table with a offer
 ######################################################*/
-CREATE FUNCTION GetOfferByID(vOfferID uuid) 
+CREATE FUNCTION GetOfferByID(vOfferID uuid, vUserUUID uuid) 
 	RETURNS TABLE
     	(
     offeruuid uuid, 
@@ -2210,7 +2270,7 @@ CREATE FUNCTION DateDiff (units VARCHAR(30), start_t TIMESTAMP, end_t TIMESTAMP)
 Input paramteres: vTime  timestamp
 Return Value: Amount of activated licenses 
 ######################################################*/
-CREATE FUNCTION GetActivatedLicensesSince (vTime timestamp)
+CREATE FUNCTION GetActivatedLicensesSince (vTime timestamp, vUserUUID uuid)
 RETURNS integer AS
 $$ 
 	;with activatedLinceses as(
@@ -2241,7 +2301,8 @@ Return Value: TechnologyDataName, Rank value
 ######################################################*/
 CREATE FUNCTION GetTopTechnologyDataSince(
 		vSinceDate timestamp without time zone,
-		vTopValue integer
+		vTopValue integer,
+		vUserUUID uuid
 	)
 RETURNS TABLE (
 	TechnologyDataName varchar(250),
@@ -2279,7 +2340,8 @@ Return Value: ComponentName, Amount
 ######################################################*/
 CREATE FUNCTION GetMostUsedComponents(
 		vSinceDate timestamp without time zone,
-		vTopValue integer
+		vTopValue integer,
+		vUserUUID uuid
 	)
 RETURNS TABLE (
 	ComponentName varchar(250),
@@ -2319,7 +2381,8 @@ Input paramteres: vSinceDate  timestamp
 Return Value: TechnologyDataName, Date, Amount, DayHour
 ######################################################*/
  CREATE OR REPLACE FUNCTION GetWorkloadSince(
-		vSinceDate timestamp without time zone		
+		vSinceDate timestamp without time zone,
+		vUserUUID uuid		
 	)
 RETURNS TABLE (
 	  TechnologyDataName varchar(250),
@@ -2361,7 +2424,8 @@ $$ LANGUAGE SQL;
 Input paramteres: vOfferRequestUUID uuid 
 ######################################################*/
 CREATE FUNCTION GetPaymentInvoiceForOfferRequest(
-		vOfferRequestUUID uuid
+		vOfferRequestUUID uuid,
+		vUserUUID uuid
 	)
 RETURNS TABLE (
 	PaymentInvoiceUUID uuid,
@@ -2391,7 +2455,8 @@ $$ LANGUAGE SQL;
 Input paramteres: vPaymentInvoiceUUID uuid 
 ######################################################*/
 CREATE FUNCTION GetOfferForPaymentInvoice(
-		vPaymentInvoiceUUID uuid
+		vPaymentInvoiceUUID uuid,
+		vUserUUID uuid
 	)
 RETURNS TABLE (
 	OfferUUID uuid,
@@ -2418,7 +2483,8 @@ $$ LANGUAGE SQL;
 Input paramteres: vTechnologyUUID uuid 
 ######################################################*/
 CREATE FUNCTION GetComponentsByTechnology(
-		vTechnologyUUID uuid
+		vTechnologyUUID uuid,
+		vUserUUID uuid
 	)
 RETURNS TABLE (
 		ComponentUUID uuid,		
@@ -2461,7 +2527,8 @@ $$ LANGUAGE SQL;
 Input paramteres: vOfferRequestUUID uuid 
 ######################################################*/
 CREATE FUNCTION GetTechnologyForOfferRequest(
-		vOfferRequestUUID uuid
+		vOfferRequestUUID uuid,
+		vUserUUID uuid
 	)
 RETURNS TABLE (
 		Technologyuuid uuid,
@@ -2498,7 +2565,8 @@ $$ LANGUAGE SQL;
 Input paramteres: vTransactionUUID uuid 
 ######################################################*/
 CREATE FUNCTION GetLicenseFeeByTransaction(
-		vTransactionUUID uuid
+		vTransactionUUID uuid,
+		vUserUUID uuid
 	) 
 RETURNS TABLE (
 		LicenseFee integer
@@ -2521,7 +2589,8 @@ $$ LANGUAGE SQL;
 Input paramteres: vOfferRequestUUID uuid 
 ######################################################*/
 CREATE OR REPLACE FUNCTION GetTransactionByOfferRequest(
-		vOfferRequestUUID uuid
+		vOfferRequestUUID uuid,
+		vUserUUID uuid
 	)
 RETURNS TABLE (
 		Transactionuuid uuid,
@@ -2571,7 +2640,8 @@ $$ LANGUAGE SQL;
 Input paramteres: vOfferRequestUUID uuid 
 ######################################################*/
 CREATE FUNCTION GetTechnologyDataByOfferRequest(
-		vOfferRequestUUID uuid
+		vOfferRequestUUID uuid,
+		vUserUUID uuid
 		) 
 RETURNS TABLE
     	(
@@ -2622,7 +2692,8 @@ RETURNS TABLE
 Input paramteres: vTransactionUUID uuid 
 ######################################################*/	
 CREATE FUNCTION GetOfferForTransaction(
-		vTransactionUUID uuid
+		vTransactionUUID uuid,
+		vUserUUID uuid
 	)
 RETURNS TABLE (
 		OfferUUID uuid,
@@ -2652,7 +2723,8 @@ $$ LANGUAGE SQL;
 Input paramteres: vTicketID varchar(4000) 
 ######################################################*/	
 CREATE FUNCTION GetOfferForTicket(
-		vTicketID varchar(4000)
+		vTicketID varchar(4000),
+		vUserUUID uuid
 	)
 RETURNS TABLE (
 		OfferUUID uuid,
@@ -2682,7 +2754,7 @@ $$ LANGUAGE SQL;
 Input paramteres: vRoleName varchar(250)
 				  vRoleDescription varchar(32672)
 ######################################################*/
-create function createrole(vRoleName varchar(250), vRoleDescription varchar(32672)) 
+create function createrole(vRoleName varchar(250), vRoleDescription varchar(32672), vUserUUID uuid) 
 returns void as
 $$
 	Declare vRoleID integer := (select nextval('RoleID'));
@@ -2708,7 +2780,9 @@ $$
                                 || cast(vRoleBit as varchar) || ', vRoleName: ' || vRoleName 
                                 || ', RoleDescription: ' 
                                 || vRoleDescription);
-        -- End Log if error 
+        -- End Log if error
+		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateRole';	
+		RETURN;
 	END;
 $$ LANGUAGE PLPGSQL;
 /* ##########################################################################
@@ -2722,7 +2796,8 @@ Input paramteres: vRoles integer,
 ######################################################*/
 create function CreatePermission(
 		vRoles integer, 
-		vFunctionName varchar(250)
+		vFunctionName varchar(250),
+		vUserUUID uuid
 	) 
 RETURNS void AS
 $$
@@ -2744,6 +2819,8 @@ $$
                                 'PermissionID: ' || cast(vPermissionID as varchar) || ', Roles: ' 
                                 || vRoles || ', FunctionName: ' || vFunctionName);
         -- End Log if error 
+		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateRole';
+		RETURN;
 	END;
 $$ LANGUAGE PLPGSQL; 
 /* ##########################################################################
@@ -2755,7 +2832,8 @@ $$ LANGUAGE PLPGSQL;
 Input paramteres: vTransactionUUID uuid
 ######################################################*/
 CREATE FUNCTION GetTransactionByID(
-		vTransactionUUID uuid
+		vTransactionUUID uuid,
+		vUserUUID uuid
 	)
 RETURNS TABLE (
 		Transactionuuid uuid,
