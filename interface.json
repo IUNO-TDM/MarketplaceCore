@@ -1,0 +1,420 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.1.0",
+    "title": "MarketplaceCore Database Rest API",
+    "contact": {
+      "name": "TRUMPF Werkzeugmaschinen GmbH & Co KG"
+    },
+    "description": ""
+  },
+  "paths": {
+    "/users/{userId}": {
+      "get": {
+        "description": "Returns the user for a specific userId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        },
+        "security": [
+          {
+            "marketplacecore_auth": [
+              "read_admin"
+            ]
+          }
+        ]
+      }
+    },
+    "/users/{userId}/image": {
+      "get": {
+        "description": "Gets the user image",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string",
+              "format": "byte"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/technologydata": {
+      "get": {
+        "description": "Gets a list of technologydata",
+        "parameters": [
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid used for authorization",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "components",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "technologies",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "attributes",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TechnologyData"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "marketplacecore_auth": [
+              "read_services"
+            ]
+          }
+        ]
+      }
+    },
+    "/technologydata/{technologyDataId}": {
+      "get": {
+        "description": "Gets the technology data for a specific identifier",
+        "parameters": [
+          {
+            "name": "technologyDataId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string",
+              "format": "byte"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/technologydata/{technologyDataId}/image": {
+      "get": {
+        "description": "The image for a specific technology data",
+        "parameters": [
+          {
+            "name": "technologyDataId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string",
+              "format": "byte"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/attributes": {
+      "get": {
+        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "parameters": [
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid used for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/attributes/{id}": {
+      "get": {
+        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Resource not found"
+          }
+        }
+      }
+    },
+    "/components": {
+      "get": {
+        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "parameters": [
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid used for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/components/{id}": {
+      "get": {
+        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Resource not found"
+          }
+        }
+      }
+    },
+    "/technologies": {
+      "get": {
+        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "parameters": [
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid used for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/technologies/{id}": {
+      "get": {
+        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Resource not found"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "marketplacecore_auth": {
+      "type": "oauth2",
+      "authorizationUrl": "to be defined",
+      "flow": "implicit",
+      "scopes": {
+        "write_public": "public users write right",
+        "read_public": "public users write right",
+        "read_admin": "admin read right",
+        "write_admin": "admin write right",
+        "write_services": "web system and machine services right",
+        "read_services": "web system and machine services right"
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "firstname": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "thumbnail": {
+          "type": "string"
+        }
+      }
+    },
+    "TechnologyData": {
+      "type": "object",
+      "properties": {
+        "technologydataid": {
+          "type": "integer"
+        },
+        "technologydataname": {
+          "type": "string"
+        },
+        "technologydatadescription": {
+          "type": "string"
+        },
+        "licensefee": {
+          "type": "number"
+        },
+        "createdat": {
+          "type": "string"
+        },
+        "createdby": {
+          "type": "string"
+        },
+        "updatedat": {
+          "type": "string"
+        },
+        "updatedby": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
