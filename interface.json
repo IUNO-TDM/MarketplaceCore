@@ -401,6 +401,56 @@
         }
       }
     },
+    "/offers": {
+      "post": {
+        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "parameters": [
+        ],
+        "responses": {
+          "201": {
+            "description": "created"
+          }
+        }
+      }
+    },
+    "/offers/{offerId}": {
+      "get": {
+        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "okay"
+          }
+        }
+      }
+    },
+    "/offers/{offerId}/payment": {
+      "post": {
+        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "okay"
+          }
+        }
+      }
+    },
     "/attributes": {
       "post": {
         "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
