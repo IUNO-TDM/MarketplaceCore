@@ -10,7 +10,7 @@ var logger = require('../global/logger');
 var io = require('socket.io-client');
 
 var PaymentService = function () {
-    console.log('a new instance of PaymentService');
+    logger.log('a new instance of PaymentService');
 
 };
 
@@ -47,8 +47,12 @@ payment_service.createLocalInvoice = function (invoice, callback) {
         }
     };
     var req = http.request(options, function (res) {
-            console.log("Got answer from PS for CreateLocalInvoice:" + res.statusCode + ' ' + res.statusMessage);
+            logger.log("Got answer from PS for CreateLocalInvoice:" + res.statusCode + ' ' + res.statusMessage);
             res.on('data', function (data) {
+                if (res.statusCode != 200) {
+                    logger.warn('Call not successful. Response: + ' + data);
+                }
+
                 var invoice = JSON.parse(data);
                 payment_service.registerStateChangeUpdates(invoice.invoiceId);
                 callback(null, invoice);
@@ -66,8 +70,12 @@ payment_service.getInvoiceTransfers = function (invoice, callback) {
         method: 'GET'
     };
     var req = http.request(options, function (res) {
-            console.log("Got answer from PS for GetInvoiceTransfer:" + res.statusCode + ' ' + res.statusMessage);
+            logger.log("Got answer from PS for GetInvoiceTransfer:" + res.statusCode + ' ' + res.statusMessage);
             res.on('data', function (data) {
+                if (res.statusCode != 200) {
+                    logger.warn('Call not successful. Response: + ' + data);
+                }
+
                 var transfers = JSON.parse(data.toString());
                 callback(null, transfers);
             });
