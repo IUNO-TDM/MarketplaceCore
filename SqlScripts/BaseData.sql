@@ -136,6 +136,33 @@ DO
             '{Juice Mixer}', 				-- <technologylist text[]>, 
             vUserID 			-- <createdby integer>
          );
+		 -- Johannisbeersaft
+        perform public.setcomponent(
+            'Johannisbeersaft',		-- <componentname character varying>, 
+            'Root',	      			-- <componentparentid integer>, 
+            'Johannisbeersaft', 	-- <componentdescription character varying>, 
+            '{Normal}',			-- <attributelist text[]>, 
+            '{Juice Mixer}', 				-- <technologylist text[]>, 
+            vUserID 			-- <createdby integer>
+         );
+		  -- Orange
+        perform public.setcomponent(
+            'Orangensaft',		-- <componentname character varying>, 
+            'Root',	      			-- <componentparentid integer>, 
+            'Orangensaft', 	-- <componentdescription character varying>, 
+            '{Normal}',			-- <attributelist text[]>, 
+            '{Juice Mixer}', 				-- <technologylist text[]>, 
+            vUserID 			-- <createdby integer>
+         );
+		-- Apfelsaft
+        perform public.setcomponent(
+            'Apfelsaft',		-- <componentname character varying>, 
+            'Root',	      			-- <componentparentid integer>, 
+            'Apfelsaft', 	-- <componentdescription character varying>, 
+            '{Normal}',			-- <attributelist text[]>, 
+            '{Juice Mixer}', 				-- <technologylist text[]>, 
+            vUserID 			-- <createdby integer>
+         );
         -- Apple
         perform public.setcomponent(
             'Apple Juice',		-- <componentname character varying>, 
@@ -199,11 +226,35 @@ $$
         DECLARE  vUserUUID uuid := (select useruuid from users where userid = 1);
 				 vTechnologyUUID uuid := (select technologyuuid from technologies where technologyid = 1);
   BEGIN
-  		-- Create TechnologyData      
-        -- Cherry with Mango
+  		-- Create TechnologyData   
+		-- Cherry with Mango
         perform public.settechnologydata(
             'CheMa',		     				 -- <technologydataname character varying>, 
-            '123456789',	     				 -- <technologydata character varying>, 
+            '{
+			  ""recipe"": {
+				""id"": ""TestProgram"",
+				""lines"": [
+				  {
+					""components"": [
+					  {
+						""ingredient"": ""Orangensaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Apfelsaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Johannisbeersaft"",
+						""amount"": 5
+					  }
+					],
+					""timing"": 1,
+					""sleep"": 0
+				  }
+				]
+			  }
+			}',	     				 -- <technologydata character varying>, 
             'Cherry with Mango', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             50000,
@@ -213,11 +264,72 @@ $$
 			-- vUserUUID,
 			vUserUUID  
 		 
+		 ); 
+		-- Other Juice
+        perform public.settechnologydata(
+            'CSaefte',		     				 -- <technologydataname character varying>, 
+            '{
+			  ""recipe"": {
+				""id"": ""TestProgram"",
+				""lines"": [
+				  {
+					""components"": [
+					  {
+						""ingredient"": ""Orangensaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Apfelsaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Johannisbeersaft"",
+						""amount"": 5
+					  }
+					],
+					""timing"": 1,
+					""sleep"": 0
+				  }
+				]
+			  }
+			}',	     				 -- <technologydata character varying>, 
+            'Cherry with Mango', 				 -- <technologydatadescription character varying>, 
+            vTechnologyUUID,    								 -- <vtechnologyid integer>, 
+            50000,
+			150000,
+            '{Delicious}', -- <taglist text[]>,            						 		 -- <createdby integer>, 
+            '{Orangensaft,Apfelsaft,Johannisbeersaft}',    							 -- <componentlist integer[]>
+			-- vUserUUID,
+			vUserUUID 
 		 );
          -- Cherry with Cola
         perform public.settechnologydata(
             'CheCo',		     				 -- <technologydataname character varying>, 
-            '123456789',	     				 -- <technologydata character varying>, 
+            '{
+			  ""recipe"": {
+				""id"": ""TestProgram"",
+				""lines"": [
+				  {
+					""components"": [
+					  {
+						""ingredient"": ""Orangensaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Apfelsaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Johannisbeersaft"",
+						""amount"": 5
+					  }
+					],
+					""timing"": 1,
+					""sleep"": 0
+				  }
+				]
+			  }
+			}',	     				 -- <technologydata character varying>, 
             'Cherry with Cola', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             75000,
@@ -230,7 +342,31 @@ $$
           -- Ginger, Orange
         perform public.settechnologydata(
             'Ginge',		     				 -- <technologydataname character varying>, 
-            '123456789',	     				 -- <technologydata character varying>, 
+            '{
+			  ""recipe"": {
+				""id"": ""TestProgram"",
+				""lines"": [
+				  {
+					""components"": [
+					  {
+						""ingredient"": ""Orangensaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Apfelsaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Johannisbeersaft"",
+						""amount"": 5
+					  }
+					],
+					""timing"": 1,
+					""sleep"": 0
+				  }
+				]
+			  }
+			}',	     				 -- <technologydata character varying>, 
             'Orange with Ginger', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             100000,
@@ -243,7 +379,31 @@ $$
          -- Banana, Mango, Orange
         perform public.settechnologydata(
             'Bamao',		     				 -- <technologydataname character varying>, 
-            '123456789',	     				 -- <technologydata character varying>, 
+            '{
+			  ""recipe"": {
+				""id"": ""TestProgram"",
+				""lines"": [
+				  {
+					""components"": [
+					  {
+						""ingredient"": ""Orangensaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Apfelsaft"",
+						""amount"": 5
+					  },
+					  {
+						""ingredient"": ""Johannisbeersaft"",
+						""amount"": 5
+					  }
+					],
+					""timing"": 1,
+					""sleep"": 0
+				  }
+				]
+			  }
+			}',	     				 -- <technologydata character varying>, 
             'Delicious Banana, Mango, Orange juice', 				 -- <technologydatadescription character varying>, 
             vTechnologyUUID,    								 -- <vtechnologyid integer>, 
             50000,
@@ -259,37 +419,51 @@ $$;
 DO
 $$
 DECLARE 
-	vtechnologydatauuid uuid := (select technologydatauuid from technologydata where technologydataid = (select max(technologydataid) from technologydata));
+	vtechnologydatauuid uuid; 
 	vAmount integer := 5; 
 	vHSMID text := 'something';
 	vUserUUID uuid := (select useruuid from users limit 1);
 	vBuyerUUID uuid;
-	vInvoice text := '{2,another stuff}';
+	vInvoice text; 
 	vOfferRequestUUID uuid;
 	vPaymentInvoiceUUID uuid;
 	vBitcoinTransaction text := 'Bitcoin';
 	vTickedID text := 'Some Ticket';
 	vOfferUUID uuid;
+	vCurrOfferRequest integer;
+	vCurrPaymentInvoiceID integer;
+	vCurrOfferID integer;
+	vRandomID integer;
 
 	BEGIN
+	FOR i IN 1..250 LOOP 
+	  vRandomID := (select (trunc(random() * 3 + 1)));
+	  vInvoice := (select uuid_generate_v4())::text;
+	  vtechnologydatauuid := (select technologydatauuid from technologydata where technologydataid = vRandomID);
 	  -- Create Buyer 	
-	  perform createuser('Buyer','Cool','buyer10.cool@coolinc.com', null);
+	  --perform createuser('Buyer','Cool','buyer.cool@coolinc.com', null);
 	  vBuyerUUID := (select useruuid from users limit 1);
 	  -- Create OfferRequest
 	  perform createofferrequest(vtechnologydatauuid,vAmount,vHSMID,vUserUUID,vBuyerUUID);
+
+	  vCurrOfferRequest := (select currval('OfferRequestID')); 
 	  -- Get OfferRequestUUID
-	  vOfferRequestUUID := (select offerrequestuuid from offerrequest limit 1)::uuid;
+	  vOfferRequestUUID := (select offerrequestuuid from offerrequest where offerrequestid = vCurrOfferRequest)::uuid;
 	  -- Create PaymentInvoice
+	  raise info '%', vCurrOfferRequest;
 	  perform SetPaymentInvoiceOffer(vOfferRequestUUID, vInvoice, vUserUUID);
 	  -- Get PaymentInvoiceUUID
-	  vPaymentInvoiceUUID := (select paymentinvoiceuuid from paymentinvoice limit 1)::uuid;
+	  vCurrPaymentInvoiceID := (select currval('PaymentInvoiceID'));
+	  vPaymentInvoiceUUID := (select paymentinvoiceuuid from paymentinvoice where paymentinvoiceid =  vCurrPaymentInvoiceID)::uuid;
 	  -- Create Offer
 	  --perform createoffer(vPaymentInvoiceUUID,vUserUUID);
 	  -- Create Payment
 	  perform createpayment(vPaymentInvoiceUUID::uuid, vBitcoinTransaction, vUserUUID);
 	  -- Get OfferUUID
-	  vOfferUUID := (select offeruuid from offer limit 1)::uuid;
+	  vCurrOfferID := (select currval('OfferID'));
+	  vOfferUUID := (select offeruuid from offer where offerid = vCurrOfferID)::uuid;
 	  -- Create LicenseOrder
 	  perform createlicenseorder(vTickedID, vOfferUUID, vUserUUID);
+	END LOOP;
 	END;
 $$;
