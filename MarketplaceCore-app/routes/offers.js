@@ -104,19 +104,4 @@ router.post('/', validate({
 
 });
 
-//TODO: Verify this route
-router.post('/:id/payment', validate({
-    query: require('../schema/offers_schema').Offers,
-    body: require('../schema/offers_schema').Payment
-}), function (req, res, next) {
-
-
-    var userUUID = req.query['userUUID'];
-    var paymentData = req.body;
-    //TODO: Save payment for offer
-
-    res.sendStatus(200);
-});
-
-
 module.exports = router;
