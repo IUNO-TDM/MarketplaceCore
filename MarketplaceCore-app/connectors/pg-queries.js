@@ -551,7 +551,7 @@ self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, cal
 //<editor-fold desc="Transactions">
 //Get all transaction by given OfferRequest
 self.GetTransactionByOfferRequest = function (userUUID, offerRequestUUID, callback) {
-    db.func('GetTransactionByOfferRequest', [offerRequestUUID, userUUID])
+    db.func('GetTransactionByOfferRequest', [offerRequestUUID])
         .then(function (data) {
             callback(null, data);
         })
