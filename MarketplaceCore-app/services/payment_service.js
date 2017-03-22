@@ -10,7 +10,7 @@ var logger = require('../global/logger');
 var io = require('socket.io-client');
 
 var PaymentService = function () {
-    console.log('a new instance of PaymentService');
+    logger.log('a new instance of PaymentService');
 
 };
 
@@ -18,24 +18,24 @@ const payment_service = new PaymentService();
 util.inherits(PaymentService, EventEmitter);
 
 
-payment_service.socket =  io.connect('http://localhost:8080/invoices',{transports: ['websocket']});
+payment_service.socket = io.connect('http://localhost:8080/invoices', {transports: ['websocket']});
 
-payment_service.socket.on('connect', function(){
+payment_service.socket.on('connect', function () {
     logger.debug("connected to paymentservice");
 });
 
-payment_service.socket.on('StateChange', function(data){
+payment_service.socket.on('StateChange', function (data) {
     logger.debug("StateChange: " + data);
     payment_service.emit('StateChange', JSON.parse(data));
 });
 
 
-payment_service.socket.on('disconnect', function(){
+payment_service.socket.on('disconnect', function () {
     logger.debug("disconnect");
 });
 
-payment_service.createLocalInvoice = function(invoice, callback){
-    body = JSON.stringify(invoice);
+payment_service.createLocalInvoice = function (invoice, callback) {
+    var body = JSON.stringify(invoice);
     var options = {
         hostname: 'localhost',
         port: 8080,
@@ -47,8 +47,12 @@ payment_service.createLocalInvoice = function(invoice, callback){
         }
     };
     var req = http.request(options, function (res) {
-            console.log("Got answer from PS for CreateLocalInvoice:" + res.statusCode + ' ' + res.statusMessage);
-            res.on('data', function(data){
+            logger.log("Got answer from PS for CreateLocalInvoice:" + res.statusCode + ' ' + res.statusMessage);
+            res.on('data', function (data) {
+                if (res.statusCode != 200) {
+                    logger.warn('Call not successful. Response: + ' + data);
+                }
+
                 var invoice = JSON.parse(data);
                 payment_service.registerStateChangeUpdates(invoice.invoiceId);
                 callback(null, invoice);
@@ -57,7 +61,7 @@ payment_service.createLocalInvoice = function(invoice, callback){
     ).end(body);
 };
 
-payment_service.getInvoiceTransfers = function(invoice, callback){
+payment_service.getInvoiceTransfers = function (invoice, callback) {
     var options = {
         hostname: 'localhost',
         port: 8080,
@@ -66,8 +70,12 @@ payment_service.getInvoiceTransfers = function(invoice, callback){
         method: 'GET'
     };
     var req = http.request(options, function (res) {
-            console.log("Got answer from PS for GetInvoiceTransfer:" + res.statusCode + ' ' + res.statusMessage);
-            res.on('data', function(data){
+            logger.log("Got answer from PS for GetInvoiceTransfer:" + res.statusCode + ' ' + res.statusMessage);
+            res.on('data', function (data) {
+                if (res.statusCode != 200) {
+                    logger.warn('Call not successful. Response: + ' + data);
+                }
+
                 var transfers = JSON.parse(data.toString());
                 callback(null, transfers);
             });
@@ -76,11 +84,11 @@ payment_service.getInvoiceTransfers = function(invoice, callback){
 };
 
 
-payment_service.registerStateChangeUpdates = function(invoiceId){
-    payment_service.socket.emit('room',invoiceId);
+payment_service.registerStateChangeUpdates = function (invoiceId) {
+    payment_service.socket.emit('room', invoiceId);
 };
-payment_service.unregisterStateChangeUpdates = function(invoiceId){
-    payment_service.socket.emit('leave',invoiceId);
+payment_service.unregisterStateChangeUpdates = function (invoiceId) {
+    payment_service.socket.emit('leave', invoiceId);
 };
 
 module.exports = payment_service;
