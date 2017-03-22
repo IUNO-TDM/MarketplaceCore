@@ -906,46 +906,96 @@ CREATE FUNCTION CreateLicenseOrder (
   $$
   LANGUAGE 'plpgsql';     
 -- ##############################################################################    
--- CreatePayment  
-CREATE FUNCTION CreatePayment(  
-  vPaymentInvoiceUUID uuid,
-  vBitcoinTransaction varchar(32672),
-  vUserUUID uuid
- )
-  RETURNS TABLE (
-	PaymentUUID uuid,
-	PaymentInvoiceUUID uuid,
-	PayDate timestamp with time zone,
-	BitcoinTransation varchar(32672),
-	CreatedBy uuid
-  ) AS
-  $$
+-- SetPayment  
+CREATE FUNCTION public.setpayment(
+    vpaymentinvoiceuuid uuid,
+    vbitcointransaction character varying(32672),
+    vconfidencestate character varying(250),
+    vdepth integer,
+    vextinvoiceid uuid,
+    vuseruuid uuid)
+  RETURNS TABLE(paymentuuid uuid, 
+		paymentinvoiceuuid uuid, 
+		paydate timestamp with time zone, 
+		bitcointransation character varying(32672), 
+		confidencestate character varying(250), 
+		depth integer,		
+		extinvoiceid uuid,	
+		createdby uuid,
+		createdat timestamp with time zone,
+		updatedby uuid,
+		updatedat timestamp with time zone) AS   	 
+
+$$
 	#variable_conflict use_column
-      DECLARE 	vPaymentID integer := (select nextval('PaymentID')); 
-				vPaymentUUID uuid := (select uuid_generate_v4());
-				vPaymentInvoiceID integer := (select PaymentInvoiceID from paymentinvoice where PaymentInvoiceUUID = vPaymentInvoiceUUID);
-				vCreatedBy integer := (select userid from users where useruuid = vUserUUID);
+      DECLARE 	vPaymentID integer;
+		vPaymentUUID uuid := (select uuid_generate_v4());
+		vPaymentInvoiceID integer := (select PaymentInvoiceID from paymentinvoice where PaymentInvoiceUUID = vPaymentInvoiceUUID);
+		vCreatedBy integer := (select userid from users where useruuid = vUserUUID);		
+		vPayDate timestamp without time zone := null;
       BEGIN        
-        INSERT INTO Payment(PaymentID, PaymentUUID, PaymentInvoiceID, PayDate, BitcoinTransaction, CreatedBy)
-        VALUES(vPaymentID, vPaymentUUID, vPaymentInvoiceID, now(), vBitcoinTransaction, vCreatedBy);
-     
-        -- Begin Log if success
-        perform public.createlog(0,'Created PaymentInvoice sucessfully', 'CreatePayment', 
+		-- Proof if ExtInvoice already exists
+		IF exists (select extinvoiceid from payment where extinvoiceid = vExtInvoiceID) THEN
+		-- update 
+		--Proof if ConfidenceState is Pending and PayDate is null
+		IF (LOWER(vConfidenceState) = LOWER('Pending') and (select 1 from payment where extinvoiceid = vExtInvoiceID and PayDate is null)::integer=1) THEN
+			vPayDate := now();
+		ELSE vPayDate := (select paydate from payment where extinvoiceid = vExtInvoiceID);
+		END IF;  
+		update payment set ConfidenceState = vConfidenceState, Depth = vDepth, bitcointransaction = vbitcointransaction,
+		PayDate = vPayDate, updatedat = now(), updatedby = vCreatedBy
+		where ExtInvoiceID = vExtInvoiceID; 
+		
+		-- Begin Log if success
+		perform public.createlog(0,'Updated PaymentInvoice sucessfully', 'CreatePayment', 
                                 'PaymentID: ' || cast(vPaymentID as varchar) 
 				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
 				|| ', BitcoinTransaction: ' || vBitcoinTransaction
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
                                 
-        -- End Log if success
+		-- End Log if success        
+
+	ELSE
+		-- Insert	
+		 vPaymentID := (select nextval('PaymentID')); 
+		IF (LOWER(vConfidenceState) = LOWER('Pending')) THEN
+			vPayDate := now();
+		ELSE 	vPayDate := null;  
+		END IF;
+		INSERT INTO payment(paymentid, paymentuuid, paymentinvoiceid, paydate, bitcointransaction, 
+				    createdby, depth, confidencestate, extinvoiceid,
+				    createdat)
+			VALUES (vPaymentID, vPaymentUUID, vPaymentInvoiceID, vPayDate, vbitcointransaction, 
+			vCreatedBy, vDepth, vConfidenceState, vExtInvoiceID, now()); 
+
+		-- Begin Log if success
+		perform public.createlog(0,'Created PaymentInvoice sucessfully', 'CreatePayment', 
+                                'PaymentID: ' || cast(vPaymentID as varchar) 
+				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
+				|| ', BitcoinTransaction: ' || vBitcoinTransaction
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+                                
+		-- End Log if success  
+	
+		END IF;
         -- Return PaymentID
         RETURN QUERY (
-		select 	PaymentUUID,
-			vPaymentInvoiceUUID,
-			paydate at time zone 'utc',
-			bitcointransaction,
-			vUserUUID
-		from payment where paymentuuid = vPaymentUUID
-			
+			select 	PaymentUUID,
+				vPaymentInvoiceUUID,
+				paydate at time zone 'utc',
+				bitcointransaction,
+				confidencestate,
+				depth,		
+				extinvoiceid,	
+				us.useruuid as CreatedBy,
+				py.createdat at time zone 'utc',
+				ur.useruuid as UpdatedBy,
+				py.updatedat at time zone 'utc'
+			from payment py join
+			users us on us.userid = py.createdby
+			left outer join 
+			users ur on ur.userid = py.updatedby
+			where extinvoiceid = vExtInvoiceID			
         );
         
         exception when others then 
@@ -956,7 +1006,7 @@ CREATE FUNCTION CreatePayment(
 				|| ', BitcoinTransaction: ' || vBitcoinTransaction
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
-        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreatePayment';
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetPayment';
         RETURN ;
       END;
   $$

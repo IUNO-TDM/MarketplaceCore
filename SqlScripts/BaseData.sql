@@ -458,12 +458,12 @@ DECLARE
 	  -- Create Offer
 	  --perform createoffer(vPaymentInvoiceUUID,vUserUUID);
 	  -- Create Payment
-	  perform createpayment(vPaymentInvoiceUUID::uuid, vBitcoinTransaction, vUserUUID);
+	  --perform createpayment(vPaymentInvoiceUUID::uuid, vBitcoinTransaction, vUserUUID);
 	  -- Get OfferUUID
-	  vCurrOfferID := (select currval('OfferID'));
-	  vOfferUUID := (select offeruuid from offer where offerid = vCurrOfferID)::uuid;
+	  --vCurrOfferID := (select currval('OfferID'));
+	  -- vOfferUUID := (select offeruuid from offer where offerid = vCurrOfferID)::uuid;
 	  -- Create LicenseOrder
-	  perform createlicenseorder(vTickedID, vOfferUUID, vUserUUID);
+	  --perform createlicenseorder(vTickedID, vOfferUUID, vUserUUID);
 	END LOOP;
 	END;
 $$;
