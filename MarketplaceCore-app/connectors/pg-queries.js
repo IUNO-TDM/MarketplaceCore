@@ -485,6 +485,10 @@ self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callbac
 self.GetOfferForTransaction = function (userUUID, transactionUUID, callback) {
     db.func('GetOfferForTransaction', [transactionUUID, userUUID])
         .then(function (data) {
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data);
         })
         .catch(function (error) {
@@ -533,11 +537,14 @@ self.GetPaymentInvoiceForOfferRequest = function(userUUID, offerRequestUUID, cal
 self.SetPayment = function(userUUID, payment, callback) {
     db.func('SetPayment', [payment.transactionUUID, payment.bitcoinTransaction, payment.confidenceState, payment.depth, payment.extInvoiceId, userUUID])
         .then(function (data) {
-            logger.debug('SetPayment result: ' + data);
+            if (data && data.length) {
+                data = data[0];
+            }
+            logger.debug('SetPayment result: ' + JSON.stringify(data));
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("SetPayment was not successful: " + error.message || error); // print the error;
+            logger.crit("SetPayment ERROR: " + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -554,7 +561,7 @@ self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, cal
             userUUID
         ])
         .then(function (data) {
-            logger.debug('Result for database query: ' + data);
+            logger.debug('SetPaymentInvoiceOffer result: ' + JSON.stringify(data));
             callback(null, data);
         })
         .catch(function (error) {
@@ -581,6 +588,9 @@ self.GetTransactionByOfferRequest = function (userUUID, offerRequestUUID, callba
 self.GetTransactionByID = function (userUUID, transactionUUID, callback) {
     db.func('GetTransactionByID', [transactionUUID, userUUID])
         .then(function (data) {
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data);
         })
         .catch(function (error) {
@@ -655,4 +665,25 @@ self.GetMostUsedComponents = function(userUUID, sinceDate, topValue, callback){
 };
 //</editor-fold>
 
+
+
+//<editor-fold desc="License">
+
+self.CreateLicenseOrder = function(ticketId, offerUUID, userUUID, callback) {
+    db.func('CreateLicenseOrder', [ticketId, offerUUID, userUUID])
+        .then(function (data) {
+            if (data && data.length) {
+                data = data[0];
+            }
+
+            logger.debug('CreateLicenseOrder result: ' + JSON.stringify(data));
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("CreateLicenseOrder ERROR: " + error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+//</editor-fold>
 module.exports = self;
