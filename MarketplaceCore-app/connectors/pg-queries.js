@@ -119,7 +119,11 @@ self.GetTechnologyDataByParams = function (userUUID, params, callback) {
         ], 1
     )
         .then(function (data) {
-            logger.debug(JSON.stringify(data));
+            logger.debug('Database query result: ' + JSON.stringify(data));
+            if (!data.result) {
+                callback(null, []);
+                return;
+            }
             callback(null, data.result);
         })
         .catch(function (error) {
@@ -524,7 +528,19 @@ self.GetPaymentInvoiceForOfferRequest = function(userUUID, offerRequestUUID, cal
             logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
-}
+};
+
+self.SetPayment = function(userUUID, payment, callback) {
+    db.func('SetPayment', [payment.transactionUUID, payment.bitcoinTransaction, payment.confidenceState, payment.depth, payment.extInvoiceId, userUUID])
+        .then(function (data) {
+            logger.debug('SetPayment result: ' + data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("SetPayment was not successful: " + error.message || error); // print the error;
+            callback(error);
+        });
+};
 //</editor-fold>
 
 //<editor-fold desc="PaymentInvoice">
@@ -538,11 +554,11 @@ self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, cal
             userUUID
         ])
         .then(function (data) {
-            logger.debug(data);
+            logger.debug('Result for database query: ' + data);
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:" + error.message || error); // print the error;
+            logger.crit("Error while saving payment invoice and offer: " + error.message || error); // print the error;
             callback(error);
         });
 };

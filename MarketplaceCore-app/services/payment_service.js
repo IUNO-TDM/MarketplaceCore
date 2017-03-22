@@ -5,9 +5,11 @@
 const EventEmitter = require('events').EventEmitter;
 const util = require('util');
 const http = require('http');
+const config = require('../global/constants').CONFIG;
 
 var logger = require('../global/logger');
 var io = require('socket.io-client');
+var queries = require('../connectors/pg-queries');
 
 var PaymentService = function () {
     logger.log('a new instance of PaymentService');
@@ -26,6 +28,18 @@ payment_service.socket.on('connect', function () {
 
 payment_service.socket.on('StateChange', function (data) {
     logger.debug("StateChange: " + data);
+    // Store state change in database
+    var paymentData = {
+        transactionUUID: data.referenceId,
+        extInvoiceId: data.invoiceId,
+        depth: data.depth,
+        confidenceState: data.state,
+        bitcoinTransaction: null,
+        userUUID: config.USER_UUID
+    };
+    queries.SetPayment(config.USER_UUID, paymentData, function(err, data) {});
+
+
     payment_service.emit('StateChange', JSON.parse(data));
 });
 
