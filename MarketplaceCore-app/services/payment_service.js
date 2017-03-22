@@ -26,21 +26,29 @@ payment_service.socket.on('connect', function () {
     logger.debug("connected to paymentservice");
 });
 
-payment_service.socket.on('StateChange', function (data) {
-    logger.debug("StateChange: " + data);
-    // Store state change in database
-    var paymentData = {
-        transactionUUID: data.referenceId,
-        extInvoiceId: data.invoiceId,
-        depth: data.depth,
-        confidenceState: data.state,
-        bitcoinTransaction: null,
-        userUUID: config.USER_UUID
-    };
-    queries.SetPayment(config.USER_UUID, paymentData, function(err, data) {});
+payment_service.socket.on('StateChange', function (invoice) {
+    logger.debug("PaymentService StateChange: " + invoice);
+    invoice = JSON.parse(invoice);
 
-
-    payment_service.emit('StateChange', JSON.parse(data));
+    if (invoice.state && invoice.state != 'unknown') {
+        // Store state change in database
+        var paymentData = {
+            transactionUUID: invoice.referenceId,
+            extInvoiceId: invoice.invoiceId,
+            depth: invoice.depth,
+            confidenceState: invoice.state,
+            bitcoinTransaction: null,
+            userUUID: config.USER_UUID
+        };
+        queries.SetPayment(config.USER_UUID, paymentData, function (err, payment) {
+            if (!err) {
+                payment_service.emit('StateChange', {
+                    invoice: invoice,
+                    payment: payment
+                });
+            }
+        });
+    }
 });
 
 
@@ -63,8 +71,8 @@ payment_service.createLocalInvoice = function (invoice, callback) {
     var req = http.request(options, function (res) {
             logger.log("Got answer from PS for CreateLocalInvoice:" + res.statusCode + ' ' + res.statusMessage);
             res.on('data', function (data) {
-                if (res.statusCode != 200) {
-                    logger.warn('Call not successful. Response: + ' + data);
+                if (res.statusCode > 201) {
+                    logger.warn('CreateLocalInvoice: Call not successful. Response: + ' + data);
                 }
 
                 var invoice = JSON.parse(data);
@@ -86,8 +94,8 @@ payment_service.getInvoiceTransfers = function (invoice, callback) {
     var req = http.request(options, function (res) {
             logger.log("Got answer from PS for GetInvoiceTransfer:" + res.statusCode + ' ' + res.statusMessage);
             res.on('data', function (data) {
-                if (res.statusCode != 200) {
-                    logger.warn('Call not successful. Response: + ' + data);
+                if (res.statusCode > 201) {
+                    logger.warn('GetInvoiceTransfers: Call not successful. Response: + ' + data);
                 }
 
                 var transfers = JSON.parse(data.toString());
