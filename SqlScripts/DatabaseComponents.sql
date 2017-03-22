@@ -908,29 +908,18 @@ CREATE FUNCTION CreateLicenseOrder (
 -- ##############################################################################    
 -- SetPayment  
 CREATE FUNCTION public.setpayment(
-    vpaymentinvoiceuuid uuid,
-    vbitcointransaction character varying(32672),
-    vconfidencestate character varying(250),
-    vdepth integer,
-    vextinvoiceid uuid,
-    vuseruuid uuid)
-  RETURNS TABLE(paymentuuid uuid, 
-		paymentinvoiceuuid uuid, 
-		paydate timestamp with time zone, 
-		bitcointransation character varying(32672), 
-		confidencestate character varying(250), 
-		depth integer,		
-		extinvoiceid uuid,	
-		createdby uuid,
-		createdat timestamp with time zone,
-		updatedby uuid,
-		updatedat timestamp with time zone) AS   	 
-
+    IN vtransactionuuid uuid,
+    IN vbitcointransaction character varying,
+    IN vconfidencestate character varying,
+    IN vdepth integer,
+    IN vextinvoiceid uuid,
+    IN vuseruuid uuid)
+  RETURNS TABLE(paymentuuid uuid, paymentinvoiceuuid uuid, paydate timestamp with time zone, bitcointransation character varying, confidencestate character varying, depth integer, extinvoiceid uuid, createdby uuid, createdat timestamp with time zone, updatedby uuid, updatedat timestamp with time zone) AS
 $$
 	#variable_conflict use_column
       DECLARE 	vPaymentID integer;
 		vPaymentUUID uuid := (select uuid_generate_v4());
-		vPaymentInvoiceID integer := (select PaymentInvoiceID from paymentinvoice where PaymentInvoiceUUID = vPaymentInvoiceUUID);
+		vPaymentInvoiceID integer := (select PaymentInvoiceID from transactions where transactionuuid = vTransactionUUID);
 		vCreatedBy integer := (select userid from users where useruuid = vUserUUID);		
 		vPayDate timestamp without time zone := null;
       BEGIN        
@@ -938,7 +927,8 @@ $$
 		IF exists (select extinvoiceid from payment where extinvoiceid = vExtInvoiceID) THEN
 		-- update 
 		--Proof if ConfidenceState is Pending and PayDate is null
-		IF (LOWER(vConfidenceState) = LOWER('Pending') and (select 1 from payment where extinvoiceid = vExtInvoiceID and PayDate is null)::integer=1) THEN
+		IF ((LOWER(vConfidenceState) = LOWER('Pending') or LOWER(vConfidenceState) = LOWER('building')) 
+			and (select 1 from payment where extinvoiceid = vExtInvoiceID and PayDate is null)::integer=1) THEN
 			vPayDate := now();
 		ELSE vPayDate := (select paydate from payment where extinvoiceid = vExtInvoiceID);
 		END IF;  
@@ -981,7 +971,7 @@ $$
         -- Return PaymentID
         RETURN QUERY (
 			select 	PaymentUUID,
-				vPaymentInvoiceUUID,
+				pi.PaymentInvoiceUUID,
 				paydate at time zone 'utc',
 				bitcointransaction,
 				confidencestate,
@@ -992,7 +982,9 @@ $$
 				ur.useruuid as UpdatedBy,
 				py.updatedat at time zone 'utc'
 			from payment py join
-			users us on us.userid = py.createdby
+			paymentinvoice pi on
+			py.paymentinvoiceid = pi.paymentinvoiceid
+			join users us on us.userid = py.createdby
 			left outer join 
 			users ur on ur.userid = py.updatedby
 			where extinvoiceid = vExtInvoiceID			
