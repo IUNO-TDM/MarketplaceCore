@@ -105,4 +105,47 @@ router.get('/:id', validate({query: require('../schema/technologydata_schema').G
 
 });
 
+router.get('/:id/image', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
+
+    queries.GetTechnologyDataByID(req.query['userUUID'], req.params['id'], function (err, technologyData) {
+        if (err) {
+            next(err);
+        }
+        else {
+            if (!technologyData || !Object.keys(technologyData).length) {
+                logger.info('No technologyData found for id: ' + req.param['id']);
+                res.sendStatus(404);
+
+                return;
+            }
+
+            var imgPath = technologyData.technologydataimgref;
+
+            if (imgPath) {
+                var fs = require('fs');
+
+                fs.readFile(imgPath, function (err, fileBuffer) {
+                    if (err) {
+                        logger.warn('Cannot read file from path: ' + imgPath);
+                        logger.warn(err);
+
+                        res.sendStatus(500);
+
+                        return;
+                    }
+
+                    res.set('Content-Type', 'image/jpg');
+                    res.send(fileBuffer);
+                });
+            }
+            else {
+                logger.info('No image found for user');
+                res.sendStatus(404);
+            }
+
+        }
+    });
+
+});
+
 module.exports = router;
