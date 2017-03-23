@@ -139,7 +139,7 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
                 });
             }
             else {
-                logger.info('No image found for user');
+                logger.info('No image found for technologyData');
                 res.sendStatus(404);
             }
 
