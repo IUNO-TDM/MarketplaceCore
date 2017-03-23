@@ -1535,23 +1535,15 @@ Get a Component
 Input paramteres: componentuuid: uuid
 Return Value: Table with all Components 
 ######################################################*/
-CREATE FUNCTION GetComponentByID(vCompUUID uuid, vUserUUID uuid) 
-	RETURNS TABLE
-    	(
-    componentuuid uuid,
-    componentname character varying(250),
-    componentparentuuid integer,
-    componentdescription character varying(32672), 
-    createdat timestamp  with time zone,
-    createdby uuid,
-    updatedat timestamp  with time zone,
-    updatedby uuid
-        )
-    AS $$ 
-	SELECT  componentuuid,
-    		componentname,
-    		componentparentid,
-		componentdescription, 
+CREATE FUNCTION public.getcomponentbyid(
+    IN vcompuuid uuid,
+    IN vuseruuid uuid)
+  RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid uuid, componentdescription character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedby uuid) AS
+$$ 
+	SELECT  cp.componentuuid,
+    		cp.componentname,
+    		cs.componentuuid,
+		cp.componentdescription, 
     		cp.createdat  at time zone 'utc',
     		ur.useruuid as createdby,
     		cp.updatedat  at time zone 'utc',
@@ -1559,7 +1551,9 @@ CREATE FUNCTION GetComponentByID(vCompUUID uuid, vUserUUID uuid)
     FROM Components cp
     join users ur on cp.createdby = ur.userid
     left outer join users us on cp.updatedby = ur.userid 
-    WHERE componentuuid = vCompUUID;
+    left outer join components cs on
+    cp.componentparentid = cs.componentid
+    WHERE cp.componentuuid = vCompUUID; 
     $$ LANGUAGE SQL;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
