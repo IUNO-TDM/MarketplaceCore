@@ -122,21 +122,14 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
             var imgPath = technologyData.technologydataimgref;
 
             if (imgPath) {
-                var fs = require('fs');
-
-                fs.readFile(imgPath, function (err, fileBuffer) {
-                    if (err) {
-                        logger.warn('Cannot read file from path: ' + imgPath);
-                        logger.warn(err);
-
-                        res.sendStatus(500);
-
-                        return;
-                    }
-
-                    res.set('Content-Type', 'image/jpg');
-                    res.send(fileBuffer);
-                });
+                if (imgPath) {
+                    var path = require('path');
+                    res.sendFile(path.resolve(imgPath));
+                }
+                else {
+                    logger.info('No image found for user');
+                    res.sendStatus(404);
+                }
             }
             else {
                 logger.info('No image found for technologyData');
