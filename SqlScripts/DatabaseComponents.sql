@@ -1026,32 +1026,21 @@ Return Value:
  TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
 ######################################################*/
 -- SetComponent   
-CREATE OR REPLACE FUNCTION SetComponent (
-  vComponentName varchar(250), 
-  vComponentParentName varchar(250), 
-  vComponentDescription varchar(32672),
-  vAttributeList text[], 
-  vTechnologyList text[],
-  vCreatedBy uuid
- )
-  RETURNS TABLE (
-	ComponentUUID uuid,
-	ComponentName varchar(250),
-	ComponentParentName varchar(250),
-	ComponentParentUUID uuid,
-	ComponentDescription varchar(32672),
-	AttributeList uuid[],
-	TechnologyList uuid[],
-	CreatedAt timestamp with time zone,
-	CreatedBy uuid	
-  ) AS
-  $$
+CREATE FUNCTION public.setcomponent(
+    IN vcomponentname character varying,
+    IN vcomponentparentname character varying,
+    IN vcomponentdescription character varying,
+    IN vattributelist text[],
+    IN vtechnologylist text[],
+    IN vcreatedby uuid)
+  RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentname character varying, componentparentuuid uuid, componentdescription character varying, attributelist uuid[], technologylist uuid[], createdat timestamp with time zone, createdby uuid) AS
+$$
 	#variable_conflict use_column
       DECLARE 	vAttributeName text; 
         	vTechName text;
 		vCompID integer;
 		vCompUUID uuid;
-		vCompParentUUID uuid := (select case when (vComponentParentName = 'Root') then uuid_generate_v4() else componentuuid end from components where componentname = vComponentParentName);
+		vCompParentUUID uuid := (select case when (vComponentParentName = 'Root' and not exists (select 1 from components where componentName = 'Root')) then uuid_generate_v4() else componentuuid end from components where componentname = vComponentParentName);
       BEGIN      
         -- Proof if all technologies are avaiable
         -- Proof if all components are avaiable      
@@ -1091,29 +1080,29 @@ CREATE OR REPLACE FUNCTION SetComponent (
         -- End Log if success
         -- Return UserID
         RETURN QUERY (
-		select 	co.ComponentUUID,
-			co.ComponentName,
-			cs.ComponentName as componentParentName,
-			cs.ComponentUUID as componentParentUUID,
-			co.ComponentDescription,
-			array_agg(att.attributeuuid),
-			array_agg(tc.technologyuuid),
-			co.CreatedAt at time zone 'utc',
-			vCreatedBy as CreatedBy
-		from components co
-		left outer join components cs
-		on co.componentparentid = cs.componentid
-		join componentsattribute ca 
-		on cs.componentid = ca.componentid
-		join attributes att 
-		on ca.attributeid = att.attributeid
-		join componentstechnologies ct 
-		on cs.componentid = ct.componentid
-		join technologies tc 
-		on tc.technologyid = ct.technologyid		
-		where co.componentid = vCompID
-		group by co.ComponentUUID, co.ComponentName, cs.ComponentName,  
-			cs.ComponentUUID, co.ComponentDescription, co.createdat
+			select 	co.ComponentUUID,
+				co.ComponentName,
+				cs.ComponentName as componentParentName,
+				cs.ComponentUUID as componentParentUUID,
+				co.ComponentDescription,
+				array_agg(att.attributeuuid),
+				array_agg(tc.technologyuuid),
+				co.CreatedAt at time zone 'utc',
+				vCreatedBy as CreatedBy
+			from components co		
+			join componentsattribute ca 	
+			on co.componentid = ca.componentid	
+			join attributes att 
+			on ca.attributeid = att.attributeid
+			join componentstechnologies ct 
+			on co.componentid = ct.componentid
+			join technologies tc 
+			on tc.technologyid = ct.technologyid	
+			left outer join components cs
+			on co.componentparentid = cs.componentid	
+			where co.componentid = vCompID
+			group by co.ComponentUUID, co.ComponentName, cs.ComponentName,  
+				cs.ComponentUUID, co.ComponentDescription, co.createdat
         );
         
         exception when others then 
