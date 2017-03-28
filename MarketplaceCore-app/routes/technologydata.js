@@ -141,4 +141,17 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
 
 });
 
+router.get('/:id/components', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
+
+    queries.GetComponentsForTechnologyDataId(req.query['userUUID'], req.params['id'], function (err, components) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(components);
+        }
+    });
+
+});
+
 module.exports = router;

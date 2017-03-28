@@ -346,6 +346,19 @@ self.GetComponentsByTechnology = function (userUUID, technologyUUID, callback) {
         });
 };
 
+//Get Component by Technology
+self.GetComponentsForTechnologyDataId = function (userUUID, technologyDataUUID, callback) {
+
+    db.func('GetComponentsForTechnologyDataId', [technologyDataUUID, userUUID])
+        .then(function (data) {
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:" + error.message || error); // print the error;
+            callback(error);
+        });
+};
+
 //Set component
 self.SetComponent = function (userUUID, data, callback) {
     var componentName = data['componentName'];
