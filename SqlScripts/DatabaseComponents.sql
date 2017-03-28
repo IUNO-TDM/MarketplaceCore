@@ -2324,35 +2324,26 @@ Input paramteres: vSinceDate  timestamp
 				  vTopValue integer
 Return Value: TechnologyDataName, Rank value 
 ######################################################*/
-CREATE FUNCTION GetTopTechnologyDataSince(
-		vSinceDate timestamp without time zone,
-		vTopValue integer,
-		vUserUUID uuid
-	)
-RETURNS TABLE (
-	TechnologyDataName varchar(250),
-	Rank integer
-	) AS 
+CREATE FUNCTION public.GetTopTechnologydataSince(
+    IN vsincedate timestamp without time zone,
+    IN vtopvalue integer,
+    IN vuseruuid uuid)
+  RETURNS TABLE(technologydataname character varying, rank integer, revenue numeric(21,2)) AS
 $$	 
-	;with activatedLinceses as(
-		select * from licenseorder lo
-		join offer of on lo.offerid = of.offerid
-		join paymentinvoice pi on
-		of.paymentinvoiceid = pi.paymentinvoiceid
-		join offerrequest oq on
-		pi.offerrequestid = oq.offerrequestid
-		join technologydata td on
-		oq.technologydataid = td.technologydataid
-		),
-	rankTable as (
-	select technologydataname, count(technologydataname) as rank from activatedLinceses where 
-	(select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+	select technologydataname, count(ts.offerid)::integer, (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	join licenseorder lo
+	on ts.licenseorderid = lo.licenseorderid
+	join offerrequest oq 
+	on oq.offerrequestid = ts.offerrequestid
+	join technologydata td
+	on oq.technologydataid = td.technologydataid
+	where (select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 	(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 	(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
-	group by technologydataname)
-	select technologydataname::varchar(250), rank::integer from rankTable
-	order by rank desc limit vTopValue;	
-$$ LANGUAGE SQL; 
+	group by technologydataname
+	order by count(ts.offerid) desc limit vTopValue;
+$$
+  LANGUAGE SQL;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2898,4 +2889,48 @@ $$
 	on li.licenseorderid = ts.licenseorderid
 	left outer join users ur on ur.userid = ts.createdby
 	left outer join users uu on uu.userid = ts.updatedby
+$$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Components for given TechnologyDataUUID
+-- ##########################################################################
+Input paramteres: vTechnologyDataUUID uuid 
+######################################################*/
+CREATE FUNCTION GetComponentsForTechnologyDataID(
+		vTechnologyDataUUID uuid,
+		vUserUUID uuid
+	)
+RETURNS TABLE (
+		ComponentUUID uuid,		
+		ComponentName varchar(250),
+		ComponentParentUUID uuid, 
+		ComponentParentName varchar(250),
+		ComponentDescription varchar(32672),
+		Createdat timestamp with time zone,
+		Createdby uuid,
+		Updatedat timestamp with time zone,
+		Useruuid uuid
+	) AS 
+$$	 
+	select	co.componentuuid,
+		co.componentname,
+		cp.componentuuid as ComponentParentUUID,
+		cp.componentname as ComponentParentName,
+		co.componentDescription,
+		co.createdat at time zone 'utc',
+		us.useruuid as CreatedBy,
+		co.updatedat at time zone 'utc',
+		ur.useruuid as UpdatedBy
+	from technologydata td
+	join technologydatacomponents tc
+	on td.technologydataid = tc.technologydataid
+	join components co on
+	co.componentid = tc.componentid
+	join components cp on
+	co.componentparentid = cp.componentid
+	join users us on us.userid = co.createdby
+	left outer join users ur on ur.userid = co.updatedby
+	where td.technologydatauuid = vTechnologyDataUUID	
 $$ LANGUAGE SQL; 
