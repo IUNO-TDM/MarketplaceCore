@@ -2890,3 +2890,47 @@ $$
 	left outer join users ur on ur.userid = ts.createdby
 	left outer join users uu on uu.userid = ts.updatedby
 $$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Components for given TechnologyDataUUID
+-- ##########################################################################
+Input paramteres: vTechnologyDataUUID uuid 
+######################################################*/
+CREATE FUNCTION GetComponentsForTechnologyDataID(
+		vTechnologyDataUUID uuid,
+		vUserUUID uuid
+	)
+RETURNS TABLE (
+		ComponentUUID uuid,		
+		ComponentName varchar(250),
+		ComponentParentUUID uuid, 
+		ComponentParentName varchar(250),
+		ComponentDescription varchar(32672),
+		Createdat timestamp with time zone,
+		Createdby uuid,
+		Updatedat timestamp with time zone,
+		Useruuid uuid
+	) AS 
+$$	 
+	select	co.componentuuid,
+		co.componentname,
+		cp.componentuuid as ComponentParentUUID,
+		cp.componentname as ComponentParentName,
+		co.componentDescription,
+		co.createdat at time zone 'utc',
+		us.useruuid as CreatedBy,
+		co.updatedat at time zone 'utc',
+		ur.useruuid as UpdatedBy
+	from technologydata td
+	join technologydatacomponents tc
+	on td.technologydataid = tc.technologydataid
+	join components co on
+	co.componentid = tc.componentid
+	join components cp on
+	co.componentparentid = cp.componentid
+	join users us on us.userid = co.createdby
+	left outer join users ur on ur.userid = co.updatedby
+	where td.technologydatauuid = vTechnologyDataUUID	
+$$ LANGUAGE SQL; 
