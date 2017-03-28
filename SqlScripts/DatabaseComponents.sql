@@ -2934,3 +2934,61 @@ $$
 	left outer join users ur on ur.userid = co.updatedby
 	where td.technologydatauuid = vTechnologyDataUUID	
 $$ LANGUAGE SQL; 
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Revenue per day
+-- ##########################################################################
+Input paramteres: vDate timestamp
+				  vUserUUID uuid
+######################################################*/
+-- Get Revenue per Day
+create function GetRevenuePerDaySince(vDate timestamp, vUserUUID uuid)
+returns table (date date, revenue numeric(21,2))
+as 
+$$	
+	select activatedat::date, (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	join licenseorder lo
+	on ts.licenseorderid = lo.licenseorderid
+	join offerrequest oq 
+	on oq.offerrequestid = ts.offerrequestid
+	join technologydata td
+	on oq.technologydataid = td.technologydataid
+	join users us on us.userid = td.createdby
+	where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+	(select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+	(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0 	 
+	group by activatedat::date 
+	order by activatedat::date;
+$$ 
+Language SQL;
+/* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Revenue per hour
+-- ##########################################################################
+Input paramteres: vDate timestamp
+				  vUserUUID uuid
+######################################################*/
+CREATE FUNCTION public.getrevenueperhoursince(
+    vdate timestamp without time zone,
+    vuseruuid uuid)
+  RETURNS TABLE(date date, hour double precision, revenue numeric) AS
+$$
+	select activatedat::date, date_part('hour',activatedat) , (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	join licenseorder lo
+	on ts.licenseorderid = lo.licenseorderid
+	join offerrequest oq 
+	on oq.offerrequestid = ts.offerrequestid
+	join technologydata td
+	on oq.technologydataid = td.technologydataid
+	join users us on us.userid = td.createdby
+	where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+	      (select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+	      (select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0 	 
+	group by activatedat::date, date_part('hour',activatedat) 
+	order by activatedat::date, date_part('hour',activatedat);
+$$
+  LANGUAGE sql;
