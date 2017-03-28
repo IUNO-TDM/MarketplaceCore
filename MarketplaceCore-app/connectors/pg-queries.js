@@ -8,7 +8,7 @@
 
 var logger = require('../global/logger');
 var pgp = require('pg-promise')();
-var connectionString = require('../config/private_config_local').connectionString;
+var connectionString = require('../config/private_config_intechdb').connectionString;
 var db = pgp(connectionString);
 
 var self = {};
@@ -667,6 +667,30 @@ self.GetWorkloadSince = function(userUUID, sinceDate, callback){
 
 self.GetMostUsedComponents = function(userUUID, sinceDate, topValue, callback){
     db.func('GetMostUsedComponents', [sinceDate, topValue, userUUID])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:" + error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+self.GetRevenuePerHour = function(userUUID, sinceDate, callback){
+    db.func('GetRevenuePerHourSince', [sinceDate, userUUID])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:" + error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+self.GetRevenuePerDay = function(userUUID, sinceDate, callback){
+    db.func('GetRevenuePerDaySince', [sinceDate, userUUID])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
