@@ -936,11 +936,12 @@ $$
 		PayDate = vPayDate, updatedat = now(), updatedby = vCreatedBy
 		where ExtInvoiceID = vExtInvoiceID; 
 		
-		-- Begin Log if success
-		perform public.createlog(0,'Updated PaymentInvoice sucessfully', 'CreatePayment', 
+		vPaymentID := (select paymentid from payment where ExtInvoiceID = vExtInvoiceID);
+		-- Begin Log if success		
+		perform public.createlog(0,'Updated Payment sucessfully', 'SetPayment', 
                                 'PaymentID: ' || cast(vPaymentID as varchar) 
 				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
-				|| ', BitcoinTransaction: ' || vBitcoinTransaction
+				|| ', BitcoinTransaction: ' || coalesce(vBitcoinTransaction, 'no BitcoinTransaction')
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
                                 
 		-- End Log if success        
@@ -959,10 +960,10 @@ $$
 			vCreatedBy, vDepth, vConfidenceState, vExtInvoiceID, now()); 
 
 		-- Begin Log if success
-		perform public.createlog(0,'Created PaymentInvoice sucessfully', 'CreatePayment', 
+		perform public.createlog(0,'Created Payment sucessfully', 'SetPayment', 
                                 'PaymentID: ' || cast(vPaymentID as varchar) 
 				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
-				|| ', BitcoinTransaction: ' || vBitcoinTransaction
+				|| ', BitcoinTransaction: ' || coalesce(vBitcoinTransaction, 'no BitcoinTransaction')
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
                                 
 		-- End Log if success  
