@@ -906,8 +906,11 @@ CREATE FUNCTION CreateLicenseOrder (
   $$
   LANGUAGE 'plpgsql';     
 -- ##############################################################################    
--- SetPayment  
-CREATE FUNCTION public.setpayment(
+-- Function: public.setpayment(uuid, character varying, character varying, integer, uuid, uuid)
+
+-- DROP FUNCTION public.setpayment(uuid, character varying, character varying, integer, uuid, uuid);
+
+CREATE OR REPLACE FUNCTION public.setpayment(
     IN vtransactionuuid uuid,
     IN vbitcointransaction character varying,
     IN vconfidencestate character varying,
@@ -915,7 +918,7 @@ CREATE FUNCTION public.setpayment(
     IN vextinvoiceid uuid,
     IN vuseruuid uuid)
   RETURNS TABLE(paymentuuid uuid, paymentinvoiceuuid uuid, paydate timestamp with time zone, bitcointransation character varying, confidencestate character varying, depth integer, extinvoiceid uuid, createdby uuid, createdat timestamp with time zone, updatedby uuid, updatedat timestamp with time zone) AS
-$$
+$BODY$
 	#variable_conflict use_column
       DECLARE 	vPaymentID integer;
 		vPaymentUUID uuid := (select uuid_generate_v4());
@@ -923,8 +926,19 @@ $$
 		vCreatedBy integer := (select userid from users where useruuid = vUserUUID);		
 		vPayDate timestamp without time zone := null;
       BEGIN        
-		-- Proof if ExtInvoice already exists
+		
+
 		IF exists (select extinvoiceid from payment where extinvoiceid = vExtInvoiceID) THEN
+		-- TEST
+		vPaymentID := (select paymentid from payment where ExtInvoiceID = vExtInvoiceID);
+		perform public.createlog(0,'START Updated Payment sucessfully', 'SetPayment', 
+                                'PaymentID: ' || cast(vPaymentID as varchar) 
+				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
+				|| ', BitcoinTransaction: ' || coalesce(vBitcoinTransaction, 'no BitcoinTransaction')
+				|| ', Confidence State: ' || coalesce(vconfidencestate, 'no value')
+				|| ', Depth: ' || coalesce(cast(vDepth as varchar), 'no value')
+				|| ', ExtInvoiceID: ' || cast(vExtInvoiceId as varchar)
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
 		-- update 
 		--Proof if ConfidenceState is Pending and PayDate is null
 		IF ((LOWER(vConfidenceState) = LOWER('Pending') or LOWER(vConfidenceState) = LOWER('building')) 
@@ -938,10 +952,13 @@ $$
 		
 		vPaymentID := (select paymentid from payment where ExtInvoiceID = vExtInvoiceID);
 		-- Begin Log if success		
-		perform public.createlog(0,'Updated Payment sucessfully', 'SetPayment', 
+		perform public.createlog(0,'END Updated Payment sucessfully', 'SetPayment', 
                                 'PaymentID: ' || cast(vPaymentID as varchar) 
 				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
 				|| ', BitcoinTransaction: ' || coalesce(vBitcoinTransaction, 'no BitcoinTransaction')
+				|| ', Confidence State: ' || coalesce(vconfidencestate, 'no value')
+				|| ', Depth: ' || coalesce(cast(vDepth as varchar), 'no value')
+				|| ', ExtInvoiceID: ' || cast(vExtInvoiceId as varchar)
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
                                 
 		-- End Log if success        
@@ -949,25 +966,29 @@ $$
 	ELSE
 		-- Insert	
 		 vPaymentID := (select nextval('PaymentID')); 
-		IF (LOWER(vConfidenceState) = LOWER('Pending')) THEN
+		IF (LOWER(vConfidenceState) = LOWER('Pending') or LOWER(vConfidenceState) = LOWER('building')) THEN
 			vPayDate := now();
 		ELSE 	vPayDate := null;  
 		END IF;
-		INSERT INTO payment(paymentid, paymentuuid, paymentinvoiceid, paydate, bitcointransaction, 
-				    createdby, depth, confidencestate, extinvoiceid,
-				    createdat)
-			VALUES (vPaymentID, vPaymentUUID, vPaymentInvoiceID, vPayDate, vbitcointransaction, 
-			vCreatedBy, vDepth, vConfidenceState, vExtInvoiceID, now()); 
+			IF not exists (select extinvoiceid from payment where extinvoiceid = vExtInvoiceID) THEN
+			INSERT INTO payment(paymentid, paymentuuid, paymentinvoiceid, paydate, bitcointransaction, 
+					    createdby, depth, confidencestate, extinvoiceid,
+					    createdat)
+				VALUES (vPaymentID, vPaymentUUID, vPaymentInvoiceID, vPayDate, vbitcointransaction, 
+				vCreatedBy, vDepth, vConfidenceState, vExtInvoiceID, now()); 
 
-		-- Begin Log if success
-		perform public.createlog(0,'Created Payment sucessfully', 'SetPayment', 
-                                'PaymentID: ' || cast(vPaymentID as varchar) 
-				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
-				|| ', BitcoinTransaction: ' || coalesce(vBitcoinTransaction, 'no BitcoinTransaction')
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
-                                
-		-- End Log if success  
-	
+			-- Begin Log if success
+			perform public.createlog(0,'Created Payment sucessfully', 'SetPayment', 
+					'PaymentID: ' || cast(vPaymentID as varchar) 
+					|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
+					|| ', BitcoinTransaction: ' || coalesce(vBitcoinTransaction, 'no BitcoinTransaction')
+					|| ', Confidence State: ' || coalesce(vconfidencestate, 'no value')
+					|| ', Depth: ' || coalesce(cast(vDepth as varchar), 'no value')
+					|| ', ExtInvoiceID: ' || cast(vExtInvoiceId as varchar)
+					|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+					
+			-- End Log if success  
+			END IF;
 		END IF;
         -- Return PaymentID
         RETURN QUERY (
@@ -993,17 +1014,24 @@ $$
         
         exception when others then 
         -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'CreatePayment', 
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'SetPayment', 
                                 'PaymentID: ' || cast(vPaymentID as varchar) 
 				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
-				|| ', BitcoinTransaction: ' || vBitcoinTransaction
+				|| ', BitcoinTransaction: ' || coalesce(vBitcoinTransaction, 'no BitcoinTransaction')
+				|| ', Confidence State: ' || coalesce(vconfidencestate, 'no value')
+				|| ', Depth: ' || coalesce(cast(vDepth as varchar), 'no value')
+				|| ', ExtInvoiceID: ' || cast(vExtInvoiceId as varchar)
 				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetPayment';
         RETURN ;
       END;
-  $$
-  LANGUAGE 'plpgsql'; 
+  $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION public.setpayment(uuid, character varying, character varying, integer, uuid, uuid)
+  OWNER TO postgres;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
