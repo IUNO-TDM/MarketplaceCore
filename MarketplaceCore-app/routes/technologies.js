@@ -37,16 +37,16 @@ router.get('/:id', validate({query: require('../schema/technologies_schema').Get
 });
 
 router.post('/', validate({
-    body: require('../schema/technologydata_schema').SaveDataBody,
-    query: require('../schema/technologydata_schema').SaveDataQuery
+    body: require('../schema/technologies_schema').SaveDataBody,
+    query: require('../schema/technologies_schema').SaveDataQuery
 }), function (req, res, next) {
     queries.CreateTechnology(req.query['userUUID'], req.body, function (err, data) {
         if (err) {
             next(err);
         }
 
-        var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        res.set('Location', fullUrl + data.id);
+        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
+        res.set('Location', fullUrl + data[0]['technologyuuid']);
         res.sendStatus(201);
     });
 });

@@ -48,6 +48,7 @@ router.get('/:id', validate({query: require('../schema/components_schema').GetSi
     });
 });
 
+//TODO: Verify this route
 router.get('/:id/technology', validate({query: require('../schema/components_schema').GetSingle}),  function (req, res, next) {
     logger.debug(req);
     queries.GetComponentsByTechnology(req.query['userUUID'], req.params['id'], function (err, data) {
@@ -70,7 +71,7 @@ router.post('/', validate({
         }
 
         var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
-        res.set('Location', fullUrl + data[0]['ocomponentuuid']);
+        res.set('Location', fullUrl + data[0]['componentuuid']);
         res.sendStatus(201);
     });
 });

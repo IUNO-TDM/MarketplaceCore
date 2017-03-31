@@ -39,3 +39,9 @@ jspm_packages
 .idea
 
 private_*
+
+# Don't store live images in github
+#images/technologydata/*
+#images/users/*
+
+.DS_Store

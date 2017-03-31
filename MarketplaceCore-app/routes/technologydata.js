@@ -60,10 +60,98 @@ router.post('/', validate({
             next(err);
         }
 
-        var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        res.set('Location', fullUrl + data.id);
+        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
+        res.set('Location', fullUrl + data[0]['technologydatauuid']);
         res.sendStatus(201);
     });
+});
+
+router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
+
+    queries.GetTechnologyDataByID(req.query['userUUID'], req.params['id'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            if (!data || !Object.keys(data).length) {
+                logger.info('No technology data found for id: ' + req.param['id']);
+                res.sendStatus(404);
+
+                return;
+            }
+
+            var imgPath = data.technologydataimgref;
+
+            if (imgPath) {
+                var fs = require('fs');
+
+                fs.readFile(imgPath, function (err, fileBuffer) {
+                    if (err) {
+                        logger.warn('Cannot read file from path: ' + imgPath);
+                        logger.warn(err);
+
+                        res.sendStatus(500);
+
+                        return;
+                    }
+
+                    res.set('Content-Type', 'image/jpg');
+                    res.send(fileBuffer);
+                });
+            }
+
+        }
+    });
+
+});
+
+router.get('/:id/image', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
+
+    queries.GetTechnologyDataByID(req.query['userUUID'], req.params['id'], function (err, technologyData) {
+        if (err) {
+            next(err);
+        }
+        else {
+            if (!technologyData || !Object.keys(technologyData).length) {
+                logger.info('No technologyData found for id: ' + req.param['id']);
+                res.sendStatus(404);
+
+                return;
+            }
+
+            var imgPath = technologyData.technologydataimgref;
+
+            if (imgPath) {
+                if (imgPath) {
+                    var path = require('path');
+                    res.sendFile(path.resolve(imgPath));
+                }
+                else {
+                    logger.info('No image found for user');
+                    res.sendStatus(404);
+                }
+            }
+            else {
+                logger.info('No image found for technologyData');
+                res.sendStatus(404);
+            }
+
+        }
+    });
+
+});
+
+router.get('/:id/components', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
+
+    queries.GetComponentsForTechnologyDataId(req.query['userUUID'], req.params['id'], function (err, components) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(components);
+        }
+    });
+
 });
 
 module.exports = router;
