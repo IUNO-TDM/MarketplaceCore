@@ -8,8 +8,8 @@
 
 var logger = require('../global/logger');
 var pgp = require('pg-promise')();
-var connectionString = require('../config/private_config_intechdb').connectionString;
-var db = pgp(connectionString);
+var config = require('../config/config_loader').loadConfig();
+var db = pgp(config.connectionString);
 
 var self = {};
 

@@ -7,7 +7,7 @@
  */
 var winston = require('winston');
 var _ = require('lodash');
-var config = require('../global/constants').CONFIG;
+var config = require('../config/config_loader').loadConfig();
 
 // Set up logger
 var customColors = {
@@ -43,7 +43,6 @@ winston.addColors(customColors);
 
 // Extend logger object to properly log 'Error' types
 var origLog = logger.log;
-
 logger.log = function (level, msg) {
     if (!msg) {
         msg = level;
@@ -54,6 +53,66 @@ logger.log = function (level, msg) {
         origLog.call(logger, level, msg.toString());
     } else {
         origLog.call(logger, level, msg);
+    }
+};
+
+var origFatal = logger.fatal;
+logger.fatal = function (msg) {
+    var objType = Object.prototype.toString.call(msg);
+    if (objType === '[object Error]') {
+        origFatal.call(logger, msg.toString());
+    } else {
+        origFatal.call(logger, msg);
+    }
+};
+
+var origCrit = logger.crit;
+logger.crit = function (msg) {
+    var objType = Object.prototype.toString.call(msg);
+    if (objType === '[object Error]') {
+        origCrit.call(logger, msg.toString());
+    } else {
+        origCrit.call(logger, msg);
+    }
+};
+
+var origWarn = logger.warn;
+logger.warn = function (msg) {
+    var objType = Object.prototype.toString.call(msg);
+    if (objType === '[object Error]') {
+        origWarn.call(logger, msg.toString());
+    } else {
+        origWarn.call(logger, msg);
+    }
+};
+
+var origInfo = logger.info;
+logger.info = function (msg) {
+    var objType = Object.prototype.toString.call(msg);
+    if (objType === '[object Error]') {
+        origInfo.call(logger, msg.toString());
+    } else {
+        origInfo.call(logger, msg);
+    }
+};
+
+var origDebug = logger.debug;
+logger.debug = function (msg) {
+    var objType = Object.prototype.toString.call(msg);
+    if (objType === '[object Error]') {
+        origDebug.call(logger, msg.toString());
+    } else {
+        origDebug.call(logger, msg);
+    }
+};
+
+var origTrace = logger.trace;
+logger.trace = function (msg) {
+    var objType = Object.prototype.toString.call(msg);
+    if (objType === '[object Error]') {
+        origTrace.call(logger, msg.toString());
+    } else {
+        origTrace.call(logger, msg);
     }
 };
 
