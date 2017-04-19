@@ -8,8 +8,8 @@
 
 var logger = require('../global/logger');
 var pgp = require('pg-promise')();
-var config = require('../config/config_loader').loadConfig();
-var db = pgp(config.connectionString);
+var config = require('../config/config_loader');
+var db = pgp(config.DB_CONNECTION_STRING);
 
 var self = {};
 

@@ -2,7 +2,7 @@ const EventEmitter = require('events').EventEmitter;
 const util = require('util');
 const payment_service = require('./payment_service');
 var queries = require('../connectors/pg-queries');
-const config = require('../config/config_loader').loadConfig();
+const config = require('../config/config_loader');
 
 var LicenseService = function () {
 };

@@ -5,7 +5,7 @@
 const EventEmitter = require('events').EventEmitter;
 const util = require('util');
 const request = require('request');
-const config = require('../config/config_loader').loadConfig();
+const config = require('../config/config_loader');
 const helper = require('../services/helper_service');
 
 var Invoice = require('../model/invoice');

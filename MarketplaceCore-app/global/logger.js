@@ -7,7 +7,7 @@
  */
 var winston = require('winston');
 var _ = require('lodash');
-var config = require('../config/config_loader').loadConfig();
+var config = require('../config/config_loader');
 
 // Set up logger
 var customColors = {

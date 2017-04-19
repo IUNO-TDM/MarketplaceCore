@@ -2,8 +2,6 @@
  * Created by beuttlerma on 18.04.17.
  */
 
-var self = {};
-
 /**
  * To use a custom config file use the config_default as a template.
  * Save the custom config file in the same directory. All files starting with private* will be ignored by git.
@@ -16,30 +14,20 @@ var self = {};
  * @returns {config}
  */
 
-var config;
+var config = require('./config_defaults');
+const ENV_NAME = 'TDM_CORE_CONFIG';
+if (process.env[ENV_NAME]) {
+    console.info('Loading configuration file: ' + process.env[ENV_NAME]);
 
-self.loadConfig = function () {
-    if (!config) {
-        var defaultConfig = require('./config_defaults');
+    var customConfig = require('./' + process.env[ENV_NAME]);
 
-        if (process.env['TDM_CORE_CONFIG']) {
-            console.info('Loading configuration file: ' + process.env['TDM_CORE_CONFIG']);
-
-            var customConfig = require('./' + process.env['TDM_CORE_CONFIG']);
-
-            // override default values from custom configuration
-            for (var key in customConfig) {
-                defaultConfig[key] = customConfig[key];
-            }
-        }
-        else {
-            console.warn('ENV Variable: TDM_CORE_CONFIG not specified. Loading defaults only.');
-        }
-        config = defaultConfig;
+    // override default values from custom configuration
+    for (var key in customConfig) {
+        config[key] = customConfig[key];
     }
+}
+else {
+    console.warn('ENV Variable: ' + ENV_NAME + ' not specified. Loading defaults only.');
+}
 
-
-    return config;
-};
-
-module.exports = self;
+module.exports = config;
