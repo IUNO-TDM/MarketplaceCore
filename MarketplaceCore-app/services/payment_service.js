@@ -6,7 +6,6 @@ const EventEmitter = require('events').EventEmitter;
 const util = require('util');
 const request = require('request');
 const config = require('../config/config_loader');
-const helper = require('../services/helper_service');
 
 var Invoice = require('../model/invoice');
 var logger = require('../global/logger');
@@ -44,7 +43,7 @@ payment_service.socket.on('StateChange', function (invoice) {
     logger.debug("PaymentService StateChange: " + invoice);
     invoice = JSON.parse(invoice);
 
-    if (invoice.state && invoice.state != 'unknown') {
+    if (invoice.state && invoice.state !== 'unknown') {
         // Store state change in database
         var paymentData = {
             transactionUUID: invoice.referenceId,
@@ -71,7 +70,7 @@ payment_service.socket.on('disconnect', function () {
 });
 
 payment_service.createLocalInvoice = function (invoice, callback) {
-    if (typeof(callback) == 'function') {
+    if (typeof(callback) === 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -100,7 +99,7 @@ payment_service.createLocalInvoice = function (invoice, callback) {
 ;
 
 payment_service.getInvoiceTransfers = function (invoice, callback) {
-    if (typeof(callback) == 'function') {
+    if (typeof(callback) === 'function') {
 
         callback = function () {
             logger.info('Callback not registered');

@@ -60,7 +60,7 @@ router.get('/workload/', function (req, res, next) {
 });
 
 router.get('/revenue/', function (req, res, next) {
-    if(req.query['time'] == 'day') {
+    if(req.query['time'] === 'day') {
         queries.GetRevenuePerDay(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
             if (err) {
                 next(err);
@@ -71,7 +71,7 @@ router.get('/revenue/', function (req, res, next) {
             }
         });
     }
-    else if(req.query['time'] == 'hour'){
+    else if(req.query['time'] === 'hour'){
         queries.GetRevenuePerHour(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
             if (err) {
                 next(err);
