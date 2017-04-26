@@ -65,10 +65,7 @@ router.post('/', validate({
             next(err);
         } else {
             if (!offerRequest || offerRequest.length <= 0) {
-                next({
-                    statusCode: 500,
-                    message: 'Error when creating offer request in marketplace'
-                });
+                next(new Error('Error when creating offer request in marketplace'));
             }else{
                 queries.GetTransactionByOfferRequest(userUUID, offerRequest[0].offerrequestuuid, function (err, transaction) {
                     if (err) {
