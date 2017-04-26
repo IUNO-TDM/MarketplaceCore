@@ -905,12 +905,8 @@ CREATE FUNCTION CreateLicenseOrder (
       END;
   $$
   LANGUAGE 'plpgsql';     
--- ##############################################################################    
--- Function: public.setpayment(uuid, character varying, character varying, integer, uuid, uuid)
-
--- DROP FUNCTION public.setpayment(uuid, character varying, character varying, integer, uuid, uuid);
-
-CREATE OR REPLACE FUNCTION public.setpayment(
+-- ##############################################################################     
+CREATE FUNCTION public.setpayment(
     IN vtransactionuuid uuid,
     IN vbitcointransaction character varying,
     IN vconfidencestate character varying,
@@ -925,6 +921,7 @@ $BODY$
 		vPaymentInvoiceID integer := (select PaymentInvoiceID from transactions where transactionuuid = vTransactionUUID);
 		vCreatedBy integer := (select userid from users where useruuid = vUserUUID);		
 		vPayDate timestamp without time zone := null;
+		vTransactionID integer := (select transactionid from transactions where transactionuuid = vtransactionuuid);
       BEGIN        
 		
 
@@ -970,25 +967,28 @@ $BODY$
 			vPayDate := now();
 		ELSE 	vPayDate := null;  
 		END IF;
-			IF not exists (select extinvoiceid from payment where extinvoiceid = vExtInvoiceID) THEN
-			INSERT INTO payment(paymentid, paymentuuid, paymentinvoiceid, paydate, bitcointransaction, 
-					    createdby, depth, confidencestate, extinvoiceid,
-					    createdat)
-				VALUES (vPaymentID, vPaymentUUID, vPaymentInvoiceID, vPayDate, vbitcointransaction, 
-				vCreatedBy, vDepth, vConfidenceState, vExtInvoiceID, now()); 
+		INSERT INTO payment(paymentid, paymentuuid, paymentinvoiceid, paydate, bitcointransaction, 
+				    createdby, depth, confidencestate, extinvoiceid,
+				    createdat)
+			VALUES (vPaymentID, vPaymentUUID, vPaymentInvoiceID, vPayDate, vbitcointransaction, 
+			vCreatedBy, vDepth, vConfidenceState, vExtInvoiceID, now()); 
 
-			-- Begin Log if success
-			perform public.createlog(0,'Created Payment sucessfully', 'SetPayment', 
-					'PaymentID: ' || cast(vPaymentID as varchar) 
-					|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
-					|| ', BitcoinTransaction: ' || coalesce(vBitcoinTransaction, 'no BitcoinTransaction')
-					|| ', Confidence State: ' || coalesce(vconfidencestate, 'no value')
-					|| ', Depth: ' || coalesce(cast(vDepth as varchar), 'no value')
-					|| ', ExtInvoiceID: ' || cast(vExtInvoiceId as varchar)
-					|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
-					
-			-- End Log if success  
-			END IF;
+			-- Update Transactions table
+		UPDATE Transactions SET PaymentID = vPaymentID, UpdatedAt = now(), UpdatedBy = vCreatedBy
+		WHERE TransactionID = vTransactionID;
+
+		-- Begin Log if success
+		perform public.createlog(0,'Created Payment sucessfully', 'SetPayment', 
+                                'PaymentID: ' || cast(vPaymentID as varchar) 
+				|| ', PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
+				|| ', BitcoinTransaction: ' || coalesce(vBitcoinTransaction, 'no BitcoinTransaction')
+				|| ', Confidence State: ' || coalesce(vconfidencestate, 'no value')
+				|| ', Depth: ' || coalesce(cast(vDepth as varchar), 'no value')
+				|| ', ExtInvoiceID: ' || cast(vExtInvoiceId as varchar)
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+                                
+		-- End Log if success  
+	
 		END IF;
         -- Return PaymentID
         RETURN QUERY (
@@ -2353,15 +2353,19 @@ Input paramteres: vSinceDate  timestamp
 				  vTopValue integer
 Return Value: TechnologyDataName, Rank value 
 ######################################################*/
-CREATE FUNCTION public.GetTopTechnologydataSince(
+-- Function: public.gettoptechnologydatasince(timestamp without time zone, integer, uuid)
+
+-- DROP FUNCTION public.gettoptechnologydatasince(timestamp without time zone, integer, uuid);
+
+CREATE OR REPLACE FUNCTION public.gettoptechnologydatasince(
     IN vsincedate timestamp without time zone,
     IN vtopvalue integer,
     IN vuseruuid uuid)
-  RETURNS TABLE(technologydataname character varying, rank integer, revenue numeric(21,2)) AS
-$$	 
+  RETURNS TABLE(technologydataname character varying, rank integer, revenue numeric) AS
+$BODY$	 
 	select technologydataname, count(ts.offerid)::integer, (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
 	join licenseorder lo
-	on ts.licenseorderid = lo.licenseorderid
+	on ts.offerid = lo.offerid
 	join offerrequest oq 
 	on oq.offerrequestid = ts.offerrequestid
 	join technologydata td
@@ -2371,8 +2375,12 @@ $$
 	(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
 	group by technologydataname
 	order by count(ts.offerid) desc limit vTopValue;
-$$
-  LANGUAGE SQL;
+$BODY$
+  LANGUAGE sql VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION public.gettoptechnologydatasince(timestamp without time zone, integer, uuid)
+  OWNER TO postgres;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -3021,3 +3029,67 @@ $$
 	order by activatedat::date, date_part('hour',activatedat);
 $$
   LANGUAGE sql;
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-31
+-- Description: Delete given TechnologyData
+-- ##########################################################################
+Input paramteres: vTechnologyDataName varchar(250)
+				  vUserUUID uuid
+######################################################*/ 
+create or replace function DeleteTechnologyData(vTechnologyDataName varchar(250), vUserUUID uuid)
+RETURNS void AS
+$$
+DECLARE 
+	vTechnologyDataId integer := (select TechnologyDataId from technologydata where technologydataname = vTechnologyDataName);
+	
+	BEGIN
+		create TEMP table vDeleteValues (technologydataid integer, offerid integer, offerrequestid integer, transactionid integer, paymentinvoiceid integer, paymentid integer, licenseorderid integer);
+		-- Get all necessary IDs
+		insert into vDeleteValues (technologydataid, offerid, offerrequestid, transactionid, paymentinvoiceid, paymentid, licenseorderid)
+		select td.technologydataid, ofr.offerid, oq.offerrequestid, transactionid, pi.paymentinvoiceid, py.paymentid, lo.licenseorderid 
+		from technologydata td		
+		join offerrequest oq on td.technologydataid = oq.technologydataid
+		join paymentinvoice pi on pi.offerrequestid = oq.offerrequestid			
+		left outer join offer ofr on ofr.paymentinvoiceid = pi.paymentinvoiceid
+		left outer join payment py on py.paymentinvoiceid = pi.paymentinvoiceid
+		left outer join licenseorder lo on lo.offerid = ofr.offerid	
+		left outer join transactions ts on ts.paymentinvoiceid = pi.paymentinvoiceid	
+		where td.technologydataid = vTechnologyDataId;
+
+		-- delete transactions
+		delete from transactions where transactionid in (select transactionid from vDeleteValues);
+
+		-- delete licenseorder
+		delete from licenseorder where licenseorderid  in (select licenseorderid from vDeleteValues);
+
+		-- delete offerid
+		delete from offer where offerid in (select offerid from vDeleteValues);			
+
+		-- delete payment
+		delete from payment where paymentid in (select paymentid from vDeleteValues);		
+		
+		-- delete paymentinvoice
+		delete from paymentinvoice where paymentinvoiceid in (select paymentinvoiceid from vDeleteValues);
+
+		-- delete offerrequest
+		delete from offerrequest where TechnologyDataId = vTechnologyDataID;
+		
+		-- delete technologydatacomponents
+		delete from technologydatacomponents where TechnologyDataId = vTechnologyDataID;
+
+		-- delete technologydatatags
+		delete from technologydatatags where TechnologyDataId = vTechnologyDataID;		
+
+		-- delete technologydata
+		delete from technologydata where TechnologyDataId = vTechnologyDataID;
+
+		--Drop Temp Table
+		drop table vDeleteValues;
+	END;
+$$
+LANGUAGE PLPGSQL;
+
+  
+  
