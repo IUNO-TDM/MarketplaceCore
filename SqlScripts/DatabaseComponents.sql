@@ -3,7 +3,7 @@
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
 -- CreatedAt: 2017-02-27
 -- Description: Script to create MarketplaceCore database functions, sequences, etc.
--- Changes: 
+-- Changes: Last update 2017-04-26
 -- ##########################################################################
 -- Create Database
 /*CREATE DATABASE "Test"
