@@ -1,8 +1,8 @@
 /**
  * Created by beuttlerma on 14.03.17.
  */
-var logger = require('../global/logger');
-var db = require('../global/database').db;
+var logger = require('../../global/logger');
+var db = require('../db_connection');
 
 /**
  * Creates an technologydata object from a database query result.

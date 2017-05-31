@@ -9,10 +9,9 @@ var express = require('express');
 var router = express.Router();
 var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
-var TechnologyData = require('../model/technologydata');
-var Component = require('../model/component');
+var TechnologyData = require('../database/model/technologydata');
+var Component = require('../database/model/component');
 var helper = require('../services/helper_service');
-var queries = require('../connectors/pg-queries');
 
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {

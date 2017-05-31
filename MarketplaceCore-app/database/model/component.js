@@ -2,8 +2,8 @@
  * Created by beuttlerma on 31.05.17.
  */
 
-var logger = require('../global/logger');
-var db = require('../global/database').db;
+var logger = require('../../global/logger');
+var db = require('../db_connection');
 
 /**
  *

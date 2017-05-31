@@ -2,8 +2,8 @@
  * Created by beuttlerma on 14.03.17.
  */
 
-var logger = require('../global/logger');
-var db = require('../global/database').db;
+var logger = require('../../global/logger');
+var db = require('../db_connection');
 
 /**
  *
@@ -52,7 +52,7 @@ User.prototype.Create = function (userUUID, callback) {
             callback(null, new User(data));
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit(error.message || error); // print the error;
             callback(error);
         });
 };

@@ -10,7 +10,7 @@ var router = express.Router();
 var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
 var helper = require('../services/helper_service');
-var User = require('../model/user');
+var User = require('../database/model/user');
 
 router.get('/:id', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
 
@@ -30,12 +30,12 @@ router.post('/', validate({
     query: require('../schema/users_schema').SaveDataQuery
 }), function (req, res, next) {
 
-    var nUser = new User();
-    nUser.userfirstname = req.body.firstName;
-    nUser.userlastname = req.body.lastName;
-    nUser.useremail = req.body.emailAddress;
+    var _user = new User();
+    _user.userfirstname = req.body.firstName;
+    _user.userlastname = req.body.lastName;
+    _user.useremail = req.body.emailAddress;
 
-    nUser.Create(req.query['userUUID'], function(err, data) {
+    _user.Create(req.query['userUUID'], function(err, data) {
         if (err) {
             next(err);
         }

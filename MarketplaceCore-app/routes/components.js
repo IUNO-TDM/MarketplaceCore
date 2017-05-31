@@ -9,8 +9,7 @@ var express = require('express');
 var router = express.Router();
 var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
-var queries = require('../connectors/pg-queries');
-var Component = require('../model/component');
+var Component = require('../database/model/component');
 var helper = require('../services/helper_service');
 
 
@@ -28,18 +27,6 @@ router.get('/', validate({query: require('../schema/components_schema').GetAll})
 
 router.get('/:id', validate({query: require('../schema/components_schema').GetSingle}),  function (req, res, next) {
     new Component().FindSingle(req.query['userUUID'], req.params['id'], function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
-});
-
-router.get('/:id/technology', validate({query: require('../schema/components_schema').GetSingle}),  function (req, res, next) {
-    logger.debug(req);
-    queries.GetComponentsByTechnology(req.query['userUUID'], req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
