@@ -11,41 +11,20 @@ var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
 var queries = require('../connectors/pg-queries');
 
-/*router.get('/', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
- logger.debug(req);
- queries.GetAllUsers(req.query['userUUID'], function(err, data){
- if (err){
- next(err);
- }
- else {
- res.json(data);
- }
- });
- });*/
+router.get('/:id', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
 
-router.get('/', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
-    if(req.query['firstName'] && req.query['lastName']){
-        queries.GetUserByName(req.query['userUUID'], req.query['firstName'], req.query['lastName'], function (err, data) {
-            if (err) {
-                next(err);
-            }
-            else {
-                res.json(data);
-            }
-        });
-    }
-    else {
-        queries.GetUserByID(req.query['userUUID'], function (err, data) {
-            if (err) {
-                next(err);
-            }
-            else {
-                res.json(data);
-            }
-        });
-    }
+    queries.GetUserByID(req.query['userUUID'], req.params['id'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
+
 });
 
+//TODO: past image to it
 router.post('/', validate({
     body: require('../schema/users_schema').SaveDataBody,
     query: require('../schema/users_schema').SaveDataQuery
@@ -56,9 +35,38 @@ router.post('/', validate({
         }
 
         var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
-        res.set('Location', fullUrl + data[0]['ouseruuid']);
+        res.set('Location', fullUrl + data[0]['useruuid']);
         res.sendStatus(201);
     });
 });
 
+router.get('/:id/image', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
+
+    queries.GetUserByID(req.query['userUUID'], req.params['id'], function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            if (!data || !Object.keys(data).length) {
+                logger.info('No user found for id: ' + req.param['id']);
+                res.sendStatus(404);
+
+                return;
+            }
+
+            var imgPath = data.imgpath;
+
+            if (imgPath) {
+                var path = require('path');
+                res.sendFile(path.resolve(imgPath));
+            }
+            else {
+                logger.info('No image found for user');
+                res.sendStatus(404);
+            }
+
+        }
+    });
+
+});
 module.exports = router;

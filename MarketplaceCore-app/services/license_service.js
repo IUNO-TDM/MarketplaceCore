@@ -4,22 +4,22 @@ const payment_service = require('./payment_service');
 var queries = require('../connectors/pg-queries');
 const config = require('../global/constants');
 
-var LicenseService = function () {};
+var LicenseService = function () {
+};
 const license_service = new LicenseService();
 util.inherits(LicenseService, EventEmitter);
 
 
-payment_service.on('StateChange', function(state){
-    if(state.state == 'pending' || state.state == 'building'){
-        var transactionUuid = state.referenceId;
-
-        queries.GetOfferForTransaction(config.CONFIG.USER_UUID, transactionUuid, function (err, data) {
-            if (!err) {
-
-
-
-                // var hsmId = data.hsmId;
-                license_service.emit('updateAvailable',data[0].oofferuuid, 'TW552HSM');
+payment_service.on('StateChange', function (data) {
+    var transactionUuid = data.invoice.referenceId;
+    if (data.payment && data.payment.paydate) {
+        queries.GetTransactionByID(config.CONFIG.USER_UUID, transactionUuid, function (err, transaction) {
+            if (!err && !transaction.licenseorderuuid) {
+                queries.CreateLicenseOrder(null, transaction.offeruuid, config.CONFIG.USER_UUID, function (err, data) {
+                    if (!err) {
+                        license_service.emit('updateAvailable', data.offeruuid, 'TW552HSM');
+                    }
+                });
             }
         });
     }

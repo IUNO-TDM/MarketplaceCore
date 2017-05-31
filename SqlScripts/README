@@ -1,0 +1,7 @@
+To Deploy the Database run:
+
+1) CreateDatabase.sql -- Optional: set database name
+2) CreateTables.sql
+3) CreateLogUser.sql -- Set password and database name
+4) DatabaseComponents.sql
+5) BaseData.sql -- Some testing data

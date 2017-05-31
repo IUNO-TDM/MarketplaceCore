@@ -8,7 +8,7 @@
 
 var logger = require('../global/logger');
 var pgp = require('pg-promise')();
-var connectionString = require('../config/private_config_local').connectionString;
+var connectionString = require('../config/private_config_intechdb').connectionString;
 var db = pgp(connectionString);
 
 var self = {};
@@ -17,19 +17,19 @@ var self = {};
 //<editor-fold desc="Users">
 // GetAllUsers(userUUID)
 self.GetAllUsers = function (userUUID, callback) {
-    db.func('GetAllUsers')
+    db.func('GetAllUsers',[userUUID])
         .then(function (data) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 // GetUserByID(userUUID, dataId)
-self.GetUserByID = function (userUUID, callback) {
-    db.func('GetUserByID', [userUUID])
+self.GetUserByID = function (userUUID, id, callback) {
+    db.func('GetUserByID', [id, userUUID])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {
@@ -38,14 +38,14 @@ self.GetUserByID = function (userUUID, callback) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 // GetUserByID(userUUID, firstName, lastName)
 self.GetUserByName = function (userUUID, firstName, lastName, callback) {
-    db.func('GetUserByName', [firstName, lastName])
+    db.func('GetUserByName', [firstName, lastName, userUUID])
         .then(function (data) {
             //Only return the first element
             //TODO: Correction has to be made. It's is possible to have many users with the same name, e.g. Michael Mueller
@@ -55,7 +55,7 @@ self.GetUserByName = function (userUUID, firstName, lastName, callback) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -66,12 +66,12 @@ self.CreateUser = function (userUUID, data, callback) {
     var firstName = data['firstName'];
     var lastName = data['lastName'];
     var emailAddress = data['emailAddress'];
-    db.func('CreateUser', [firstName, lastName, emailAddress])
+    db.func('CreateUser', [firstName, lastName, emailAddress, userUUID])
         .then(function (data) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -81,12 +81,12 @@ self.CreateUser = function (userUUID, data, callback) {
 //<editor-fold desc="TechnologyData">
 // GetAllTechnologyData
 self.GetAllTechnologyData = function (userUUID, callback) {
-    db.func('GetAllTechnologyData')
+    db.func('GetAllTechnologyData', [userUUID])
         .then(function (data) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -102,7 +102,7 @@ self.GetTechnologyDataByID = function (userUUID, technologyDataUUID, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -110,26 +110,24 @@ self.GetTechnologyDataByID = function (userUUID, technologyDataUUID, callback) {
 //Get TechnologyDataByParams
 self.GetTechnologyDataByParams = function (userUUID, params, callback) {
     var technologies = params['technologies'];
-    var technologyData = params['technologyData'];
-    var tags = params['tags'];
     var components = params['components'];
-    var attributes = params['attributes'];
 
     db.func('GetTechnologyDataByParams',
-        [   userUUID,
-            technologyData,
+        [   components,
             technologies,
-            tags,
-            components,
-            attributes
-        ]
+            userUUID
+        ], 1
     )
         .then(function (data) {
-            logger.debug(JSON.stringify(data));
-            callback(null, data);
+            logger.debug('Database query result: ' + JSON.stringify(data));
+            if (!data.result) {
+                callback(null, []);
+                return;
+            }
+            callback(null, data.result);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -146,7 +144,7 @@ self.GetTechnologyDataByName = function (userUUID, technologyDataName, callback)
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -154,24 +152,24 @@ self.GetTechnologyDataByName = function (userUUID, technologyDataName, callback)
 //GetTechnologyDataByName
 self.GetTechnologyDataByOfferRequest = function (userUUID, offerRequestUUID, callback) {
 
-    db.func('GetTechnologyDataByOfferRequest', [offerRequestUUID])
+    db.func('GetTechnologyDataByOfferRequest', [offerRequestUUID, userUUID])
         .then(function (data) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 //Get all transaction by given OfferRequest
 self.GetLicenseFeeByTransaction = function (userUUID, transactionUUID, callback) {
-    db.func('GetLicenseFeeByTransaction', [transactionUUID])
+    db.func('GetLicenseFeeByTransaction', [transactionUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -182,25 +180,27 @@ self.SetTechnologyData = function (userUUID, data, callback) {
     var technologyDataDescription = data['technologyDataDescription'];
     var technologyUUID = data['technologyUUID'];
     var licenseFee = data['licenseFee'];
+    var retailPrice = data['retailPrice'];
     var tagList = data['tagList'];
     var componentList = data['componentList'];
 
     db.func('SetTechnologyData',
-        [technologyDataName,
+        [   technologyDataName,
             technologyData,
             technologyDataDescription,
             technologyUUID,
             licenseFee,
+            retailPrice,
             tagList,
-            userUUID,
-            componentList
+            componentList,
+            userUUID
         ])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -211,12 +211,12 @@ self.SetTechnologyData = function (userUUID, data, callback) {
 //Get all Technologies
 self.GetAllTechnologies = function (userUUID, callback) {
 
-    db.func('GetAllTechnologies')
+    db.func('GetAllTechnologies', [userUUID])
         .then(function (data) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -224,12 +224,12 @@ self.GetAllTechnologies = function (userUUID, callback) {
 //Get technology by ID
 self.GetTechnologyByID = function (userUUID, technologyUUID, callback) {
 
-    db.func('GetTechnologyByID', [technologyUUID])
+    db.func('GetTechnologyByID', [technologyUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -237,24 +237,24 @@ self.GetTechnologyByID = function (userUUID, technologyUUID, callback) {
 //Get technology by OfferRequest
 self.GetTechnologyForOfferRequest = function (userUUID, offerRequestUUID, callback) {
 
-    db.func('GetTechnologyForOfferRequest', [offerRequestUUID])
+    db.func('GetTechnologyForOfferRequest', [offerRequestUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 self.GetComponentByID = function (userUUID, componentUUID, callback) {
 
-    db.func('GetComponentByID', [componentUUID])
+    db.func('GetComponentByID', [componentUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -262,12 +262,12 @@ self.GetComponentByID = function (userUUID, componentUUID, callback) {
 //Get Component by Name
 self.GetComponentByName = function (userUUID, componentName, callback) {
 
-    db.func('GetComponentByName', [componentName])
+    db.func('GetComponentByName', [componentName, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -287,7 +287,7 @@ self.CreateTechnology = function (userUUID, data, callback) {
                 callback(null, data);
             })
             .catch(function (error) {
-                logger.crit("ERROR:", error.message || error); // print the error;
+                logger.crit("ERROR:" + error.message || error); // print the error;
                 callback(error);
             });
     };
@@ -297,12 +297,12 @@ self.CreateTechnology = function (userUUID, data, callback) {
 //Get all GetAllComponents
 self.GetAllComponents = function (userUUID, callback) {
 
-    db.func('GetAllComponents')
+    db.func('GetAllComponents', [userUUID])
         .then(function (data) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -310,12 +310,12 @@ self.GetAllComponents = function (userUUID, callback) {
 //Get Component by ID
 self.GetComponentByID = function (userUUID, componentUUID, callback) {
 
-    db.func('GetComponentByID', [componentUUID])
+    db.func('GetComponentByID', [componentUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -323,12 +323,12 @@ self.GetComponentByID = function (userUUID, componentUUID, callback) {
 //Get Component by Name
 self.GetComponentByName = function (userUUID, componentName, callback) {
 
-    db.func('GetComponentByName', [componentName])
+    db.func('GetComponentByName', [componentName, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -336,12 +336,25 @@ self.GetComponentByName = function (userUUID, componentName, callback) {
 //Get Component by Technology
 self.GetComponentsByTechnology = function (userUUID, technologyUUID, callback) {
 
-    db.func('GetComponentsByTechnology', [technologyUUID])
+    db.func('GetComponentsByTechnology', [technologyUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+//Get Component by Technology
+self.GetComponentsForTechnologyDataId = function (userUUID, technologyDataUUID, callback) {
+
+    db.func('GetComponentsForTechnologyDataId', [technologyDataUUID, userUUID])
+        .then(function (data) {
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -367,7 +380,7 @@ self.SetComponent = function (userUUID, data, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -377,12 +390,12 @@ self.SetComponent = function (userUUID, data, callback) {
 //Get all GetAllAttributes
 self.GetAllAttributes = function (userUUID, callback) {
 
-    db.func('GetAllAttributes')
+    db.func('GetAllAttributes', userUUID)
         .then(function (data) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -390,12 +403,12 @@ self.GetAllAttributes = function (userUUID, callback) {
 //Get Attribute by ID
 self.GetAttributeByID = function (userUUID, attributeUUID, callback) {
 
-    db.func('GetAttributeByID', [attributeUUID])
+    db.func('GetAttributeByID', [attributeUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -403,12 +416,12 @@ self.GetAttributeByID = function (userUUID, attributeUUID, callback) {
 //Get Attribute by Name
 self.GetAttributeByName = function (userUUID, attributeName, callback) {
 
-    db.func('GetAttributeByName', [attributeName])
+    db.func('GetAttributeByName', [attributeName, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -426,7 +439,7 @@ self.CreateAttribute = function (userUUID, data, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -435,60 +448,64 @@ self.CreateAttribute = function (userUUID, data, callback) {
 //<editor-fold desc="Offer">
 //Get all Offers
 self.GetAllOffers = function (userUUID, callback) {
-    db.func('GetAllOffers')
+    db.func('GetAllOffers', [userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 //Get Offer by ID
 self.GetOfferByID = function (userUUID, offerUUID, callback) {
-    db.func('GetOfferByID', [offerUUID])
+    db.func('GetOfferByID', [offerUUID, userUUID])
         .then(function (data) {
             callback(null, data)
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 //Get Offer for Request
 self.GetOfferForRequest = function (userUUID, offerRequestUUID, callback) {
-    db.func('GetOfferByRequestID', [offerRequestUUID])
+    db.func('GetOfferByRequestID', [offerRequestUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 //Get Offer for Request
 self.GetOfferForPaymentInvoice = function (userUUID, paymentInvoiceUUID, callback) {
-    db.func('GetOfferForPaymentInvoice', [paymentInvoiceUUID])
+    db.func('GetOfferForPaymentInvoice', [paymentInvoiceUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 //Get Offer for Request
 self.GetOfferForTransaction = function (userUUID, transactionUUID, callback) {
-    db.func('GetOfferForTransaction', [transactionUUID])
+    db.func('GetOfferForTransaction', [transactionUUID, userUUID])
         .then(function (data) {
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -510,7 +527,7 @@ self.CreateOfferRequest = function (userUUID, requestData, callback) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -520,15 +537,30 @@ self.CreateOfferRequest = function (userUUID, requestData, callback) {
 //<editor-fold desc="Payment">
 // GetPaymentForOfferRequest
 self.GetPaymentInvoiceForOfferRequest = function(userUUID, offerRequestUUID, callback){
-    db.func('GetPaymentInvoiceForOfferRequest', [offerRequestUUID])
+    db.func('GetPaymentInvoiceForOfferRequest', [offerRequestUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
-}
+};
+
+self.SetPayment = function(userUUID, payment, callback) {
+    db.func('SetPayment', [payment.transactionUUID, payment.bitcoinTransaction, payment.confidenceState, payment.depth, payment.extInvoiceId, userUUID])
+        .then(function (data) {
+            if (data && data.length) {
+                data = data[0];
+            }
+            logger.debug('SetPayment result: ' + JSON.stringify(data));
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("SetPayment ERROR: " + error.message || error); // print the error;
+            callback(error);
+        });
+};
 //</editor-fold>
 
 //<editor-fold desc="PaymentInvoice">
@@ -542,11 +574,11 @@ self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, cal
             userUUID
         ])
         .then(function (data) {
-            logger.debug(data);
+            logger.debug('SetPaymentInvoiceOffer result: ' + JSON.stringify(data));
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("Error while saving payment invoice and offer: " + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -555,24 +587,27 @@ self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, cal
 //<editor-fold desc="Transactions">
 //Get all transaction by given OfferRequest
 self.GetTransactionByOfferRequest = function (userUUID, offerRequestUUID, callback) {
-    db.func('GetTransactionByOfferRequest', [offerRequestUUID])
+    db.func('GetTransactionByOfferRequest', [offerRequestUUID, userUUID])
         .then(function (data) {
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 //Get all transaction by given OfferRequest
 self.GetTransactionByID = function (userUUID, transactionUUID, callback) {
-    db.func('GetTransactionByID', [transactionUUID])
+    db.func('GetTransactionByID', [transactionUUID, userUUID])
         .then(function (data) {
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
@@ -582,12 +617,12 @@ self.GetTransactionByID = function (userUUID, transactionUUID, callback) {
 //Get Tag for given technologydata
 //TODO: Implementation
 self.GetTagsForTechnologyData = function (userUUID, data, callback){
-        db.func('GetTagsForTechnologyData', [data])
+        db.func('GetTagsForTechnologyData', [data, userUUID])
             .then(function (data) {
                 callback(null, data);
             })
             .catch(function (error) {
-                logger.crit("ERROR:", error.message || error); // print the error;
+                logger.crit("ERROR:" + error.message || error); // print the error;
                 callback(error);
             });
 };
@@ -595,52 +630,97 @@ self.GetTagsForTechnologyData = function (userUUID, data, callback){
 
 //<editor-fold desc="Reports">
 self.GetActivatedLicensesSince = function (userUUID, sinceDate, callback) {
-    db.func('GetActivatedLicensesSince',[sinceDate])
+    db.func('GetActivatedLicensesSince',[sinceDate, userUUID])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 self.GetTopTechnologyDataSince = function(userUUID, sinceDate, topValue, callback){
-    db.func('GetTopTechnologyDataSince', [sinceDate, topValue])
+    db.func('GetTopTechnologyDataSince', [sinceDate, topValue, userUUID])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 self.GetWorkloadSince = function(userUUID, sinceDate, callback){
-    db.func('GetWorkloadSince', [sinceDate])
+    db.func('GetWorkloadSince', [sinceDate, userUUID])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 
 self.GetMostUsedComponents = function(userUUID, sinceDate, topValue, callback){
-    db.func('GetMostUsedComponents', [sinceDate, topValue])
+    db.func('GetMostUsedComponents', [sinceDate, topValue, userUUID])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:" + error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+self.GetRevenuePerHour = function(userUUID, sinceDate, callback){
+    db.func('GetRevenuePerHourSince', [sinceDate, userUUID])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:" + error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+self.GetRevenuePerDay = function(userUUID, sinceDate, callback){
+    db.func('GetRevenuePerDaySince', [sinceDate, userUUID])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("ERROR:" + error.message || error); // print the error;
             callback(error);
         });
 };
 //</editor-fold>
 
+
+
+//<editor-fold desc="License">
+
+self.CreateLicenseOrder = function(ticketId, offerUUID, userUUID, callback) {
+    db.func('CreateLicenseOrder', [ticketId, offerUUID, userUUID])
+        .then(function (data) {
+            if (data && data.length) {
+                data = data[0];
+            }
+
+            logger.debug('CreateLicenseOrder result: ' + JSON.stringify(data));
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit("CreateLicenseOrder ERROR: " + error.message || error); // print the error;
+            callback(error);
+        });
+};
+
+//</editor-fold>
 module.exports = self;

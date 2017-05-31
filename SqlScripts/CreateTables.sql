@@ -1,16 +1,12 @@
 -- Generiert von Oracle SQL Developer Data Modeler 4.0.3.853
---   am/um:        2017-03-13 14:53:09 MEZ
+--   am/um:        2017-03-22 10:16:31 MEZ
 --   Site:      DB2/UDB 8.1
 --   Typ:      DB2/UDB 8.1
-
-
-
-
 CREATE
   TABLE Attributes
   (
     AttributeID   INTEGER NOT NULL ,
-    AttributeUUID UUID ,
+    AttributeUUID UUID,
     AttributeName VARCHAR (250) NOT NULL ,
     CreatedAt     TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
     CreatedBy     INTEGER NOT NULL ,
@@ -127,8 +123,14 @@ CREATE
     PaymentUUID        UUID ,
     PaymentInvoiceID   INTEGER NOT NULL ,
     PayDate            TIMESTAMP WITHOUT TIME ZONE ,
+    ConfidenceState    VARCHAR (250) ,
+    Depth              INTEGER ,
     BitcoinTransaction VARCHAR (32672) ,
-    CreatedBy          INTEGER
+    ExtInvoiceID       UUID ,
+    CreatedAt          TIMESTAMP WITHOUT TIME ZONE ,
+    CreatedBy          INTEGER ,
+    UpdatedBy          INTEGER ,
+    UpdatedAt          TIMESTAMP WITHOUT TIME ZONE
   ) ;
 ALTER TABLE Payment ADD CONSTRAINT Payment_PK PRIMARY KEY ( PaymentID ) ;
 

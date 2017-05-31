@@ -25,6 +25,7 @@ router.get('/:id', validate({
 
 });
 
+//TODO: Verify this route
 router.get('/offerrequest/:id', validate({
     query: require('../schema/offers_schema').Offers
 }), function (req, res, next) {
@@ -38,6 +39,7 @@ router.get('/offerrequest/:id', validate({
 
 });
 
+//TODO: Verify this route
 router.get('/paymentinvoice/:id', validate({
     query: require('../schema/offers_schema').Offers
 }), function (req, res, next) {
@@ -80,15 +82,15 @@ router.post('/', validate({
                                     if (err) {
                                         next(err);
                                     } else {
-                                        var fullUrl = req.protocol + '://' + req.get('host') + req.baseurl + '/';
-                                        res.set('Location', fullUrl + offer[0].offeruuid);
+                                        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl;
+                                        res.set('Location', fullUrl + '/'  +offer[0].offeruuid);
                                         res.status(201);
                                         var invoiceIn  = JSON.parse(offer[0].invoice);
                                         var invoiceOut = {
                                             expiration: invoiceIn.expiration,
                                             transfers: invoiceIn.transfers
                                         };
-                                        res.json({'id': offer[0].offeruuid, 'invoice': invoiceOut}); //TODO: Send offer json
+                                        res.json({'id': offer[0].offeruuid, 'invoice': invoiceOut});
                                     }
                                 });
                             }
@@ -101,19 +103,5 @@ router.post('/', validate({
 
 
 });
-
-router.post('/:id/payment', validate({
-    query: require('../schema/offers_schema').Offers,
-    body: require('../schema/offers_schema').Payment
-}), function (req, res, next) {
-
-
-    var userUUID = req.query['userUUID'];
-    var paymentData = req.body;
-    //TODO: Save payment for offer
-
-    res.sendStatus(200);
-});
-
 
 module.exports = router;
