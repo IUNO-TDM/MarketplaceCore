@@ -25,7 +25,6 @@ router.get('/:id', validate({
 
 });
 
-//TODO: Verify this route
 router.get('/offerrequest/:id', validate({
     query: require('../schema/offers_schema').Offers
 }), function (req, res, next) {
@@ -39,7 +38,6 @@ router.get('/offerrequest/:id', validate({
 
 });
 
-//TODO: Verify this route
 router.get('/paymentinvoice/:id', validate({
     query: require('../schema/offers_schema').Offers
 }), function (req, res, next) {

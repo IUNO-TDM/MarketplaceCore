@@ -30,12 +30,12 @@ router.post('/', validate({
     query: require('../schema/users_schema').SaveDataQuery
 }), function (req, res, next) {
 
-    var user = new User();
-    user.userfirstname = req.body.firstName;
-    user.userlastname = req.body.lastName;
-    user.useremail = req.body.emailAddress;
+    var nUser = new User();
+    nUser.userfirstname = req.body.firstName;
+    nUser.userlastname = req.body.lastName;
+    nUser.useremail = req.body.emailAddress;
 
-    user.Create(req.query['userUUID'], function(err, data) {
+    nUser.Create(req.query['userUUID'], function(err, data) {
         if (err) {
             next(err);
         }

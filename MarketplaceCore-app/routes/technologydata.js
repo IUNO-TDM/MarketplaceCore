@@ -10,6 +10,7 @@ var router = express.Router();
 var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
 var TechnologyData = require('../model/technologydata');
+var Component = require('../model/component');
 var helper = require('../services/helper_service');
 var queries = require('../connectors/pg-queries');
 
@@ -99,7 +100,7 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
 
 router.get('/:id/components', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    queries.GetComponentsForTechnologyDataId(req.query['userUUID'], req.params['id'], function (err, components) {
+    new Component().FindByTechnologyDataId(req.query['userUUID'], req.params['id'], function (err, components) {
         if (err) {
             next(err);
         }
@@ -107,7 +108,6 @@ router.get('/:id/components', validate({query: require('../schema/technologydata
             res.json(components);
         }
     });
-
 });
 
 module.exports = router;

@@ -13,42 +13,18 @@ var queries = require('../connectors/pg-queries');
 
 
 router.get('/', validate({query: require('../schema/technologies_schema').GetAll}), function (req, res, next) {
-
-    queries.GetAllTechnologies(req.query['userUUID'], function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
+    throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 });
 
 router.get('/:id', validate({query: require('../schema/technologies_schema').GetSingle}), function (req, res, next) {
-    logger.debug(req);
-    queries.GetTechnologyByID(req.query['userUUID'], req.params['id'], function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
+    throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 });
 
 router.post('/', validate({
     body: require('../schema/technologies_schema').SaveDataBody,
     query: require('../schema/technologies_schema').SaveDataQuery
 }), function (req, res, next) {
-    queries.CreateTechnology(req.query['userUUID'], req.body, function (err, data) {
-        if (err) {
-            next(err);
-        }
-
-        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
-        res.set('Location', fullUrl + data[0]['technologyuuid']);
-        res.sendStatus(201);
-    });
+    throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 });
 
 module.exports = router;
