@@ -3,59 +3,56 @@
  */
 
 var logger = require('../global/logger');
-var pgp = require('pg-promise')();
-var connectionString = require('../config/private_config_local').connectionString;
-var db = pgp(connectionString);
+var db = require('../global/database').db;
 
+/**
+ *
+ * Builds a user object from a database response
+ *
+ * @param data
+ * @constructor
+ */
 function User(data) {
-    this.userid = data.userid;
-    this.useruuid = data.useruuid;
-    this.userfirstname = data.userfirstname;
-    this.userlastname = data.userlastname;
-    this.useremail = data.useremail;
-    this.thumbnail = data.thumbnail;
-    this.imgpath = data.imgpath;
-    this.createdat = data.createdat;
-    this.updatedat = data.updatedat;
-
+    if (data) {
+        this.userid = data.userid;
+        this.useruuid = data.useruuid;
+        this.userfirstname = data.userfirstname;
+        this.userlastname = data.userlastname;
+        this.useremail = data.useremail;
+        this.thumbnail = data.thumbnail;
+        this.imgpath = data.imgpath;
+        this.createdat = data.createdat;
+        this.updatedat = data.updatedat;
+    }
 }
 
-User.prototype.FindAll = function (callback) {
-    db.func('GetAllUsers')
-        .then(function (data) {
-            var resultList = [];
-            for (var key in data) {
-                resultList.push(new User(data[key]));
-            }
-            callback(null, resultList)
-        })
-        .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
-            callback(error);
-        });
+User.prototype.FindAll = function () {
+    throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 };
 
-User.prototype.FindSingle = function (id, callback) {
-    db.func('GetUserByID', [id])
+User.prototype.FindSingle = function (userUUID, id, callback) {
+
+    db.func('GetUserByID', [id, userUUID])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {
                 data = data[0];
             }
-            callback(null, new User(data));
+            callback(null, new User(data))
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit(error);
             callback(error);
         });
 };
-User.prototype.Create = function () {
-    db.func('CreateUser', [this.userfirstname, this.userlastname, this.useremail])
+
+User.prototype.Create = function (userUUID, callback) {
+    db.func('CreateUser', [this.userfirstname, this.userlastname, this.useremail, userUUID])
         .then(function (data) {
             callback(null, new User(data));
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit("ERROR:", error.message || error); // print the error;
             callback(error);
         });
 };

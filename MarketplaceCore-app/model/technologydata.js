@@ -2,28 +2,34 @@
  * Created by beuttlerma on 14.03.17.
  */
 var logger = require('../global/logger');
-var pgp = require('pg-promise')();
-var connectionString = require('../config/private_config_local').connectionString;
-var db = pgp(connectionString);
+var db = require('../global/database').db;
 
+/**
+ * Creates an technologydata object from a database query result.
+ *
+ * @param data
+ * @constructor
+ */
 function TechnologyData(data) {
-    this.technologydataid = data.technologydataid;
-    this.technologydatauuid = data.technologydatauuid;
-    this.technologydataname = data.technologydataname;
-    this.technologyid = data.technologyid;
-    this.technologydata = data.technologydata;
-    this.licensefee = data.licensefee;
-    this.retailprice = data.retailprice;
-    this.licenseproductcode = data.licenseproductcode;
-    this.technologydatadescription = data.technologydatadescription;
-    this.technologydatathumbnail = data.technologydatathumbnail;
-    this.technologydataimgref = data.technologydataimgref;
-    this.createdat = data.createdat;
-    this.createdby = data.createdby;
-    this.updatedat = data.updatedat;
-    this.updatedby = data.updatedby;
-    this.componentlist = data.componentlist;
-    this.taglist= data.taglist;
+    if (data) {
+        this.technologydataid = data.technologydataid;
+        this.technologydatauuid = data.technologydatauuid;
+        this.technologydataname = data.technologydataname;
+        this.technologyid = data.technologyid;
+        this.technologydata = data.technologydata;
+        this.licensefee = data.licensefee;
+        this.retailprice = data.retailprice;
+        this.licenseproductcode = data.licenseproductcode;
+        this.technologydatadescription = data.technologydatadescription;
+        this.technologydatathumbnail = data.technologydatathumbnail;
+        this.technologydataimgref = data.technologydataimgref;
+        this.createdat = data.createdat;
+        this.createdby = data.createdby;
+        this.updatedat = data.updatedat;
+        this.updatedby = data.updatedby;
+        this.componentlist = data.componentlist;
+        this.taglist = data.taglist;
+    }
 }
 
 TechnologyData.prototype.FindAll = function (userUUID, params, callback) {
@@ -33,25 +39,23 @@ TechnologyData.prototype.FindAll = function (userUUID, params, callback) {
     var components = params['components'];
     var attributes = params['attributes'];
 
+
     db.func('GetTechnologyDataByParams',
-        [userUUID,
-            technologyData,
+        [components,
             technologies,
-            tags,
-            components,
-            attributes
-        ]
+            userUUID
+        ], 1 //TODO: Document this parameter
     )
         .then(function (data) {
-            logger.debug(JSON.stringify(data));
+            logger.debug('Database query result: ' + JSON.stringify(data));
             var resultList = [];
-            for (var key in data) {
-                resultList.push(new TechnologyData(data[key]));
+            for (var key in data.result) {
+                resultList.push(new TechnologyData(data.result[key]));
             }
-            callback(null, resultList)
+            callback(null, resultList);
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit(error);
             callback(error);
         });
 };
@@ -66,27 +70,28 @@ TechnologyData.prototype.FindSingle = function (userUUID, id, callback) {
             callback(null, new TechnologyData(data));
         })
         .catch(function (error) {
-            logger.debug("ERROR:", error.message || error); // print the error;
+            logger.crit(error); // print the error;
             callback(error);
         });
 };
-TechnologyData.prototype.Create = function (userUUID) {
+TechnologyData.prototype.Create = function (userUUID, callback) {
     db.func('SetTechnologyData',
-        [this.technologydataname,
-            this.technologydata,
-            this.technologydatadescription,
-            this.technologyid,
-            this.licensefee,
-            this.taglist,
-            userUUID,
-            this.componentlist
+        [   self.technologydataname,
+            self.technologydata,
+            self.technologydatadescription,
+            self.technologyid,
+            self.licensefee,
+            self.retailprice,
+            self.taglist,
+            self.componentlist,
+            userUUID
         ])
         .then(function (data) {
             logger.debug(data);
-            callback(null, data);
+            callback(null, new TechnologyData(data));
         })
         .catch(function (error) {
-            logger.crit("ERROR:", error.message || error); // print the error;
+            logger.crit(error);
             callback(error);
         });
 };

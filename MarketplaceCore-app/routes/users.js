@@ -9,11 +9,12 @@ var express = require('express');
 var router = express.Router();
 var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
-var queries = require('../connectors/pg-queries');
+var helper = require('../services/helper_service');
+var User = require('../model/user');
 
 router.get('/:id', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
 
-    queries.GetUserByID(req.query['userUUID'], req.params['id'], function (err, data) {
+    new User().FindSingle(req.query['userUUID'], req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -24,17 +25,22 @@ router.get('/:id', validate({query: require('../schema/users_schema').GetSingle}
 
 });
 
-//TODO: past image to it
 router.post('/', validate({
     body: require('../schema/users_schema').SaveDataBody,
     query: require('../schema/users_schema').SaveDataQuery
 }), function (req, res, next) {
-    queries.CreateUser(req.query['userUUID'], req.body, function (err, data) {
+
+    var user = new User();
+    user.userfirstname = req.body.firstName;
+    user.userlastname = req.body.lastName;
+    user.useremail = req.body.emailAddress;
+
+    user.Create(req.query['userUUID'], function(err, data) {
         if (err) {
             next(err);
         }
 
-        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
+        var fullUrl = helper.buildFullUrlFromRequest(req);
         res.set('Location', fullUrl + data[0]['useruuid']);
         res.sendStatus(201);
     });
@@ -42,7 +48,7 @@ router.post('/', validate({
 
 router.get('/:id/image', validate({query: require('../schema/users_schema').GetSingle}), function (req, res, next) {
 
-    queries.GetUserByID(req.query['userUUID'], req.params['id'], function (err, data) {
+    new User().FindSingle(req.query['userUUID'], req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
