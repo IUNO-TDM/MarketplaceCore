@@ -10,7 +10,7 @@ const config = require('../config/config_loader');
 var Invoice = require('../model/invoice');
 var logger = require('../global/logger');
 var io = require('socket.io-client');
-var queries = require('../connectors/pg-queries');
+var dbPayment = require('../database/function/payment');
 
 var PaymentService = function () {
     logger.log('a new instance of PaymentService');
@@ -53,7 +53,7 @@ payment_service.socket.on('StateChange', function (invoice) {
             bitcoinTransaction: null,
             userUUID: config.USER_UUID
         };
-        queries.SetPayment(config.USER_UUID, paymentData, function (err, payment) {
+        dbPayment.SetPayment(config.USER_UUID, paymentData, function (err, payment) {
             if (!err) {
                 payment_service.emit('StateChange', {
                     invoice: invoice,

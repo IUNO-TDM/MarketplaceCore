@@ -8,11 +8,11 @@
 var express = require('express');
 var router = express.Router();
 var logger = require('../global/logger');
-var queries = require('../connectors/pg-queries');
+var dbReports = require('../database/function/report');
 
 router.get('/', function (req, res, next) {
        if(req.query['sinceDate'] && req.query['topValue']) {
-           queries.GetTopTechnologyDataSince(req.query['userUUID'], req.query['sinceDate'], req.query['topValue'], function (err, data) {
+           dbReports.GetTopTechnologyDataSince(req.query['userUUID'], req.query['sinceDate'], req.query['topValue'], function (err, data) {
                if (err) {
                    next(err);
                }
@@ -23,7 +23,7 @@ router.get('/', function (req, res, next) {
            });
        }
        else if(req.query['sinceDate']){
-           queries.GetActivatedLicensesSince(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
+           dbReports.GetActivatedLicensesSince(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
                if (err) {
                    next(err);
                }
@@ -35,7 +35,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/favorit/', function (req, res, next) {
-    queries.GetMostUsedComponents(req.query['userUUID'], req.query['sinceDate'], req.query['topValue'], function (err, data) {
+    dbReports.GetMostUsedComponents(req.query['userUUID'], req.query['sinceDate'], req.query['topValue'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -47,7 +47,7 @@ router.get('/favorit/', function (req, res, next) {
 });
 
 router.get('/workload/', function (req, res, next) {
-    queries.GetWorkloadSince(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
+    dbReports.GetWorkloadSince(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -61,7 +61,7 @@ router.get('/workload/', function (req, res, next) {
 
 router.get('/revenue/', function (req, res, next) {
     if(req.query['time'] === 'day') {
-        queries.GetRevenuePerDay(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
+        dbReports.GetRevenuePerDay(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
             if (err) {
                 next(err);
             }
@@ -72,7 +72,7 @@ router.get('/revenue/', function (req, res, next) {
         });
     }
     else if(req.query['time'] === 'hour'){
-        queries.GetRevenuePerHour(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
+        dbReports.GetRevenuePerHour(req.query['userUUID'], req.query['sinceDate'], function (err, data) {
             if (err) {
                 next(err);
             }

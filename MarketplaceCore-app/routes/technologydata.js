@@ -9,37 +9,26 @@ var express = require('express');
 var router = express.Router();
 var logger = require('../global/logger');
 var validate = require('express-jsonschema').validate;
-var queries = require('../connectors/pg-queries');
+var TechnologyData = require('../database/model/technologydata');
+var Component = require('../database/model/component');
+var helper = require('../services/helper_service');
 
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
 
-    if (req.query['name']) {
-        //TODO: Merge ByName and ByParams into a single method.
-        queries.GetTechnologyDataByName(req.query['userUUID'], req.query['name'], function (err, data) {
-            if (err) {
-                next(err);
-            }
-            else {
-                res.json([data]);
-            }
-        });
-    }
-    else {
-        queries.GetTechnologyDataByParams(req.query['userUUID'], req.query, function (err, data) {
-            if (err) {
-                next(err);
-            }
-            else {
-                res.json(data);
-            }
-        });
-    }
+    new TechnologyData().FindAll(req.query['userUUID'], req.query, function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
 });
 
 router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    queries.GetTechnologyDataByID(req.query['userUUID'], req.params['id'], function (err, data) {
+    new TechnologyData().FindSingle(req.query['userUUID'], req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -48,66 +37,39 @@ router.get('/:id', validate({query: require('../schema/technologydata_schema').G
             res.json(data);
         }
     });
-
 });
 
 router.post('/', validate({
     body: require('../schema/technologydata_schema').SaveDataBody,
     query: require('../schema/technologydata_schema').SaveDataQuery
 }), function (req, res, next) {
-    queries.SetTechnologyData(req.query['userUUID'], req.body, function (err, data) {
+    var techData = new TechnologyData();
+
+    techData.technologydataname = data['technologyDataName'];
+    techData.technologydata = data['technologyData'];
+    techData.technologydatadescription = data['technologyDataDescription'];
+    techData.technologyid = data['technologyUUID'];
+    techData.licensefee = data['licenseFee'];
+    techData.retailprice = data['retailPrice'];
+    techData.taglist = data['tagList'];
+    techData.componentlist = data['componentList'];
+
+    techData.Create(req.query['userUUID'], req.body, function (err, data) {
         if (err) {
             next(err);
         }
 
-        var fullUrl = req.protocol + '://' + req.get('host') + req.baseUrl + '/';
+        var fullUrl = helper.buildFullUrlFromRequest(req);
         res.set('Location', fullUrl + data[0]['technologydatauuid']);
         res.sendStatus(201);
     });
 });
 
-router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
-
-    queries.GetTechnologyDataByID(req.query['userUUID'], req.params['id'], function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            if (!data || !Object.keys(data).length) {
-                logger.info('No technology data found for id: ' + req.param['id']);
-                res.sendStatus(404);
-
-                return;
-            }
-
-            var imgPath = data.technologydataimgref;
-
-            if (imgPath) {
-                var fs = require('fs');
-
-                fs.readFile(imgPath, function (err, fileBuffer) {
-                    if (err) {
-                        logger.warn('Cannot read file from path: ' + imgPath);
-                        logger.warn(err);
-
-                        res.sendStatus(500);
-
-                        return;
-                    }
-
-                    res.set('Content-Type', 'image/jpg');
-                    res.send(fileBuffer);
-                });
-            }
-
-        }
-    });
-
-});
 
 router.get('/:id/image', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    queries.GetTechnologyDataByID(req.query['userUUID'], req.params['id'], function (err, technologyData) {
+
+    new TechnologyData().FindSingle(req.query['userUUID'], req.params['id'], function (err, technologyData) {
         if (err) {
             next(err);
         }
@@ -122,14 +84,8 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
             var imgPath = technologyData.technologydataimgref;
 
             if (imgPath) {
-                if (imgPath) {
-                    var path = require('path');
-                    res.sendFile(path.resolve(imgPath));
-                }
-                else {
-                    logger.info('No image found for user');
-                    res.sendStatus(404);
-                }
+                var path = require('path');
+                res.sendFile(path.resolve(imgPath));
             }
             else {
                 logger.info('No image found for technologyData');
@@ -143,7 +99,7 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
 
 router.get('/:id/components', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    queries.GetComponentsForTechnologyDataId(req.query['userUUID'], req.params['id'], function (err, components) {
+    new Component().FindByTechnologyDataId(req.query['userUUID'], req.params['id'], function (err, components) {
         if (err) {
             next(err);
         }
@@ -151,7 +107,6 @@ router.get('/:id/components', validate({query: require('../schema/technologydata
             res.json(components);
         }
     });
-
 });
 
 module.exports = router;
