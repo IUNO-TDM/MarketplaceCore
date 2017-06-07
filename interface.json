@@ -64,6 +64,9 @@
             "schema": {
               "$ref": "#/definitions/User"
             }
+          },
+          "404": {
+            "description": "user not found"
           }
         }
       }
@@ -231,6 +234,9 @@
           },
           "400": {
             "description": "bad request"
+          },
+          "404": {
+            "description": "technologydata not found"
           }
         }
       }
@@ -262,7 +268,7 @@
             }
           },
           "404": {
-            "description": "User not found"
+            "description": "Image not found"
           }
         }
       }
@@ -297,6 +303,9 @@
           },
           "400": {
             "description": "bad request"
+          },
+          "404": {
+            "description": "technologydata not found"
           }
         }
       }
@@ -364,6 +373,9 @@
           },
           "400": {
             "description": "bad request"
+          },
+          "404": {
+            "description": "offer not found"
           }
         }
       }
@@ -426,12 +438,6 @@
         "responses": {
           "200": {
             "description": "Operation successful",
-            "headers": {
-              "location": {
-                "description": "The the component and attributes",
-                "type": "string"
-              }
-            },
             "schema": {
               "$ref": "#/definitions/Components"
             }
@@ -463,18 +469,15 @@
         "responses": {
           "200": {
             "description": "Operation successful",
-            "headers": {
-              "location": {
-                "description": "The the component and attributes",
-                "type": "string"
-              }
-            },
             "schema": {
               "$ref": "#/definitions/Components"
             }
           },
           "400": {
             "description": "bad request"
+          },
+          "404": {
+            "description": "component not found"
           }
         }
       }
