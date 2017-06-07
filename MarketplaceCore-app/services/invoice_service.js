@@ -2,12 +2,8 @@
  * Created by beuttlerma on 03.03.17.
  */
 
-var queries = require('../connectors/pg-queries');
-
 var payment_service = require('./payment_service');
 var self = {};
-
-
 
 self.generateInvoice = function (request,transaction, callback) {
 
