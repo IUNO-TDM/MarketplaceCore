@@ -34,7 +34,6 @@ function TechnologyData(data) {
 
 TechnologyData.prototype.FindAll = function (userUUID, params, callback) {
     var technologies = params['technologies'];
-    var technologyData = params['technologyData'];
     var tags = params['tags'];
     var components = params['components'];
     var attributes = params['attributes'];
