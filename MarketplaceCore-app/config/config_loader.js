@@ -8,6 +8,8 @@
  *
  * Set the file name as environment variable for TDM_CORE_CONFIG.
  *
+ * Example: TDM_CORE_CONFIG = 'private_config_local'
+ *
  * If the custom config is missing any variables, the default variables will be used.
  * If no custom config is defined, the default configuration will be loaded.
  *
