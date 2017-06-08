@@ -44,7 +44,14 @@
           "400": {
             "description": "bad request"
           }
-        }
+        },
+        "security": [
+          {
+            "tdm_auth": [
+              "admin"
+            ]
+          }
+        ]
       }
     },
     "/users/{userUUID}": {
@@ -68,7 +75,14 @@
           "404": {
             "description": "user not found"
           }
-        }
+        },
+        "security": [
+          {
+            "tdm_auth": [
+              "viewUserProfile"
+            ]
+          }
+        ]
       }
     },
     "/users/{userUUID}/image": {
@@ -100,7 +114,14 @@
           "404": {
             "description": "No image found for user"
           }
-        }
+        },
+        "security": [
+          {
+            "tdm_auth": [
+              "viewUserProfile"
+            ]
+          }
+        ]
       }
     },
     "/technologydata": {
@@ -311,7 +332,7 @@
       }
     },
     "/offers": {
-      "post":{
+      "post": {
         "description": "Create a new offer",
         "parameters": [
           {
@@ -480,6 +501,24 @@
             "description": "component not found"
           }
         }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "tdm_auth": {
+      "type": "oauth2",
+      "authorizationUrl": "http://iuno.axoom.cloud:4711/api/oauth/dialog",
+      "flow": "implicit",
+      "scopes": {
+        "dashboard": "view dashboard",
+        "createRecipe": "create a recipe",
+        "viewRecipe": "view a recipe",
+        "viewSecureRecipe": "view a secure recipe",
+        "editRecipe": "edit a recipe",
+        "editSecureRecipe": "edit a secure recipe",
+        "viewUserProfile": "view the user profile",
+        "editUserProfile": "edit user profile",
+        "admin": "admin ui"
       }
     }
   },
@@ -671,28 +710,23 @@
         }
       }
     },
-    "Components" : {
+    "Components": {
       "type": "object",
       "properties": {
         "componentName": {
           "type": "string"
-
         },
         "componentParentName": {
           "type": "string"
-
         },
         "componentDescription": {
           "type": "string"
-
         },
         "attributeList": {
           "type": "array"
-
         },
         "technologyList": {
           "type": "array"
-
         }
       }
     }
