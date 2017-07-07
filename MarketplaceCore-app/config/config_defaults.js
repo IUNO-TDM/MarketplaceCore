@@ -22,9 +22,20 @@ var database = '';
 
 // ---- CONFIGURATION EXPORT ----
 
+self.HOST_SETTINGS = {
+    OAUTH_SERVER: {
+        HOST: 'localhost',
+        PORT: 3005
+    }
+};
+
 self.DB_CONNECTION_STRING = 'postgres://{0}:{1}@{2}:{3}/{4}'.format(username, password, host, port, database);
 self.LOG_LEVEL = 'debug';
 self.USER_UUID = '16f69912-d6be-4ef0-ada8-2c1c75578b51';
+self.OAUTH_CREDENTIALS = {
+    CLIENT_ID: '',
+    CLIENT_SECRET: ''
+};
 
 
 module.exports = self;
