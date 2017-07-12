@@ -78,12 +78,13 @@ payment_service.createLocalInvoice = function (invoice, callback) {
     }
 
     var options = buildOptionsForRequest(
-        'GET',
+        'POST',
         'http',
         'localhost',
         8080,
         '/v1/invoices'
     );
+    options.body = invoice;
 
     request(options, function (e, r, jsonData) {
         var err = logger.logRequestAndResponse(e, options, r, jsonData);
