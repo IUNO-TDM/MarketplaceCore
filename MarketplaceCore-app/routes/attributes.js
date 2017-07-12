@@ -15,7 +15,7 @@ router.get('/', validate({query: require('../schema/attributes_schema').GetAll})
     throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 });
 
-router.get('/:id', validate({query: require('../schema/attributes_schema').GetSingle}),  function (req, res, next) {
+router.get('/:id', validate({query: require('../schema/attributes_schema').GetSingle}), function (req, res, next) {
     throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 });
 

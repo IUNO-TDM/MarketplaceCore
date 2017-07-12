@@ -4,6 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var validate = require('express-jsonschema').validate;
+var authentication = require('./services/authentication_service');
 
 var app = express();
 
@@ -14,6 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use('/', validate({query: require('./schema/oauth_schema').AccessToken}), authentication.oAuth);
 // Load all routes
 app.use('/technologydata', require('./routes/technologydata'));
 app.use('/users', require('./routes/users'));

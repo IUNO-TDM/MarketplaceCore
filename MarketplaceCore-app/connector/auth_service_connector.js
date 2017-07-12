@@ -28,7 +28,7 @@ self.validateToken = function (userUUID, token, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
-            logger.info('Callback not registered');
+            logger.info('Callback not regis§tered');
         }
     }
 
@@ -43,13 +43,15 @@ self.validateToken = function (userUUID, token, callback) {
         }
     );
 
-    request(options, function (e, r, jsonData) {
-        var err = logger.logRequestAndResponse(e, options, r, jsonData);
+    request(options, function (e, r, tokenInfo) {
+        var err = logger.logRequestAndResponse(e, options, r, tokenInfo);
 
-        var tokenInfo = jsonData;
+        if (err) {
+            return callback(err);
+        }
 
-        //TODO: Make a more advanced check
-        tokenValid = tokenInfo.user.id = userUUID;
+        tokenValid = tokenInfo.useruuid === userUUID;
+        tokenValid = tokenValid && new Date(tokenInfo.expires) > new Date();
 
         callback(err, tokenValid)
     });
