@@ -32,7 +32,7 @@ function TechnologyData(data) {
     }
 }
 
-TechnologyData.prototype.FindAll = function (userUUID, params, callback) {
+TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, params, callback) {
     var technologies = params['technologies'];
     var tags = params['tags'];
     var components = params['components'];
@@ -59,7 +59,7 @@ TechnologyData.prototype.FindAll = function (userUUID, params, callback) {
         });
 };
 
-TechnologyData.prototype.FindSingle = function (userUUID, id, callback) {
+TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, id, callback) {
     db.func('GetTechnologyDataByID', [id, userUUID])
         .then(function (data) {
             //Only return the first element

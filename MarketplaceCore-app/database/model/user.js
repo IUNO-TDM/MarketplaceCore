@@ -26,11 +26,11 @@ function User(data) {
     }
 }
 
-User.prototype.FindAll = function () {
+User.prototype.FindAll = User.FindAll = function () {
     throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 };
 
-User.prototype.FindSingle = function (userUUID, id, callback) {
+User.prototype.FindSingle = User.FindSingle = function (userUUID, id, callback) {
 
     db.func('GetUserByID', [id, userUUID])
         .then(function (data) {

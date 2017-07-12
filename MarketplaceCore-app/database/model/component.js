@@ -31,7 +31,7 @@ function Component(data) {
 
 }
 
-Component.prototype.FindAll = function (userUUID, params, callback) {
+Component.prototype.FindAll = Component.FindAll = function (userUUID, params, callback) {
     db.func('GetAllComponents', [userUUID])
         .then(function (data) {
             var resultList = [];
@@ -48,7 +48,7 @@ Component.prototype.FindAll = function (userUUID, params, callback) {
         });
 };
 
-Component.prototype.FindSingle = function (userUUID, id, callback) {
+Component.prototype.FindSingle = Component.FindSingle = function (userUUID, id, callback) {
     db.func('GetComponentByID', [id, userUUID])
         .then(function (data) {
             if (data && data.length) {
@@ -62,7 +62,7 @@ Component.prototype.FindSingle = function (userUUID, id, callback) {
         });
 };
 
-Component.prototype.FindByTechnologyDataId = function (userUUID, technologyDataId, callback) {
+Component.prototype.FindByTechnologyDataId =  Component.FindByTechnologyDataId = function (userUUID, technologyDataId, callback) {
     db.func('GetComponentsForTechnologyDataId', [technologyDataId, userUUID])
         .then(function (data) {
             var resultList = [];

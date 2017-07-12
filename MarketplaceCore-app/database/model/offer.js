@@ -21,11 +21,11 @@ function Offer(data) {
     }
 }
 
-Offer.prototype.FindAll = function () {
+Offer.prototype.FindAll = Offer.FindAll = function () {
     throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 };
 
-Offer.prototype.FindSingle = function (userUUID, id, callback) {
+Offer.prototype.FindSingle = Offer.FindSingle = function (userUUID, id, callback) {
 
     db.func('GetOfferByID', [id, userUUID])
         .then(function (data) {
@@ -40,7 +40,7 @@ Offer.prototype.FindSingle = function (userUUID, id, callback) {
         });
 };
 
-Offer.prototype.FindByRequest = function (userUUID, offerRequestUUID, callback) {
+Offer.prototype.FindByRequest = Offer.FindByRequest = function (userUUID, offerRequestUUID, callback) {
 
     db.func('GetOfferByRequestID', [offerRequestUUID, userUUID])
         .then(function (data) {
@@ -55,7 +55,7 @@ Offer.prototype.FindByRequest = function (userUUID, offerRequestUUID, callback) 
         });
 };
 
-Offer.prototype.FindByPaymentInvoice = function (userUUID, paymentInvoiceUUID, callback) {
+Offer.prototype.FindByPaymentInvoice = Offer.FindByPaymentInvoice = function (userUUID, paymentInvoiceUUID, callback) {
 
     db.func('GetOfferForPaymentInvoice', [paymentInvoiceUUID, userUUID])
         .then(function (data) {
