@@ -11,8 +11,7 @@ self.CreateOfferRequest = function (userUUID, requestData, callback) {
     logger.debug('User UUID: ' +  userUUID);
     //TODO: A request should have more than one item
     db.func('CreateOfferRequest',
-        [   requestData.items[0].dataId,
-            requestData.items[0].amount,
+        [   requestData,
             requestData.hsmId,
             userUUID,
             userUUID //TODO: what is the buyer uuid?
