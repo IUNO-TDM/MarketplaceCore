@@ -50,8 +50,8 @@ self.validateToken = function (userUUID, token, callback) {
             return callback(err);
         }
 
-        tokenValid = tokenInfo.useruuid === userUUID;
-        tokenValid = tokenValid && new Date(tokenInfo.expires) > new Date();
+        tokenValid = tokenInfo.user.id === userUUID;
+        tokenValid = tokenValid && new Date(tokenInfo.accessTokenExpiresAt) > new Date();
 
         callback(err, tokenValid)
     });

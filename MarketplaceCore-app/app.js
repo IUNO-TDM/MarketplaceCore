@@ -19,7 +19,6 @@ app.use(cookieParser());
 app.use('/', validate({query: require('./schema/oauth_schema').AccessToken}), authentication.oAuth);
 // Load all routes
 app.use('/technologydata', require('./routes/technologydata'));
-app.use('/users', require('./routes/users'));
 app.use('/components', require('./routes/components'));
 app.use('/offers', require('./routes/offers'));
 app.use('/technologies', require('./routes/technologies'));
