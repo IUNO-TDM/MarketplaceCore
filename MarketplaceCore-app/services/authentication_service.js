@@ -3,6 +3,7 @@
  */
 
 var authService= require('../connector/auth_service_connector');
+var logger = require('../global/logger');
 var self = {};
 
 function getBearerTokenFromHeader(req) {
@@ -10,7 +11,7 @@ function getBearerTokenFromHeader(req) {
         throw new TypeError('argument req is required to have headers property')
     }
 
-    if (!req.headers.authorization.startsWith('Bearer')) {
+    if (req.headers.authorization && !req.headers.authorization.startsWith('Bearer')) {
         throw new Error('Bearer token missing')
     }
 
@@ -33,10 +34,11 @@ function unauthorized(res) {
 self.oAuth = function(req, res, next) {
 
     try {
-        var token = getBearerTokenFromHeader(req);
+        var accessToken = getBearerTokenFromHeader(req);
 
-        authService.validateToken(req.query['userUUID'], token, function(err, isValid){
+        authService.validateToken(req.query['userUUID'], accessToken, function(err, isValid, token){
             if (isValid) {
+                req.token = token;
                 next();
             }
             else {
@@ -49,10 +51,6 @@ self.oAuth = function(req, res, next) {
         logger.warn(ex);
         return unauthorized(res);
     }
-
-
-
-
 };
 
 module.exports = self;

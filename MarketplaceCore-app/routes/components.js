@@ -15,6 +15,7 @@ var helper = require('../services/helper_service');
 
 router.get('/', validate({query: require('../schema/components_schema').GetAll}), function (req, res, next) {
 
+    // req.token.user.role,
     new Component().FindAll(req.query['userUUID'], req.query, function (err, data) {
         if (err) {
             next(err);
