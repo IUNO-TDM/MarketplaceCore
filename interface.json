@@ -8,7 +8,7 @@
     },
     "description": ""
   },
-  "host": "localhost:8080",
+  "host": "localhost:3001",
   "schemes": [
     "http",
     "https"
