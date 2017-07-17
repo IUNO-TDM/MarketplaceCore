@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.1.0",
+    "version": "0.2.0",
     "title": "MarketplaceCore Database Rest API",
     "contact": {
       "name": "TRUMPF Werkzeugmaschinen GmbH & Co KG"
@@ -9,102 +9,11 @@
     "description": ""
   },
   "paths": {
-    "/users": {
-      "post": {
-        "description": "Create a new user",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/SaveDataBody"
-            }
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Operation successful",
-            "headers": {
-              "location": {
-                "description": "The path to the user (userUUID)",
-                "type": "string"
-              }
-            },
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          "400": {
-            "description": "bad request"
-          }
-        }
-      }
-    },
-    "/users/{userUUID}": {
-      "get": {
-        "description": "Returns the user for a specific userId",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userUUID",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          "404": {
-            "description": "user not found"
-          }
-        }
-      }
-    },
-    "/users/{userUUID}/image": {
-      "get": {
-        "description": "Gets the user image",
-        "parameters": [
-          {
-            "name": "userUUID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userUUID for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "string",
-              "format": "byte"
-            }
-          },
-          "404": {
-            "description": "No image found for user"
-          }
-        }
-      }
-    },
     "/technologydata": {
       "post": {
+        "security": {
+          "Bearer":[]
+        },
         "description": "Create technology data",
         "parameters": [
           {
