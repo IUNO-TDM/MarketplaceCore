@@ -25,7 +25,7 @@ var database = '';
 self.HOST_SETTINGS = {
     OAUTH_SERVER: {
         HOST: 'localhost',
-        PORT: 3005
+        PORT: 3006
     }
 };
 

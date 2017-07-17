@@ -1,110 +1,54 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.1.0",
+    "version": "1.0.0",
     "title": "MarketplaceCore Database Rest API",
     "contact": {
       "name": "TRUMPF Werkzeugmaschinen GmbH & Co KG"
     },
     "description": ""
   },
+  "host": "localhost:3001",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Core_Auth": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "http://localhost:3005/oauth/authorise",
+      "tokenUrl": "http://localhost:3006/oauth/token",
+      "scopes": {
+        "default": "Undefined",
+        "dashboard": "view dashboard",
+        "createRecipe": "create a recipe",
+        "viewRecipe": "view a recipe",
+        "viewSecureRecipe": "view a secure recipe",
+        "editRecipe": "edit a recipe",
+        "editSecureRecipe": "edit a secure recipe",
+        "viewUserProfile": "view the user profile",
+        "editUserProfile": "edit user profile",
+        "admin": "admin ui"
+      }
+    }
+  },
   "paths": {
-    "/users": {
-      "post": {
-        "description": "Create a new user",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/SaveDataBody"
-            }
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Operation successful",
-            "headers": {
-              "location": {
-                "description": "The path to the user (userUUID)",
-                "type": "string"
-              }
-            },
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          "400": {
-            "description": "bad request"
-          }
-        }
-      }
-    },
-    "/users/{userUUID}": {
-      "get": {
-        "description": "Returns the user for a specific userId",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userUUID",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          "404": {
-            "description": "user not found"
-          }
-        }
-      }
-    },
-    "/users/{userUUID}/image": {
-      "get": {
-        "description": "Gets the user image",
-        "parameters": [
-          {
-            "name": "userUUID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userUUID for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "string",
-              "format": "byte"
-            }
-          },
-          "404": {
-            "description": "No image found for user"
-          }
-        }
-      }
-    },
     "/technologydata": {
       "post": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Create technology data",
         "parameters": [
           {
@@ -137,6 +81,9 @@
           },
           "400": {
             "description": "bad request"
+          },
+          "401": {
+            "description": "Authentication required"
           }
         }
       },
@@ -206,6 +153,13 @@
     },
     "/technologydata/{technologyDataId}": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Gets the technology data for a specific identifier",
         "parameters": [
           {
@@ -235,6 +189,9 @@
           "400": {
             "description": "bad request"
           },
+          "401": {
+            "description": "Authorization required"
+          },
           "404": {
             "description": "technologydata not found"
           }
@@ -243,6 +200,13 @@
     },
     "/technologydata/{technologyDataId}/image": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "The image for a specific technology data",
         "parameters": [
           {
@@ -275,6 +239,13 @@
     },
     "/technologydata/{technologyDataId}/components": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "The image for a specific technology data",
         "parameters": [
           {
@@ -311,7 +282,14 @@
       }
     },
     "/offers": {
-      "post":{
+      "post": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Create a new offer",
         "parameters": [
           {
@@ -344,6 +322,13 @@
     },
     "/offers/{id}": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Get a offer based on the id",
         "parameters": [
           {
@@ -382,6 +367,13 @@
     },
     "/components": {
       "post": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Create a new component",
         "parameters": [
           {
@@ -419,6 +411,13 @@
         }
       },
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Get component for the given componentName or get all components",
         "parameters": [
           {
@@ -450,6 +449,13 @@
     },
     "/components/{id}": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Get component for the given id",
         "parameters": [
           {
@@ -484,20 +490,6 @@
     }
   },
   "definitions": {
-    "User": {
-      "type": "object",
-      "properties": {
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "emailAddress": {
-          "type": "string"
-        }
-      }
-    },
     "Offer": {
       "type": "object",
       "properties": {
@@ -511,20 +503,6 @@
           "type": "string"
         },
         "createdby": {
-          "type": "string"
-        }
-      }
-    },
-    "SaveDataBody": {
-      "type": "object",
-      "properties": {
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "emailAddress": {
           "type": "string"
         }
       }
@@ -570,41 +548,6 @@
                 "type": "string"
               }
             }
-          }
-        }
-      }
-    },
-    "TechnologyDataGetAll": {
-      "type": "object",
-      "properties": {
-        "userUUID": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "components": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "technologies": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "attributes": {
-          "type": "array",
-          "items": {
-            "type": "string"
           }
         }
       }
@@ -671,28 +614,23 @@
         }
       }
     },
-    "Components" : {
+    "Components": {
       "type": "object",
       "properties": {
         "componentName": {
           "type": "string"
-
         },
         "componentParentName": {
           "type": "string"
-
         },
         "componentDescription": {
           "type": "string"
-
         },
         "attributeList": {
           "type": "array"
-
         },
         "technologyList": {
           "type": "array"
-
         }
       }
     }

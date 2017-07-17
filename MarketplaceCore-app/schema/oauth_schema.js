@@ -7,10 +7,6 @@ var self = {};
 self.AccessToken = {
     type: 'object',
     properties: {
-        accessToken: {
-            type: 'string',
-            required: true
-        },
         userUUID: {
             type: 'string',
             required: true
