@@ -1,19 +1,54 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.2.0",
+    "version": "1.0.0",
     "title": "MarketplaceCore Database Rest API",
     "contact": {
       "name": "TRUMPF Werkzeugmaschinen GmbH & Co KG"
     },
     "description": ""
   },
+  "host": "localhost:8080",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Core_Auth": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "http://localhost:3005/oauth/authorise",
+      "tokenUrl": "http://localhost:3006/oauth/token",
+      "scopes": {
+        "default": "Undefined",
+        "dashboard": "view dashboard",
+        "createRecipe": "create a recipe",
+        "viewRecipe": "view a recipe",
+        "viewSecureRecipe": "view a secure recipe",
+        "editRecipe": "edit a recipe",
+        "editSecureRecipe": "edit a secure recipe",
+        "viewUserProfile": "view the user profile",
+        "editUserProfile": "edit user profile",
+        "admin": "admin ui"
+      }
+    }
+  },
   "paths": {
     "/technologydata": {
       "post": {
-        "security": {
-          "Bearer":[]
-        },
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Create technology data",
         "parameters": [
           {
@@ -46,6 +81,9 @@
           },
           "400": {
             "description": "bad request"
+          },
+          "401": {
+            "description": "Authentication required"
           }
         }
       },
@@ -115,6 +153,13 @@
     },
     "/technologydata/{technologyDataId}": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Gets the technology data for a specific identifier",
         "parameters": [
           {
@@ -144,6 +189,9 @@
           "400": {
             "description": "bad request"
           },
+          "401": {
+            "description": "Authorization required"
+          },
           "404": {
             "description": "technologydata not found"
           }
@@ -152,6 +200,13 @@
     },
     "/technologydata/{technologyDataId}/image": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "The image for a specific technology data",
         "parameters": [
           {
@@ -184,6 +239,13 @@
     },
     "/technologydata/{technologyDataId}/components": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "The image for a specific technology data",
         "parameters": [
           {
@@ -220,7 +282,14 @@
       }
     },
     "/offers": {
-      "post":{
+      "post": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Create a new offer",
         "parameters": [
           {
@@ -253,6 +322,13 @@
     },
     "/offers/{id}": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Get a offer based on the id",
         "parameters": [
           {
@@ -291,6 +367,13 @@
     },
     "/components": {
       "post": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Create a new component",
         "parameters": [
           {
@@ -328,6 +411,13 @@
         }
       },
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Get component for the given componentName or get all components",
         "parameters": [
           {
@@ -359,6 +449,13 @@
     },
     "/components/{id}": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Get component for the given id",
         "parameters": [
           {
@@ -393,20 +490,6 @@
     }
   },
   "definitions": {
-    "User": {
-      "type": "object",
-      "properties": {
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "emailAddress": {
-          "type": "string"
-        }
-      }
-    },
     "Offer": {
       "type": "object",
       "properties": {
@@ -420,20 +503,6 @@
           "type": "string"
         },
         "createdby": {
-          "type": "string"
-        }
-      }
-    },
-    "SaveDataBody": {
-      "type": "object",
-      "properties": {
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "emailAddress": {
           "type": "string"
         }
       }
@@ -479,41 +548,6 @@
                 "type": "string"
               }
             }
-          }
-        }
-      }
-    },
-    "TechnologyDataGetAll": {
-      "type": "object",
-      "properties": {
-        "userUUID": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "components": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "technologies": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "attributes": {
-          "type": "array",
-          "items": {
-            "type": "string"
           }
         }
       }
@@ -580,28 +614,23 @@
         }
       }
     },
-    "Components" : {
+    "Components": {
       "type": "object",
       "properties": {
         "componentName": {
           "type": "string"
-
         },
         "componentParentName": {
           "type": "string"
-
         },
         "componentDescription": {
           "type": "string"
-
         },
         "attributeList": {
           "type": "array"
-
         },
         "technologyList": {
           "type": "array"
-
         }
       }
     }
