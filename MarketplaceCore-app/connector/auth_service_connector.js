@@ -22,7 +22,7 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
     }
 }
 
-self.validateToken = function (userUUID, token, callback) {
+self.validateToken = function (userUUID, accessToken, callback) {
     var tokenValid = false;
 
     if (typeof(callback) !== 'function') {
@@ -39,21 +39,21 @@ self.validateToken = function (userUUID, token, callback) {
         CONFIG.HOST_SETTINGS.OAUTH_SERVER.PORT,
         '/tokeninfo',
         {
-            access_token: token
+            access_token: accessToken
         }
     );
 
-    request(options, function (e, r, tokenInfo) {
-        var err = logger.logRequestAndResponse(e, options, r, tokenInfo);
+    request(options, function (e, r, token) {
+        var err = logger.logRequestAndResponse(e, options, r, token);
 
         if (err) {
             return callback(err);
         }
 
-        tokenValid = tokenInfo.user.id === userUUID;
-        tokenValid = tokenValid && new Date(tokenInfo.accessTokenExpiresAt) > new Date();
+        tokenValid = token.user.id === userUUID;
+        tokenValid = tokenValid && new Date(token.accessTokenExpiresAt) > new Date();
 
-        callback(err, tokenValid)
+        callback(err, tokenValid, token)
     });
 
 
