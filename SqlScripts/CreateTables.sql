@@ -1,17 +1,18 @@
 -- Generiert von Oracle SQL Developer Data Modeler 4.0.3.853
---   am/um:        2017-03-22 10:16:31 MEZ
+--   am/um:        2017-07-14 11:28:05 MESZ
 --   Site:      DB2/UDB 8.1
 --   Typ:      DB2/UDB 8.1
+
 CREATE
   TABLE Attributes
   (
     AttributeID   INTEGER NOT NULL ,
-    AttributeUUID UUID,
+    AttributeUUID UUID ,
     AttributeName VARCHAR (250) NOT NULL ,
     CreatedAt     TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
-    CreatedBy     INTEGER NOT NULL ,
+    CreatedBy     UUID NOT NULL ,
     UpdatedAt     TIMESTAMP WITHOUT TIME ZONE ,
-    UpdatedBy     INTEGER
+    UpdatedBy     UUID
   ) ;
 ALTER TABLE Attributes ADD CONSTRAINT Attribubes_PK PRIMARY KEY ( AttributeID )
 ;
@@ -26,9 +27,9 @@ CREATE
     ComponentParentID    INTEGER ,
     ComponentDescription VARCHAR (32672) ,
     CreatedAt            TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
-    CreatedBy            INTEGER NOT NULL ,
+    CreatedBy            UUID NOT NULL ,
     UpdatedAt            TIMESTAMP WITHOUT TIME ZONE ,
-    UpdatedBy            INTEGER
+    UpdatedBy            UUID
   ) ;
 ALTER TABLE Components ADD CONSTRAINT Components_PK PRIMARY KEY ( ComponentID )
 ;
@@ -61,7 +62,7 @@ CREATE
     OfferID          INTEGER NOT NULL ,
     ActivatedAt      TIMESTAMP WITHOUT TIME ZONE ,
     CreatedAt        TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
-    CreatedBy        INTEGER NOT NULL
+    CreatedBy        UUID NOT NULL
   ) ;
 ALTER TABLE LicenseOrder ADD CONSTRAINT LicenseOrder_PK PRIMARY KEY (
 LicenseOrderID ) ;
@@ -75,10 +76,6 @@ CREATE
   ) ;
 ALTER TABLE LogStatus ADD CONSTRAINT LogStatus_PK PRIMARY KEY ( LogStatusID ) ;
 
-INSERT INTO LogStatus VALUES (0,'Sucessed','Operation has successed');
-INSERT INTO LogStatus VALUES (1,'ERROR','Operation has failed');
-INSERT INTO LogStatus VALUES (2,'PENDING','Operation is pending');
-
 CREATE
   TABLE LogTable
   (
@@ -91,6 +88,10 @@ CREATE
   ) ;
 ALTER TABLE LogTable ADD CONSTRAINT LogTable_PK PRIMARY KEY ( LogID ) ;
 
+INSERT INTO LogStatus VALUES (0,'Sucessed','Operation has successed');
+INSERT INTO LogStatus VALUES (1,'ERROR','Operation has failed');
+INSERT INTO LogStatus VALUES (2,'PENDING','Operation is pending');
+
 CREATE
   TABLE Offer
   (
@@ -98,7 +99,7 @@ CREATE
     OfferUUID        UUID ,
     PaymentInvoiceID INTEGER NOT NULL ,
     CreatedAt        TIMESTAMP WITHOUT TIME ZONE ,
-    CreatedBy        INTEGER NOT NULL
+    CreatedBy        UUID NOT NULL
   ) ;
 ALTER TABLE Offer ADD CONSTRAINT Offer_PK PRIMARY KEY ( OfferID ) ;
 
@@ -108,13 +109,22 @@ CREATE
     OfferRequestID   INTEGER NOT NULL ,
     OfferRequestUUID UUID ,
     TechnologyDataID INTEGER NOT NULL ,
-    Amount           INTEGER ,
     HSMID            VARCHAR ,
     CreatedAt        TIMESTAMP WITHOUT TIME ZONE ,
-    RequestedBy      INTEGER NOT NULL
+    RequestedBy      UUID NOT NULL
   ) ;
 ALTER TABLE OfferRequest ADD CONSTRAINT OfferRequest_PK PRIMARY KEY (
 OfferRequestID ) ;
+
+CREATE
+  TABLE OfferRequestItems
+  (
+    OfferRequestID   INTEGER NOT NULL ,
+    TechnologyDataID INTEGER NOT NULL ,
+    Amount           INTEGER NOT NULL
+  ) ;
+ALTER TABLE OfferRequestItems ADD CONSTRAINT OfferRequestItems_PK PRIMARY KEY (
+OfferRequestID, TechnologyDataID ) ;
 
 CREATE
   TABLE Payment
@@ -128,8 +138,8 @@ CREATE
     BitcoinTransaction VARCHAR (32672) ,
     ExtInvoiceID       UUID ,
     CreatedAt          TIMESTAMP WITHOUT TIME ZONE ,
-    CreatedBy          INTEGER ,
-    UpdatedBy          INTEGER ,
+    CreatedBy          UUID NOT NULL ,
+    UpdatedBy          UUID ,
     UpdatedAt          TIMESTAMP WITHOUT TIME ZONE
   ) ;
 ALTER TABLE Payment ADD CONSTRAINT Payment_PK PRIMARY KEY ( PaymentID ) ;
@@ -142,30 +152,10 @@ CREATE
     OfferRequestID     INTEGER NOT NULL ,
     Invoice            VARCHAR (32672) ,
     CreatedAt          TIMESTAMP WITHOUT TIME ZONE ,
-    CreatedBy          INTEGER
+    CreatedBy          UUID NOT NULL
   ) ;
 ALTER TABLE PaymentInvoice ADD CONSTRAINT PaymentInvoice_PK PRIMARY KEY (
 PaymentInvoiceID ) ;
-
-CREATE
-  TABLE Permissions
-  (
-    PermissionID   INTEGER ,
-    PermissionUUID UUID ,
-    Roles          INTEGER NOT NULL ,
-    FunctionName   VARCHAR (250)
-  ) ;
-
-CREATE
-  TABLE Roles
-  (
-    RoleID          INTEGER NOT NULL ,
-    RoleUUID        UUID ,
-    RoleBit         INTEGER ,
-    RoleName        VARCHAR (250) ,
-    RoleDescription VARCHAR
-  ) ;
-ALTER TABLE Roles ADD CONSTRAINT Roles_PK PRIMARY KEY ( RoleID ) ;
 
 CREATE
   TABLE Tags
@@ -174,9 +164,9 @@ CREATE
     TagUUID   UUID ,
     TagName   VARCHAR (250) NOT NULL ,
     CreatedAt TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
-    CreatedBy INTEGER NOT NULL ,
+    CreatedBy UUID NOT NULL ,
     UpdatedAt TIMESTAMP WITHOUT TIME ZONE ,
-    UpdatedBy INTEGER
+    UpdatedBy UUID
   ) ;
 ALTER TABLE Tags ADD CONSTRAINT Tags_PK PRIMARY KEY ( TagID ) ;
 
@@ -188,9 +178,9 @@ CREATE
     TechnologyName        VARCHAR (250) NOT NULL ,
     TechnologyDescription VARCHAR (32672) ,
     CreatedAt             TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
-    CreatedBy             INTEGER NOT NULL ,
+    CreatedBy             UUID NOT NULL ,
     UpdatedAt             TIMESTAMP WITHOUT TIME ZONE ,
-    UpdatedBy             INTEGER
+    UpdatedBy             UUID
   ) ;
 ALTER TABLE Technologies ADD CONSTRAINT Technologies_PK PRIMARY KEY (
 TechnologyID ) ;
@@ -212,9 +202,9 @@ CREATE
     TechnologyDataThumbnail Bytea ,
     TechnologyDataImgRef VARCHAR ,
     CreatedAt            TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
-    CreatedBy            INTEGER NOT NULL ,
+    CreatedBy            UUID NOT NULL ,
     UpdatedAt            TIMESTAMP WITHOUT TIME ZONE ,
-    UpdatedBy            INTEGER
+    UpdatedBy            UUID
   ) ;
 ALTER TABLE TechnologyData ADD CONSTRAINT TechnologyData_PK PRIMARY KEY (
 TechnologyDataID ) ;
@@ -251,38 +241,49 @@ CREATE
     PaymentInvoiceID INTEGER ,
     LicenseOrderID   INTEGER ,
     CreatedAt        TIMESTAMP WITHOUT TIME ZONE ,
-    CreatedBy        INTEGER NOT NULL ,
+    CreatedBy        UUID NOT NULL ,
     UpdatedAt        TIMESTAMP WITHOUT TIME ZONE ,
-    UpdatedBy        INTEGER
+    UpdatedBy        UUID
   ) ;
 ALTER TABLE Transactions ADD CONSTRAINT Transactions_PK PRIMARY KEY (
 TransactionID ) ;
 
 CREATE
-  TABLE Users
+  TABLE Functions
   (
-    UserID        INTEGER NOT NULL ,
-    UserUUID      UUID ,
-    UserFirstName VARCHAR (250) NOT NULL ,
-    UserLastName  VARCHAR (250) NOT NULL ,
-    UserEmail     VARCHAR (250) NOT NULL ,
-    Thumbnail Bytea ,
-    ImgPath   VARCHAR ,
-    CreatedAt TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
-    UpdatedAt TIMESTAMP WITHOUT TIME ZONE
+    FunctionID   INTEGER NOT NULL ,
+    FunctionName VARCHAR (250)
   ) ;
-ALTER TABLE Users ADD CONSTRAINT Users_PK PRIMARY KEY ( UserID ) ;
-ALTER TABLE Users ADD CONSTRAINT Users__UN UNIQUE ( UserEmail ) ;
+ALTER TABLE Functions ADD CONSTRAINT Functions_PK PRIMARY KEY ( FunctionID ) ;
 
 CREATE
-  TABLE UsersRoles
+  TABLE Roles
   (
-    UserID INTEGER NOT NULL ,
-    RoleID INTEGER NOT NULL
+    RoleId           INTEGER NOT NULL ,
+    RoleName         VARCHAR ,
+    RoleDescription VARCHAR
   ) ;
+  
+ALTER TABLE Roles ADD CONSTRAINT Roles_PK PRIMARY KEY ( RoleId ) ;
 
-ALTER TABLE Attributes ADD CONSTRAINT Attribubes_Users_FK FOREIGN KEY (
-CreatedBy ) REFERENCES Users ( UserID ) ON
+CREATE
+  TABLE RolesPermissions
+  (
+    RoleId     INTEGER NOT NULL ,
+    FunctionId INTEGER NOT NULL
+  ) ;
+  
+ALTER TABLE RolesPermissions ADD CONSTRAINT RolesPermissions_PK PRIMARY KEY (
+RoleId, FunctionId ) ;
+
+ALTER TABLE RolesPermissions ADD CONSTRAINT RolesPermissions_Functions_FK
+
+FOREIGN KEY ( FunctionId ) REFERENCES Functions ( FunctionID ) ON
+DELETE
+  NO ACTION;
+  
+ALTER TABLE RolesPermissions ADD CONSTRAINT RolesPermissions_Roles_FK FOREIGN
+KEY ( RoleId ) REFERENCES Roles ( RoleId ) ON
 DELETE
   NO ACTION;
 
@@ -315,18 +316,8 @@ ComponentParentID ) REFERENCES Components ( ComponentID ) ON
 DELETE
   NO ACTION;
 
-ALTER TABLE Components ADD CONSTRAINT Components_Users_FK FOREIGN KEY (
-CreatedBy ) REFERENCES Users ( UserID ) ON
-DELETE
-  NO ACTION;
-
 ALTER TABLE LicenseOrder ADD CONSTRAINT LicenseOrder_Offer_FK FOREIGN KEY (
 OfferID ) REFERENCES Offer ( OfferID ) ON
-DELETE
-  NO ACTION;
-
-ALTER TABLE LicenseOrder ADD CONSTRAINT LicenseOrder_Users_FK FOREIGN KEY (
-CreatedBy ) REFERENCES Users ( UserID ) ON
 DELETE
   NO ACTION;
 
@@ -335,23 +326,24 @@ LogStatusID ) REFERENCES LogStatus ( LogStatusID ) ON
 DELETE
   NO ACTION;
 
+ALTER TABLE OfferRequestItems ADD CONSTRAINT OfferRequestItems_OfferRequest_FK
+FOREIGN KEY ( OfferRequestID ) REFERENCES OfferRequest ( OfferRequestID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE OfferRequestItems ADD CONSTRAINT
+OfferRequestItems_TechnologyData_FK FOREIGN KEY ( TechnologyDataID ) REFERENCES
+TechnologyData ( TechnologyDataID ) ON
+DELETE
+  NO ACTION;
+
 ALTER TABLE OfferRequest ADD CONSTRAINT OfferRequest_TechnologyData_FK FOREIGN
 KEY ( TechnologyDataID ) REFERENCES TechnologyData ( TechnologyDataID ) ON
 DELETE
   NO ACTION;
 
-ALTER TABLE OfferRequest ADD CONSTRAINT OfferRequest_Users_FK FOREIGN KEY (
-RequestedBy ) REFERENCES Users ( UserID ) ON
-DELETE
-  NO ACTION;
-
 ALTER TABLE Offer ADD CONSTRAINT Offer_PaymentInvoice_FK FOREIGN KEY (
 PaymentInvoiceID ) REFERENCES PaymentInvoice ( PaymentInvoiceID ) ON
-DELETE
-  NO ACTION;
-
-ALTER TABLE Offer ADD CONSTRAINT Offer_Users_FK FOREIGN KEY ( CreatedBy )
-REFERENCES Users ( UserID ) ON
 DELETE
   NO ACTION;
 
@@ -362,16 +354,6 @@ DELETE
 
 ALTER TABLE Payment ADD CONSTRAINT Payment_PaymentInvoice_FK FOREIGN KEY (
 PaymentInvoiceID ) REFERENCES PaymentInvoice ( PaymentInvoiceID ) ON
-DELETE
-  NO ACTION;
-
-ALTER TABLE Tags ADD CONSTRAINT Tags_Users_FK FOREIGN KEY ( CreatedBy )
-REFERENCES Users ( UserID ) ON
-DELETE
-  NO ACTION;
-
-ALTER TABLE Technologies ADD CONSTRAINT Technologies_Users_FK FOREIGN KEY (
-CreatedBy ) REFERENCES Users ( UserID ) ON
 DELETE
   NO ACTION;
 
@@ -403,11 +385,6 @@ FOREIGN KEY ( TechnologyID ) REFERENCES Technologies ( TechnologyID ) ON
 DELETE
   NO ACTION;
 
-ALTER TABLE TechnologyData ADD CONSTRAINT TechnologyData_Users_FK FOREIGN KEY (
-CreatedBy ) REFERENCES Users ( UserID ) ON
-DELETE
-  NO ACTION;
-
 ALTER TABLE Transactions ADD CONSTRAINT Transactions_LicenseOrder_FK FOREIGN
 KEY ( LicenseOrderID ) REFERENCES LicenseOrder ( LicenseOrderID ) ON
 DELETE
@@ -433,37 +410,12 @@ PaymentID ) REFERENCES Payment ( PaymentID ) ON
 DELETE
   NO ACTION;
 
-ALTER TABLE Transactions ADD CONSTRAINT Transactions_Users_FK FOREIGN KEY (
-BuyerID ) REFERENCES Users ( UserID ) ON
-DELETE
-  NO ACTION;
-
-ALTER TABLE Transactions ADD CONSTRAINT Transactions_Users_FKv1 FOREIGN KEY (
-CreatedBy ) REFERENCES Users ( UserID ) ON
-DELETE
-  NO ACTION;
-
-ALTER TABLE Transactions ADD CONSTRAINT Transactions_Users_FKv2 FOREIGN KEY (
-UpdatedBy ) REFERENCES Users ( UserID ) ON
-DELETE
-  NO ACTION;
-
-ALTER TABLE UsersRoles ADD CONSTRAINT UsersRoles_Roles_FK FOREIGN KEY ( RoleID
-) REFERENCES Roles ( RoleID ) ON
-DELETE
-  NO ACTION;
-
-ALTER TABLE UsersRoles ADD CONSTRAINT UsersRoles_Users_FK FOREIGN KEY ( UserID
-) REFERENCES Users ( UserID ) ON
-DELETE
-  NO ACTION;
-
 
 -- Zusammenfassungsbericht für Oracle SQL Developer Data Modeler: 
 -- 
--- CREATE TABLE                            21
+-- CREATE TABLE                            19
 -- CREATE INDEX                             0
--- ALTER TABLE                             58
+-- ALTER TABLE                             45
 -- CREATE VIEW                              0
 -- CREATE PACKAGE                           0
 -- CREATE PACKAGE BODY                      0

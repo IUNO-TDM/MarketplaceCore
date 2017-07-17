@@ -45,7 +45,7 @@ CREATE SEQUENCE LicenseOrderID START 1;
 -- RoleID
 CREATE SEQUENCE RoleID START 1;
 -- PermissionID
-CREATE SEQUENCE PermissionID START 1;
+CREATE SEQUENCE FunctionID START 2;
 -- ##########################################################################
 -- Create Indexes
 CREATE UNIQUE INDEX invoice_idx ON paymentinvoice (invoice);
@@ -83,57 +83,6 @@ $BODY$
       END;
   $BODY$
   LANGUAGE plpgsql;
--- ##############################################################################
--- CreateUser 
-CREATE FUNCTION CreateUser(vUserFirstName varchar(250), vUserLastName varchar(250), vUserEmail varchar(250), vCreatedBy uuid)
-  RETURNS TABLE (
-	UserUUID uuid,
-	UserFirstName varchar(250),
-	UserLastName varchar(250), 
-	UserEmail varchar(250),
-	CreatedAt timestamp with time zone,
-	UpdatedAt timestamp with time zone
-  )
-  
- AS
-  $$
-		#variable_conflict use_column
-      DECLARE 	vUserID integer := (select nextval('UserID'));      
-				vUserUUID uuid := (select uuid_generate_v4()); 
-      BEGIN        
-        INSERT INTO Users(UserID, UserUUID, UserFirstName, UserLastName, UserEmail, CreatedAt)
-        VALUES(vUserID, vUserUUID, vUserFirstName, vUserLastName, vUserEmail, now());        
-        
-        -- Begin Log if success
-        perform public.createlog(0,'Created User sucessfully', 'CreateUser', 
-                                'UserID: ' || cast(vUserID as varchar) || ', UserFirstName: ' 
-                                || vUserFirstName || ', UserLastName: ' || vUserLastName 
-                                || ', ' 
-                                || vUserEmail);
-                                
-        -- End Log if success
-	-- RETURN
-	RETURN QUERY (select 	users.useruuid,
-				users.userfirstname,
-				users.userlastname,
-				users.useremail,
-				users.createdat at time zone 'utc',
-				users.updatedat at time zone 'utc'
-			from users where users.useruuid = vUserUUID);      
-         
-        
-        exception when others then 
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateUser', 
-                                'UserID: ' || cast(vUserID as varchar) || ', UserFirstName: ' 
-                                || vUserFirstName || ', UserLastName: ' || vUserLastName 
-                                || ', ' 
-                                || vUserEmail);
-		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateUser';
-        -- End Log if error 
-      END;
-  $$
-  LANGUAGE 'plpgsql';
 -- ##############################################################################    
 CREATE FUNCTION CreateTechnologyData (
 	  vTechnologyDataName varchar(250), 
@@ -142,7 +91,8 @@ CREATE FUNCTION CreateTechnologyData (
 	  vLicenseFee integer,  
 	  vRetailPrice integer,
 	  vTechnologyUUID uuid,
-	  vCreatedBy uuid
+	  vCreatedBy uuid,
+	  vRoleName varchar
  )
   RETURNS TABLE (
 	TechnologyDataUUID uuid,
@@ -162,11 +112,17 @@ CREATE FUNCTION CreateTechnologyData (
       DECLARE 	vTechnologyDataID integer := (select nextval('TechnologyDataID'));
 		vTechnologyDataUUID uuid := (select uuid_generate_v4());     
 		vTechnologyID integer := (select technologyid from technologies where technologyuuid = vTechnologyUUID);
-		vUserID integer := (select userid from users where useruuid = vCreatedby);
-		-- vTechAuthor integer := (select userid from users where useruuid = vTechnologyDataAuthor);		
-      BEGIN        
-        INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, RetailPrice, TechnologyID, CreatedBy, CreatedAt)
-        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyID, vUserID, now());
+		vFunctionName varchar := 'CreateTechnologyData';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+			
+      BEGIN       
+	IF(vIsAllowed) then
+		INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, RetailPrice, TechnologyID, CreatedBy, CreatedAt)
+        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyID, vCreatedBy, now());
+	else 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	end if;	        
      
         -- Begin Log if success
         perform public.createlog(0,'Created TechnologyData sucessfully', 'CreateTechnologyData', 
@@ -177,7 +133,7 @@ CREATE FUNCTION CreateTechnologyData (
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
 								|| ', RetailPrice: ' || cast(vRetailPrice as varchar)
-                                || ', CreatedBy: ' || vUserID);
+                                || ', CreatedBy: ' || vCreatedBy);
                                 
         -- End Log if success
         -- Return 
@@ -209,7 +165,7 @@ CREATE FUNCTION CreateTechnologyData (
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
 								|| ', RetailPrice: ' || cast(vRetailPrice as varchar)
-                                || ', CreatedBy: ' || vUserID);
+                                || ', CreatedBy: ' || vCreatedBy);
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyData';
         RETURN;
@@ -220,7 +176,8 @@ CREATE FUNCTION CreateTechnologyData (
 -- CreateTag
  CREATE FUNCTION CreateTag (
   vTagName varchar(250),  
-  vCreatedBy uuid
+  vCreatedBy uuid,
+  vRoleName varchar
  )
   RETURNS TABLE (
 	TagUUID uuid,
@@ -232,16 +189,23 @@ CREATE FUNCTION CreateTechnologyData (
 	#variable_conflict use_column
       DECLARE 	vTagID integer := (select nextval('TagID'));
 		vTagUUID uuid := (select uuid_generate_v4());	
-		vUserID integer := (select userid from users where useruuid = vCreatedBy);
-      BEGIN        
-        INSERT INTO Tags(TagID, TagUUID, TagName, CreatedBy, CreatedAt)
-        VALUES(vTagID, vTagUUID, vTagName, vUserID, now());
-     
+		vFunctionName varchar := 'CreateTag';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+      BEGIN     
+
+	IF(vIsAllowed) THEN
+		INSERT INTO Tags(TagID, TagUUID, TagName, CreatedBy, CreatedAt)
+		VALUES(vTagID, vTagUUID, vTagName, vCreatedBy, now());
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;	
+
         -- Begin Log if success
         perform public.createlog(0,'Created Tag sucessfully', 'CreateTag', 
                                 'TagID: ' || cast(vTagID as varchar) 
 				|| ', TagName: ' || vTagName 
-				|| ', CreatedBy: ' || cast(vUserID as varchar));
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
                                 
         -- End Log if success
         -- Return 
@@ -259,7 +223,7 @@ CREATE FUNCTION CreateTechnologyData (
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'CreateTag', 
                                 'TagID: ' || cast(vTagID as varchar) 
 				|| ', TagName: ' || vTagName 
-				|| ', CreatedBy: ' || cast(vUserID as varchar));
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTag'; 
        RETURN;
@@ -271,7 +235,8 @@ CREATE FUNCTION CreateTechnologyData (
 CREATE FUNCTION CreateTechnologyDataTags (
   vTechnologyDataUUID uuid, 
   vTagList text[],
-  vCreatedBy uuid
+  vCreatedBy uuid,
+  vRoleName varchar
  )
   RETURNS TABLE (
 	TechnologyDataUUID uuid,
@@ -282,16 +247,23 @@ CREATE FUNCTION CreateTechnologyDataTags (
   	DECLARE vTagName text;
 		vtagID integer;
 		vTechnologyDataID integer := (select technologydataid from technologydata where technologydatauuid = vTechnologyDataUUID);
-		
+		vFunctionName varchar := 'CreateTechnologyDataTags';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
       BEGIN     
-         FOREACH vTagName in array vTagList          	
-        LOOP 
-        	 vtagID := (select tags.tagID from tags where tagName = vTagName); 
-         	 INSERT INTO TechnologyDataTags(TechnologyDataID, tagID)
-			VALUES (vTechnologyDataID, vtagID);
-			
-        END LOOP; 
-     
+
+	IF(vIsAllowed) THEN  
+		FOREACH vTagName in array vTagList          	
+		LOOP 
+			 vtagID := (select tags.tagID from tags where tagName = vTagName); 
+			 INSERT INTO TechnologyDataTags(TechnologyDataID, tagID)
+				VALUES (vTechnologyDataID, vtagID);
+				
+		END LOOP; 
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+
         -- Begin Log if success
         perform public.createlog(0,'Created relation from Tags to TechnologyData sucessfully', 'CreateTechnologyDataTags', 
                                 'TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
@@ -324,7 +296,8 @@ CREATE FUNCTION CreateTechnologyDataTags (
 -- CreateAttribute
 CREATE FUNCTION CreateAttribute (
   vAttributeName varchar(250), 
-  vCreatedBy uuid
+  vCreatedBy uuid,
+  vRoleName varchar
  )
   RETURNS TABLE (
 	AttributeUUID uuid,
@@ -336,16 +309,22 @@ CREATE FUNCTION CreateAttribute (
 	#variable_conflict use_column
       DECLARE 	vAttributeID integer := (select nextval('AttributeID'));
 		vAttributeUUID uuid := (select uuid_generate_v4());
-		vUserID integer := (select userid from users where useruuid = vCreatedby);
-      BEGIN        
-        INSERT INTO public.Attributes(AttributeID, AttributeUUID, AttributeName, CreatedBy, CreatedAt)
-        VALUES(vAttributeID, vAttributeUUID, vAttributeName, vUserID, now());
-     
+		vFunctionName varchar := 'CreateAttribute';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+      BEGIN     
+
+	IF(vIsAllowed) THEN       
+		INSERT INTO public.Attributes(AttributeID, AttributeUUID, AttributeName, CreatedBy, CreatedAt)
+		VALUES(vAttributeID, vAttributeUUID, vAttributeName, vCreatedBy, now());     
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
         -- Begin Log if success
         perform public.createlog(0,'Created Attribute sucessfully', 'CreateAttribute', 
                                 'AttributeID: ' || cast(vAttributeID as varchar) 
 				|| ', AttributeName: ' || vAttributeName
-				|| ', CreatedBy: ' || cast(vUserID as varchar));
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
                                 
         -- End Log if success
         -- Return  
@@ -363,7 +342,7 @@ CREATE FUNCTION CreateAttribute (
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'CreateAttribute', 
                                 'AttributeID: ' || cast(vAttributeID as varchar) 
 				|| ', AttributeName: ' || vAttributeName
-				|| ', CreatedBy: ' || cast(vUserID as varchar));
+				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         -- Return Error Code * -1
 		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateAttribute';
@@ -377,7 +356,8 @@ CREATE OR REPLACE FUNCTION CreateComponent (
   vComponentParentUUID uuid, 
   vComponentName varchar(250),
   vComponentDescription varchar(250),
-  vCreatedBy uuid
+  vCreatedBy uuid,
+  vRoleName varchar
  )
   RETURNS TABLE (
 	ComponentUUID uuid,
@@ -391,13 +371,21 @@ CREATE OR REPLACE FUNCTION CreateComponent (
   $$
 	#variable_conflict use_column
       DECLARE 	vComponentID integer := (select nextval('ComponentID'));
-		vComponentUUID uuid := (select uuid_generate_v4());		
-		vUserID integer := (select userid from users where useruuid = vCreatedBy);
-		vComponentParentID integer := (select componentid from components where componentuuid = vComponentParentUUID);
-      BEGIN        
-        INSERT INTO components(ComponentID, ComponentUUID, ComponentParentID, ComponentName, ComponentDescription, CreatedBy, CreatedAt)
-        VALUES(vComponentID, vComponentUUID, vComponentParentID, vComponentName, vComponentDescription, vUserID, now());
+		vComponentUUID uuid := (select uuid_generate_v4());		 
+		vComponentParentID integer := (select componentid from components where componentuuid = vComponentParentUUID);	
+		vFunctionName varchar := 'CreateComponent';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+      BEGIN     
+
+	IF(vIsAllowed) THEN  
      
+        INSERT INTO components(ComponentID, ComponentUUID, ComponentParentID, ComponentName, ComponentDescription, CreatedBy, CreatedAt)
+        VALUES(vComponentID, vComponentUUID, vComponentParentID, vComponentName, vComponentDescription, vCreatedBy, now());
+     
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
         -- Begin Log if success
         perform public.createlog(0,'Created Component sucessfully', 'CreateComponent', 
                                 'ComponentID: ' || cast(vComponentID as varchar) || ', '  
@@ -407,7 +395,7 @@ CREATE OR REPLACE FUNCTION CreateComponent (
                                 || ', ComponentDescription: ' 
                                 || vComponentDescription 
                                 || ', CreatedBy: ' 
-                                || cast(vUserID as varchar));
+                                || cast(vCreatedBy as varchar));
                                 
         -- End Log if success
         -- Return 
@@ -435,7 +423,7 @@ CREATE OR REPLACE FUNCTION CreateComponent (
                                 || ', ComponentDescription: ' 
                                 || vComponentDescription 
                                 || ', CreatedBy: ' 
-                                || cast(vUserID as varchar));
+                                || cast(vCreatedBy as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateComponent';
         RETURN;
@@ -447,7 +435,9 @@ CREATE OR REPLACE FUNCTION CreateComponent (
 CREATE FUNCTION createtechnology(
     vTechnologyname character varying,
     vTechnologydescription character varying,
-    vCreatedby uuid)
+    vCreatedby uuid,
+    vRoleName varchar
+    )
   RETURNS TABLE (
 	TechnologyUUID uuid,
 	TechnologyName varchar(250),
@@ -459,11 +449,19 @@ $$
 	#variable_conflict use_column
       DECLARE 	vTechnologyID integer := (select nextval('TechnologyID'));
 		vTechnologyUUID uuid := (select uuid_generate_v4());
-		vUserID integer := (select userid from users where useruuid = vCreatedby);
-      BEGIN        
-        INSERT INTO Technologies(TechnologyID, TechnologyUUID, TechnologyName, TechnologyDescription, CreatedBy, CreatedAt)
-        VALUES(vTechnologyID, vTechnologyUUID, vTechnologyName, vTechnologyDescription, vUserID, now());
+		vFunctionName varchar := 'CreateTechnology';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+      BEGIN     
+
+	IF(vIsAllowed) THEN          
+		INSERT INTO Technologies(TechnologyID, TechnologyUUID, TechnologyName, TechnologyDescription, CreatedBy, CreatedAt)
+		VALUES(vTechnologyID, vTechnologyUUID, vTechnologyName, vTechnologyDescription, vCreatedby, now());
      
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
         -- Begin Log if success
         perform public.createlog(0,'Created Technology sucessfully', 'CreateTechnology', 
                                 'TechnologyID: ' || cast(vTechnologyID as varchar) 
@@ -472,7 +470,7 @@ $$
                                 || ', TechnologyDescription: ' 
                                 || vTechnologyDescription 
                                 || ', CreatedBy: ' 
-                                || cast(vUserID as varchar));
+                                || cast(vCreatedby as varchar));
                                 
         -- End Log if success
         -- Return 
@@ -495,7 +493,7 @@ $$
                                 || ', TechnologyDescription: ' 
                                 || vTechnologyDescription 
                                 || ', CreatedBy: ' 
-                                || cast(vUserID as varchar));
+                                || cast(vCreatedby as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnology';
         RETURN;
@@ -506,7 +504,8 @@ $$
 -- CreateTechnologyDataComponents 
 CREATE FUNCTION CreateTechnologyDataComponents (
   vTechnologyDataUUID uuid, 
-  vComponentList text[] 
+  vComponentList text[],
+  vRoleName varchar 
  )
   RETURNS TABLE (
 	TechnologyDataUUID uuid,
@@ -517,15 +516,22 @@ CREATE FUNCTION CreateTechnologyDataComponents (
   	DECLARE vCompName text;
 		vCompID integer;
 		vTechnologyDataID integer := (select technologydataid from technologydata where technologydatauuid = vTechnologyDataUUID);
-      BEGIN     
-         FOREACH vCompName in array vComponentList 		
-        LOOP 
-		vCompID := (select componentID from components where componentName = vCompName);
+		vFunctionName varchar := 'CreateTechnologyDataComponents';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
 		
-         	INSERT INTO TechnologyDataComponents(technologydataid, componentid)
-		VALUES (vTechnologyDataID, vCompID);
-        END LOOP; 
-     
+      BEGIN  
+	IF(vIsAllowed) THEN 
+		FOREACH vCompName in array vComponentList 		
+		LOOP 
+			vCompID := (select componentID from components where componentName = vCompName);
+			
+			INSERT INTO TechnologyDataComponents(technologydataid, componentid)
+			VALUES (vTechnologyDataID, vCompID);
+		END LOOP;      
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
         -- Begin Log if success
         perform public.createlog(0,'Created relation from Componets to TechnologyData sucessfully', 'CreateTechnologyDataComponents', 
                                 'TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
@@ -553,62 +559,11 @@ CREATE FUNCTION CreateTechnologyDataComponents (
   $$
   LANGUAGE 'plpgsql'; 
 -- ##############################################################################       
--- CreateComponentsAttribute
-CREATE FUNCTION CreateComponentsAttribute (
-  vComponentUUID uuid, 
-  vAttributeList text[]
- )
-  RETURNS TABLE (
-	ComponentUUID uuid,
-	AttributeList uuid[]
-  ) AS
-  $$
-	#variable_conflict use_column
-  	DECLARE vAttributeName text;
-		vAttrID int;
-		vComponentID integer := (select componentid from components where componentuuid = vComponentUUID);
-      BEGIN     
-         FOREACH vAttributeName in array vAttributeList          	
-        LOOP 
-        	 vAttrID := (select attributes.attributeID from public.attributes where attributename = vAttributeName); 
-         	 INSERT INTO ComponentsAttribute(ComponentID, AttributeID)
-             VALUES (vComponentID, vAttrID);
-        END LOOP; 
-     
-        -- Begin Log if success
-        perform public.createlog(0,'Created relation from component to attributes sucessfully', 'CreateComponentsAttribute', 
-                                'ComponentID: ' || cast(vComponentID as varchar)
-                                || ', AttributeList: ' 
-                                || cast(vAttributeList as varchar));
-                                
-        -- End Log if success
-        -- Return
-        RETURN QUERY (
-		select 	vComponentUUId,
-				array_agg(att.AttributeUUID)
-		from componentsattribute ca
-		join attributes att
-		on ca.attributeid = att.attributeid 
-		where componentid = vComponentID
-        );
-        
-        exception when others then 
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateComponentsAttribute', 
-                                'ComponentID: ' || cast(vComponentID as varchar)
-                                || ', AttributeList: ' 
-                                || cast(vAttributeList as varchar));
-        -- End Log if error
-        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateComponentsAttribute';
-        RETURN;
-      END;
-  $$
-  LANGUAGE 'plpgsql';
--- ##############################################################################    
 -- CreateComponentsTechnologies
-CREATE FUNCTION CreateComponentsTechnologies (
+CREATE OR REPLACE FUNCTION CreateComponentsTechnologies (
   vComponentUUID uuid, 
-  vTechnologyList text[]
+  vTechnologyList text[],
+  vRoleName varchar 
  )
   RETURNS TABLE (
 	ComponentUUID uuid,
@@ -619,14 +574,84 @@ CREATE FUNCTION CreateComponentsTechnologies (
     DECLARE 	vTechName text;
 		vTechID integer;
 		vComponentID integer := (select componentid from components where componentuuid = vComponentUUID);
-      BEGIN     
-         FOREACH vTechName in array vTechnologyList          	
-        LOOP 
-		vTechID := (select technologyid from technologies where technologyname = vTechName);
-         	 INSERT INTO ComponentsTechnologies(ComponentID, TechnologyID)
-             VALUES (vComponentID, vTechID);
-        END LOOP; 
-     
+		vFunctionName varchar := 'CreateComponentsTechnologies';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN      
+		FOREACH vTechName in array vTechnologyList          	
+		LOOP 
+			vTechID := (select technologyid from technologies where technologyname = vTechName);
+			 INSERT INTO ComponentsTechnologies(ComponentID, TechnologyID)
+		     VALUES (vComponentID, vTechID);
+		END LOOP; 
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+        -- Begin Log if success
+        perform public.createlog(0,'Created relation from component to attributes sucessfully', 'CreateComponentsTechnologies', 
+                                'ComponentID: ' || cast(vComponentID as varchar)
+                                || ', TechnologyList: ' 
+                                || cast(vTechnologyList as varchar));
+                                
+        -- End Log if success
+        -- Return 
+        RETURN QUERY (
+		select 	vComponentUUID,
+			array_agg(technologyUUID)
+		from componentstechnologies ct
+		join technologies th on ct.technologyid = th.technologyid
+		where componentid = vComponentID
+        );
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateComponentsTechnologies', 
+                                'ComponentID: ' || cast(vComponentID as varchar)
+                                || ', TechnologyList: ' 
+                                || cast(vTechnologyList as varchar));
+        -- End Log if error
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateComponentsTechnologies';
+        RETURN;
+      END;
+  $$
+  LANGUAGE 'plpgsql';
+-- ##############################################################################    
+-- CreateComponentsTechnologies
+CREATE OR REPLACE FUNCTION CreateComponentsTechnologies (
+  vComponentUUID uuid, 
+  vTechnologyList text[],
+  vRoleName varchar 
+ )
+  RETURNS TABLE (
+	ComponentUUID uuid,
+	TechnologyList uuid[]
+  ) AS
+  $$
+	#variable_conflict use_column
+    DECLARE 	vTechName text;
+		vTechID integer;
+		vComponentID integer := (select componentid from components where componentuuid = vComponentUUID);
+		vFunctionName varchar := 'CreateComponentsTechnologies';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN      
+		FOREACH vTechName in array vTechnologyList          	
+		LOOP 
+			vTechID := (select technologyid from technologies where technologyname = vTechName);
+			 INSERT INTO ComponentsTechnologies(ComponentID, TechnologyID)
+		     VALUES (vComponentID, vTechID);
+		END LOOP; 
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
         -- Begin Log if success
         perform public.createlog(0,'Created relation from component to attributes sucessfully', 'CreateComponentsTechnologies', 
                                 'ComponentID: ' || cast(vComponentID as varchar)
@@ -657,57 +682,68 @@ CREATE FUNCTION CreateComponentsTechnologies (
   LANGUAGE 'plpgsql';
 -- ##############################################################################
 --  CreateOfferRequest
-CREATE FUNCTION CreateOfferRequest (
-  vTechnologyDataUUID uuid,
-  vAmount integer,
-  vHSMID varchar,
-  vUserUUID uuid,
-  vBuyerUUID uuid
- )
-  RETURNS TABLE (
+CREATE FUNCTION public.createofferrequest(
+    IN vitems jsonb,
+    IN vhsmid character varying,
+    IN vuseruuid uuid,
+    IN vbuyeruuid uuid,
+    IN vRoleName varchar)
+  RETURNS TABLE(
 	OfferRequestUUID uuid,
-	TechnologyDataUUID uuid,
-	Amount integer,
+	items json,
 	HMSID varchar(32672),
 	CreatedAt timestamp with time zone,
-	RequestedBy uuid	
-  )	
- AS
-  $$
-	#variable_conflict use_column
+	RequestedBy uuid) AS
+$BODY$
+	#variable_conflict use_column 
       DECLARE 	vOfferRequestID integer := (select nextval('OfferRequestID'));
-		vOfferRequestUUID uuid := (select uuid_generate_v4());
-		vTechnologyDataID integer := (select technologydata.technologydataid from technologydata where technologydata.technologydatauuid = vTechnologyDataUUID);	
-		vRequestedBy integer := (select userid from users where useruuid = vUserUUID);
+		vOfferRequestUUID uuid := (select uuid_generate_v4()); 
 		vTransactionID integer := (select nextval('TransactionID'));
 		vTransactionUUID uuid := (select uuid_generate_v4());
-		vBuyerID integer := (select userid from users where useruuid = vBuyerUUID);
-      BEGIN        
-        INSERT INTO OfferRequest(OfferRequestID, OfferRequestUUID, TechnologyDataID, Amount, HSMID, RequestedBy, CreatedAt)
-        VALUES(vOfferRequestID, vOfferRequestUUID, vTechnologyDataID, vAmount, vHSMID, vRequestedBy, now());
+		vFunctionName varchar := 'CreateOfferRequest'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
 
-        INSERT INTO Transactions(TransactionID, TransactionUUID, OfferRequestID, BuyerID, CreatedBy, CreatedAt)
-		VALUES (vTransactionID, vTransactionUUID, vOfferRequestID, vBuyerID, vRequestedBy, now());
-     
+	IF(vIsAllowed) THEN          
+		INSERT INTO OfferRequest(OfferRequestID, OfferRequestUUID, HSMID, RequestedBy, CreatedAt)
+		VALUES(vOfferRequestID, vOfferRequestUUID, vHSMID, vbuyeruuid, now());
+
+		INSERT INTO Transactions(TransactionID, TransactionUUID, OfferRequestID, BuyerID, CreatedBy, CreatedAt)
+		VALUES (vTransactionID, vTransactionUUID, vOfferRequestID, vbuyeruuid, vbuyeruuid, now());
+
+		with items as (
+			select 	vOfferRequestID as offerrequestid,
+				(json_array_elements_text(vitems::json->'items')::json->>'dataId')::text as dataId,
+				(json_array_elements_text(vitems::json->'items')::json->'amount')::text as amount
+			)
+		insert into offerrequestitems(offerrequestid,technologydataId,amount)
+		select offerrequestid, td.technologydataid, amount::integer from items it
+		join technologydata td on it.dataid::uuid = td.technologydatauuid;
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
         -- Begin Log if success
         perform public.createlog(0,'Created OfferRequest sucessfully', 'CreateOfferRequest', 
                                 'OfferRequestID: ' || cast(vOfferRequestID as varchar) 
-				|| ', TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
-				|| ', Amount: ' || cast(vAmount as varchar) || ', HSMID: ' || vHSMID);
+				|| ', Items: ' || cast(vItems as varchar)
+				|| ', HSMID: ' || vHSMID);
                                 
         -- End Log if success
         -- Return OfferRequestUUID
         RETURN QUERY (
 				select	ofr.OfferRequestUUID,
-						td.TechnologyDataUUID,
-						ofr.Amount,
-						ofr.HSMID,
-						ofr.CreatedAt at time zone 'utc',
-						us.useruuid as RequestedBy
-						from offerrequest ofr 
-						join technologydata td 
-						on ofr.technologydataid = td.technologydataid
-						join users us on us.userid = ofr.requestedby
+					json_build_object('dataId', td.TechnologyDataUUID::uuid, 'amount', oi.Amount),
+					ofr.HSMID,
+					ofr.CreatedAt at time zone 'utc',
+					us.useruuid as RequestedBy
+					from offerrequest ofr 	
+					join users us on us.userid = ofr.requestedby
+					join offerrequestitems oi on oi.offerrequestid = ofr.offerrequestid
+					join technologydata td 
+					on oi.technologydataid = td.technologydataid
 				where ofr.offerrequestuuid = vOfferRequestUUID
         );
         
@@ -715,20 +751,23 @@ CREATE FUNCTION CreateOfferRequest (
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateOfferRequest', 
                                 'OfferRequestID: ' || cast(vOfferRequestID as varchar) 
-				|| ', TechnologyDataID: ' || cast(vTechnologyDataID as varchar)
-				|| ', Amount: ' || cast(vAmount as varchar) || ', HSMID: ' || vHSMID);
+				|| ', Items: ' || cast(vItems as varchar)
+				|| ', HSMID: ' || vHSMID);
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateOfferRequest';
         RETURN;
       END;
-  $$
-  LANGUAGE 'plpgsql'; 
+  $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
 -- ##############################################################################    
 -- CreatePaymentInvoice
 CREATE FUNCTION CreatePaymentInvoice (
   vInvoice varchar(32672), 
   vOfferRequestUUID uuid,
-  vUserUUID uuid  
+  vUserUUID uuid,
+  vRoleName varchar  
  )
   RETURNS TABLE (
 	PaymentInvoiceUUID uuid,
@@ -741,17 +780,25 @@ CREATE FUNCTION CreatePaymentInvoice (
 	#variable_conflict use_column
 	DECLARE vPaymentInvoiceID integer := (select nextval('PaymentInvoiceID'));
 		vPaymentInvoiceUUID uuid := (select uuid_generate_v4()); 
-		vOfferReqID integer := (select offerrequestid from offerrequest where offerrequestuuid = vOfferRequestUUID);
-		vCreatedBy integer := (select userid from users where useruuid = vUserUUID);
+		vOfferReqID integer := (select offerrequestid from offerrequest where offerrequestuuid = vOfferRequestUUID);		
 		vTransactionID integer := (select transactionid from transactions where offerrequestid = vOfferReqID);
-      BEGIN        
-        INSERT INTO PaymentInvoice(PaymentInvoiceID, PaymentInvoiceUUID, OfferRequestID, Invoice, CreatedBy, CreatedAt)
-        VALUES(vPaymentInvoiceID, vPaymentInvoiceUUID, vOfferReqID, vInvoice, vCreatedBy, now());
+		vFunctionName varchar := 'CreatePaymentInvoice'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN        
+		INSERT INTO PaymentInvoice(PaymentInvoiceID, PaymentInvoiceUUID, OfferRequestID, Invoice, CreatedBy, CreatedAt)
+		VALUES(vPaymentInvoiceID, vPaymentInvoiceUUID, vOfferReqID, vInvoice, vUserUUID, now());
 
 		-- Update Transactions table
-        UPDATE Transactions SET PaymentInvoiceID = vPaymentInvoiceID, UpdatedAt = now(), UpdatedBy = vCreatedBy
-        WHERE TransactionID = vTransactionID;
-     
+		UPDATE Transactions SET PaymentInvoiceID = vPaymentInvoiceID, UpdatedAt = now(), UpdatedBy = vUserUUID
+		WHERE TransactionID = vTransactionID;
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
         -- Begin Log if success
         perform public.createlog(0,'Created PaymentInvoice sucessfully', 'CreatePaymentInvoice', 
                                 'PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
@@ -791,7 +838,8 @@ CREATE FUNCTION CreatePaymentInvoice (
 -- CreateOffer   
 CREATE FUNCTION CreateOffer(
   vPaymentInvoiceUUID uuid,
-  vUserUUID uuid
+  vUserUUID uuid,
+  vRoleName varchar
  )
   RETURNS TABLE (
 	OfferUUID uuid,
@@ -804,16 +852,25 @@ CREATE FUNCTION CreateOffer(
       DECLARE 	vOfferID integer := (select nextval('OfferID'));
 		vOfferUUID uuid := (select uuid_generate_v4());
 		vPaymentInvoiceID integer := (select paymentinvoiceid from paymentinvoice where paymentinvoiceuuid = vPaymentInvoiceUUID);	
-		vCreatedBy integer := (select userid from users where useruuid = vUserUUID); 
 		vTransactionID integer := (select transactionid from transactions where paymentinvoiceid = vPaymentInvoiceID); 
-      BEGIN        
-        INSERT INTO Offer(OfferID, OfferUUID, PaymentInvoiceID, CreatedBy, CreatedAt)
-        VALUES(vOfferID, vOfferUUID, vPaymentInvoiceID, vCreatedBy, now());
+		vFunctionName varchar := 'CreateOffer'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
 
-        -- Update Transactions table
-        UPDATE Transactions SET OfferId = vOfferID, UpdatedAt = now(), UpdatedBy = vCreatedBy
-        WHERE TransactionID = vTransactionID;
-     
+	IF(vIsAllowed) THEN  
+              
+		INSERT INTO Offer(OfferID, OfferUUID, PaymentInvoiceID, CreatedBy, CreatedAt)
+		VALUES(vOfferID, vOfferUUID, vPaymentInvoiceID, vUserUUID, now());
+
+		-- Update Transactions table
+		UPDATE Transactions SET OfferId = vOfferID, UpdatedAt = now(), UpdatedBy = vCreatedBy
+		WHERE TransactionID = vTransactionID;
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
         -- Begin Log if success
         perform public.createlog(0,'Created Offer sucessfully', 'CreateOffer', 
                                 'OfferID: ' || cast(vOfferID as varchar) 
@@ -847,7 +904,8 @@ CREATE FUNCTION CreateOffer(
 CREATE FUNCTION CreateLicenseOrder (
   vTicketID varchar(4000),
   vOfferUUID uuid,
-  vUserUUID uuid
+  vUserUUID uuid,
+  vRoleName varchar
  )
   RETURNS TABLE (
 	LicenseOrderUUID uuid,
@@ -861,23 +919,31 @@ CREATE FUNCTION CreateLicenseOrder (
 	#variable_conflict use_column
       DECLARE 			vLicenseOrderID integer := (select nextval('LicenseOrderID'));
 				vLicenseOrderUUID uuid := (select uuid_generate_v4()); 
-				vOfferID integer := (select offerid from offer where offeruuid = vOfferUUID);
-				vCreatedBy integer := (select userid from users where useruuid = vUserUUID);
+				vOfferID integer := (select offerid from offer where offeruuid = vOfferUUID); 
 				vTransactionID integer := (select transactionid from transactions where offerid = vOfferID);
-      BEGIN        
-        INSERT INTO LicenseOrder(LicenseOrderID, LicenseOrderUUID, TicketID, OfferID, ActivatedAt, CreatedBy, CreatedAt)
-        VALUES(vLicenseOrderID, vLicenseOrderUUID, vTicketID, vOfferID, now(), vCreatedBy, now());
+				FunctionName varchar := 'CreateLicenseOrder'; 
+				vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN         
+		INSERT INTO LicenseOrder(LicenseOrderID, LicenseOrderUUID, TicketID, OfferID, ActivatedAt, CreatedBy, CreatedAt)
+		VALUES(vLicenseOrderID, vLicenseOrderUUID, vTicketID, vOfferID, now(), vUserUUID, now());
 
 		-- Update Transactions table
-        UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = vCreatedBy
-        WHERE TransactionID = vTransactionID;
-     
+		UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = vCreatedBy
+		WHERE TransactionID = vTransactionID;
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
         -- Begin Log if success
         perform public.createlog(0,'Created CreateLicenseOrder sucessfully', 'CreateLicenseOrder', 
                                 'PaymentInvoiceID: ' || cast(vLicenseOrderID as varchar) 
 				|| ', TicketID: ' || vTicketID
 				|| ', OfferID: ' || cast(vOfferID as varchar)
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+				|| ', CreatedBy: ' || cast(vUserUUID as varchar));
                                 
         -- End Log if success
         -- Return 
@@ -898,13 +964,13 @@ CREATE FUNCTION CreateLicenseOrder (
                                 'PaymentInvoiceID: ' || cast(vLicenseOrderID as varchar) 
 				|| ', TicketID: ' || vTicketID
 				|| ', OfferID: ' || cast(vOfferID as varchar)
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+				|| ', CreatedBy: ' || cast(vUserUUID as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateLicenseOrder';
         RETURN;
       END;
   $$
-  LANGUAGE 'plpgsql';     
+  LANGUAGE 'plpgsql';      
 -- ##############################################################################     
 CREATE FUNCTION public.setpayment(
     IN vtransactionuuid uuid,
@@ -912,17 +978,22 @@ CREATE FUNCTION public.setpayment(
     IN vconfidencestate character varying,
     IN vdepth integer,
     IN vextinvoiceid uuid,
-    IN vuseruuid uuid)
+    IN vuseruuid uuid,
+    IN vRoleName varchar)
   RETURNS TABLE(paymentuuid uuid, paymentinvoiceuuid uuid, paydate timestamp with time zone, bitcointransation character varying, confidencestate character varying, depth integer, extinvoiceid uuid, createdby uuid, createdat timestamp with time zone, updatedby uuid, updatedat timestamp with time zone) AS
 $BODY$
 	#variable_conflict use_column
       DECLARE 	vPaymentID integer;
 		vPaymentUUID uuid := (select uuid_generate_v4());
-		vPaymentInvoiceID integer := (select PaymentInvoiceID from transactions where transactionuuid = vTransactionUUID);
-		vCreatedBy integer := (select userid from users where useruuid = vUserUUID);		
+		vPaymentInvoiceID integer := (select PaymentInvoiceID from transactions where transactionuuid = vTransactionUUID);		
 		vPayDate timestamp without time zone := null;
 		vTransactionID integer := (select transactionid from transactions where transactionuuid = vtransactionuuid);
-      BEGIN        
+		vFunctionName varchar := 'SetPayment'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN         
 		
 
 		IF exists (select extinvoiceid from payment where extinvoiceid = vExtInvoiceID) THEN
@@ -935,7 +1006,7 @@ $BODY$
 				|| ', Confidence State: ' || coalesce(vconfidencestate, 'no value')
 				|| ', Depth: ' || coalesce(cast(vDepth as varchar), 'no value')
 				|| ', ExtInvoiceID: ' || cast(vExtInvoiceId as varchar)
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+				|| ', CreatedBy: ' || cast(vuseruuid as varchar));
 		-- update 
 		--Proof if ConfidenceState is Pending and PayDate is null
 		IF ((LOWER(vConfidenceState) = LOWER('Pending') or LOWER(vConfidenceState) = LOWER('building')) 
@@ -944,7 +1015,7 @@ $BODY$
 		ELSE vPayDate := (select paydate from payment where extinvoiceid = vExtInvoiceID);
 		END IF;  
 		update payment set ConfidenceState = vConfidenceState, Depth = vDepth, bitcointransaction = vbitcointransaction,
-		PayDate = vPayDate, updatedat = now(), updatedby = vCreatedBy
+		PayDate = vPayDate, updatedat = now(), updatedby = vuseruuid
 		where ExtInvoiceID = vExtInvoiceID; 
 		
 		vPaymentID := (select paymentid from payment where ExtInvoiceID = vExtInvoiceID);
@@ -956,7 +1027,7 @@ $BODY$
 				|| ', Confidence State: ' || coalesce(vconfidencestate, 'no value')
 				|| ', Depth: ' || coalesce(cast(vDepth as varchar), 'no value')
 				|| ', ExtInvoiceID: ' || cast(vExtInvoiceId as varchar)
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+				|| ', CreatedBy: ' || cast(vuseruuid as varchar));
                                 
 		-- End Log if success        
 
@@ -971,10 +1042,10 @@ $BODY$
 				    createdby, depth, confidencestate, extinvoiceid,
 				    createdat)
 			VALUES (vPaymentID, vPaymentUUID, vPaymentInvoiceID, vPayDate, vbitcointransaction, 
-			vCreatedBy, vDepth, vConfidenceState, vExtInvoiceID, now()); 
+			vuseruuid, vDepth, vConfidenceState, vExtInvoiceID, now()); 
 
 			-- Update Transactions table
-		UPDATE Transactions SET PaymentID = vPaymentID, UpdatedAt = now(), UpdatedBy = vCreatedBy
+		UPDATE Transactions SET PaymentID = vPaymentID, UpdatedAt = now(), UpdatedBy = vuseruuid
 		WHERE TransactionID = vTransactionID;
 
 		-- Begin Log if success
@@ -985,11 +1056,16 @@ $BODY$
 				|| ', Confidence State: ' || coalesce(vconfidencestate, 'no value')
 				|| ', Depth: ' || coalesce(cast(vDepth as varchar), 'no value')
 				|| ', ExtInvoiceID: ' || cast(vExtInvoiceId as varchar)
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+				|| ', CreatedBy: ' || cast(vuseruuid as varchar));
                                 
 		-- End Log if success  
 	
 		END IF;
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+	
         -- Return PaymentID
         RETURN QUERY (
 			select 	PaymentUUID,
@@ -1021,7 +1097,7 @@ $BODY$
 				|| ', Confidence State: ' || coalesce(vconfidencestate, 'no value')
 				|| ', Depth: ' || coalesce(cast(vDepth as varchar), 'no value')
 				|| ', ExtInvoiceID: ' || cast(vExtInvoiceId as varchar)
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+				|| ', CreatedBy: ' || cast(vuseruuid as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetPayment';
         RETURN ;
@@ -1030,8 +1106,70 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000;
-ALTER FUNCTION public.setpayment(uuid, character varying, character varying, integer, uuid, uuid)
-  OWNER TO postgres;
+-- ###########################################################################
+
+-- ##############################################################################       
+-- CreateComponentsAttribute
+CREATE FUNCTION CreateComponentsAttribute (
+  vComponentUUID uuid, 
+  vAttributeList text[],
+  vRoleName varchar
+ )
+  RETURNS TABLE (
+	ComponentUUID uuid,
+	AttributeList uuid[]
+  ) AS
+  $$
+	#variable_conflict use_column
+  	DECLARE vAttributeName text;
+		vAttrID int;
+		vComponentID integer := (select componentid from components where componentuuid = vComponentUUID);       
+		vFunctionName varchar := 'SetComponent'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN      
+        FOREACH vAttributeName in array vAttributeList          	
+        LOOP 
+        	 vAttrID := (select attributes.attributeID from public.attributes where attributename = vAttributeName); 
+         	 INSERT INTO ComponentsAttribute(ComponentID, AttributeID)
+             VALUES (vComponentID, vAttrID);
+        END LOOP; 
+     
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+        -- Begin Log if success
+        perform public.createlog(0,'Created relation from component to attributes sucessfully', 'CreateComponentsAttribute', 
+                                'ComponentID: ' || cast(vComponentID as varchar)
+                                || ', AttributeList: ' 
+                                || cast(vAttributeList as varchar));
+                                
+        -- End Log if success
+        -- Return
+        RETURN QUERY (
+		select 	vComponentUUId,
+				array_agg(att.AttributeUUID)
+		from componentsattribute ca
+		join attributes att
+		on ca.attributeid = att.attributeid 
+		where componentid = vComponentID
+        );
+        
+        exception when others then 
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateComponentsAttribute', 
+                                'ComponentID: ' || cast(vComponentID as varchar)
+                                || ', AttributeList: ' 
+                                || cast(vAttributeList as varchar));
+        -- End Log if error
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateComponentsAttribute';
+        RETURN;
+      END;
+  $$
+  LANGUAGE 'plpgsql';  
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1061,7 +1199,8 @@ CREATE FUNCTION public.setcomponent(
     IN vcomponentdescription character varying,
     IN vattributelist text[],
     IN vtechnologylist text[],
-    IN vcreatedby uuid)
+    IN vcreatedby uuid,
+    IN vRoleName varchar)
   RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentname character varying, componentparentuuid uuid, componentdescription character varying, attributelist uuid[], technologylist uuid[], createdat timestamp with time zone, createdby uuid) AS
 $$
 	#variable_conflict use_column
@@ -1070,42 +1209,50 @@ $$
 		vCompID integer;
 		vCompUUID uuid;
 		vCompParentUUID uuid := (select case when (vComponentParentName = 'Root' and not exists (select 1 from components where componentName = 'Root')) then uuid_generate_v4() else componentuuid end from components where componentname = vComponentParentName);
-      BEGIN      
-        -- Proof if all technologies are avaiable
-        -- Proof if all components are avaiable      
-        FOREACH vTechName in array vTechnologyList 
-        LOOP 
-         	 if not exists (select technologyid from technologies where technologyname = vTechName) then
-                 raise exception using
-                 errcode = 'invalid_parameter_value',
-                 message = 'There is no technology with TechnologyName: ' || vTechName; 
-         	 end if;
-        END LOOP;
-        -- Proof if all Attributes are avaiable     
-        FOREACH vAttributeName in array vAttributeList 
-        LOOP 
-         	 if not exists (select attributeid from public.attributes where attributename = vAttributeName) then
-               perform public.createattribute(vAttributeName,vCreatedBy);
-        	 end if;
-        END LOOP;
-        
-        -- Create new Component
-        perform public.createcomponent(vCompParentUUID,vComponentName, vComponentdescription, vCreatedby);
-		vCompID := (select currval('ComponentID')); 
-		vCompUUID := (select componentuuid from components where componentID = vCompID);
-        
-        -- Create relation from Components to TechnologyData 
-        perform public.CreateComponentsAttribute(vCompUUID, vAttributeList);  
-        
-        -- Create relation from Components to TechnologyData 
-        perform public.CreateComponentsTechnologies(vCompUUID, vTechnologyList); 
-     	
-        -- Begin Log if success
-        perform public.createlog(0,'Set Component sucessfully','SetComponent', 
-                                'ComponentID: ' || cast(vCompID as varchar) || ', componentname: ' 
-                                || vComponentName || ', componentdescription: ' || vComponentDescription 
-                                || ', CreatedBy: ' || cast(vCreatedBy as varchar));
-                                
+		vFunctionName varchar := 'SetComponent'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN       
+		-- Proof if all technologies are avaiable
+		-- Proof if all components are avaiable      
+		FOREACH vTechName in array vTechnologyList 
+		LOOP 
+			 if not exists (select technologyid from technologies where technologyname = vTechName) then
+			 raise exception using
+			 errcode = 'invalid_parameter_value',
+			 message = 'There is no technology with TechnologyName: ' || vTechName; 
+			 end if;
+		END LOOP;
+		-- Proof if all Attributes are avaiable     
+		FOREACH vAttributeName in array vAttributeList 
+		LOOP 
+			 if not exists (select attributeid from public.attributes where attributename = vAttributeName) then
+		       perform public.createattribute(vAttributeName,vCreatedBy, vRoleName);
+			 end if;
+		END LOOP;
+		
+		-- Create new Component
+		perform public.createcomponent(vCompParentUUID,vComponentName, vComponentdescription, vCreatedby, vRoleName);
+			vCompID := (select currval('ComponentID')); 
+			vCompUUID := (select componentuuid from components where componentID = vCompID);
+		
+		-- Create relation from Components to TechnologyData 
+		perform public.CreateComponentsAttribute(vCompUUID, vAttributeList, vRoleName);  
+		
+		-- Create relation from Components to TechnologyData 
+		perform public.CreateComponentsTechnologies(vCompUUID, vTechnologyList, vRoleName); 
+		
+		-- Begin Log if success
+		perform public.createlog(0,'Set Component sucessfully','SetComponent', 
+					'ComponentID: ' || cast(vCompID as varchar) || ', componentname: ' 
+					|| vComponentName || ', componentdescription: ' || vComponentDescription 
+					|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+        ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;                       
         -- End Log if success
         -- Return UserID
         RETURN QUERY (
@@ -1182,8 +1329,8 @@ Return Value:
 	vRetailPrice integer,
 	vTaglist text[],	
 	vComponentlist text[],
-	-- vTechnologyDataAuthor uuid,
-	vCreatedby uuid)
+	vCreatedby uuid,
+	vRoleName varchar)
   RETURNS TABLE (
 	TechnologyDataUUID uuid,
 	TechnologyDataName varchar(250),
@@ -1205,49 +1352,57 @@ $$
 				vTagName text; 
 				vTechnologyDataID int; 
 				vTechnologyDataUUID uuid;
-				vUserID integer := (select userid from users where useruuid = vCreatedby);
 				vTechnologyID integer := (select technologyID from technologies where technologyUUID = vTechnologyUUID);
-      BEGIN        
-        -- Proof if all components are avaiable      
-        FOREACH vCompName in array vComponentlist 
-        LOOP 
-         	 if not exists (select componentid from components where componentname = vCompName) then
-                 raise exception using
-                 errcode = 'invalid_parameter_value',
-                 message = 'There is no component with ComponentName: ' || vCompName; 
-         	 end if;
-        END LOOP;
-        -- Proof if all Tags are avaiable     
-        FOREACH vTagName in array vTagList 
-        LOOP 
-         	 if not exists (select tagID from tags where tagname = vTagName) then
-			perform public.createtag(vTagName,vCreatedby);
-        	 end if;
-        END LOOP;
-        -- Proof if technology is avaiable  
-        if not exists (select technologyid from technologies where technologyuuid = vTechnologyUUID) then
-        	raise exception using
-            errcode = 'invalid_parameter_value',
-            message = 'There is no technology with TechnologyID: ' || vTechnologyID::text; 
-        end if;
-        
-        -- Create new TechnologyData  
-		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyUUID, vCreatedBy); 		
-        vTechnologyDataID := (select currval('TechnologyDataID'));
-        vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
-        -- Create relation from Components to TechnologyData 
-        perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList);
-        
-        -- Create relation from Tags to TechnologyData 
-        perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList, CreatedBy);
-     	
-        -- Begin Log if success
-        perform public.createlog(0,'Set TechnologyData sucessfully', 'SetTechnologyData', 
-                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: ' 
-                                || vTechnologyDataName || ', TechnologyData: ' || vTechnologyData 
-                                || ', TechnologyDataDescription: ' || vTechnologyDataDescription 
-                                || ', CreatedBy: ' || cast(vUserID as varchar));
-                                
+				vFunctionName varchar := 'SetTechnologyData'; 
+				vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN         
+		-- Proof if all components are avaiable      
+		FOREACH vCompName in array vComponentlist 
+		LOOP 
+			 if not exists (select componentid from components where componentname = vCompName) then
+			 raise exception using
+			 errcode = 'invalid_parameter_value',
+			 message = 'There is no component with ComponentName: ' || vCompName; 
+			 end if;
+		END LOOP;
+		-- Proof if all Tags are avaiable     
+		FOREACH vTagName in array vTagList 
+		LOOP 
+			 if not exists (select tagID from tags where tagname = vTagName) then
+				perform public.createtag(vTagName,vCreatedby, vRoleName);
+			 end if;
+		END LOOP;
+		-- Proof if technology is avaiable  
+		if not exists (select technologyid from technologies where technologyuuid = vTechnologyUUID) then
+			raise exception using
+		    errcode = 'invalid_parameter_value',
+		    message = 'There is no technology with TechnologyID: ' || vTechnologyID::text; 
+		end if;
+		
+		-- Create new TechnologyData  
+			perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyUUID, vCreatedBy, vRoleName); 		
+		vTechnologyDataID := (select currval('TechnologyDataID'));
+		vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
+		-- Create relation from Components to TechnologyData 
+		perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList, vRoleName);
+		
+		-- Create relation from Tags to TechnologyData 
+		perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList, CreatedBy, vRoleName);
+		
+		-- Begin Log if success
+		perform public.createlog(0,'Set TechnologyData sucessfully', 'SetTechnologyData', 
+					'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: ' 
+					|| vTechnologyDataName || ', TechnologyData: ' || vTechnologyData 
+					|| ', TechnologyDataDescription: ' || vTechnologyDataDescription 
+					|| ', CreatedBy: ' || cast(vRoleName as varchar));
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 				
         -- End Log if success
         -- Return vTechnologyDataUUID
         RETURN QUERY (
@@ -1284,7 +1439,7 @@ $$
                                 'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: ' 
                                 || vTechnologyDataName || ', TechnologyData: ' || vTechnologyData 
                                 || ', TechnologyDataDescription: ' || vTechnologyDataDescription 
-                                || ', CreatedBy: ' || cast(vUserID as varchar));
+                                || ', CreatedBy: ' || cast(vCreatedby as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetTechnologyData';
         RETURN;
@@ -1304,11 +1459,12 @@ Return Value:
  Step 1:  
  TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
 ######################################################*/
--- SetPaymentInvoiceOffer  
+ -- SetPaymentInvoiceOffer  
 CREATE FUNCTION SetPaymentInvoiceOffer ( 
 	vOfferRequestUUID uuid,
 	vInvoice varchar(32672),
-	vCreatedBy uuid	
+	vCreatedBy uuid,
+	vRoleName varchar	
  )
   RETURNS TABLE (
 	paymentinvoiceuuid uuid, 
@@ -1325,23 +1481,31 @@ CREATE FUNCTION SetPaymentInvoiceOffer (
 	#variable_conflict use_column
       DECLARE  
 		vPaymentInvoiceID integer;
-		vPaymentInvoiceUUID uuid;
-		vUserID integer := (select userid from users where useruuid = vCreatedBy);
-      BEGIN      
-        -- Create PaymentInvoice
-        perform createpaymentinvoice(vInvoice,vOfferRequestUUID,vCreatedBy);
-        vPaymentInvoiceID := (select currval('PaymentInvoiceID'));
-        vPaymentInvoiceUUID := (select paymentinvoice.paymentinvoiceuuid from paymentinvoice where paymentinvoiceid = vPaymentInvoiceID);
+		vPaymentInvoiceUUID uuid; 
+		vFunctionName varchar := 'SetPaymentInvoiceOffer'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
 		
-	-- Create Offer
-	perform createoffer(vPaymentInvoiceUUID, vCreatedBy);
+	BEGIN     
 
-        -- Begin Log if success
-        perform public.createlog(0,'Set SetPaymentInvoiceOffer sucessfully', 'SetPaymentInvoiceOffer', 
-                                'OfferRequestID: ' || cast(vOfferRequestUUID as varchar)
-				|| ', invoice: ' || vInvoice  
-                                || ', CreatedBy: ' || cast(vUserID as varchar));
-                                
+	IF(vIsAllowed) THEN        
+		-- Create PaymentInvoice
+		perform createpaymentinvoice(vInvoice,vOfferRequestUUID,vCreatedBy, vRoleName);
+		vPaymentInvoiceID := (select currval('PaymentInvoiceID'));
+		vPaymentInvoiceUUID := (select paymentinvoice.paymentinvoiceuuid from paymentinvoice where paymentinvoiceid = vPaymentInvoiceID);
+			
+		-- Create Offer
+		perform createoffer(vPaymentInvoiceUUID, vCreatedBy, vRoleName);
+
+		-- Begin Log if success
+		perform public.createlog(0,'Set SetPaymentInvoiceOffer sucessfully', 'SetPaymentInvoiceOffer', 
+					'OfferRequestID: ' || cast(vOfferRequestUUID as varchar)
+					|| ', invoice: ' || vInvoice  
+					|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 				
         -- End Log if success
         -- Return
         RETURN QUERY (
@@ -1362,7 +1526,7 @@ CREATE FUNCTION SetPaymentInvoiceOffer (
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,'SetPaymentInvoiceOffer', 
                                 'OfferRequestID: ' || cast(vOfferRequestUUID as varchar)
 				|| ', invoice: ' || vInvoice  
-                                || ', CreatedBy: ' || cast(vUserID as varchar));
+                                || ', CreatedBy: ' || cast(vCreatedBy as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetPaymentInvoiceOffer';
         RETURN;
@@ -1379,7 +1543,7 @@ Create a complete Technology Data
 Input paramteres: none	
 Return Value: Table with all TechnologyData 
 ######################################################*/
-CREATE FUNCTION GetAllTechnologyData() 
+CREATE OR REPLACE FUNCTION GetAllTechnologyData(vRoleName varchar) 
 	RETURNS TABLE
     	(
 			technologydatauuid uuid,
@@ -1396,27 +1560,40 @@ CREATE FUNCTION GetAllTechnologyData()
 			updatedat timestamp with time zone,
 			useruuid uuid
         )
-    AS $$ 
-    	SELECT 	technologydatauuid,
-				tc.technologyuuid,    		
-				technologydataname,
-				technologydata,
-				technologydatadescription,
-				licensefee,				
-				retailprice,
-				technologydatathumbnail,
-				technologydataimgref,
-				td.createdat  at time zone 'utc',
-				ur.useruuid as createdby,	
-				td.updatedat  at time zone 'utc',
-				us.useruuid as UpdatedBy
-		FROM TechnologyData td
-		join technologies tc 
-		on td.technologyid = tc.technologyid
-		join users ur on td.createdby = ur.userid
-		left outer join users us 
-		on td.updatedby = us.userid
-	$$ LANGUAGE SQL;
+    AS $$
+	DECLARE vFunctionName varchar := 'GetAllTechnologyData'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+	
+		RETURN QUERY (SELECT 	technologydatauuid,
+					tc.technologyuuid,    		
+					technologydataname,
+					technologydata,
+					technologydatadescription,
+					licensefee,				
+					retailprice,
+					technologydatathumbnail,
+					technologydataimgref,
+					td.createdat  at time zone 'utc',
+					td.createdBy,	
+					td.updatedat  at time zone 'utc',
+					td.UpdatedBy
+			FROM TechnologyData td
+			join technologies tc 
+			on td.technologyid = tc.technologyid 
+			);
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+	
+	END;
+	$$
+	LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1428,9 +1605,9 @@ Input paramteres: technologyUUID uuid
 				  userUUID uuid
 Return Value: Table with all TechnologyData 
 ######################################################*/
-  CREATE FUNCTION public.GetTechnologyDataByID(
+ CREATE FUNCTION public.GetTechnologyDataByID(
     vtechnologydatauuid uuid,
-    vuseruuid uuid)
+    vRoleName varchar)
   RETURNS TABLE(technologydatauuid uuid, 
 		technologyuuid uuid, 
 		technologydataname character varying, 
@@ -1445,27 +1622,40 @@ Return Value: Table with all TechnologyData
 		updatedat timestamp with time zone,
 		updatedyby uuid) AS
 $$ 
-    	SELECT 	technologydatauuid,
-		tc.technologyuuid,    		
-		technologydataname,
-		technologydata,
-		technologydatadescription,
-		licensefee,
-		retailprice,
-		technologydatathumbnail,
-		technologydataimgref,
-		td.createdat  at time zone 'utc',
-		ur.useruuid as createdby,	
-		td.updatedat  at time zone 'utc',
-		us.useruuid as UpdatedBy
-		FROM TechnologyData td
-		join technologies tc 
-		on td.technologyid = tc.technologyid
-		join users ur on td.createdby = ur.userid
-		left outer join users us 
-		on td.updatedby = us.userid
-		where technologydatauuid = vtechnologydatauuid;
-	$$ LANGUAGE SQL; 
+	DECLARE
+		vFunctionName varchar := 'GetTechnologyDataByID'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (	SELECT 	technologydatauuid,
+				tc.technologyuuid,    		
+				technologydataname,
+				technologydata,
+				technologydatadescription,
+				licensefee,
+				retailprice,
+				technologydatathumbnail,
+				technologydataimgref,
+				td.createdat  at time zone 'utc',
+				td.createdby,	
+				td.updatedat  at time zone 'utc',
+				td.updatedby
+				FROM TechnologyData td
+				join technologies tc 
+				on td.technologyid = tc.technologyid
+				where technologydatauuid = vtechnologydatauuid
+		);
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+$$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1479,7 +1669,7 @@ Return Value: Table with all TechnologyData
 ######################################################*/
 CREATE FUNCTION GetTechnologyDataByName(
 		vTechnologyDataName varchar(250),
-		vUserUUID uuid
+		vRoleName varchar
 		) 
 RETURNS TABLE
     	(
@@ -1495,10 +1685,18 @@ RETURNS TABLE
 			createdat timestamp with time zone,
 			createdby uuid,	
 			updatedat timestamp with time zone,
-			useruuid uuid
+			updatedBy uuid
         )
     AS $$ 
-    	SELECT 	technologydatauuid,
+	DECLARE
+		vFunctionName varchar := 'GetTechnologyDataByName'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+    	RETURN QUERY (SELECT 	technologydatauuid,
 				tc.technologyuuid,    		
 				technologydataname,
 				technologydata,
@@ -1508,17 +1706,22 @@ RETURNS TABLE
 				technologydatathumbnail,
 				technologydataimgref,
 				td.createdat  at time zone 'utc',
-				ur.useruuid as createdby,	
+				td.createdby,	
 				td.updatedat  at time zone 'utc',
-				us.useruuid as UpdatedBy
-		FROM TechnologyData td
-		join technologies tc 
-		on td.technologyid = tc.technologyid
-		join users ur on td.createdby = ur.userid
-		left outer join users us 
-		on td.updatedby = us.userid
-		where technologydataname = vTechnologyDataName;
-	$$ LANGUAGE SQL; 
+				td.updatedBy
+			FROM TechnologyData td
+			join technologies tc 
+			on td.technologyid = tc.technologyid 
+			where technologydataname = vTechnologyDataName
+		);
+		
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+	$$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1526,34 +1729,44 @@ RETURNS TABLE
 -- Description: Script to get all Components
 -- ##########################################################################
 Get all Components
-Input paramteres: none	
+Input paramteres: vRoleName	
 Return Value: Table with all Components 
-######################################################*/
-CREATE FUNCTION GetAllComponents(vUserUUID uuid) 
-	RETURNS TABLE
-    	(
-    componentuuid uuid,
-    componentname character varying(250),
-    componentparentuuid integer,
-    componentdescription character varying(32672), 
-    createdat timestamp  with time zone,
-    createdby uuid,
-    updatedat timestamp  with time zone,
-    updatedby uuid
-        )
-    AS $$ 
-	SELECT  componentuuid,
-    		componentname,
-    		componentparentid,
-			componentdescription, 
-    		cp.createdat  at time zone 'utc',
-    		ur.useruuid as createdby,
-    		cp.updatedat  at time zone 'utc',
-    		us.useruuid as updatedby 
-    FROM Components cp
-    join users ur on cp.createdby = ur.userid
-    left outer join users us on cp.updatedby = ur.userid
-    $$ LANGUAGE SQL;
+######################################################*/ 
+CREATE FUNCTION public.getallcomponents(IN vrolename character varying)
+  RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid integer, componentdescription character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedby uuid) AS
+$BODY$ 
+	DECLARE
+		vFunctionName varchar := 'GetAllComponents'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (SELECT  cp.componentuuid,
+			cp.componentname,
+			cp.componentparentid,
+			cp.componentdescription, 
+			cp.createdat  at time zone 'utc',
+			cp.createdby,
+			cp.updatedat  at time zone 'utc',
+			cp.updatedby 
+			FROM Components cp 
+		);
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION public.getallcomponents(character varying)
+  OWNER TO postgres;
+
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1566,24 +1779,37 @@ Return Value: Table with all Components
 ######################################################*/
 CREATE FUNCTION public.getcomponentbyid(
     IN vcompuuid uuid,
-    IN vuseruuid uuid)
+    IN vRoleName varchar)
   RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid uuid, componentdescription character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedby uuid) AS
 $$ 
-	SELECT  cp.componentuuid,
-    		cp.componentname,
-    		cs.componentuuid,
-		cp.componentdescription, 
-    		cp.createdat  at time zone 'utc',
-    		ur.useruuid as createdby,
-    		cp.updatedat  at time zone 'utc',
-    		us.useruuid as updatedby 
-    FROM Components cp
-    join users ur on cp.createdby = ur.userid
-    left outer join users us on cp.updatedby = ur.userid 
-    left outer join components cs on
-    cp.componentparentid = cs.componentid
-    WHERE cp.componentuuid = vCompUUID; 
-    $$ LANGUAGE SQL;
+	DECLARE
+		vFunctionName varchar := 'GetComponentById'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (SELECT  cp.componentuuid,
+				cp.componentname,
+				cs.componentuuid,
+				cp.componentdescription, 
+				cp.createdat  at time zone 'utc',
+				cp.createdby,
+				cp.updatedat  at time zone 'utc',
+				cp.updatedby 
+		    FROM Components cp
+		    left outer join components cs on
+		    cp.componentparentid = cs.componentid
+		    WHERE cp.componentuuid = vCompUUID
+		  ); 
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1607,19 +1833,34 @@ CREATE FUNCTION GetComponentByName(vCompName varchar(250), vUserUUID uuid)
     updatedby uuid
         )
     AS $$ 
-	SELECT  componentuuid,
-    		componentname,
-    		componentparentid,
-		componentdescription, 
-    		cp.createdat  at time zone 'utc',
-    		ur.useruuid as createdby,
-    		cp.updatedat  at time zone 'utc',
-    		us.useruuid as updatedby 
-    FROM Components cp
-    join users ur on cp.createdby = ur.userid
-    left outer join users us on cp.updatedby = ur.userid
-    WHERE componentname = vCompName;
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetComponentByName'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+	
+	RETURN QUERY (SELECT  	componentuuid,
+				componentname,
+				componentparentid,
+				componentdescription, 
+				cp.createdat  at time zone 'utc',
+				cp.createdby,
+				cp.updatedat  at time zone 'utc',
+				cp.updatedby 
+		    FROM Components cp
+		    WHERE componentname = vCompName
+		 );
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1630,27 +1871,42 @@ Get all Tags
 Input paramteres: none	
 Return Value: Table with all Tags 
 ######################################################*/
-CREATE FUNCTION GetAllTags(vUserUUID uuid) 
+CREATE FUNCTION GetAllTags(vRoleName varchar) 
 	RETURNS TABLE
     	(
-    taguuid uuid,
-    tagname character varying(250),    
-    createdat timestamp  with time zone,
-    createdby uuid,
-    updatedat timestamp  with time zone,
-    updatedby uuid
+	    taguuid uuid,
+	    tagname character varying(250),    
+	    createdat timestamp  with time zone,
+	    createdby uuid,
+	    updatedat timestamp  with time zone,
+	    updatedby uuid
         )
     AS $$ 
-	SELECT  taguuid,
-    		tagname, 
-    		tg.createdat  at time zone 'utc',
-    		ur.useruuid as createdby,
-    		tg.updatedat  at time zone 'utc',
-    		us.useruuid as updatedby 
-    FROM tags tg
-    join users ur on tg.createdby = ur.userid
-    left outer join users us on tg.updatedby = ur.userid
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetAllTags'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (SELECT  taguuid,
+				tagname, 
+				tg.createdat  at time zone 'utc',
+				tg.createdby,
+				tg.updatedat  at time zone 'utc',
+				tg.updatedby 
+		    FROM tags tg 
+		  );
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1661,28 +1917,43 @@ Get a Tag
 Input paramteres: TagUUID: uuid	
 Return Value: Table with all Tags 
 ######################################################*/
-CREATE FUNCTION GetTagByID(vTagID uuid, vUserUUID uuid) 
+CREATE FUNCTION GetTagByID(vTagID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
-    taguuid uuid,
-    tagname character varying(250),    
-    createdat timestamp  with time zone,
-    createdby uuid,
-    updatedat timestamp  with time zone,
-    updatedby uuid
+	    taguuid uuid,
+	    tagname character varying(250),    
+	    createdat timestamp  with time zone,
+	    createdby uuid,
+	    updatedat timestamp  with time zone,
+	    updatedby uuid
         )
     AS $$ 
-	SELECT  taguuid,
-    		tagname, 
-    		tg.createdat  at time zone 'utc',
-    		ur.useruuid as createdby,
-    		tg.updatedat  at time zone 'utc',
-    		us.useruuid as updatedby 
-    FROM tags tg
-    join users ur on tg.createdby = ur.userid
-    left outer join users us on tg.updatedby = ur.userid
-    WHERE tagUUID = vTagID;
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetTagByID'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (SELECT  taguuid,
+				tagname, 
+				tg.createdat  at time zone 'utc',
+				tg.createdby,
+				tg.updatedat  at time zone 'utc',
+				tg.updatedby 
+		    FROM tags tg 
+		    WHERE tagUUID = vTagID
+		  );
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1693,28 +1964,43 @@ Get a Tag
 Input paramteres: TagName: string
 Return Value: Table with all Tags 
 ######################################################*/
-CREATE FUNCTION GetTagByName(vTagName varchar(250), vUserUUID uuid) 
+CREATE FUNCTION GetTagByName(vTagName varchar(250), vRoleName varchar) 
 	RETURNS TABLE
     	(
-    taguuid uuid,
-    tagname character varying(250),    
-    createdat timestamp  with time zone,
-    createdby uuid,
-    updatedat timestamp  with time zone,
-    updatedby uuid
+	    taguuid uuid,
+	    tagname character varying(250),    
+	    createdat timestamp  with time zone,
+	    createdby uuid,
+	    updatedat timestamp  with time zone,
+	    updatedby uuid
         )
     AS $$ 
-	SELECT  taguuid,
-    		tagname, 
-    		tg.createdat  at time zone 'utc',
-    		ur.useruuid as createdby,
-    		tg.updatedat  at time zone 'utc',
-    		us.useruuid as updatedby 
-    FROM tags tg
-    join users ur on tg.createdby = ur.userid
-    left outer join users us on tg.updatedby = ur.userid
-	WHERE tagName = vTagName;
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetTagByName'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (SELECT  taguuid,
+				tagname, 
+				tg.createdat  at time zone 'utc',
+				tg.createdby,
+				tg.updatedat  at time zone 'utc',
+				tg.updatedby 
+		    FROM tags tg 
+		    WHERE tagName = vTagName
+		  );
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1725,7 +2011,7 @@ Get all Technologies
 Input paramteres: none	
 Return Value: Table with all Technologies
 ######################################################*/
-CREATE FUNCTION GetAllTechnologies(vUserUUID uuid) 
+CREATE FUNCTION GetAllTechnologies(vRoleName varchar) 
 	RETURNS TABLE
     	(
     technologyuuid uuid,
@@ -1737,17 +2023,32 @@ CREATE FUNCTION GetAllTechnologies(vUserUUID uuid)
     updatedby uuid
         )
     AS $$ 
-	SELECT  technologyuuid,
-    		technologyname, 
-		technologydescription, 
-    		tg.createdat at time zone 'utc',
-    		ur.useruuid as createdby,
-    		tg.updatedat at time zone 'utc',
-    		us.useruuid as updatedby 
-    FROM Technologies tg
-    JOIN users ur ON tg.createdby = ur.userid
-    LEFT OUTER JOIN users us ON tg.updatedby = us.userid
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetAllTechnologies'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN 
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (SELECT  technologyuuid,
+				technologyname, 
+				technologydescription, 
+				tg.createdat at time zone 'utc',
+				tg.createdby,
+				tg.updatedat at time zone 'utc',
+				tg.updatedby 
+		    FROM Technologies tg 
+		 );
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1758,7 +2059,7 @@ Get all Technologies
 Input paramteres: TechnologyUUID: uuid	
 Return Value: Table with the Technology filter by TechnologyUUID
 ######################################################*/
-CREATE FUNCTION GetTechnologyByID(vtechUUID uuid, vUserUUID uuid) 
+CREATE FUNCTION GetTechnologyByID(vtechUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     technologyuuid uuid,
@@ -1770,18 +2071,31 @@ CREATE FUNCTION GetTechnologyByID(vtechUUID uuid, vUserUUID uuid)
     updatedby uuid
         )
     AS $$ 
-	SELECT  technologyuuid,
-    		technologyname, 
-		technologydescription, 
-    		tg.createdat at time zone 'utc',
-    		ur.useruuid as createdby,
-    		tg.updatedat at time zone 'utc',
-    		us.useruuid as updatedby 
-    FROM Technologies tg
-    JOIN users ur ON tg.createdby = ur.userid
-    LEFT OUTER JOIN users us ON tg.updatedby = us.userid
-	WHERE technologyuuid = vtechUUID;
-    $$ LANGUAGE SQL;
+	DECLARE
+		vFunctionName varchar := 'GetTechnologyByName'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN 
+
+	IF(vIsAllowed) THEN 
+
+	RETURN QUERY (SELECT  technologyuuid,
+			technologyname, 
+			technologydescription, 
+			tg.createdat at time zone 'utc',
+			tg.createdby,
+			tg.updatedat at time zone 'utc',
+			tg.updatedby 
+		FROM Technologies tg  
+		WHERE technologyuuid = vtechUUID
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1792,7 +2106,7 @@ Get all Technologies
 Input paramteres: TechnologyName: string
 Return Value: Table with the Technology filter by TechnologyName
 ######################################################*/
-CREATE FUNCTION GetTechnologyByName(vtechName varchar, vUserUUID uuid) 
+CREATE FUNCTION GetTechnologyByName(vtechName varchar, vRoleName varchar) 
 	RETURNS TABLE
     	(
     technologyuuid uuid,
@@ -1804,18 +2118,33 @@ CREATE FUNCTION GetTechnologyByName(vtechName varchar, vUserUUID uuid)
     updatedby uuid
         )
     AS $$ 
-	SELECT  technologyuuid,
-    		technologyname, 
-			technologydescription, 
-    		tg.createdat at time zone 'utc',
-    		ur.useruuid as createdby,
-    		tg.updatedat at time zone 'utc',
-    		us.useruuid as updatedby 
-    FROM Technologies tg
-    JOIN users ur ON tg.createdby = ur.userid
-    LEFT OUTER JOIN users us ON tg.updatedby = us.userid
-	WHERE technologyname = vtechName;
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetTechnologyByName'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN 
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (SELECT  technologyuuid,
+				technologyname, 
+				technologydescription, 
+				tg.createdat at time zone 'utc',
+				tg.createdby,
+				tg.updatedat at time zone 'utc',
+				tg.updatedby 
+		    FROM Technologies tg 
+		    WHERE technologyname = vtechName
+		 );
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $$ LANGUAGE 'plpgsql';
 /*##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1834,189 +2163,100 @@ CREATE OR REPLACE FUNCTION public.gettechnologydatabyparams(
     out result json)
 	AS
 $BODY$	 
-		 ;with tg as (
-			select tg.tagid, tg.tagname from tags tg
-			join technologydatatags ts
-			on tg.tagid = ts.tagid
-			join technologydata td
-			on ts.technologydataid = td.technologydataid
-			join technologies tt 
-			on td.technologyid = tt.technologyid 			
-			group by tg.tagid, tg.tagname
-		),
-		 att as (
-			select ab.attributeid, attributename from components co
-			join componentsattribute ca on
-			co.componentid = ca.componentid
-			join attributes ab on
-			ca.attributeid = ab.attributeid
-			join technologydatacomponents tc
-			on tc.componentid = co.componentid			 
-			group by ab.attributeid 
-		), 
-		comp as (
-		select co.componentuuid, co.componentid, co.componentname, array_to_json(array_agg(t.*)) as attributes from att t
-		join componentsattribute ca on t.attributeid = ca.attributeid
-		join components co on co.componentid = ca.componentid
-		group by co.componentname, co.componentid, co.componentuuid
-		),
-		techData as (	
-			select td.technologydatauuid,
-				td.technologydataname,
-				tt.technologyuuid,
-				td.technologydata,
-				td.licensefee,
-				td.retailprice,
-				td.licenseproductcode,
-				td.technologydatadescription,
-				td.technologydatathumbnail,
-				td.technologydataimgref,
-				td.createdat at time zone 'utc',
-				us.useruuid as CreatedBy,
-				td.updatedat at time zone 'utc',
-				ur.useruuid as UpdatedBy,
-				array_to_json(array_agg(co.*)) ComponentsWithAttribute
-			from comp co join technologydatacomponents tc
-			on co.componentid = tc.componentid
-			join technologydata td on
-			td.technologydataid = tc.technologydataid
-			join components cm on cm.componentid = co.componentid  
-			join technologies tt on 
-			tt.technologyid = td.technologyid
-			join users us on us.userid = td.createdby
-			left outer join users ur on ur.userid = td.updatedby
-			group by td.technologydatauuid,
-				td.technologydataname,
-				tt.technologyuuid,
-				td.technologydata,
-				td.licensefee,
-				td.retailprice,
-				td.licenseproductcode,
-				td.technologydatadescription,
-				td.technologydatathumbnail,
-				td.technologydataimgref,
-				td.createdat,				
-				us.useruuid,
-				td.updatedat,
-				ur.useruuid	
-		),
-		compIn as (
-			select	technologydataname, array_agg(componentuuid order by componentuuid asc) comp 
-			from components co
-			join technologydatacomponents tc
-			on co.componentid = tc.componentid
-			join technologydata td on
-			td.technologydataid = tc.technologydataid
-			group by technologydataname	 			
-		)
-		select array_to_json(array_agg(td.*)) from techData	td
-		join compIn co on co.technologydataname = td.technologydataname
-		where co.comp::text[] <@ vComponents;
+
+	DECLARE
+		vFunctionName varchar := 'GetTechnologyDataByParams'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN   
+
+	IF(vIsAllowed) THEN  
+	
+	 	 with tg as (
+				select tg.tagid, tg.tagname from tags tg
+				join technologydatatags ts
+				on tg.tagid = ts.tagid
+				join technologydata td
+				on ts.technologydataid = td.technologydataid
+				join technologies tt 
+				on td.technologyid = tt.technologyid 			
+				group by tg.tagid, tg.tagname
+			),
+			 att as (
+				select ab.attributeid, attributename from components co
+				join componentsattribute ca on
+				co.componentid = ca.componentid
+				join attributes ab on
+				ca.attributeid = ab.attributeid
+				join technologydatacomponents tc
+				on tc.componentid = co.componentid			 
+				group by ab.attributeid 
+			), 
+			comp as (
+			select co.componentuuid, co.componentid, co.componentname, array_to_json(array_agg(t.*)) as attributes from att t
+			join componentsattribute ca on t.attributeid = ca.attributeid
+			join components co on co.componentid = ca.componentid
+			group by co.componentname, co.componentid, co.componentuuid
+			),
+			techData as (	
+				select td.technologydatauuid,
+					td.technologydataname,
+					tt.technologyuuid,
+					td.technologydata,
+					td.licensefee,
+					td.retailprice,
+					td.licenseproductcode,
+					td.technologydatadescription,
+					td.technologydatathumbnail,
+					td.technologydataimgref,
+					td.createdat at time zone 'utc',
+					co.CreatedBy,
+					td.updatedat at time zone 'utc',
+					co.UpdatedBy,
+					array_to_json(array_agg(co.*)) ComponentsWithAttribute
+				from comp co join technologydatacomponents tc
+				on co.componentid = tc.componentid
+				join technologydata td on
+				td.technologydataid = tc.technologydataid
+				join components cm on cm.componentid = co.componentid  
+				join technologies tt on 
+				tt.technologyid = td.technologyid
+				group by td.technologydatauuid,
+					td.technologydataname,
+					tt.technologyuuid,
+					td.technologydata,
+					td.licensefee,
+					td.retailprice,
+					td.licenseproductcode,
+					td.technologydatadescription,
+					td.technologydatathumbnail,
+					td.technologydataimgref,
+					td.createdat,				
+					co.useruuid,
+					td.updatedat,
+					co.useruuid	
+			),
+			compIn as (
+				select	technologydataname, array_agg(componentuuid order by componentuuid asc) comp 
+				from components co
+				join technologydatacomponents tc
+				on co.componentid = tc.componentid
+				join technologydata td on
+				td.technologydataid = tc.technologydataid
+				group by technologydataname	 			
+			)
+			select array_to_json(array_agg(td.*)) from techData	td
+			join compIn co on co.technologydataname = td.technologydataname
+			where co.comp::text[] <@ vComponents;
+		 
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
 		$BODY$
-  LANGUAGE sql VOLATILE
-  COST 100;
-/* ##########################################################################
--- Author: Marcel Ely Gomes 
--- Company: Trumpf Werkzeugmaschine GmbH & Co KG
--- CreatedAt: 2017-02-23
--- Description: Script to get all users
--- ##########################################################################
-Get all Users
-Input paramteres: none
-Return Value: Table with all users
-######################################################*/
-CREATE OR REPLACE FUNCTION GetAllUsers(vUserUUID uuid) 
-	RETURNS TABLE
-    	(
-    useruuid uuid,
-    userfirstname character varying(250),
-    userlastname character varying(250),            
-    useremail character varying(250),  
-    thumbnail bytea,
-    imgpath character varying(250), 
-    createdat timestamp  with time zone,       
-    updatedat timestamp  with time zone
-        )
-    AS $$ 
-	SELECT  useruuid uuid,
-		userfirstname,
-		userlastname,            
-		useremail, 
-		thumbnail,
-		imgpath,           
-		createdat at time zone 'utc',       
-		updatedat at time zone 'utc'
-    FROM Users;
-    $$ LANGUAGE SQL;
-/* ##########################################################################
--- Author: Marcel Ely Gomes 
--- Company: Trumpf Werkzeugmaschine GmbH & Co KG
--- CreatedAt: 2017-02-23
--- Description: Script to user by useruuid
--- ##########################################################################
-Get a User based on the given useruuid
-Input paramteres: UserUUID uuid
-Return Value: Table with a user
-######################################################*/
-CREATE FUNCTION GetUserByID(vUserUUID uuid, vUserRequesterUUID uuid) 
-	RETURNS TABLE
-    	(
-    useruuid uuid,
-    userfirstname character varying(250),
-    userlastname character varying(250),            
-    useremail character varying(250),  
-    thumbnail bytea,
-    imgpath character varying(250), 
-    createdat timestamp  with time zone,       
-    updatedat timestamp  with time zone
-        )
-    AS $$ 
-	SELECT  useruuid uuid,
-		userfirstname,
-		userlastname,            
-		useremail, 
-		thumbnail,
-		imgpath,           
-		createdat at time zone 'utc',       
-		updatedat at time zone 'utc'
-    FROM Users WHERE UserUUID = vUserUUID;
-    $$ LANGUAGE SQL;
-/* ##########################################################################
--- Author: Marcel Ely Gomes 
--- Company: Trumpf Werkzeugmaschine GmbH & Co KG
--- CreatedAt: 2017-02-23
--- Description: Script to user by user name
--- ##########################################################################
-Get all Users based on the given user fistname or lastname
-Input paramteres: UserFirstName  varchar(250) OR
-		  UserLastName  varchar(250) 		
-Return Value: Table with all users that match the input parameters
-######################################################*/
- CREATE FUNCTION GetUserByName(vUserFirstName varchar(250), vUserLastName varchar(250), vUserUUID uuid) 
-	RETURNS TABLE
-    	(
-    useruuid uuid,
-    userfirstname character varying(250),
-    userlastname character varying(250),            
-    useremail character varying(250),  
-    thumbnail bytea,
-    imgpath character varying(250), 
-    createdat timestamp  with time zone,       
-    updatedat timestamp  with time zone
-        )
-    AS $$ 
-	SELECT  useruuid uuid,
-		userfirstname,
-		userlastname,            
-		useremail, 
-		thumbnail,
-		imgpath,           
-		createdat at time zone 'utc',       
-		updatedat at time zone 'utc'
-	FROM Users
-	WHERE 	(vUserFirstName IS NULL OR users.userfirstname = vUserFirstName)
-	AND 	(vUserLastName IS NULL OR users.userlastname = vUserLastName);
-    $$ LANGUAGE SQL;
+  LANGUAGE 'plpgsql';   
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2027,7 +2267,7 @@ Get all offers
 Input paramteres: none		
 Return Value: Table with all offers
 ######################################################*/
-CREATE FUNCTION GetAllOffers(vUserUUID uuid) 
+CREATE FUNCTION GetAllOffers(vRoleName varchar) 
 	RETURNS TABLE
     	(
     offeruuid uuid,    
@@ -2036,14 +2276,30 @@ CREATE FUNCTION GetAllOffers(vUserUUID uuid)
     createdby uuid
         )
     AS $$ 
-	SELECT  offeruuid,                
-	        paymentinvoiceuuid,
-	        offr.createdat at time zone 'utc',
-	        ur.useruuid as createdby
-	FROM offer offr JOIN
-	paymentinvoice pi ON offr.paymentinvoiceid = pi.paymentinvoiceid	 
-	JOIN Users ur ON offr.createdby = ur.userid
-    $$ LANGUAGE SQL; 
+
+	DECLARE
+		vFunctionName varchar := 'GetAllOffers'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+	
+	RETURN QUERY (SELECT  offeruuid,                
+				paymentinvoiceuuid,
+				offr.createdat at time zone 'utc',
+				offr.createdby
+			FROM offer offr JOIN
+			paymentinvoice pi ON offr.paymentinvoiceid = pi.paymentinvoiceid 
+		);
+		
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $$ LANGUAGE 'plpgsql';  
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2054,7 +2310,7 @@ Get all attributes
 Input paramteres: none		
 Return Value: Table with all attributes
 ######################################################*/
-CREATE FUNCTION GetAllAttributes(vUserUUID uuid) 
+CREATE FUNCTION GetAllAttributes(vRoleName varchar) 
 	RETURNS TABLE
     	(
     attributeuuid uuid,    
@@ -2065,16 +2321,31 @@ CREATE FUNCTION GetAllAttributes(vUserUUID uuid)
     updatedby uuid
         )
     AS $$ 
-	SELECT  attributeuuid,                
-	        attributename,
-	        att.createdat at time zone 'utc',
-	        ur.useruuid as createdby,
-	        att.updatedat at time zone 'utc',
-	        us.useruuid as updatedby
-	FROM attributes att
-	JOIN users ur ON att.createdby = ur.userid 
-	LEFT OUTER JOIN users us ON att.updatedby = us.userid    
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetAllAttributes'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY	(SELECT  attributeuuid,                
+				attributename,
+				att.createdat at time zone 'utc',
+				att.createdby,
+				att.updatedat at time zone 'utc',
+				att.updatedby
+			FROM attributes att 
+		);   
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+
+	END; 
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2084,7 +2355,7 @@ CREATE FUNCTION GetAllAttributes(vUserUUID uuid)
 Input paramteres: attributeUUID uuid		
 Return Value: Table with a attribute
 ######################################################*/
-CREATE FUNCTION GetAttributeByID(vAttrUUID uuid, vUserUUID uuid) 
+CREATE FUNCTION GetAttributeByID(vAttrUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     attributeuuid uuid,    
@@ -2095,17 +2366,32 @@ CREATE FUNCTION GetAttributeByID(vAttrUUID uuid, vUserUUID uuid)
     updatedby uuid
         )
     AS $$ 
-	SELECT  attributeuuid,                
-	        attributename,
-	        att.createdat at time zone 'utc',
-	        ur.useruuid as createdby,
-	        att.updatedat at time zone 'utc',
-	        us.useruuid as updatedby
-	FROM attributes att
-	JOIN users ur ON att.createdby = ur.userid 
-	LEFT OUTER JOIN users us ON att.updatedby = us.userid 
-	WHERE attributeUUID = vAttrUUID;
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetAttributeByID'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY	(SELECT  attributeuuid,                
+				attributename,
+				att.createdat at time zone 'utc',
+				att.createdby,
+				att.updatedat at time zone 'utc',
+				att.updatedby
+			FROM attributes att 
+			WHERE attributeUUID = vAttrUUID
+		);   
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+
+	END; 
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2115,7 +2401,7 @@ CREATE FUNCTION GetAttributeByID(vAttrUUID uuid, vUserUUID uuid)
 Input paramteres: attributeName varchar(250)
 Return Value: Table with a attribute
 ######################################################*/
-CREATE FUNCTION GetAttributeByName(vAttrName varchar(250), vUserUUID uuid) 
+CREATE FUNCTION GetAttributeByName(vAttrName varchar(250), vRoleName varchar) 
 	RETURNS TABLE
     	(
     attributeuuid uuid,    
@@ -2126,17 +2412,32 @@ CREATE FUNCTION GetAttributeByName(vAttrName varchar(250), vUserUUID uuid)
     updatedby uuid
         )
     AS $$ 
-	SELECT  attributeuuid,                
-	        attributename,
-	        att.createdat at time zone 'utc',
-	        ur.useruuid as createdby,
-	        att.updatedat at time zone 'utc',
-	        us.useruuid as updatedby
-	FROM attributes att
-	JOIN users ur ON att.createdby = ur.userid 
-	LEFT OUTER JOIN users us ON att.updatedby = us.userid 
-	WHERE attributeName = vAttrName;
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetAttributeByName'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY	(SELECT  attributeuuid,                
+				attributename,
+				att.createdat at time zone 'utc',
+				att.createdby,
+				att.updatedat at time zone 'utc',
+				att.updatedby
+			FROM attributes att 
+			WHERE attributeName = vAttrName
+		);   
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+
+	END; 
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2156,17 +2457,32 @@ CREATE FUNCTION GetOfferByRequestID(vRequestID uuid, vUserUUID uuid)
     createdby uuid 
         )
     AS $$ 
-	SELECT  ofr.offeruuid,                
-	        pm.paymentinvoiceuuid,
-	        ofr.createdat at time zone 'utc',
-	        ur.useruuid
-	FROM offer ofr 	
-	JOIN paymentinvoice pm 
-	ON ofr.paymentinvoiceid = pm.paymentinvoiceid
-	JOIN users ur 
-	ON ofr.createdby = ur.userid	
-	WHERE pm.offerrequestid = (select offerrequest.offerrequestid from offerrequest where offerrequestuuid = vRequestID)
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetOfferByRequestID'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (SELECT  ofr.offeruuid,                
+				pm.paymentinvoiceuuid,
+				ofr.createdat at time zone 'utc',
+				ofr.createdby
+			FROM offer ofr 	
+			JOIN paymentinvoice pm 
+			ON ofr.paymentinvoiceid = pm.paymentinvoiceid
+			WHERE pm.offerrequestid = (select offerrequest.offerrequestid from offerrequest where offerrequestuuid = vRequestID)
+		);
+		
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+   $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2177,7 +2493,7 @@ Get a offer
 Input paramteres: OfferUUID uuid		
 Return Value: Table with a offer
 ######################################################*/
-CREATE FUNCTION GetOfferByID(vOfferID uuid, vUserUUID uuid) 
+CREATE FUNCTION GetOfferByID(vOfferID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     offeruuid uuid, 
@@ -2186,17 +2502,31 @@ CREATE FUNCTION GetOfferByID(vOfferID uuid, vUserUUID uuid)
     createdby uuid
         )
     AS $$ 
-	SELECT  ofr.offeruuid,                
-	        pm.paymentinvoiceuuid,
-	        ofr.createdat at time zone 'utc',
-	        ur.useruuid
-	FROM offer ofr 	
-	JOIN paymentinvoice pm 
-	ON ofr.paymentinvoiceid = pm.paymentinvoiceid
-	JOIN users ur 
-	ON ofr.createdby = ur.userid	
-	WHERE ofr.offeruuid = vOfferID
-    $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetOfferByID'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+	
+	RETURN QUERY (SELECT  ofr.offeruuid,                
+				pm.paymentinvoiceuuid,
+				ofr.createdat at time zone 'utc',
+				ofr.createdby
+			FROM offer ofr 	
+			JOIN paymentinvoice pm 
+			ON ofr.paymentinvoiceid = pm.paymentinvoiceid
+			WHERE ofr.offeruuid = vOfferID
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+    $$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2324,25 +2654,40 @@ CREATE FUNCTION DateDiff (units VARCHAR(30), start_t TIMESTAMP, end_t TIMESTAMP)
 Input paramteres: vTime  timestamp
 Return Value: Amount of activated licenses 
 ######################################################*/
-CREATE FUNCTION GetActivatedLicensesSince (vTime timestamp, vUserUUID uuid)
+CREATE FUNCTION GetActivatedLicensesSince (vTime timestamp, vRoleName varchar)
 RETURNS integer AS
 $$ 
-	;with activatedLinceses as(
-		select * from licenseorder lo
-		join offer of on lo.offerid = of.offerid
-		join paymentinvoice pi on
-		of.paymentinvoiceid = pi.paymentinvoiceid
-		join offerrequest oq on
-		pi.offerrequestid = oq.offerrequestid
-		join technologydata td on
-		oq.technologydataid = td.technologydataid
-		)
-	select count(*)::integer from activatedLinceses	where 
-	(select datediff('second',vTime::timestamp,activatedat::timestamp)) >= 0 AND
-	(select datediff('minute',vTime::timestamp,activatedat::timestamp)) >= 0 AND
-	(select datediff('hour',vTime::timestamp,activatedat::timestamp)) >= 0;
+	DECLARE
+		vFunctionName varchar := 'GetActivatedLicensesSince'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+		with activatedLinceses as(
+			select * from licenseorder lo
+			join offer of on lo.offerid = of.offerid
+			join paymentinvoice pi on
+			of.paymentinvoiceid = pi.paymentinvoiceid
+			join offerrequest oq on
+			pi.offerrequestid = oq.offerrequestid
+			join technologydata td on
+			oq.technologydataid = td.technologydataid
+			)
+		select count(*)::integer from activatedLinceses	where 
+		(select datediff('second',vTime::timestamp,activatedat::timestamp)) >= 0 AND
+		(select datediff('minute',vTime::timestamp,activatedat::timestamp)) >= 0 AND
+		(select datediff('hour',vTime::timestamp,activatedat::timestamp)) >= 0;
+	
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN null;
+	END IF; 
+
+	END;
  
-$$ LANGUAGE SQL;
+$$ LANGUAGE 'plpgsql';
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2353,34 +2698,44 @@ Input paramteres: vSinceDate  timestamp
 				  vTopValue integer
 Return Value: TechnologyDataName, Rank value 
 ######################################################*/
--- Function: public.gettoptechnologydatasince(timestamp without time zone, integer, uuid)
-
--- DROP FUNCTION public.gettoptechnologydatasince(timestamp without time zone, integer, uuid);
-
 CREATE OR REPLACE FUNCTION public.gettoptechnologydatasince(
     IN vsincedate timestamp without time zone,
     IN vtopvalue integer,
-    IN vuseruuid uuid)
+    IN vRoleName varchar)
   RETURNS TABLE(technologydataname character varying, rank integer, revenue numeric) AS
-$BODY$	 
-	select technologydataname, count(ts.offerid)::integer, (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
-	join licenseorder lo
-	on ts.offerid = lo.offerid
-	join offerrequest oq 
-	on oq.offerrequestid = ts.offerrequestid
-	join technologydata td
-	on oq.technologydataid = td.technologydataid
-	where (select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
-	(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
-	(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
-	group by technologydataname
-	order by count(ts.offerid) desc limit vTopValue;
-$BODY$
-  LANGUAGE sql VOLATILE
-  COST 100
-  ROWS 1000;
-ALTER FUNCTION public.gettoptechnologydatasince(timestamp without time zone, integer, uuid)
-  OWNER TO postgres;
+$BODY$	
+
+	DECLARE
+		vFunctionName varchar := 'GetTopTechnologyDataSince'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+
+	RETURN QUERY (	select technologydataname, count(ts.offerid)::integer, (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+			join licenseorder lo
+			on ts.offerid = lo.offerid
+			join offerrequest oq 
+			on oq.offerrequestid = ts.offerrequestid
+			join technologydata td
+			on oq.technologydataid = td.technologydataid
+			where (select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+			group by technologydataname
+			order by count(ts.offerid) desc limit vTopValue
+		);
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+
+	END;
+			
+	$BODY$
+	  LANGUAGE 'plpgsql';  
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2394,36 +2749,52 @@ Return Value: ComponentName, Amount
 CREATE FUNCTION GetMostUsedComponents(
 		vSinceDate timestamp without time zone,
 		vTopValue integer,
-		vUserUUID uuid
+		vRoleName varchar
 	)
 RETURNS TABLE (
 	ComponentName varchar(250),
 	Amount integer
 ) AS
 $$
-	;with activatedLinceses as(
-		select * from licenseorder lo
-		join offer of on lo.offerid = of.offerid
-		join paymentinvoice pi on
-		of.paymentinvoiceid = pi.paymentinvoiceid
-		join offerrequest oq on
-		pi.offerrequestid = oq.offerrequestid
-		join technologydata td on
-		oq.technologydataid = td.technologydataid
-		join technologydatacomponents tc on 
-		tc.technologydataid = td.technologydataid
-		join components co on 
-		co.componentid = tc.componentid
-		),
-	rankTable as (
-	select componentname, count(componentname) as rank from activatedLinceses where 
-	(select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
-	(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
-	(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
-	group by componentname)
-	select componentname::varchar(250), rank::integer from rankTable
-	order by rank desc limit vTopValue;	
- $$ LANGUAGE SQL;
+
+	DECLARE
+		vFunctionName varchar := 'GetMostUsedComponents'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+	
+		with activatedLinceses as(
+			select * from licenseorder lo
+			join offer of on lo.offerid = of.offerid
+			join paymentinvoice pi on
+			of.paymentinvoiceid = pi.paymentinvoiceid
+			join offerrequest oq on
+			pi.offerrequestid = oq.offerrequestid
+			join technologydata td on
+			oq.technologydataid = td.technologydataid
+			join technologydatacomponents tc on 
+			tc.technologydataid = td.technologydataid
+			join components co on 
+			co.componentid = tc.componentid
+			),
+		rankTable as (
+		select componentname, count(componentname) as rank from activatedLinceses where 
+		(select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+		(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+		(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+		group by componentname)
+		select componentname::varchar(250), rank::integer from rankTable
+		order by rank desc limit vTopValue;	
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+ $$ LANGUAGE 'plpgsql';
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2433,9 +2804,9 @@ $$
 Input paramteres: vSinceDate  timestamp 
 Return Value: TechnologyDataName, Date, Amount, DayHour
 ######################################################*/
- CREATE OR REPLACE FUNCTION GetWorkloadSince(
+CREATE OR REPLACE FUNCTION GetWorkloadSince(
 		vSinceDate timestamp without time zone,
-		vUserUUID uuid		
+		vRoleName varchar	
 	)
 RETURNS TABLE (
 	  TechnologyDataName varchar(250),
@@ -2444,30 +2815,45 @@ RETURNS TABLE (
 	  DayHour integer
 	) AS
 $$
-	;with activatedLicenses as(
-		select * from licenseorder lo
-		join offer of on lo.offerid = of.offerid
-		join paymentinvoice pi on
-		of.paymentinvoiceid = pi.paymentinvoiceid
-		join offerrequest oq on
-		pi.offerrequestid = oq.offerrequestid
-		join technologydata td on
-		oq.technologydataid = td.technologydataid
-		join technologydatacomponents tc on 
-		tc.technologydataid = td.technologydataid
-		),
-	rankTable as (
-	select technologydataname, activatedat, 
-	activatedat::date as dateValue, 
-	date_part('hour',activatedat) as dayhour from activatedLicenses where 
-	(select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
-	(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
-	(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
-	group by technologydataname, activatedat )
-	select technologydataname, dateValue, count(dayhour)::integer as amount, dayhour::integer from rankTable		
-	group by technologydataname,dateValue, dayhour	 
-	order by dayhour asc;	
-$$ LANGUAGE SQL; 
+
+	DECLARE
+		vFunctionName varchar := 'GetWorkloadSince'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+
+			with activatedLicenses as(
+				select * from licenseorder lo
+				join offer of on lo.offerid = of.offerid
+				join paymentinvoice pi on
+				of.paymentinvoiceid = pi.paymentinvoiceid
+				join offerrequest oq on
+				pi.offerrequestid = oq.offerrequestid
+				join technologydata td on
+				oq.technologydataid = td.technologydataid
+				join technologydatacomponents tc on 
+				tc.technologydataid = td.technologydataid
+				),
+			rankTable as (
+			select technologydataname, activatedat, 
+			activatedat::date as dateValue, 
+			date_part('hour',activatedat) as dayhour from activatedLicenses where 
+			(select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+			group by technologydataname, activatedat )
+			select technologydataname, dateValue, count(dayhour)::integer as amount, dayhour::integer from rankTable		
+			group by technologydataname,dateValue, dayhour	 
+			order by dayhour asc;	
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+
+	END;
+$$ LANGUAGE 'plpgsql'; 
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2488,17 +2874,32 @@ RETURNS TABLE (
 	CreatedBy uuid
 	) AS 
 $$	 
-	select 	pi.paymentinvoiceuuid,
-		oq.offerrequestuuid,
-		pi.invoice,		
-		pi.createdat at time zone 'utc',
-		us.useruuid as createdby
-	from PaymentInvoice pi
-	join offerrequest oq 
-	on pi.offerrequestid = oq.offerrequestid
-	join users us on us.userid = pi.createdby
-	where oq.offerRequestUUID = vOfferRequestUUID
-$$ LANGUAGE SQL; 
+
+	DECLARE
+		vFunctionName varchar := 'GetPaymentInvoiceForOfferRequest'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+	
+	RETURN QUERY (select 	pi.paymentinvoiceuuid,
+							oq.offerrequestuuid,
+							pi.invoice,		
+							pi.createdat at time zone 'utc',
+							pi.createdby
+				from PaymentInvoice pi
+				join offerrequest oq 
+				on pi.offerrequestid = oq.offerrequestid 
+				where oq.offerRequestUUID = vOfferRequestUUID
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2509,7 +2910,7 @@ Input paramteres: vPaymentInvoiceUUID uuid
 ######################################################*/
 CREATE FUNCTION GetOfferForPaymentInvoice(
 		vPaymentInvoiceUUID uuid,
-		vUserUUID uuid
+		vRoleName varchar
 	)
 RETURNS TABLE (
 	OfferUUID uuid,
@@ -2518,15 +2919,30 @@ RETURNS TABLE (
 	CreatedBy uuid
 	) AS 
 $$	 
-	select 	ofr.offerUUID,
-		pi.PaymentInvoiceUUID,			
-		pi.createdat at time zone 'utc',
-		us.useruuid as createdby
-	from Offer ofr
-	join paymentinvoice pi 
-	on ofr.paymentinvoiceid = pi.paymentinvoiceid
-	join users us on us.userid = ofr.createdby	
-$$ LANGUAGE SQL; 
+	DECLARE
+		vFunctionName varchar := 'GetOfferForPaymentInvoice'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (select 	ofr.offerUUID,
+				pi.PaymentInvoiceUUID,			
+				pi.createdat at time zone 'utc',
+				ofr.createdby
+			from Offer ofr
+			join paymentinvoice pi 
+			on ofr.paymentinvoiceid = pi.paymentinvoiceid 
+		);
+		
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+
+	END;
+$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2537,7 +2953,7 @@ Input paramteres: vTechnologyUUID uuid
 ######################################################*/
 CREATE FUNCTION GetComponentsByTechnology(
 		vTechnologyUUID uuid,
-		vUserUUID uuid
+		vRoleName varchar
 	)
 RETURNS TABLE (
 		ComponentUUID uuid,		
@@ -2551,26 +2967,40 @@ RETURNS TABLE (
 		Useruuid uuid
 	) AS 
 $$	 
-	select 	co.componentUUID,		
-		co.componentName,
-		cs.componentUUID as componentParentUUID, 
-		cs.componentName as componentParentName,
-		co.componentDescription,
-		co.createdat at time zone 'utc',
-		us.useruuid as createdby,
-		co.updatedat at time zone 'utc',
-		ur.useruuid as updatedby
-	from components co
-	join componentstechnologies ct
-	on co.componentid = ct.componentid
-	join technologies tc
-	on tc.technologyid = ct.technologyid
-	join users us on us.userid = co.createdby
-	left outer join users ur on ur.userid = co.updatedby
-	left outer join components cs 
-	on co.componentparentid = cs.componentid
-	where tc.technologyuuid = vTechnologyUUID	
-$$ LANGUAGE SQL; 
+	DECLARE
+		vFunctionName varchar := 'GetComponentsByTechnology'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+	
+	RETURN QUERY (select 	co.componentUUID,		
+			co.componentName,
+			cs.componentUUID as componentParentUUID, 
+			cs.componentName as componentParentName,
+			co.componentDescription,
+			co.createdat at time zone 'utc',
+			co.createdby,
+			co.updatedat at time zone 'utc',
+			co.updatedby
+			from components co
+			join componentstechnologies ct
+			on co.componentid = ct.componentid
+			join technologies tc
+			on tc.technologyid = ct.technologyid 
+			left outer join components cs 
+			on co.componentparentid = cs.componentid
+			where tc.technologyuuid = vTechnologyUUID
+		);
+		
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;		
+$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2581,7 +3011,7 @@ Input paramteres: vOfferRequestUUID uuid
 ######################################################*/
 CREATE FUNCTION GetTechnologyForOfferRequest(
 		vOfferRequestUUID uuid,
-		vUserUUID uuid
+		vRoleName varchar
 	)
 RETURNS TABLE (
 		Technologyuuid uuid,
@@ -2593,22 +3023,35 @@ RETURNS TABLE (
 		Updatedby uuid
 	) AS 
 $$	 
-	select 	tc.technologyuuid,
-		tc.technologyName,
-		tc.technologyDescription,
-		tc.createdat at time zone 'utc',
-		us.useruuid as createdby,
-		tc.updatedat at time zone 'utc',
-		ur.useruuid as updatedby
-	from technologydata td	
-	join offerrequest oq
-	on oq.technologydataid = td.technologydataid
-	join technologies tc
-	on tc.technologyid = td.technologyid
-	join users us on us.userid = tc.createdby
-	left outer join users ur on ur.userid = tc.updatedby
-	where oq.offerrequestuuid = vOfferRequestUUID
-$$ LANGUAGE SQL; 
+	DECLARE
+		vFunctionName varchar := 'GetTechnologyForOfferRequest'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (select 	tc.technologyuuid,
+				tc.technologyName,
+				tc.technologyDescription,
+				tc.createdat at time zone 'utc',
+				td.createdby,
+				tc.updatedat at time zone 'utc',
+				td.updatedby
+			from technologydata td	
+			join offerrequest oq
+			on oq.technologydataid = td.technologydataid
+			join technologies tc
+			on tc.technologyid = td.technologyid 
+			where oq.offerrequestuuid = vOfferRequestUUID
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2619,20 +3062,35 @@ Input paramteres: vTransactionUUID uuid
 ######################################################*/
 CREATE FUNCTION GetLicenseFeeByTransaction(
 		vTransactionUUID uuid,
-		vUserUUID uuid
+		vRoleName varchar
 	) 
 RETURNS TABLE (
 		LicenseFee integer
 	) AS 
 $$	 
-	select	td.licenseFee
-	from transactions ts
-	join offerrequest oq
-	on oq.offerrequestid = ts.offerrequestid
-	join technologydata td
-	on oq.technologydataid = td.technologydataid
-	where ts.transactionuuid = vTransactionUUID
-$$ LANGUAGE SQL; 
+	DECLARE
+		vFunctionName varchar := 'GetLicenseFeeByTransaction'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+
+	RETURN QUERY (select	td.licenseFee
+			from transactions ts
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join technologydata td
+			on oq.technologydataid = td.technologydataid
+			where ts.transactionuuid = vTransactionUUID
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+$$ LANGUAGE 'plpgsql';  
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2643,7 +3101,7 @@ Input paramteres: vOfferRequestUUID uuid
 ######################################################*/
 CREATE OR REPLACE FUNCTION GetTransactionByOfferRequest(
 		vOfferRequestUUID uuid,
-		vUserUUID uuid
+		vRoleName varchar
 	)
 RETURNS TABLE (
 		Transactionuuid uuid,
@@ -2659,31 +3117,46 @@ RETURNS TABLE (
 		Updatedby uuid
 	) AS 
 $$	 
-	select	ts.transactionuuid,
-		us.useruuid as buyer,
-		ofr.offeruuid,
-		oq.offerrequestuuid,
-		py.paymentuuid,
-		pi.paymentinvoiceuuid,
-		li.licenseorderuuid,
-		ts.createdat at time zone 'utc',
-		ur.useruuid as createdby,
-		ts.updatedat at time zone 'utc',
-		uu.useruuid as updatedby
-	from transactions ts
-	join offerrequest oq
-	on ts.offerrequestid = oq.offerrequestid
-	and oq.offerrequestuuid = vOfferRequestUUID
-	left outer join users us on us.userid = ts.buyerid
-	left outer join offer ofr on ofr.offerid = ts.offerid
-	left outer join payment py on py.paymentid = ts.paymentid
-	left outer join paymentinvoice pi 
-	on pi.paymentinvoiceid = ts.paymentinvoiceid
-	left outer join licenseorder li 
-	on li.licenseorderid = ts.licenseorderid
-	left outer join users ur on ur.userid = ts.createdby
-	left outer join users uu on uu.userid = ts.updatedby
-$$ LANGUAGE SQL; 
+	DECLARE
+		vFunctionName varchar := 'GetTransactionByOfferRequest'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (select	ts.transactionuuid,
+				ts.buyer,
+				ofr.offeruuid,
+				oq.offerrequestuuid,
+				py.paymentuuid,
+				pi.paymentinvoiceuuid,
+				li.licenseorderuuid,
+				ts.createdat at time zone 'utc',
+				ts.createdby,
+				ts.updatedat at time zone 'utc',
+				ts.updatedby
+			from transactions ts
+			join offerrequest oq
+			on ts.offerrequestid = oq.offerrequestid
+			and oq.offerrequestuuid = vOfferRequestUUID
+			left outer join users us on us.userid = ts.buyerid
+			left outer join offer ofr on ofr.offerid = ts.offerid
+			left outer join payment py on py.paymentid = ts.paymentid
+			left outer join paymentinvoice pi 
+			on pi.paymentinvoiceid = ts.paymentinvoiceid
+			left outer join licenseorder li 
+			on li.licenseorderid = ts.licenseorderid
+			left outer join users ur on ur.userid = ts.createdby
+			left outer join users uu on uu.userid = ts.updatedby
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2694,7 +3167,7 @@ Input paramteres: vOfferRequestUUID uuid
 ######################################################*/
 CREATE FUNCTION GetTechnologyDataByOfferRequest(
 		vOfferRequestUUID uuid,
-		vUserUUID uuid
+		vRoleName varchar
 		) 
 RETURNS TABLE
     	(
@@ -2713,29 +3186,41 @@ RETURNS TABLE
 			useruuid uuid
         )
     AS $$ 
-    	SELECT 	technologydatauuid,
-		tc.technologyuuid,    		
-		technologydataname,
-		technologydata,
-		technologydatadescription,
-		licensefee,
-		retailprice,
-		technologydatathumbnail,
-		technologydataimgref,
-		td.createdat  at time zone 'utc',
-		ur.useruuid as createdby,	
-		td.updatedat  at time zone 'utc',
-		us.useruuid as UpdatedBy
-		FROM TechnologyData td
-		join technologies tc 
-		on td.technologyid = tc.technologyid
-		join offerrequest oq 
-		on oq.technologydataid = td.technologydataid
-		and oq.offerrequestuuid = vOfferRequestUUID
-		join users ur on td.createdby = ur.userid
-		left outer join users us 
-		on td.updatedby = us.userid;
-	$$ LANGUAGE SQL; 
+	DECLARE
+		vFunctionName varchar := 'GetTechnologyDataByOfferRequest'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+    	RETURN QUERY (SELECT 	technologydatauuid,
+			tc.technologyuuid,    		
+			technologydataname,
+			technologydata,
+			technologydatadescription,
+			licensefee,
+			retailprice,
+			technologydatathumbnail,
+			technologydataimgref,
+			td.createdat  at time zone 'utc',
+			td.createdby,	
+			td.updatedat  at time zone 'utc',
+			td.UpdatedBy
+			FROM TechnologyData td
+			join technologies tc 
+			on td.technologyid = tc.technologyid
+			join offerrequest oq 
+			on oq.technologydataid = td.technologydataid
+			and oq.offerrequestuuid = vOfferRequestUUID
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+	$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2746,7 +3231,7 @@ Input paramteres: vTransactionUUID uuid
 ######################################################*/	
 CREATE FUNCTION GetOfferForTransaction(
 		vTransactionUUID uuid,
-		vUserUUID uuid
+		vRoleName varchar
 	)
 RETURNS TABLE (
 		OfferUUID uuid,
@@ -2754,19 +3239,33 @@ RETURNS TABLE (
 		CreatedAt timestamp with time zone,
 		CreatedBy uuid
 	) AS 
-$$	 	
-	select 	ofr.offerUUID,
-		pi.PaymentInvoiceUUID,			
-		pi.createdat at time zone 'utc',
-		us.useruuid as createdby
-	from Offer ofr
-	join paymentinvoice pi 
-	on ofr.paymentinvoiceid = pi.paymentinvoiceid
-	join transactions ts 
-	on ts.offerid = ofr.offerid
-	and ts.transactionuuid = vTransactionUUID
-	join users us on us.userid = ofr.createdby	
-$$ LANGUAGE SQL; 
+$$	 
+	DECLARE
+		vFunctionName varchar := 'GetOfferForTransaction'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+	
+	RETURN QUERY (select 	ofr.offerUUID,
+				pi.PaymentInvoiceUUID,			
+				pi.createdat at time zone 'utc',
+				ofr.createdby
+			from Offer ofr
+			join paymentinvoice pi 
+			on ofr.paymentinvoiceid = pi.paymentinvoiceid
+			join transactions ts 
+			on ts.offerid = ofr.offerid
+			and ts.transactionuuid = vTransactionUUID
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+	
+	END;
+$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2777,7 +3276,7 @@ Input paramteres: vTicketID varchar(4000)
 ######################################################*/	
 CREATE FUNCTION GetOfferForTicket(
 		vTicketID varchar(4000),
-		vUserUUID uuid
+		vRoleName varchar
 	)
 RETURNS TABLE (
 		OfferUUID uuid,
@@ -2785,19 +3284,34 @@ RETURNS TABLE (
 		CreatedAt timestamp with time zone,
 		CreatedBy uuid
 	) AS 
-$$	 	 
-	select 	ofr.offerUUID,
-		pi.PaymentInvoiceUUID,			
-		pi.createdat at time zone 'utc',
-		us.useruuid as createdby
-	from Offer ofr
-	join paymentinvoice pi 
-	on ofr.paymentinvoiceid = pi.paymentinvoiceid
-	join licenseorder lo
-	on lo.offerid = ofr.offerid
-	and lo.ticketid = vTicketID
-	join users us on us.userid = ofr.createdby	
-$$ LANGUAGE SQL; 
+$$	 
+	DECLARE
+		vFunctionName varchar := 'GetOfferForTicket'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+	
+	RETURN QUERY (select 	ofr.offerUUID,
+				pi.PaymentInvoiceUUID,			
+				pi.createdat at time zone 'utc',
+				ofr.createdby
+			from Offer ofr
+			join paymentinvoice pi 
+			on ofr.paymentinvoiceid = pi.paymentinvoiceid
+			join licenseorder lo
+			on lo.offerid = ofr.offerid
+			and lo.ticketid = vTicketID
+		
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+	
+	END;
+$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2807,30 +3321,35 @@ $$ LANGUAGE SQL;
 Input paramteres: vRoleName varchar(250)
 				  vRoleDescription varchar(32672)
 ######################################################*/
-create function createrole(vRoleName varchar(250), vRoleDescription varchar(32672), vUserUUID uuid) 
+create function createrole(vRoleName varchar(250), vRoleDescription varchar(32672), vRoleNameUser varchar) 
 returns void as
 $$
-	Declare vRoleID integer := (select nextval('RoleID'));
-		vRoleUUID uuid := (select uuid_generate_v4());
-		vRoleBit integer := (select max(RoleBit)*2 from Roles);
+	Declare vRoleID integer := (select nextval('RoleID')); 
+		vFunctionName varchar := 'CreateRole';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleNameUser, vFunctionName));
 		
-	BEGIN
-		vRoleBit  := (select case when(vRoleBit is null) then 1 else vRoleBit end);
-		insert into roles (RoleID, RoleUUID, RoleBit, RoleName, RoleDescription)
-		values (vRoleID, vRoleUUID, vRoleBit, vRoleName, vRoleDescription);
+		
+	BEGIN 
+		if(vIsAllowed) then
+			insert into roles (RoleID, RoleName, RoleDescription)
+			values (vRoleID, vRoleName, vRoleDescription);
+		else 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+		end if;
 
 	 -- Begin Log if success
         perform public.createlog(0,'Created Role sucessfully', 'CreateRole', 
-                                'RoleID: ' || cast(vRoleID as varchar) || ', RoleBit: ' 
-                                || cast(vRoleBit as varchar) || ', vRoleName: ' || vRoleName 
+                                'RoleID: ' || cast(vRoleID as varchar)  
+                                || ', vRoleName: ' || vRoleName 
                                 || ', RoleDescription: ' 
                                 || vRoleDescription);
 
 	 exception when others then 
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateRole', 
-                                'RoleID: ' || cast(vRoleID as varchar) || ', RoleBit: ' 
-                                || cast(vRoleBit as varchar) || ', vRoleName: ' || vRoleName 
+                                'RoleID: ' || cast(vRoleID as varchar)  
+                                || ', vRoleName: ' || vRoleName 
                                 || ', RoleDescription: ' 
                                 || vRoleDescription);
         -- End Log if error
@@ -2844,38 +3363,48 @@ $$ LANGUAGE PLPGSQL;
 -- CreatedAt: 2017-03-13
 -- Description: Create permissions for Roles
 -- ##########################################################################
-Input paramteres: vRoles integer, 
-				  vFunctionName varchar(250)
+Input paramteres: vRoleName varchar, 
+				  vFunctionName varchar(250),
+				  vRoleNameUser varchar
 ######################################################*/
-create function CreatePermission(
-		vRoles integer, 
+create function SetPermission(
+		vRoleName varchar, 
 		vFunctionName varchar(250),
-		vUserUUID uuid
+		vRoleNameUser varchar		
 	) 
 RETURNS void AS
 $$
-	DECLARE
-		vPermissionID integer := (select nextval('PermissionID'));
-		vPermissionUUID uuid := (select uuid_generate_v4());
+	DECLARE vFunctionID integer := (select nextval('FunctionID'));				
+		vThisFunctionName varchar := 'SetPermission';
+		vIsAllowed boolean := (select public.checkPermissions(vRoleNameUser, vThisFunctionName));
+		vRoleId integer := (select roleid from roles where rolename = vRoleName);
 	BEGIN
-		insert into permissions (PermissionID, PermissionUUID, Roles, FunctionName)
-		values (vPermissionID, vPermissionUUID, vRoles, vFunctionName);
+		if(vIsAllowed) then		
+			insert into functions (FunctionID, FunctionName)
+			values (vFunctionID, vFunctionName);
+
+			insert into rolespermissions(RoleId,FunctionId)
+			values (vRoleId, vFunctionId);
+		else 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+		end if;
 
 	-- Begin Log if success
-        perform public.createlog(0,'Created Permission sucessfully', 'CreatePermission', 
-                                'PermissionID: ' || cast(vPermissionID as varchar) || ', Roles: ' 
-                                || vRoles || ', FunctionName: ' || vFunctionName);
+        perform public.createlog(0,'Created Permission sucessfully', 'SetPermission', 
+                                'PermissionID: ' || cast(vFunctionID as varchar) || ', Role: ' 
+                                || vRoleName || ', FunctionName: ' || vFunctionName);
 
 	 exception when others then 
         -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreatePermission', 
-                                'PermissionID: ' || cast(vPermissionID as varchar) || ', Roles: ' 
-                                || vRoles || ', FunctionName: ' || vFunctionName);
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'SetPermission', 
+                                'PermissionID: ' || cast(vFunctionID as varchar) || ', Roles ' 
+                                || vRoleName || ', FunctionName: ' || vFunctionName);
         -- End Log if error 
-		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateRole';
+		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetPermission';
 		RETURN;
 	END;
-$$ LANGUAGE PLPGSQL; 
+$$ LANGUAGE PLPGSQL;  
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2884,9 +3413,9 @@ $$ LANGUAGE PLPGSQL;
 -- ##########################################################################
 Input paramteres: vTransactionUUID uuid
 ######################################################*/
-CREATE FUNCTION GetTransactionByID(
+ CREATE FUNCTION GetTransactionByID(
 		vTransactionUUID uuid,
-		vUserUUID uuid
+		vRoleName varchar
 	)
 RETURNS TABLE (
 		Transactionuuid uuid,
@@ -2902,31 +3431,43 @@ RETURNS TABLE (
 		Updatedby uuid
 	) AS 
 $$	  
-	select	ts.transactionuuid,
-		us.useruuid as buyer,
-		ofr.offeruuid,
-		oq.offerrequestuuid,
-		py.paymentuuid,
-		pi.paymentinvoiceuuid,
-		li.licenseorderuuid,
-		ts.createdat at time zone 'utc',
-		ur.useruuid as createdby,
-		ts.updatedat at time zone 'utc',
-		uu.useruuid as updatedby
-	from transactions ts
-	join offerrequest oq
-	on ts.offerrequestid = oq.offerrequestid
-	and ts.transactionuuid = vTransactionUUID
-	left outer join users us on us.userid = ts.buyerid
-	left outer join offer ofr on ofr.offerid = ts.offerid
-	left outer join payment py on py.paymentid = ts.paymentid
-	left outer join paymentinvoice pi 
-	on pi.paymentinvoiceid = ts.paymentinvoiceid
-	left outer join licenseorder li 
-	on li.licenseorderid = ts.licenseorderid
-	left outer join users ur on ur.userid = ts.createdby
-	left outer join users uu on uu.userid = ts.updatedby
-$$ LANGUAGE SQL; 
+	DECLARE
+		vFunctionName varchar := 'GetTransactionByID'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+
+	RETURN QUERY (select	ts.transactionuuid,
+				ts.buyer,
+				ofr.offeruuid,
+				oq.offerrequestuuid,
+				py.paymentuuid,
+				pi.paymentinvoiceuuid,
+				li.licenseorderuuid,
+				ts.createdat at time zone 'utc',
+				ts.createdby,
+				ts.updatedat at time zone 'utc',
+				ts.updatedby
+			from transactions ts
+			join offerrequest oq
+			on ts.offerrequestid = oq.offerrequestid
+			and ts.transactionuuid = vTransactionUUID 
+			left outer join offer ofr on ofr.offerid = ts.offerid
+			left outer join payment py on py.paymentid = ts.paymentid
+			left outer join paymentinvoice pi 
+			on pi.paymentinvoiceid = ts.paymentinvoiceid
+			left outer join licenseorder li 
+			on li.licenseorderid = ts.licenseorderid 
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+	
+	END;
+$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2937,7 +3478,7 @@ Input paramteres: vTechnologyDataUUID uuid
 ######################################################*/
 CREATE FUNCTION GetComponentsForTechnologyDataID(
 		vTechnologyDataUUID uuid,
-		vUserUUID uuid
+		vRoleName varchar
 	)
 RETURNS TABLE (
 		ComponentUUID uuid,		
@@ -2951,26 +3492,39 @@ RETURNS TABLE (
 		Useruuid uuid
 	) AS 
 $$	 
-	select	co.componentuuid,
-		co.componentname,
-		cp.componentuuid as ComponentParentUUID,
-		cp.componentname as ComponentParentName,
-		co.componentDescription,
-		co.createdat at time zone 'utc',
-		us.useruuid as CreatedBy,
-		co.updatedat at time zone 'utc',
-		ur.useruuid as UpdatedBy
-	from technologydata td
-	join technologydatacomponents tc
-	on td.technologydataid = tc.technologydataid
-	join components co on
-	co.componentid = tc.componentid
-	join components cp on
-	co.componentparentid = cp.componentid
-	join users us on us.userid = co.createdby
-	left outer join users ur on ur.userid = co.updatedby
-	where td.technologydatauuid = vTechnologyDataUUID	
-$$ LANGUAGE SQL; 
+	DECLARE
+		vFunctionName varchar := 'GetComponentsForTechnologyDataID'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+
+	RETURN QUERY (select	co.componentuuid,
+				co.componentname,
+				cp.componentuuid as ComponentParentUUID,
+				cp.componentname as ComponentParentName,
+				co.componentDescription,
+				co.createdat at time zone 'utc',
+				td.CreatedBy,
+				co.updatedat at time zone 'utc',
+				td.UpdatedBy
+			from technologydata td
+			join technologydatacomponents tc
+			on td.technologydataid = tc.technologydataid
+			join components co on
+			co.componentid = tc.componentid
+			join components cp on
+			co.componentparentid = cp.componentid 
+			where td.technologydatauuid = vTechnologyDataUUID
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+	
+	END;
+	$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2981,25 +3535,38 @@ Input paramteres: vDate timestamp
 				  vUserUUID uuid
 ######################################################*/
 -- Get Revenue per Day
-create function GetRevenuePerDaySince(vDate timestamp, vUserUUID uuid)
+create function GetRevenuePerDaySince(vDate timestamp, vRoleName varchar)
 returns table (date date, revenue numeric(21,2))
 as 
 $$	
-	select activatedat::date, (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
-	join licenseorder lo
-	on ts.licenseorderid = lo.licenseorderid
-	join offerrequest oq 
-	on oq.offerrequestid = ts.offerrequestid
-	join technologydata td
-	on oq.technologydataid = td.technologydataid
-	join users us on us.userid = td.createdby
-	where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-	(select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-	(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0 	 
-	group by activatedat::date 
-	order by activatedat::date;
-$$ 
-Language SQL;
+	DECLARE
+		vFunctionName varchar := 'GetRevenuePerDaySince'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN  
+
+	RETURN QUERY (select activatedat::date, (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq 
+			on oq.offerrequestid = ts.offerrequestid
+			join technologydata td
+			on oq.technologydataid = td.technologydataid 
+			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0 	 
+			group by activatedat::date 
+			order by activatedat::date
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+	
+	END;
+	$$ LANGUAGE 'plpgsql'; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -3011,24 +3578,37 @@ Input paramteres: vDate timestamp
 ######################################################*/
 CREATE FUNCTION public.getrevenueperhoursince(
     vdate timestamp without time zone,
-    vuseruuid uuid)
+    vRoleName varchar)
   RETURNS TABLE(date date, hour double precision, revenue numeric) AS
 $$
-	select activatedat::date, date_part('hour',activatedat) , (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
-	join licenseorder lo
-	on ts.licenseorderid = lo.licenseorderid
-	join offerrequest oq 
-	on oq.offerrequestid = ts.offerrequestid
-	join technologydata td
-	on oq.technologydataid = td.technologydataid
-	join users us on us.userid = td.createdby
-	where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-	      (select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-	      (select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0 	 
-	group by activatedat::date, date_part('hour',activatedat) 
-	order by activatedat::date, date_part('hour',activatedat);
-$$
-  LANGUAGE sql;
+	DECLARE
+		vFunctionName varchar := 'GetRevenuePerHourSince'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+
+	RETURN QUERY (select activatedat::date, date_part('hour',activatedat) , (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq 
+			on oq.offerrequestid = ts.offerrequestid
+			join technologydata td
+			on oq.technologydataid = td.technologydataid 
+			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+			      (select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+			      (select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0 	 
+			group by activatedat::date, date_part('hour',activatedat) 
+			order by activatedat::date, date_part('hour',activatedat)
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+	
+	END;
+	$$ LANGUAGE 'plpgsql'; 
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -3038,13 +3618,17 @@ $$
 Input paramteres: vTechnologyDataName varchar(250)
 				  vUserUUID uuid
 ######################################################*/ 
-create or replace function DeleteTechnologyData(vTechnologyDataName varchar(250), vUserUUID uuid)
+create or replace function DeleteTechnologyData(vTechnologyDataName varchar(250), vUserUUID uuid, vRoleName varchar)
 RETURNS void AS
 $$
-DECLARE 
-	vTechnologyDataId integer := (select TechnologyDataId from technologydata where technologydataname = vTechnologyDataName);
-	
-	BEGIN
+	DECLARE 
+		vTechnologyDataId integer := (select TechnologyDataId from technologydata where technologydataname = vTechnologyDataName);
+		vFunctionName varchar := 'DeleteTechnologyData'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+		IF(vIsAllowed) THEN  
 		create TEMP table vDeleteValues (technologydataid integer, offerid integer, offerrequestid integer, transactionid integer, paymentinvoiceid integer, paymentid integer, licenseorderid integer);
 		-- Get all necessary IDs
 		insert into vDeleteValues (technologydataid, offerid, offerrequestid, transactionid, paymentinvoiceid, paymentid, licenseorderid)
@@ -3087,6 +3671,40 @@ DECLARE
 
 		--Drop Temp Table
 		drop table vDeleteValues;
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF;
+	
+	END;
+$$
+LANGUAGE PLPGSQL;
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes 
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-07-12
+-- Description: Proof the role permissions
+-- ##########################################################################
+Input paramteres: vRoleName varchar
+				  vFunctionName varchar
+######################################################*/ 
+CREATE OR REPLACE FUNCTION checkPermissions(
+		vRoleName varchar,
+		vFunctionName varchar
+	)
+RETURNS BOOLEAN AS
+$$
+	#variable_conflict use_column
+	DECLARE	vIsAllowed boolean;
+		vRoleId integer := (select roleid from roles where rolename = vRoleName);
+		vFunctionId integer := (select functionId from functions where functionname = vFunctionName);
+	BEGIN
+		vIsAllowed := (select exists(select 1 from rolespermissions where roleid=vRoleId and functionId = vFunctionId));
+		if(vIsAllowed) then
+			return true;
+		else
+			return false;
+		end if;
 	END;
 $$
 LANGUAGE PLPGSQL;
