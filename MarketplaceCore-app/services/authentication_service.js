@@ -7,17 +7,21 @@ var logger = require('../global/logger');
 var self = {};
 
 function getBearerTokenFromHeader(req) {
-    if (!req.headers || typeof req.headers !== 'object') {
-        throw new TypeError('argument req is required to have headers property')
-    }
+    var token;
 
-    if (req.headers.authorization && !req.headers.authorization.startsWith('Bearer')) {
-        throw new Error('Bearer token missing')
-    }
+    if (req.headers && typeof req.headers === 'object') {
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+            try {
+                token = req.headers.authorization.split('Bearer ')[1];
+            }
+            catch (err) {
 
-    var token = req.headers.authorization.split('Bearer ')[1];
+            }
+        }
+    }
 
     if (!token) {
+        logger.info('Missing Header: Authentication: Bearer {Access_Token}');
         throw new Error('Bearer token missing');
     }
 
