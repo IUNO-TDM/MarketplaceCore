@@ -32,7 +32,7 @@ function Component(data) {
 }
 
 Component.prototype.FindAll = Component.FindAll = function (userUUID, roleName, params, callback) {
-    db.func('GetAllComponents', [roleName])
+    db.func('GetAllComponents', [userUUID, roleName])
         .then(function (data) {
             var resultList = [];
 
@@ -49,7 +49,7 @@ Component.prototype.FindAll = Component.FindAll = function (userUUID, roleName, 
 };
 
 Component.prototype.FindSingle = Component.FindSingle = function (userUUID, roleName, id, callback) {
-    db.func('GetComponentByID', [id, roleName])
+    db.func('GetComponentByID', [ id, userUUID, roleName])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];

@@ -5,7 +5,8 @@
 var payment_service = require('./payment_service');
 var self = {};
 
-self.generateInvoice = function (request,transaction, callback) {
+self.generateInvoice = function (request,transaction, roleName, callback) {
+
 
 
     var invoice = {

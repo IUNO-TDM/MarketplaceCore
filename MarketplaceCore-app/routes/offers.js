@@ -68,15 +68,16 @@ router.post('/', validate({
 
     var userUUID = req.query['userUUID'];
     var requestData = req.body;
+    var roleName = req.token.user.rolename;
 
-    offerRequest.CreateOfferRequest(userUUID, requestData, function (err, offerRequest) {
+    offerRequest.CreateOfferRequest(userUUID, roleName, requestData, function (err, offerRequest) {
         if (err) {
             next(err);
         } else {
             if (!offerRequest || offerRequest.length <= 0) {
                 next(new Error('Error when creating offer request in marketplace'));
             }else{
-                transaction.GetTransactionByOfferRequest(userUUID, offerRequest[0].offerrequestuuid, function (err, transaction) {
+                transaction.GetTransactionByOfferRequest(userUUID, roleName, offerRequest.result.offerrequestuuid, function (err, transaction) {
                     if (err) {
                         next(err);
                     } else {
@@ -84,7 +85,7 @@ router.post('/', validate({
                             if (err) {
                                 next(err);
                             } else {
-                                payment.SetPaymentInvoiceOffer(userUUID, invoiceData, offerRequest[0].offerrequestuuid, function (err, offer) {
+                                payment.SetPaymentInvoiceOffer(userUUID, roleName, invoiceData, offerRequest.result.offerrequestuuid, function (err, offer) {
                                     if (err) {
                                         next(err);
                                     } else {

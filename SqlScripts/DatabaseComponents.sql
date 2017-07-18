@@ -45,7 +45,9 @@ CREATE SEQUENCE LicenseOrderID START 1;
 -- RoleID
 CREATE SEQUENCE RoleID START 1;
 -- PermissionID
-CREATE SEQUENCE FunctionID START 2;
+CREATE SEQUENCE FunctionID START 2;  
+-- OfferRequestItemID
+CREATE SEQUENCE OfferRequestItemID START 1; 
 -- ##########################################################################
 -- Create Indexes
 CREATE UNIQUE INDEX invoice_idx ON paymentinvoice (invoice);
@@ -681,22 +683,18 @@ CREATE OR REPLACE FUNCTION CreateComponentsTechnologies (
   $$
   LANGUAGE 'plpgsql';
 -- ##############################################################################
---  CreateOfferRequest
-CREATE FUNCTION public.createofferrequest(
+--  CreateOfferRequest 
+CREATE OR REPLACE FUNCTION public.createofferrequest(
     IN vitems jsonb,
     IN vhsmid character varying,
     IN vuseruuid uuid,
     IN vbuyeruuid uuid,
-    IN vRoleName varchar)
-  RETURNS TABLE(
-	OfferRequestUUID uuid,
-	items json,
-	HMSID varchar(32672),
-	CreatedAt timestamp with time zone,
-	RequestedBy uuid) AS
+    IN vrolename character varying)
+  RETURNS table(result json) AS
 $BODY$
 	#variable_conflict use_column 
-      DECLARE 	vOfferRequestID integer := (select nextval('OfferRequestID'));
+      DECLARE 	vOfferRequestItemID integer := (select nextval('OfferRequestItemID'));
+		vOfferRequestID integer := (select nextval('OfferRequestID'));
 		vOfferRequestUUID uuid := (select uuid_generate_v4()); 
 		vTransactionID integer := (select nextval('TransactionID'));
 		vTransactionUUID uuid := (select uuid_generate_v4());
@@ -713,12 +711,12 @@ $BODY$
 		VALUES (vTransactionID, vTransactionUUID, vOfferRequestID, vbuyeruuid, vbuyeruuid, now());
 
 		with items as (
-			select 	vOfferRequestID as offerrequestid,
+			select 	vOfferRequestItemID as OfferRequestItemID, vOfferRequestID as offerrequestid,
 				(json_array_elements_text(vitems::json->'items')::json->>'dataId')::text as dataId,
 				(json_array_elements_text(vitems::json->'items')::json->'amount')::text as amount
 			)
-		insert into offerrequestitems(offerrequestid,technologydataId,amount)
-		select offerrequestid, td.technologydataid, amount::integer from items it
+		insert into offerrequestitems(offerrequestitemid, offerrequestid,technologydataId,amount)
+		select OfferRequestItemID, offerrequestid, td.technologydataid, amount::integer from items it
 		join technologydata td on it.dataid::uuid = td.technologydatauuid;
 
 	ELSE 
@@ -734,17 +732,19 @@ $BODY$
         -- End Log if success
         -- Return OfferRequestUUID
         RETURN QUERY (
-				select	ofr.OfferRequestUUID,
-					json_build_object('dataId', td.TechnologyDataUUID::uuid, 'amount', oi.Amount),
-					ofr.HSMID,
-					ofr.CreatedAt at time zone 'utc',
-					us.useruuid as RequestedBy
-					from offerrequest ofr 	
-					join users us on us.userid = ofr.requestedby
-					join offerrequestitems oi on oi.offerrequestid = ofr.offerrequestid
-					join technologydata td 
-					on oi.technologydataid = td.technologydataid
-				where ofr.offerrequestuuid = vOfferRequestUUID
+				select row_to_json (t) as result from (
+					select offerrequestuuid, 
+						(
+						select	 array_to_json(array_agg(row_to_json(d)))
+						from (select   td.TechnologyDataUUID::uuid,   oi.Amount 
+							from offerrequest ofr 	
+							join offerrequestitems oi on oi.offerrequestid = ofr.offerrequestid
+							join technologydata td 
+							on oi.technologydataid = td.technologydataid
+							where offerrequestuuid = vOfferRequestUUID
+							) d
+						 ) as items, HSMID, CreatedAt at time zone 'utc' as CreatedAt, RequestedBy 
+					 from offerrequest where offerrequestuuid = vOfferRequestUUID) t
         );
         
         exception when others then 
@@ -759,8 +759,7 @@ $BODY$
       END;
   $BODY$
   LANGUAGE plpgsql VOLATILE
-  COST 100
-  ROWS 1000;
+  COST 100;
 -- ##############################################################################    
 -- CreatePaymentInvoice
 CREATE FUNCTION CreatePaymentInvoice (
@@ -1106,13 +1105,11 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000;
--- ###########################################################################
-
--- ##############################################################################       
+-- ###########################################################################     
 -- CreateComponentsAttribute
 CREATE FUNCTION CreateComponentsAttribute (
   vComponentUUID uuid, 
-  vAttributeList text[],
+  vAttributeList text[], 
   vRoleName varchar
  )
   RETURNS TABLE (
@@ -1543,7 +1540,7 @@ Create a complete Technology Data
 Input paramteres: none	
 Return Value: Table with all TechnologyData 
 ######################################################*/
-CREATE OR REPLACE FUNCTION GetAllTechnologyData(vRoleName varchar) 
+CREATE OR REPLACE FUNCTION GetAllTechnologyData(vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
 			technologydatauuid uuid,
@@ -1607,6 +1604,7 @@ Return Value: Table with all TechnologyData
 ######################################################*/
  CREATE FUNCTION public.GetTechnologyDataByID(
     vtechnologydatauuid uuid,
+	vUserUUID uuid,
     vRoleName varchar)
   RETURNS TABLE(technologydatauuid uuid, 
 		technologyuuid uuid, 
@@ -1669,6 +1667,7 @@ Return Value: Table with all TechnologyData
 ######################################################*/
 CREATE FUNCTION GetTechnologyDataByName(
 		vTechnologyDataName varchar(250),
+		vUserUUID uuid,
 		vRoleName varchar
 		) 
 RETURNS TABLE
@@ -1732,7 +1731,7 @@ Get all Components
 Input paramteres: vRoleName	
 Return Value: Table with all Components 
 ######################################################*/ 
-CREATE FUNCTION public.getallcomponents(IN vrolename character varying)
+CREATE FUNCTION public.getallcomponents(vUserUUID uuid, vrolename character varying)
   RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid integer, componentdescription character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedby uuid) AS
 $BODY$ 
 	DECLARE
@@ -1779,6 +1778,7 @@ Return Value: Table with all Components
 ######################################################*/
 CREATE FUNCTION public.getcomponentbyid(
     IN vcompuuid uuid,
+	IN vUserUUID uuid,
     IN vRoleName varchar)
   RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid uuid, componentdescription character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedby uuid) AS
 $$ 
@@ -1820,7 +1820,7 @@ Get a Component
 Input paramteres: componentname: string
 Return Value: Table with all Components 
 ######################################################*/
-CREATE FUNCTION GetComponentByName(vCompName varchar(250), vUserUUID uuid) 
+CREATE FUNCTION GetComponentByName(vCompName varchar(250), vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     componentuuid uuid,
@@ -1871,7 +1871,7 @@ Get all Tags
 Input paramteres: none	
 Return Value: Table with all Tags 
 ######################################################*/
-CREATE FUNCTION GetAllTags(vRoleName varchar) 
+CREATE FUNCTION GetAllTags(vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
 	    taguuid uuid,
@@ -1917,7 +1917,7 @@ Get a Tag
 Input paramteres: TagUUID: uuid	
 Return Value: Table with all Tags 
 ######################################################*/
-CREATE FUNCTION GetTagByID(vTagID uuid, vRoleName varchar) 
+CREATE FUNCTION GetTagByID(vTagID uuid, vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
 	    taguuid uuid,
@@ -1964,7 +1964,7 @@ Get a Tag
 Input paramteres: TagName: string
 Return Value: Table with all Tags 
 ######################################################*/
-CREATE FUNCTION GetTagByName(vTagName varchar(250), vRoleName varchar) 
+CREATE FUNCTION GetTagByName(vTagName varchar(250), vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
 	    taguuid uuid,
@@ -2011,7 +2011,7 @@ Get all Technologies
 Input paramteres: none	
 Return Value: Table with all Technologies
 ######################################################*/
-CREATE FUNCTION GetAllTechnologies(vRoleName varchar) 
+CREATE FUNCTION GetAllTechnologies(vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     technologyuuid uuid,
@@ -2059,7 +2059,7 @@ Get all Technologies
 Input paramteres: TechnologyUUID: uuid	
 Return Value: Table with the Technology filter by TechnologyUUID
 ######################################################*/
-CREATE FUNCTION GetTechnologyByID(vtechUUID uuid, vRoleName varchar) 
+CREATE FUNCTION GetTechnologyByID(vtechUUID uuid, vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     technologyuuid uuid,
@@ -2106,7 +2106,7 @@ Get all Technologies
 Input paramteres: TechnologyName: string
 Return Value: Table with the Technology filter by TechnologyName
 ######################################################*/
-CREATE FUNCTION GetTechnologyByName(vtechName varchar, vRoleName varchar) 
+CREATE FUNCTION GetTechnologyByName(vtechName varchar, vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     technologyuuid uuid,
@@ -2267,7 +2267,7 @@ Get all offers
 Input paramteres: none		
 Return Value: Table with all offers
 ######################################################*/
-CREATE FUNCTION GetAllOffers(vRoleName varchar) 
+CREATE FUNCTION GetAllOffers(vUserUUID varchar, vRoleName varchar) 
 	RETURNS TABLE
     	(
     offeruuid uuid,    
@@ -2310,7 +2310,7 @@ Get all attributes
 Input paramteres: none		
 Return Value: Table with all attributes
 ######################################################*/
-CREATE FUNCTION GetAllAttributes(vRoleName varchar) 
+CREATE FUNCTION GetAllAttributes(vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     attributeuuid uuid,    
@@ -2355,7 +2355,7 @@ CREATE FUNCTION GetAllAttributes(vRoleName varchar)
 Input paramteres: attributeUUID uuid		
 Return Value: Table with a attribute
 ######################################################*/
-CREATE FUNCTION GetAttributeByID(vAttrUUID uuid, vRoleName varchar) 
+CREATE FUNCTION GetAttributeByID(vAttrUUID uuid, vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     attributeuuid uuid,    
@@ -2401,7 +2401,7 @@ CREATE FUNCTION GetAttributeByID(vAttrUUID uuid, vRoleName varchar)
 Input paramteres: attributeName varchar(250)
 Return Value: Table with a attribute
 ######################################################*/
-CREATE FUNCTION GetAttributeByName(vAttrName varchar(250), vRoleName varchar) 
+CREATE FUNCTION GetAttributeByName(vAttrName varchar(250), vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     attributeuuid uuid,    
@@ -2448,7 +2448,7 @@ Get a offer
 Input paramteres: OfferRequestID uuid		
 Return Value: Table with a offer
 ######################################################*/
-CREATE FUNCTION GetOfferByRequestID(vRequestID uuid, vUserUUID uuid) 
+CREATE FUNCTION GetOfferByRequestID(vRequestID uuid, vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     offeruuid uuid, 
@@ -2493,7 +2493,7 @@ Get a offer
 Input paramteres: OfferUUID uuid		
 Return Value: Table with a offer
 ######################################################*/
-CREATE FUNCTION GetOfferByID(vOfferID uuid, vRoleName varchar) 
+CREATE FUNCTION GetOfferByID(vOfferID uuid, vUserUUID uuid, vRoleName varchar) 
 	RETURNS TABLE
     	(
     offeruuid uuid, 
@@ -2654,7 +2654,7 @@ CREATE FUNCTION DateDiff (units VARCHAR(30), start_t TIMESTAMP, end_t TIMESTAMP)
 Input paramteres: vTime  timestamp
 Return Value: Amount of activated licenses 
 ######################################################*/
-CREATE FUNCTION GetActivatedLicensesSince (vTime timestamp, vRoleName varchar)
+CREATE FUNCTION GetActivatedLicensesSince (vTime timestamp, vUserUUID uuid, vRoleName varchar)
 RETURNS integer AS
 $$ 
 	DECLARE
@@ -2701,6 +2701,7 @@ Return Value: TechnologyDataName, Rank value
 CREATE OR REPLACE FUNCTION public.gettoptechnologydatasince(
     IN vsincedate timestamp without time zone,
     IN vtopvalue integer,
+	IN vUserUUID uuid,
     IN vRoleName varchar)
   RETURNS TABLE(technologydataname character varying, rank integer, revenue numeric) AS
 $BODY$	
@@ -2749,6 +2750,7 @@ Return Value: ComponentName, Amount
 CREATE FUNCTION GetMostUsedComponents(
 		vSinceDate timestamp without time zone,
 		vTopValue integer,
+		vUserUUID uuid,
 		vRoleName varchar
 	)
 RETURNS TABLE (
@@ -2806,6 +2808,7 @@ Return Value: TechnologyDataName, Date, Amount, DayHour
 ######################################################*/
 CREATE OR REPLACE FUNCTION GetWorkloadSince(
 		vSinceDate timestamp without time zone,
+		vUserUUID uuid,
 		vRoleName varchar	
 	)
 RETURNS TABLE (
@@ -2864,7 +2867,8 @@ Input paramteres: vOfferRequestUUID uuid
 ######################################################*/
 CREATE FUNCTION GetPaymentInvoiceForOfferRequest(
 		vOfferRequestUUID uuid,
-		vUserUUID uuid
+		vUserUUID uuid,
+		vRoleName varchar
 	)
 RETURNS TABLE (
 	PaymentInvoiceUUID uuid,
@@ -2910,6 +2914,7 @@ Input paramteres: vPaymentInvoiceUUID uuid
 ######################################################*/
 CREATE FUNCTION GetOfferForPaymentInvoice(
 		vPaymentInvoiceUUID uuid,
+		vUserUUID uuid,
 		vRoleName varchar
 	)
 RETURNS TABLE (
@@ -2953,6 +2958,7 @@ Input paramteres: vTechnologyUUID uuid
 ######################################################*/
 CREATE FUNCTION GetComponentsByTechnology(
 		vTechnologyUUID uuid,
+		vUserUUID uuid,
 		vRoleName varchar
 	)
 RETURNS TABLE (
@@ -3011,6 +3017,7 @@ Input paramteres: vOfferRequestUUID uuid
 ######################################################*/
 CREATE FUNCTION GetTechnologyForOfferRequest(
 		vOfferRequestUUID uuid,
+		vUserUUID uuid,
 		vRoleName varchar
 	)
 RETURNS TABLE (
@@ -3062,6 +3069,7 @@ Input paramteres: vTransactionUUID uuid
 ######################################################*/
 CREATE FUNCTION GetLicenseFeeByTransaction(
 		vTransactionUUID uuid,
+		vUserUUID uuid,
 		vRoleName varchar
 	) 
 RETURNS TABLE (
@@ -3098,9 +3106,10 @@ $$ LANGUAGE 'plpgsql';
 -- Description: Script Get Transaction for given OfferRequestUUID
 -- ##########################################################################
 Input paramteres: vOfferRequestUUID uuid 
-######################################################*/
+######################################################*/ 
 CREATE OR REPLACE FUNCTION GetTransactionByOfferRequest(
 		vOfferRequestUUID uuid,
+		vUserUUID uuid,
 		vRoleName varchar
 	)
 RETURNS TABLE (
@@ -3126,7 +3135,7 @@ $$
 	IF(vIsAllowed) THEN 
 	
 	RETURN QUERY (select	ts.transactionuuid,
-				ts.buyer,
+				ts.buyerid,
 				ofr.offeruuid,
 				oq.offerrequestuuid,
 				py.paymentuuid,
@@ -3140,15 +3149,12 @@ $$
 			join offerrequest oq
 			on ts.offerrequestid = oq.offerrequestid
 			and oq.offerrequestuuid = vOfferRequestUUID
-			left outer join users us on us.userid = ts.buyerid
 			left outer join offer ofr on ofr.offerid = ts.offerid
 			left outer join payment py on py.paymentid = ts.paymentid
 			left outer join paymentinvoice pi 
 			on pi.paymentinvoiceid = ts.paymentinvoiceid
 			left outer join licenseorder li 
 			on li.licenseorderid = ts.licenseorderid
-			left outer join users ur on ur.userid = ts.createdby
-			left outer join users uu on uu.userid = ts.updatedby
 		);
 	ELSE 
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
@@ -3167,6 +3173,7 @@ Input paramteres: vOfferRequestUUID uuid
 ######################################################*/
 CREATE FUNCTION GetTechnologyDataByOfferRequest(
 		vOfferRequestUUID uuid,
+		vUserUUID uuid,
 		vRoleName varchar
 		) 
 RETURNS TABLE
@@ -3231,6 +3238,7 @@ Input paramteres: vTransactionUUID uuid
 ######################################################*/	
 CREATE FUNCTION GetOfferForTransaction(
 		vTransactionUUID uuid,
+		vUserUUID uuid,
 		vRoleName varchar
 	)
 RETURNS TABLE (
@@ -3276,6 +3284,7 @@ Input paramteres: vTicketID varchar(4000)
 ######################################################*/	
 CREATE FUNCTION GetOfferForTicket(
 		vTicketID varchar(4000),
+		vUserUUID uuid,
 		vRoleName varchar
 	)
 RETURNS TABLE (
@@ -3321,7 +3330,7 @@ $$ LANGUAGE 'plpgsql';
 Input paramteres: vRoleName varchar(250)
 				  vRoleDescription varchar(32672)
 ######################################################*/
-create function createrole(vRoleName varchar(250), vRoleDescription varchar(32672), vRoleNameUser varchar) 
+create function createrole(vRoleName varchar(250), vRoleDescription varchar(32672), vUserUUID uuid, vRoleNameUser varchar) 
 returns void as
 $$
 	Declare vRoleID integer := (select nextval('RoleID')); 
@@ -3370,6 +3379,7 @@ Input paramteres: vRoleName varchar,
 create function SetPermission(
 		vRoleName varchar, 
 		vFunctionName varchar(250),
+		vUserUUID uuid,
 		vRoleNameUser varchar		
 	) 
 RETURNS void AS
@@ -3415,6 +3425,7 @@ Input paramteres: vTransactionUUID uuid
 ######################################################*/
  CREATE FUNCTION GetTransactionByID(
 		vTransactionUUID uuid,
+		vUserUUID uuid,
 		vRoleName varchar
 	)
 RETURNS TABLE (
@@ -3478,6 +3489,7 @@ Input paramteres: vTechnologyDataUUID uuid
 ######################################################*/
 CREATE FUNCTION GetComponentsForTechnologyDataID(
 		vTechnologyDataUUID uuid,
+		vUserUUID uuid,
 		vRoleName varchar
 	)
 RETURNS TABLE (
@@ -3535,7 +3547,7 @@ Input paramteres: vDate timestamp
 				  vUserUUID uuid
 ######################################################*/
 -- Get Revenue per Day
-create function GetRevenuePerDaySince(vDate timestamp, vRoleName varchar)
+create function GetRevenuePerDaySince(vDate timestamp, vUserUUID uuid, vRoleName varchar)
 returns table (date date, revenue numeric(21,2))
 as 
 $$	
@@ -3578,6 +3590,7 @@ Input paramteres: vDate timestamp
 ######################################################*/
 CREATE FUNCTION public.getrevenueperhoursince(
     vdate timestamp without time zone,
+	vUserUUID uuid,
     vRoleName varchar)
   RETURNS TABLE(date date, hour double precision, revenue numeric) AS
 $$

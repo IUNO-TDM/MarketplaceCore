@@ -108,7 +108,6 @@ CREATE
   (
     OfferRequestID   INTEGER NOT NULL ,
     OfferRequestUUID UUID ,
-    TechnologyDataID INTEGER NOT NULL ,
     HSMID            VARCHAR ,
     CreatedAt        TIMESTAMP WITHOUT TIME ZONE ,
     RequestedBy      UUID NOT NULL
@@ -234,7 +233,7 @@ CREATE
   (
     TransactionID    INTEGER NOT NULL ,
     TransactionUUID  UUID ,
-    BuyerID          INTEGER NOT NULL ,
+    BuyerID          UUID,
     OfferID          INTEGER ,
     OfferRequestID   INTEGER NOT NULL ,
     PaymentID        INTEGER ,
