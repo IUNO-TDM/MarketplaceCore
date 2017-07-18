@@ -1,0 +1,146 @@
+{
+	"variables": [],
+	"info": {
+		"name": "MarketplaceCore",
+		"_postman_id": "328958c8-5929-619d-1e34-f49db448fc57",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET TECHNOLOGYDATA",
+			"request": {
+				"url": {
+					"raw": "http://localhost:3002/technologydata?components[0]=570a5df0-a044-4e22-b6e6-b10af872d75c&components[1]=198f1571-4846-4467-967a-00427ab0208d&userUUID=168955dc-d057-4826-99ce-732c60c8f91e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3002",
+					"path": [
+						"technologydata"
+					],
+					"query": [
+						{
+							"key": "components[0]",
+							"value": "570a5df0-a044-4e22-b6e6-b10af872d75c",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "components[1]",
+							"value": "198f1571-4846-4467-967a-00427ab0208d",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "authorization",
+							"value": "Bearer 105ae7d32fbf05531c3f3bcc6202f1a1e48c5343",
+							"equals": true,
+							"description": "",
+							"disabled": true
+						},
+						{
+							"key": "userUUID",
+							"value": "168955dc-d057-4826-99ce-732c60c8f91e",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer 105ae7d32fbf05531c3f3bcc6202f1a1e48c5343",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GET COMPONENTS",
+			"request": {
+				"url": {
+					"raw": "http://localhost:3002/components?userUUID=16f69912-d6be-4ef0-ada8-2c1c75578b51&components",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3002",
+					"path": [
+						"components"
+					],
+					"query": [
+						{
+							"key": "userUUID",
+							"value": "16f69912-d6be-4ef0-ada8-2c1c75578b51",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "components",
+							"value": "",
+							"equals": false,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "CREATE OFFER",
+			"request": {
+				"url": {
+					"raw": "http://localhost:3002/offers?userUUID=168955dc-d057-4826-99ce-732c60c8f91e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3002",
+					"path": [
+						"offers"
+					],
+					"query": [
+						{
+							"key": "userUUID",
+							"value": "168955dc-d057-4826-99ce-732c60c8f91e",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer 105ae7d32fbf05531c3f3bcc6202f1a1e48c5343",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"items\":[\n\t\t{\n\t\t\t\"dataId\": \"d0fd3af4-f448-4bf9-b225-a346f1ef0013\",\n\t\t\t\"amount\": 1\n\t\t},\n\t\t{\n\t\t\t\"dataId\": \"5f4448cc-5017-42e3-a3da-eee573f0b55c\",\n\t\t\t\"amount\": 1\n\t\t}\n\t],\n\t\"hsmId\": \"34567890\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
