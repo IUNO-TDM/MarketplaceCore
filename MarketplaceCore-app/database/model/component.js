@@ -23,7 +23,7 @@ function Component(data) {
         this.createdby = data.createdby;
         this.updatedat = data.updatedat;
         this.useruuid = data.useruuid;
-        this.attributelist = data.attributelist;;
+        this.attributelist = data.attributelist;
         this.technologylist = data.technologylist;
 
         console.log(data);
@@ -31,8 +31,8 @@ function Component(data) {
 
 }
 
-Component.prototype.FindAll = Component.FindAll = function (userUUID, params, callback) {
-    db.func('GetAllComponents', [userUUID])
+Component.prototype.FindAll = Component.FindAll = function (userUUID, roleName, params, callback) {
+    db.func('GetAllComponents', [roleName])
         .then(function (data) {
             var resultList = [];
 
@@ -48,8 +48,8 @@ Component.prototype.FindAll = Component.FindAll = function (userUUID, params, ca
         });
 };
 
-Component.prototype.FindSingle = Component.FindSingle = function (userUUID, id, callback) {
-    db.func('GetComponentByID', [id, userUUID])
+Component.prototype.FindSingle = Component.FindSingle = function (userUUID, roleName, id, callback) {
+    db.func('GetComponentByID', [id, roleName])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];
@@ -77,14 +77,15 @@ Component.prototype.FindByTechnologyDataId =  Component.FindByTechnologyDataId =
         });
 };
 
-Component.prototype.Create = function (userUUID, callback) {
+Component.prototype.Create = function (userUUID, rolename, callback) {
     db.func('SetComponent',
-        [   self.componentname,
-            self.componentparentid,
-            self.componentdescription,
-            self.attributelist,
-            self.technologylist,
-            userUUID
+        [   this.componentname,
+            this.componentparentname,
+            this.componentdescription,
+            this.attributelist,
+            this.technologylist,
+            userUUID,
+            rolename
         ])
         .then(function (data) {
             logger.debug(data);

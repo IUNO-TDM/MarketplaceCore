@@ -16,7 +16,7 @@ var helper = require('../services/helper_service');
 router.get('/', validate({query: require('../schema/components_schema').GetAll}), function (req, res, next) {
 
     // req.token.user.role,
-    new Component().FindAll(req.query['userUUID'], req.query, function (err, data) {
+    new Component().FindAll(req.query['userUUID'], req.token.user.rolename, req.query, function (err, data) {
         if (err) {
             next(err);
         }
@@ -27,7 +27,7 @@ router.get('/', validate({query: require('../schema/components_schema').GetAll})
 });
 
 router.get('/:id', validate({query: require('../schema/components_schema').GetSingle}),  function (req, res, next) {
-    new Component().FindSingle(req.query['userUUID'], req.params['id'], function (err, data) {
+    new Component().FindSingle(req.query['userUUID'], req.token.user.rolename, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -43,13 +43,15 @@ router.post('/', validate({
 }), function (req, res, next) {
     var comp = new Component();
 
+    var data = req.body;
+
     comp.componentname = data['componentName'];
     comp.componentparentname = data['componentParentName']; //TODO: Refactor this. Why would we identify the parent component by name !?
     comp.componentdescription = data['componentDescription'];
     comp.attributelist = data['attributeList'];
     comp.technologylist = data['technologyList'];
 
-    comp.Create(req.query['userUUID'], function (err, data) {
+    comp.Create(req.query['userUUID'], req.token.user.rolename, function (err, data) {
         if (err) {
             next(err);
         }
