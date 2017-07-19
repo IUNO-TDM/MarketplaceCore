@@ -76,7 +76,7 @@ $$
 		perform SetPermission('Admin', 'SetTechnologyData', 'Admin');
 		perform SetPermission('Admin', 'CreateTechnologyDataTags', 'Admin');
 		perform SetPermission('Admin', 'GetLicenseFeeByTechnologyData', 'Admin');
-		
+		perform SetPermission('Admin', 'GetTechnologyDataOwnerById', 'Admin');
 		
 		
 	END;

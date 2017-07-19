@@ -2155,13 +2155,14 @@ CREATE FUNCTION GetTechnologyByName(vtechName varchar, vUserUUID uuid, vRoleName
 Get all Technologies
 Input paramteres: none	
 Return Value: Table with all Technologies
-######################################################*/
+######################################################*/ 
 CREATE OR REPLACE FUNCTION public.gettechnologydatabyparams(
-    vcomponents text[], 
-    vtechnologyuuid uuid,
-    vCreatedBy uuid,
-    out result json)
-	AS
+    IN vcomponents text[],
+    IN vtechnologyuuid uuid,
+    IN vcreatedby uuid,
+    IN vRoleName varchar,
+    OUT result json)
+  RETURNS json AS
 $BODY$	 
 
 	DECLARE
@@ -2170,7 +2171,7 @@ $BODY$
 		
 	BEGIN   
 
-	IF(vIsAllowed) THEN  
+	IF(isAllowed) THEN  
 	
 	 	 with tg as (
 				select tg.tagid, tg.tagname from tags tg
@@ -2256,7 +2257,8 @@ $BODY$
 
 	END;
 		$BODY$
-  LANGUAGE 'plpgsql';   
+  LANGUAGE plpgsql VOLATILE
+  COST 100;  
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -3752,6 +3754,35 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000; 
+--######################################################
+--GetTechnologyDataOwnerById
+CREATE OR REPLACE FUNCTION public.gettechnologydataownerbyid(
+    IN vtechnologydatauuid uuid,
+    IN vUserUUID uuid,
+    IN vRoleName character varying
+    )
+  RETURNS TABLE(createdby varchar) AS
+$BODY$ 
+	DECLARE
+		vFunctionName varchar := 'GetTechnologyDataOwnerById'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
 
-  
-  
+	IF(isAllowed) THEN 
+	
+	RETURN QUERY (	SELECT 	td.createdby
+				FROM TechnologyData td 
+				where technologydatauuid = vtechnologydatauuid
+		);
+
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000; 
