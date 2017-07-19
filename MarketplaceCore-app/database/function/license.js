@@ -29,7 +29,7 @@ self.GetLicenseFeeByTechnologyData = function(userUUID, technologyDataUUID, role
             if (data && data.length) {
                 data = data[0];
             }
-            callback(null, data.getlicensefeebytechnologydata)
+            callback(null, data.licensefee)
         })
         .catch(function (error) {
             logger.crit(error);

@@ -115,15 +115,14 @@ CREATE
 ALTER TABLE OfferRequest ADD CONSTRAINT OfferRequest_PK PRIMARY KEY (
 OfferRequestID ) ;
 
-CREATE
-  TABLE OfferRequestItems
+CREATE TABLE OfferRequestItems
   (
-    OfferRequestID   INTEGER NOT NULL ,
-    TechnologyDataID INTEGER NOT NULL ,
-    Amount           INTEGER NOT NULL
+    OfferRequestItemID INTEGER NOT NULL ,
+    OfferRequestID     INTEGER, 
+    TechnologyDataID	INTEGER,
+    Amount INTEGER NOT NULL
   ) ;
-ALTER TABLE OfferRequestItems ADD CONSTRAINT OfferRequestItems_PK PRIMARY KEY (
-OfferRequestID, TechnologyDataID ) ;
+
 
 CREATE
   TABLE Payment
@@ -336,11 +335,6 @@ TechnologyData ( TechnologyDataID ) ON
 DELETE
   NO ACTION;
 
-ALTER TABLE OfferRequest ADD CONSTRAINT OfferRequest_TechnologyData_FK FOREIGN
-KEY ( TechnologyDataID ) REFERENCES TechnologyData ( TechnologyDataID ) ON
-DELETE
-  NO ACTION;
-
 ALTER TABLE Offer ADD CONSTRAINT Offer_PaymentInvoice_FK FOREIGN KEY (
 PaymentInvoiceID ) REFERENCES PaymentInvoice ( PaymentInvoiceID ) ON
 DELETE
@@ -408,6 +402,8 @@ ALTER TABLE Transactions ADD CONSTRAINT Transactions_Payment_FK FOREIGN KEY (
 PaymentID ) REFERENCES Payment ( PaymentID ) ON
 DELETE
   NO ACTION;
+
+ALTER TABLE OfferRequestItems ADD CONSTRAINT OfferRequestItems_PK PRIMARY KEY ( OfferRequestItemID, OfferRequestID, TechnologyDataID ) ;
 
 
 -- Zusammenfassungsbericht für Oracle SQL Developer Data Modeler: 

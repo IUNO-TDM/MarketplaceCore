@@ -1762,9 +1762,7 @@ $BODY$
     $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
-  ROWS 1000;
-ALTER FUNCTION public.getallcomponents(character varying)
-  OWNER TO postgres;
+  ROWS 1000; 
 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
