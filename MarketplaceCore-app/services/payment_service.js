@@ -70,7 +70,7 @@ payment_service.socket.on('disconnect', function () {
 });
 
 payment_service.createLocalInvoice = function (invoice, callback) {
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -100,7 +100,7 @@ payment_service.createLocalInvoice = function (invoice, callback) {
 ;
 
 payment_service.getInvoiceTransfers = function (invoice, callback) {
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
