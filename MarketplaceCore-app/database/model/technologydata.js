@@ -32,17 +32,20 @@ function TechnologyData(data) {
     }
 }
 
-TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, params, callback) {
+TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, roleName, params, callback) {
     var technologies = params['technologies'];
     var tags = params['tags'];
     var components = params['components'];
     var attributes = params['attributes'];
+    var technologydataname = params['technologydataname'];
 
 
     db.func('GetTechnologyDataByParams',
-        [components,
+        [   components,
             technologies,
-            userUUID
+            technologydataname,
+            userUUID,
+            roleName
         ], 1 //TODO: Document this parameter
     )
         .then(function (data) {
@@ -59,8 +62,8 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
         });
 };
 
-TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, id, callback) {
-    db.func('GetTechnologyDataByID', [id, userUUID])
+TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, roleName, id, callback) {
+    db.func('GetTechnologyDataByID', [id, userUUID, roleName])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {

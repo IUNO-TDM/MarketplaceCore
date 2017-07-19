@@ -762,20 +762,13 @@ $BODY$
   COST 100;
 -- ##############################################################################    
 -- CreatePaymentInvoice
-CREATE FUNCTION CreatePaymentInvoice (
-  vInvoice varchar(32672), 
-  vOfferRequestUUID uuid,
-  vUserUUID uuid,
-  vRoleName varchar  
- )
-  RETURNS TABLE (
-	PaymentInvoiceUUID uuid,
-	OfferRequestUUID uuid,
-	Invoice varchar(32672),
-	CreatedAt timestamp with time zone,
-	CreatedBy uuid
-  ) AS
-  $$
+CREATE FUNCTION public.createpaymentinvoice(
+    IN vinvoice character varying,
+    IN vofferrequestuuid uuid,
+    IN vuseruuid uuid,
+    IN vrolename character varying)
+  RETURNS TABLE(paymentinvoiceuuid uuid, offerrequestuuid uuid, invoice character varying, createdat timestamp with time zone, createdby uuid) AS
+$BODY$
 	#variable_conflict use_column
 	DECLARE vPaymentInvoiceID integer := (select nextval('PaymentInvoiceID'));
 		vPaymentInvoiceUUID uuid := (select uuid_generate_v4()); 
@@ -803,7 +796,7 @@ CREATE FUNCTION CreatePaymentInvoice (
                                 'PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
 				|| ', OfferRequestID: ' || cast(vOfferReqID as varchar)
 				|| ', Invoice: ' || vInvoice
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+				|| ', CreatedBy: ' || cast(vuseruuid as varchar));
                                 
         -- End Log if success
         -- Return 
@@ -812,11 +805,10 @@ CREATE FUNCTION CreatePaymentInvoice (
 			oq.OfferRequestUUID,
 			pi.Invoice,
 			pi.CreatedAt at time zone 'utc',
-			ur.useruuid as CreatedBy
+			pi.CreatedBy
 		from paymentinvoice pi
 		join offerrequest oq 
-		on pi.offerrequestid = oq.offerrequestid
-		join users ur on ur.userid = pi.createdby		
+		on pi.offerrequestid = oq.offerrequestid 		
 		where pi.paymentinvoiceuuid = vPaymentInvoiceUUID
         );
         
@@ -826,27 +818,23 @@ CREATE FUNCTION CreatePaymentInvoice (
                                 'PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
 				|| ', OfferRequestID: ' || cast(vOfferReqID as varchar)
 				|| ', Invoice: ' || vInvoice
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+				|| ', CreatedBy: ' || cast(vuseruuid as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreatePaymentInvoice';
         RETURN;
       END;
-  $$
-  LANGUAGE 'plpgsql';
+  $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
 -- ##############################################################################    
 -- CreateOffer   
-CREATE FUNCTION CreateOffer(
-  vPaymentInvoiceUUID uuid,
-  vUserUUID uuid,
-  vRoleName varchar
- )
-  RETURNS TABLE (
-	OfferUUID uuid,
-	PaymentInvoiceUUID uuid,
-	CreatedAt timestamp with time zone,
-	CreatedBy uuid	
-  ) AS
-  $$
+CREATE FUNCTION public.createoffer(
+    IN vpaymentinvoiceuuid uuid,
+    IN vuseruuid uuid,
+    IN vrolename character varying)
+  RETURNS TABLE(offeruuid uuid, paymentinvoiceuuid uuid, createdat timestamp with time zone, createdby uuid) AS
+$BODY$
 	#variable_conflict use_column
       DECLARE 	vOfferID integer := (select nextval('OfferID'));
 		vOfferUUID uuid := (select uuid_generate_v4());
@@ -863,7 +851,7 @@ CREATE FUNCTION CreateOffer(
 		VALUES(vOfferID, vOfferUUID, vPaymentInvoiceID, vUserUUID, now());
 
 		-- Update Transactions table
-		UPDATE Transactions SET OfferId = vOfferID, UpdatedAt = now(), UpdatedBy = vCreatedBy
+		UPDATE Transactions SET OfferId = vOfferID, UpdatedAt = now(), UpdatedBy = vUserUUID
 		WHERE TransactionID = vTransactionID;
 
 	ELSE 
@@ -874,7 +862,7 @@ CREATE FUNCTION CreateOffer(
         perform public.createlog(0,'Created Offer sucessfully', 'CreateOffer', 
                                 'OfferID: ' || cast(vOfferID as varchar) 
 				|| ', PaymentInvoiceUUID: ' || cast(vPaymentInvoiceUUID as varchar)
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+				|| ', CreatedBy: ' || cast(vUserUUID as varchar));
                                 
         -- End Log if success
         -- Return vOfferUUID
@@ -891,13 +879,15 @@ CREATE FUNCTION CreateOffer(
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateOffer', 
                                 'OfferID: ' || cast(vOfferID as varchar) 
 				|| ', PaymentInvoiceUUID: ' || cast(vPaymentInvoiceUUID as varchar)
-				|| ', CreatedBy: ' || cast(vCreatedBy as varchar));
+				|| ', CreatedBy: ' || cast(vUserUUID as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateOffer';
         RETURN;
       END;
-  $$
-  LANGUAGE 'plpgsql';   
+  $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
 -- ##############################################################################
 -- CreateLicenseOrder  
 CREATE FUNCTION CreateLicenseOrder (
@@ -1457,24 +1447,13 @@ Return Value:
  TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
 ######################################################*/
  -- SetPaymentInvoiceOffer  
-CREATE FUNCTION SetPaymentInvoiceOffer ( 
-	vOfferRequestUUID uuid,
-	vInvoice varchar(32672),
-	vCreatedBy uuid,
-	vRoleName varchar	
- )
-  RETURNS TABLE (
-	paymentinvoiceuuid uuid, 
-	invoice varchar(32672),
-	offeruuid uuid,	
-	paymentcreatedat timestamp with time zone,
-	paymentcreatedby uuid,
-	offercreatedat timestamp with time zone,
-	offercreatedby uuid
-	)
-  
-   AS
-  $$  
+CREATE FUNCTION public.setpaymentinvoiceoffer(
+    IN vofferrequestuuid uuid,
+    IN vinvoice character varying,
+    IN vcreatedby uuid,
+    IN vrolename character varying)
+  RETURNS TABLE(paymentinvoiceuuid uuid, invoice character varying, offeruuid uuid, paymentcreatedat timestamp with time zone, paymentcreatedby uuid, offercreatedat timestamp with time zone, offercreatedby uuid) AS
+$BODY$  
 	#variable_conflict use_column
       DECLARE  
 		vPaymentInvoiceID integer;
@@ -1528,8 +1507,10 @@ CREATE FUNCTION SetPaymentInvoiceOffer (
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetPaymentInvoiceOffer';
         RETURN;
       END;
-  $$
-  LANGUAGE 'plpgsql';
+  $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -1602,41 +1583,29 @@ Input paramteres: technologyUUID uuid
 				  userUUID uuid
 Return Value: Table with all TechnologyData 
 ######################################################*/
- CREATE FUNCTION public.GetTechnologyDataByID(
-    vtechnologydatauuid uuid,
-	vUserUUID uuid,
-    vRoleName varchar)
-  RETURNS TABLE(technologydatauuid uuid, 
-		technologyuuid uuid, 
-		technologydataname character varying, 
-		technologydata character varying, 
-		technologydatadescription character varying, 
-		licensefee integer, 
-		retailprice integer, 
-		technologydatathumbnail bytea, 
-		technologydataimgref character varying, 
-		createdat timestamp with time zone, 
-		createdby uuid, 
-		updatedat timestamp with time zone,
-		updatedyby uuid) AS
-$$ 
+ CREATE FUNCTION public.gettechnologydatabyid(
+    IN vtechnologydatauuid uuid,
+    IN vuseruuid uuid,
+    IN vrolename character varying)
+  RETURNS TABLE(technologydatauuid uuid, technologyuuid uuid, technologydataname character varying, technologydata character varying, technologydatadescription character varying, licensefee integer, retailprice integer, technologydatathumbnail bytea, technologydataimgref character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedyby uuid) AS
+$BODY$ 
 	DECLARE
-		vFunctionName varchar := 'GetTechnologyDataByID'; 
+		vFunctionName varchar := 'GetTechnologyDataById'; 
 		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
 		
 	BEGIN     
 
 	IF(vIsAllowed) THEN 
 	
-	RETURN QUERY (	SELECT 	technologydatauuid,
+	RETURN QUERY (	SELECT 	td.technologydatauuid,
 				tc.technologyuuid,    		
-				technologydataname,
-				technologydata,
-				technologydatadescription,
-				licensefee,
-				retailprice,
-				technologydatathumbnail,
-				technologydataimgref,
+				td.technologydataname,
+				td.technologydata,
+				td.technologydatadescription,
+				td.licensefee,
+				td.retailprice,
+				td.technologydatathumbnail,
+				td.technologydataimgref,
 				td.createdat  at time zone 'utc',
 				td.createdby,	
 				td.updatedat  at time zone 'utc',
@@ -1644,7 +1613,7 @@ $$
 				FROM TechnologyData td
 				join technologies tc 
 				on td.technologyid = tc.technologyid
-				where technologydatauuid = vtechnologydatauuid
+				where td.technologydatauuid = vtechnologydatauuid
 		);
 
 	ELSE 
@@ -1653,7 +1622,10 @@ $$
 	END IF; 
 
 	END;
-$$ LANGUAGE 'plpgsql';
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2154,13 +2126,13 @@ Get all Technologies
 Input paramteres: none	
 Return Value: Table with all Technologies
 ######################################################*/ 
-CREATE OR REPLACE FUNCTION public.gettechnologydatabyparams(
+CREATE FUNCTION public.gettechnologydatabyparams(
     IN vcomponents text[],
     IN vtechnologyuuid uuid,
+    IN vtechnologydataname character varying,
     IN vcreatedby uuid,
-    IN vRoleName varchar,
-    OUT result json)
-  RETURNS json AS
+    IN vrolename character varying)
+  RETURNS table(result json) AS
 $BODY$	 
 
 	DECLARE
@@ -2169,9 +2141,9 @@ $BODY$
 		
 	BEGIN   
 
-	IF(isAllowed) THEN  
+	IF(vIsAllowed) THEN  
 	
-	 	 with tg as (
+	 RETURN QUERY (	 with tg as (
 				select tg.tagid, tg.tagname from tags tg
 				join technologydatatags ts
 				on tg.tagid = ts.tagid
@@ -2209,9 +2181,9 @@ $BODY$
 					td.technologydatathumbnail,
 					td.technologydataimgref,
 					td.createdat at time zone 'utc',
-					co.CreatedBy,
+					td.CreatedBy,
 					td.updatedat at time zone 'utc',
-					co.UpdatedBy,
+					td.UpdatedBy,
 					array_to_json(array_agg(co.*)) ComponentsWithAttribute
 				from comp co join technologydatacomponents tc
 				on co.componentid = tc.componentid
@@ -2219,7 +2191,7 @@ $BODY$
 				td.technologydataid = tc.technologydataid
 				join components cm on cm.componentid = co.componentid  
 				join technologies tt on 
-				tt.technologyid = td.technologyid
+				tt.technologyid = td.technologyid				
 				group by td.technologydatauuid,
 					td.technologydataname,
 					tt.technologyuuid,
@@ -2231,9 +2203,9 @@ $BODY$
 					td.technologydatathumbnail,
 					td.technologydataimgref,
 					td.createdat,				
-					co.useruuid,
+					td.createdby,
 					td.updatedat,
-					co.useruuid	
+					td.updatedby 
 			),
 			compIn as (
 				select	technologydataname, array_agg(componentuuid order by componentuuid asc) comp 
@@ -2241,12 +2213,15 @@ $BODY$
 				join technologydatacomponents tc
 				on co.componentid = tc.componentid
 				join technologydata td on
-				td.technologydataid = tc.technologydataid
-				group by technologydataname	 			
+				td.technologydataid = tc.technologydataid				
+				group by technologydataname
+					 			
 			)
 			select array_to_json(array_agg(td.*)) from techData	td
 			join compIn co on co.technologydataname = td.technologydataname
-			where co.comp::text[] <@ vComponents;
+			where (co.comp::text[] <@ vComponents OR vComponents is null)
+			and (vTechnologyDataName is null OR td.technologydataname = vTechnologyDataName)
+		);
 		 
 	ELSE 
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
@@ -2256,7 +2231,7 @@ $BODY$
 	END;
 		$BODY$
   LANGUAGE plpgsql VOLATILE
-  COST 100;  
+  COST 100; 
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -3767,7 +3742,7 @@ $BODY$
 		
 	BEGIN     
 
-	IF(isAllowed) THEN 
+	IF(vIsAllowed) THEN 
 	
 	RETURN QUERY (	SELECT 	td.createdby
 				FROM TechnologyData td 

@@ -16,7 +16,7 @@ var helper = require('../services/helper_service');
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
 
-    new TechnologyData().FindAll(req.query['userUUID'], req.query, function (err, data) {
+    new TechnologyData().FindAll(req.query['userUUID'], req.token.user.rolename, req.query, function (err, data) {
         if (err) {
             next(err);
         }
@@ -28,7 +28,7 @@ router.get('/', validate({query: require('../schema/technologydata_schema').GetA
 
 router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    new TechnologyData().FindSingle(req.query['userUUID'], req.params['id'], function (err, data) {
+    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.rolename, req.params['id'],   function (err, data) {
         if (err) {
             next(err);
         }

@@ -14,10 +14,6 @@ self.GetAll = {
             type: 'string',
             required: true
         },
-        name: {
-            type: 'string',
-            required: false
-        },
         tags: {
             type: 'array',
             items: {
@@ -37,6 +33,10 @@ self.GetAll = {
             items: {
                 type: 'string'
             },
+            required: false
+        },
+        technologydataname: {
+            type: 'string',
             required: false
         },
         attributes: {
