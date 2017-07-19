@@ -3721,6 +3721,37 @@ $$
 	END;
 $$
 LANGUAGE PLPGSQL;
+--######################################################
+--GetLicenseFeeByTechnologyData
+CREATE FUNCTION public.GetLicenseFeeByTechnologyData(
+    IN vTechnologyDataUUID uuid,
+    IN vUserUUID uuid,
+    IN vrolename character varying
+    )
+  RETURNS TABLE(licensefee integer) AS
+$BODY$	 
+	DECLARE
+		vFunctionName varchar := 'GetLicenseFeeByTechnologyData'; 
+		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
+		
+	BEGIN     
+
+	IF(vIsAllowed) THEN 
+
+	RETURN QUERY (select	td.licenseFee
+			from technologydata td			
+			where td.technologydatauuid = vTechnologyDataUUID
+		);
+	ELSE 
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';	
+		 RETURN;
+	END IF; 
+
+	END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000; 
 
   
   

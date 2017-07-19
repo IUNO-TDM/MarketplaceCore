@@ -74,7 +74,8 @@ $$
 		perform SetPermission('Admin', 'SetPayment', 'Admin');
 		perform SetPermission('Admin', 'SetPaymentInvoiceOffer', 'Admin');
 		perform SetPermission('Admin', 'SetTechnologyData', 'Admin');
-		perform SetPermission('Admin', 'CreateTechnologyDataTags', 'Admin')
+		perform SetPermission('Admin', 'CreateTechnologyDataTags', 'Admin');
+		perform SetPermission('Admin', 'GetLicenseFeeByTechnologyData', 'Admin');
 		
 		
 		
