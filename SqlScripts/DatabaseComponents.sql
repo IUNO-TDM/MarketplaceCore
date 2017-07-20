@@ -506,7 +506,7 @@ $$
 -- CreateTechnologyDataComponents 
 CREATE FUNCTION CreateTechnologyDataComponents (
   vTechnologyDataUUID uuid, 
-  vComponentList text[],
+  vComponentList uuid[],
   vRoleName varchar 
  )
   RETURNS TABLE (
@@ -515,7 +515,7 @@ CREATE FUNCTION CreateTechnologyDataComponents (
   ) AS
   $$
 	#variable_conflict use_column
-  	DECLARE vCompName text;
+  	DECLARE vCompUUID uuid;
 		vCompID integer;
 		vTechnologyDataID integer := (select technologydataid from technologydata where technologydatauuid = vTechnologyDataUUID);
 		vFunctionName varchar := 'CreateTechnologyDataComponents';
@@ -523,9 +523,9 @@ CREATE FUNCTION CreateTechnologyDataComponents (
 		
       BEGIN  
 	IF(vIsAllowed) THEN 
-		FOREACH vCompName in array vComponentList 		
+		FOREACH vCompUUID in array vComponentList 		
 		LOOP 
-			vCompID := (select componentID from components where componentName = vCompName);
+			vCompID := (select componentID from components where componentUUID = vCompUUID);
 			
 			INSERT INTO TechnologyDataComponents(technologydataid, componentid)
 			VALUES (vTechnologyDataID, vCompID);
@@ -1315,7 +1315,7 @@ Return Value:
 	vLicensefee integer,
 	vRetailPrice integer,
 	vTaglist text[],	
-	vComponentlist text[],
+	vComponentlist uuid[],
 	vCreatedby uuid,
 	vRoleName varchar)
   RETURNS TABLE (
@@ -1335,7 +1335,7 @@ Return Value:
   ) AS	  
 $$    
 	#variable_conflict use_column
-      DECLARE 	vCompName text;
+      DECLARE 	vCompUUID uuid;
 				vTagName text; 
 				vTechnologyDataID int; 
 				vTechnologyDataUUID uuid;
@@ -1347,9 +1347,9 @@ $$
 
 	IF(vIsAllowed) THEN         
 		-- Proof if all components are avaiable      
-		FOREACH vCompName in array vComponentlist 
+		FOREACH vCompUUID in array vComponentlist 
 		LOOP 
-			 if not exists (select componentid from components where componentname = vCompName) then
+			 if not exists (select componentid from components where componentuuid = vCompUUID) then
 			 raise exception using
 			 errcode = 'invalid_parameter_value',
 			 message = 'There is no component with ComponentName: ' || vCompName; 
@@ -1370,7 +1370,7 @@ $$
 		end if;
 		
 		-- Create new TechnologyData  
-			perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyUUID, vCreatedBy, vRoleName); 		
+		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyUUID, vCreatedBy, vRoleName); 		
 		vTechnologyDataID := (select currval('TechnologyDataID'));
 		vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
 		-- Create relation from Components to TechnologyData 

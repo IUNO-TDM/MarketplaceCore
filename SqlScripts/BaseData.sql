@@ -224,9 +224,13 @@ $$
         DECLARE  vUserUUID uuid := 'f6552f5c-f15b-4350-b373-418979d4c045';
 				 vRoleName varchar := 'Admin';
 				 vTechnologyUUID uuid := (select technologyuuid from technologies where technologyid = 1);
+		vComponents uuid[];
+	
   BEGIN
   		-- Create TechnologyData   
-		-- Cherry with Mango
+		-- Cherry with Mango	
+
+	vComponents := (select array_agg(componentuuid) from components where componentname in ('Cherry Juice','Mango Juice'));
         perform public.settechnologydata(
             'CheMa',		     				 -- <technologydataname character varying>, 
             '{
@@ -259,12 +263,13 @@ $$
             50000,
 			150000,
             '{Delicious, Cherry, Mango, Yummy}', -- <taglist text[]>,            						 		 -- <createdby integer>, 
-            '{Cherry Juice,Mango Juice}',    							 -- <componentlist integer[]>
+            vComponents,    							 -- <componentlist integer[]>
 			vUserUUID,
 			vRoleName  
 		 
 		 ); 
 		-- Other Juice
+	vComponents := (select array_agg(componentuuid) from components where componentname in ('Orangensaft','Apfelsaft','Johannisbeersaft'));
         perform public.settechnologydata(
             'CSaefte',		     				 -- <technologydataname character varying>, 
             '{
@@ -297,11 +302,12 @@ $$
             50000,
 			150000,
             '{Delicious}', -- <taglist text[]>,            						 		 -- <createdby integer>, 
-            '{Orangensaft,Apfelsaft,Johannisbeersaft}',    							 -- <componentlist integer[]>
+            vComponents,    							 -- <componentlist integer[]>
 			vUserUUID,
 			vRoleName 
 		 );
          -- Cherry with Cola
+        vComponents := (select array_agg(componentuuid) from components where componentname in ('Cherry Juice','Cola'));
         perform public.settechnologydata(
             'CheCo',		     				 -- <technologydataname character varying>, 
             '{
@@ -334,11 +340,12 @@ $$
             75000,
 			200000,  			 			 
             '{Delicious, Cherry, Cola, Refreshing}', -- <taglist text[]>,
-			'{Cherry Juice,Cola}',    		 -- <componentlist integer[]>			
+	    vComponents,    		 -- <componentlist integer[]>			
             vUserUUID,    						 -- <createdby integer>, 
             vRoleName
          );
           -- Ginger, Orange
+        vComponents := (select array_agg(componentuuid) from components where componentname in ('Ginger Sirup','Orange Juice'));
         perform public.settechnologydata(
             'Ginge',		     				 -- <technologydataname character varying>, 
             '{
@@ -371,11 +378,12 @@ $$
             100000,
 			175000,    			 				 -- <licensefee numeric>, 
             '{Delicious, Ginger, Orange}', -- <taglist text[]>,               						  
-            '{Ginger Sirup,Orange Juice}', 
+            vComponents, 
 			vUserUUID,
 			vRoleName
          );
          -- Banana, Mango, Orange
+        vComponents := (select array_agg(componentuuid) from components where componentname in ('Banana Juice','Mango Juice','Orange Juice'));
         perform public.settechnologydata(
             'Bamao',		     				 -- <technologydataname character varying>, 
             '{
@@ -408,7 +416,7 @@ $$
             50000,
 			200000,
             '{Delicious, Banana, Orange, Mango, Tasty}', -- <taglist text[]>,              
-            '{Banana Juice,Mango Juice,Orange Juice}',    								 -- <componentlist integer[]>
+            vComponents,    								 -- <componentlist integer[]>
 			vUserUUID,
 			vRoleName 
          );
