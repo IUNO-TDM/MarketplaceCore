@@ -1340,7 +1340,7 @@ $BODY$
 			 if not exists (select componentid from components where componentuuid = vCompUUID) then
 			 raise exception using
 			 errcode = 'invalid_parameter_value',
-			 message = 'There is no component with ComponentName: ' || vCompName; 
+			 message = 'There is no component with ComponentName: ' || cast(vCompUUID as varchar); 
 			 end if;
 		END LOOP;
 		-- Proof if all Tags are avaiable     
@@ -1354,7 +1354,7 @@ $BODY$
 		if not exists (select technologyid from technologies where technologyuuid = vTechnologyUUID) then
 			raise exception using
 		    errcode = 'invalid_parameter_value',
-		    message = 'There is no technology with TechnologyID: ' || vTechnologyID::text; 
+		    message = 'There is no technology with TechnologyID: ' || coalesce(vTechnologyID::text,'Empty'); 
 		end if;
 		
 		-- Create new TechnologyData  
