@@ -76,21 +76,22 @@ TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (user
             callback(error);
         });
 };
-TechnologyData.prototype.Create = function (userUUID, callback) {
+TechnologyData.prototype.Create = function (userUUID, roleName, callback) {
     db.func('SetTechnologyData',
-        [   self.technologydataname,
-            self.technologydata,
-            self.technologydatadescription,
-            self.technologyid,
-            self.licensefee,
-            self.retailprice,
-            self.taglist,
-            self.componentlist,
-            userUUID
+        [   this.technologydataname,
+            this.technologydata,
+            this.technologydatadescription,
+            this.technologyid,
+            this.licensefee,
+            this.retailprice,
+            this.taglist,
+            this.componentlist,
+            userUUID,
+            roleName
         ])
         .then(function (data) {
             logger.debug(data);
-            callback(null, new TechnologyData(data));
+            callback(null, data);
         })
         .catch(function (error) {
             logger.crit(error);
