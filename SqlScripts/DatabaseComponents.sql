@@ -506,7 +506,7 @@ $$
 -- CreateTechnologyDataComponents 
 CREATE FUNCTION CreateTechnologyDataComponents (
   vTechnologyDataUUID uuid, 
-  vComponentList uuid[],
+  vComponentList text[],
   vRoleName varchar 
  )
   RETURNS TABLE (
@@ -1307,33 +1307,19 @@ Return Value:
  TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
 ######################################################*/
 -- Set TechnologyData  
- CREATE FUNCTION public.settechnologydata(  
-	vTechnologyDataName varchar(250), 
-	vTechnologyData varchar(32672), 
-	vTechnologyDataDescription varchar(32672), 
-	vtechnologyuuid uuid,
-	vLicensefee integer,
-	vRetailPrice integer,
-	vTaglist text[],	
-	vComponentlist uuid[],
-	vCreatedby uuid,
-	vRoleName varchar)
-  RETURNS TABLE (
-	TechnologyDataUUID uuid,
-	TechnologyDataName varchar(250),
-	TechnologyUUID uuid,
-	TechnologyData varchar(32672),
-	LicenseFee integer,
-	RetailPrice integer,
-	TechnologyDataDescription varchar(32672),
-	TechnologyDataThumbnail bytea,
-	TechnologyDataImgRef character varying,
-	TagList uuid[],
-	ComponentList uuid[],
-	CreatedAt timestamp with time zone,
-	CreatedBy uuid
-  ) AS	  
-$$    
+CREATE FUNCTION public.settechnologydata(
+    IN vtechnologydataname character varying,
+    IN vtechnologydata character varying,
+    IN vtechnologydatadescription character varying,
+    IN vtechnologyuuid uuid,
+    IN vlicensefee integer,
+    IN vretailprice integer,
+    IN vtaglist text[],
+    IN vcomponentlist text[],
+    IN vcreatedby uuid,
+    IN vrolename character varying)
+  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, technologyuuid uuid, technologydata character varying, licensefee integer, retailprice integer, technologydatadescription character varying, technologydatathumbnail bytea, technologydataimgref character varying, taglist uuid[], componentlist uuid[], createdat timestamp with time zone, createdby uuid) AS
+$BODY$    
 	#variable_conflict use_column
       DECLARE 	vCompUUID uuid;
 				vTagName text; 
@@ -1431,8 +1417,10 @@ $$
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetTechnologyData';
         RETURN;
       END;
-  $$
-  LANGUAGE plpgsql;
+  $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG

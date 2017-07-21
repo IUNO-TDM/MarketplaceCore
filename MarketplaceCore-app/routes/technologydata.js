@@ -43,7 +43,9 @@ router.post('/', validate({
     body: require('../schema/technologydata_schema').SaveDataBody,
     query: require('../schema/technologydata_schema').SaveDataQuery
 }), function (req, res, next) {
+
     var techData = new TechnologyData();
+    var data = req.body;
 
     techData.technologydataname = data['technologyDataName'];
     techData.technologydata = data['technologyData'];
@@ -54,7 +56,7 @@ router.post('/', validate({
     techData.taglist = data['tagList'];
     techData.componentlist = data['componentList'];
 
-    techData.Create(req.query['userUUID'], req.body, function (err, data) {
+    techData.Create(req.query['userUUID'], req.token.user.rolename, function (err, data) {
         if (err) {
             next(err);
         }
