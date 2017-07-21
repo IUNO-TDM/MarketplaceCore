@@ -27,7 +27,7 @@
         "tags": [
           "license"
         ],
-        "summary": "Get a new license update for a CmDongle",
+        "summary": "Get a new license update for a CmDongle.",
         "description": "",
         "operationId": "doLicenseUpdate",
         "consumes": [
@@ -53,11 +53,19 @@
             "schema": {
               "type": "object",
               "properties": {
-                "ReturnMessage": {
-                  "$ref": "#/definitions/ReturnMessage"
-                },
                 "Result": {
                   "$ref": "#/definitions/LicenseUpdate"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ReturnMessage": {
+                  "$ref": "#/definitions/ReturnMessage"
                 }
               }
             }
@@ -70,7 +78,7 @@
         "tags": [
           "license"
         ],
-        "summary": "Creates and activates a new license for a product and CmDongle",
+        "summary": "Creates and activates a new license for a product and CmDongle.",
         "description": "",
         "operationId": "doCreateOrderIUNO",
         "consumes": [
@@ -92,15 +100,15 @@
         ],
         "responses": {
           "200": {
-            "description": "okay",
+            "description": "okay"
+          },
+          "500": {
+            "description": "error",
             "schema": {
               "type": "object",
               "properties": {
                 "ReturnMessage": {
                   "$ref": "#/definitions/ReturnMessage"
-                },
-                "Result": {
-                  "type": "object"
                 }
               }
             }
@@ -139,11 +147,19 @@
             "schema": {
               "type": "object",
               "properties": {
-                "ReturnMessage": {
-                  "$ref": "#/definitions/ReturnMessage"
-                },
                 "Result": {
                   "$ref": "#/definitions/EncryptedData"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ReturnMessage": {
+                  "$ref": "#/definitions/ReturnMessage"
                 }
               }
             }
@@ -178,15 +194,15 @@
         ],
         "responses": {
           "200": {
-            "description": "okay",
+            "description": "okay"
+          },
+          "500": {
+            "description": "error",
             "schema": {
               "type": "object",
               "properties": {
                 "ReturnMessage": {
                   "$ref": "#/definitions/ReturnMessage"
-                },
-                "Result": {
-                  "type": "object"
                 }
               }
             }
@@ -322,7 +338,7 @@
         },
         "ErrorText": {
           "type": "string",
-          "description": "Error message for the user"
+          "description": "Error message for the user."
         },
         "InternalErrorCode": {
           "type": "integer",
