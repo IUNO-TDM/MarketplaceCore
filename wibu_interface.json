@@ -186,7 +186,7 @@
             "description": "Metadata object for creating a new technolgoy data set",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CreateItem"
+              "$ref": "#/definitions/Item"
             }
           }
         ],
@@ -214,27 +214,25 @@
       "type": "object",
       "properties": {
         "cmserial": {
-          "type": "string"
+          "type": "string",
+          "description": "serial number of CmContainer as string",
+          "example": "3-312345"
         },
         "context": {
           "type": "string",
-          "format": "base64"
+          "format": "base64",
+          "description": "WibuCmRaC file of CmContainer encoded with base64",
+          "example": "SFAgd2FzIGhlcmUhCg=="
         },
         "firmcode": {
           "type": "integer",
-          "format": "int32",
-          "default": 6000274,
-          "enum": [
-            6000274
-          ]
+          "format": "uint32",
+          "default": 6000274
         },
         "cmactid": {
           "type": "integer",
-          "format": "int32",
-          "default": 1000,
-          "enum": [
-            1000
-          ]
+          "format": "uint32",
+          "default": 1000
         },
         "location": {
           "type": "string",
@@ -247,15 +245,14 @@
       "properties": {
         "content": {
           "type": "string",
-          "format": "base64"
-        },
-        "length": {
-          "type": "integer",
-          "format": "int32"
+          "format": "base64",
+          "description": "WibuCmRaU file encoded with base64",
+          "example": "SFAgd2FzIGhlcmUhCg=="
         },
         "md5": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "md5",
+          "description": "md5 checksum of content"
         }
       }
     },
@@ -263,17 +260,23 @@
       "type": "object",
       "properties": {
         "cmserial": {
-          "type": "string"
+          "type": "string",
+          "description": "serial number of CmContainer the license is ordered for as string",
+          "example": "3-312345"
         },
         "customerid": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 20,
+          "description": "name of customer"
         },
         "itemid": {
-          "type": "string"
+          "type": "string",
+          "description": "number of articel to be licensed"
         },
         "quantity": {
           "type": "integer",
-          "format": "int32"
+          "format": "int32",
+          "description": "amount of licenses to be issued"
         }
       }
     },
@@ -281,14 +284,20 @@
       "type": "object",
       "properties": {
         "firmcode": {
-          "type": "string"
+          "type": "integer",
+          "format": "uint32",
+          "default": 6000274
         },
         "productcode": {
-          "type": "string"
+          "type": "string",
+          "description": "product code for encryption"
         },
         "buffer": {
           "type": "string",
-          "format": "base64"
+          "format": "base64",
+          "description": "base64 encoded raw data to be encrypted",
+          "minLength": 24,
+          "example": "MDk4NzY1NDMyMWFiY2RlZmdoCg=="
         }
       }
     },
@@ -297,32 +306,36 @@
       "properties": {
         "content": {
           "type": "string",
-          "format": "base64"
-        },
-        "length": {
-          "type": "integer",
-          "format": "int32"
+          "format": "base64",
+          "description": "encrypted data encoded with base64"
         },
         "md5": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "md5",
+          "description": "md5 checksum of content"
         }
       }
     },
-    "CreateItem": {
+    "Item": {
       "type": "object",
       "properties": {
         "itemid": {
-          "type": "string"
+          "type": "string",
+          "description": "article number and reference for issueing licenses"
         },
         "itemname": {
-          "type": "string"
+          "type": "string",
+          "description": "name of article",
+          "example": "pangalactic gargle blaster"
         },
         "firmcode": {
-          "type": "string"
+          "type": "integer",
+          "format": "uint32",
+          "default": 6000274
         },
         "productcode": {
-          "type": "string"
+          "type": "string",
+          "description": "product code for encryption"
         }
       }
     },
@@ -332,21 +345,24 @@
         "ReturnCode": {
           "type": "integer",
           "format": "int32",
-          "description": ""
+          "description": "error code for the user"
         },
         "ErrorText": {
           "type": "string",
-          "description": "Error message for the user."
+          "description": "error message for the user"
         },
         "InternalErrorCode": {
           "type": "integer",
-          "format": "int32"
+          "format": "int32",
+          "description": "zero for errors in php module, non zero for application errors"
         },
         "InternalErrorText": {
-          "type": "string"
+          "type": "string",
+          "description": "error message for internal error"
         },
         "Version": {
-          "type": "string"
+          "type": "string",
+          "description": "version information"
         }
       }
     }
