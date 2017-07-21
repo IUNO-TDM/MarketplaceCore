@@ -71,7 +71,7 @@ router.post('/', validate({
 router.get('/:id/image', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
 
-    new TechnologyData().FindSingle(req.query['userUUID'], req.params['id'], function (err, technologyData) {
+    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.rolename, req.params['id'], function (err, technologyData) {
         if (err) {
             next(err);
         }
@@ -101,7 +101,7 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
 
 router.get('/:id/components', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    new Component().FindByTechnologyDataId(req.query['userUUID'], req.params['id'], function (err, components) {
+    new Component().FindByTechnologyDataId(req.query['userUUID'], req.token.user.rolename, req.params['id'], function (err, components) {
         if (err) {
             next(err);
         }

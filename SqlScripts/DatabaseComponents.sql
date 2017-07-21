@@ -3468,7 +3468,7 @@ RETURNS TABLE (
 	) AS 
 $$	 
 	DECLARE
-		vFunctionName varchar := 'GetComponentsForTechnologyDataID'; 
+		vFunctionName varchar := 'GetComponentsForTechnologyDataId'; 
 		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
 		
 	BEGIN     

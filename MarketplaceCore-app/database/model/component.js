@@ -62,8 +62,8 @@ Component.prototype.FindSingle = Component.FindSingle = function (userUUID, role
         });
 };
 
-Component.prototype.FindByTechnologyDataId =  Component.FindByTechnologyDataId = function (userUUID, technologyDataId, callback) {
-    db.func('GetComponentsForTechnologyDataId', [technologyDataId, userUUID])
+Component.prototype.FindByTechnologyDataId =  Component.FindByTechnologyDataId = function (userUUID, roleName, technologyDataId, callback) {
+    db.func('GetComponentsForTechnologyDataId', [technologyDataId, userUUID, roleName])
         .then(function (data) {
             var resultList = [];
             for (var key in data) {
