@@ -50,7 +50,9 @@ CREATE SEQUENCE FunctionID START 2;
 CREATE SEQUENCE OfferRequestItemID START 1; 
 -- ##########################################################################
 -- Create Indexes
-CREATE UNIQUE INDEX invoice_idx ON paymentinvoice (invoice);
+--CREATE UNIQUE INDEX invoice_idx ON paymentinvoice (invoice);
+-- There is a problem in PostgreSql see: https://hcmc.uvic.ca/blogs/index.php?blog=22&p=8105&more=1&c=1&tb=1&pb=1
+-- Indexes and sequences may run out of sync
 -- ##########################################################################
 -- Create Functions
 -- CreateLog
@@ -795,7 +797,7 @@ $BODY$
         perform public.createlog(0,'Created PaymentInvoice sucessfully', 'CreatePaymentInvoice', 
                                 'PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
 				|| ', OfferRequestID: ' || cast(vOfferReqID as varchar)
-				|| ', Invoice: ' || vInvoice
+				|| ', Invoice: ' || coalesce(vInvoice, 'Empty')
 				|| ', CreatedBy: ' || cast(vuseruuid as varchar));
                                 
         -- End Log if success
@@ -814,10 +816,10 @@ $BODY$
         
         exception when others then 
         -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreatePaymentInvoice', 
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'CreatePaymentInvoice', 
                                 'PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar) 
 				|| ', OfferRequestID: ' || cast(vOfferReqID as varchar)
-				|| ', Invoice: ' || vInvoice
+				|| ', Invoice: ' || coalesce(vInvoice, 'Empty')
 				|| ', CreatedBy: ' || cast(vuseruuid as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreatePaymentInvoice';
