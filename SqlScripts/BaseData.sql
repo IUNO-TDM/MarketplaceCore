@@ -224,7 +224,7 @@ $$
         DECLARE  vUserUUID uuid := 'f6552f5c-f15b-4350-b373-418979d4c045';
 				 vRoleName varchar := 'Admin';
 				 vTechnologyUUID uuid := (select technologyuuid from technologies where technologyid = 1);
-		vComponents uuid[];
+		vComponents text[];
 	
   BEGIN
   		-- Create TechnologyData   

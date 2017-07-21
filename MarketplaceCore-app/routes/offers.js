@@ -90,7 +90,7 @@ router.post('/', validate({
                                         next(err);
                                     } else {
                                         var fullUrl = helper.buildFullUrlFromRequest(req);
-                                        res.set('Location', fullUrl + '/'  +offer[0].offeruuid);
+                                        res.set('Location', fullUrl + offer[0].offeruuid);
                                         res.status(201);
                                         var invoiceIn  = JSON.parse(offer[0].invoice);
                                         var invoiceOut = {
