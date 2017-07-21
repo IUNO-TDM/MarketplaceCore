@@ -22,8 +22,8 @@
     "https"
   ],
   "paths": {
-    "/doLicenseUpdate2.php": {
-      "post": {
+    "/license.php": {
+      "get": {
         "tags": [
           "license"
         ],
@@ -71,9 +71,7 @@
             }
           }
         }
-      }
-    },
-    "/doCreateOrderIUNO.php": {
+      },
       "post": {
         "tags": [
           "license"
@@ -116,8 +114,8 @@
         }
       }
     },
-    "/doEncryptData.php": {
-      "post": {
+    "/encrypt.php": {
+      "get": {
         "tags": [
           "article"
         ],
@@ -167,7 +165,7 @@
         }
       }
     },
-    "/doCreateItem.php": {
+    "/article.php": {
       "post": {
         "tags": [
           "article"
