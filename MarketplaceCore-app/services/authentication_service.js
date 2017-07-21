@@ -2,7 +2,7 @@
  * Created by beuttlerma on 11.07.17.
  */
 
-var authService= require('../connector/auth_service_connector');
+var authService= require('../adapter/auth_service_adapter');
 var logger = require('../global/logger');
 var self = {};
 
