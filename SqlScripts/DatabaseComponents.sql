@@ -2479,7 +2479,7 @@ CREATE FUNCTION GetOfferByID(vOfferID uuid, vUserUUID uuid, vRoleName varchar)
     AS $$ 
 
 	DECLARE
-		vFunctionName varchar := 'GetOfferByID'; 
+		vFunctionName varchar := 'GetOfferById'; 
 		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
 		
 	BEGIN     

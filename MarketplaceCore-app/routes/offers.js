@@ -19,7 +19,7 @@ var transaction = require('../database/function/transaction');
 router.get('/:id', validate({
     query: require('../schema/offers_schema').Offers
 }), function (req, res, next) {
-    new Offer().FindSingle(req.query['userUUID'], req.params['id'], function (err, data) {
+    new Offer().FindSingle(req.query['userUUID'], req.token.user.rolename, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         } else {
