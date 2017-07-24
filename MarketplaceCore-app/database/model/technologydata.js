@@ -38,12 +38,14 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
     var components = params['components'];
     var attributes = params['attributes'];
     var technologydataname = params['technologydataname'];
+    var ownerUUID = params['ownerUUID'];
 
 
     db.func('GetTechnologyDataByParams',
         [   components,
             technologies,
             technologydataname,
+            ownerUUID,
             userUUID,
             roleName
         ], 1 //TODO: Document this parameter

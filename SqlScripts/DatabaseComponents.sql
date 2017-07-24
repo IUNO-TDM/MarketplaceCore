@@ -2120,9 +2120,10 @@ CREATE FUNCTION public.gettechnologydatabyparams(
     IN vcomponents text[],
     IN vtechnologyuuid uuid,
     IN vtechnologydataname character varying,
-    IN vcreatedby uuid,
+    IN vOwnerUUID uuid,
+    IN vUserUUID uuid,
     IN vrolename character varying)
-  RETURNS table(result json) AS
+  RETURNS TABLE(result json) AS
 $BODY$	 
 
 	DECLARE
@@ -2181,7 +2182,8 @@ $BODY$
 				td.technologydataid = tc.technologydataid
 				join components cm on cm.componentid = co.componentid  
 				join technologies tt on 
-				tt.technologyid = td.technologyid				
+				tt.technologyid = td.technologyid
+				where (vOwnerUUID is null OR td.createdby = vOwnerUUID)				
 				group by td.technologydatauuid,
 					td.technologydataname,
 					tt.technologyuuid,
@@ -2211,6 +2213,7 @@ $BODY$
 			join compIn co on co.technologydataname = td.technologydataname
 			where (co.comp::text[] <@ vComponents OR vComponents is null)
 			and (vTechnologyDataName is null OR td.technologydataname = vTechnologyDataName)
+			
 		);
 		 
 	ELSE 
@@ -2221,7 +2224,8 @@ $BODY$
 	END;
 		$BODY$
   LANGUAGE plpgsql VOLATILE
-  COST 100; 
+  COST 100
+  ROWS 1000;  
 /* ##########################################################################
 -- Author: Marcel Ely Gomes 
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG

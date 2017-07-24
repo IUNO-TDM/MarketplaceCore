@@ -45,6 +45,10 @@ self.GetAll = {
                 type: 'string'
             },
             required: false
+        },
+        ownerUUID: {
+            type: 'string',
+            required: false
         }
     }
 };
