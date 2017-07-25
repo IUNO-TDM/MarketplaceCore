@@ -14,11 +14,11 @@ var self = {};
 
 // ---- Database Credentials ----
 
-var username = '';
-var password = '';
-var host = '';
+var username = 'username';
+var password = 'password';
+var host = 'host';
 var port = 5432;
-var database = '';
+var database = 'database';
 
 // ---- CONFIGURATION EXPORT ----
 
