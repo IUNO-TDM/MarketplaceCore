@@ -11,11 +11,11 @@ var self = {};
 
 // ---- Database Credentials ----
 
-var username = '';
-var password = '';
-var host = '';
-var port = 5432;
-var database = '';
+var username = 'postgres';
+var password = 're7ahpheibaiweey';
+var host = 'test-tdm.fritz.box';
+var port = '5432';
+var database = 'intechdb';
 
 // ---- CONFIGURATION EXPORT ----
 
@@ -30,9 +30,8 @@ self.HOST_SETTINGS = {
 self.DB_CONNECTION_STRING = 'postgres://{0}:{1}@{2}:{3}/{4}'.format(username, password, host, port, database);
 self.LOG_LEVEL = 'debug';
 self.OAUTH_CREDENTIALS = {
-    CLIENT_ID: '',
-    CLIENT_SECRET: ''
+    CLIENT_ID: '9f400def-9680-4ad1-a228-00724dbbd983',
+    CLIENT_SECRET: 'ce0eabeb-123b-45f7-931f-3a9d535c23a9'
 };
-
 
 module.exports = self;
