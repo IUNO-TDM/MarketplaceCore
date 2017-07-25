@@ -3,7 +3,7 @@ const util = require('util');
 const payment_service = require('./payment_service');
 const config = require('../config/config_loader');
 var dbTrans = require('../database/function/transaction');
-var dbLicence = require('../database/function/licence');
+var dbLicence = require('../database/function/license');
 
 var LicenseService = function () {
 };

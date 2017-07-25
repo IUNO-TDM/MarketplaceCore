@@ -21,8 +21,6 @@ app.use('/', validate({query: require('./schema/oauth_schema').AccessToken}), au
 app.use('/technologydata', require('./routes/technologydata'));
 app.use('/components', require('./routes/components'));
 app.use('/offers', require('./routes/offers'));
-app.use('/technologies', require('./routes/technologies'));
-app.use('/attributes', require('./routes/attributes'));
 app.use('/offers', require('./routes/offers'));
 app.use('/reports', require('./routes/reports'));
 

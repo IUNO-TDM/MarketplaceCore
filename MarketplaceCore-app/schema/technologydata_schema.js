@@ -14,10 +14,6 @@ self.GetAll = {
             type: 'string',
             required: true
         },
-        name: {
-            type: 'string',
-            required: false
-        },
         tags: {
             type: 'array',
             items: {
@@ -39,11 +35,19 @@ self.GetAll = {
             },
             required: false
         },
+        technologydataname: {
+            type: 'string',
+            required: false
+        },
         attributes: {
             type: 'array',
             items: {
                 type: 'string'
             },
+            required: false
+        },
+        ownerUUID: {
+            type: 'string',
             required: false
         }
     }

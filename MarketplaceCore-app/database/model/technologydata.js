@@ -32,17 +32,22 @@ function TechnologyData(data) {
     }
 }
 
-TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, params, callback) {
+TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, roleName, params, callback) {
     var technologies = params['technologies'];
     var tags = params['tags'];
     var components = params['components'];
     var attributes = params['attributes'];
+    var technologydataname = params['technologydataname'];
+    var ownerUUID = params['ownerUUID'];
 
 
     db.func('GetTechnologyDataByParams',
-        [components,
+        [   components,
             technologies,
-            userUUID
+            technologydataname,
+            ownerUUID,
+            userUUID,
+            roleName
         ], 1 //TODO: Document this parameter
     )
         .then(function (data) {
@@ -59,8 +64,8 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
         });
 };
 
-TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, id, callback) {
-    db.func('GetTechnologyDataByID', [id, userUUID])
+TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, roleName, id, callback) {
+    db.func('GetTechnologyDataByID', [id, userUUID, roleName])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {
@@ -73,21 +78,22 @@ TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (user
             callback(error);
         });
 };
-TechnologyData.prototype.Create = function (userUUID, callback) {
+TechnologyData.prototype.Create = function (userUUID, roleName, callback) {
     db.func('SetTechnologyData',
-        [   self.technologydataname,
-            self.technologydata,
-            self.technologydatadescription,
-            self.technologyid,
-            self.licensefee,
-            self.retailprice,
-            self.taglist,
-            self.componentlist,
-            userUUID
+        [   this.technologydataname,
+            this.technologydata,
+            this.technologydatadescription,
+            this.technologyid,
+            this.licensefee,
+            this.retailprice,
+            this.taglist,
+            this.componentlist,
+            userUUID,
+            roleName
         ])
         .then(function (data) {
             logger.debug(data);
-            callback(null, new TechnologyData(data));
+            callback(null, data);
         })
         .catch(function (error) {
             logger.crit(error);

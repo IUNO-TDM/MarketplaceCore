@@ -27,11 +27,12 @@ self.SetPayment = function(userUUID, payment, callback) {
 //</editor-fold>
 
 //<editor-fold desc="Offer and Invoice">
-self.SetPaymentInvoiceOffer = function (userUUID, invoice, offerRequestUUID, callback) {
+self.SetPaymentInvoiceOffer = function (userUUID, roleName, invoice, offerRequestUUID, callback) {
     db.func('SetPaymentInvoiceOffer',
         [   offerRequestUUID,
             invoice,
-            userUUID
+            userUUID,
+            roleName
         ])
         .then(function (data) {
             logger.debug('SetPaymentInvoiceOffer result: ' + JSON.stringify(data));

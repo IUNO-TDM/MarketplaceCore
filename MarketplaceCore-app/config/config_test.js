@@ -1,6 +1,3 @@
-/**
- * Created by beuttlerma on 18.04.17.
- */
 
 String.prototype.format = function () {
     var args = [].slice.call(arguments);
@@ -14,18 +11,18 @@ var self = {};
 
 // ---- Database Credentials ----
 
-var username = 'username';
-var password = 'password';
-var host = 'host';
+var username = '';
+var password = '';
+var host = '';
 var port = 5432;
-var database = 'database';
+var database = '';
 
 // ---- CONFIGURATION EXPORT ----
 
 self.HOST_SETTINGS = {
     OAUTH_SERVER: {
         PROTOCOL: 'http',
-        HOST: 'localhost',
+        HOST: 'test-tdm.fritz.box',
         PORT: 3006
     }
 };

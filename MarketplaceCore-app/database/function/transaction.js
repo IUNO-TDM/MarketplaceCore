@@ -7,8 +7,8 @@ var db = require('../db_connection');
 
 var self = {};
 
-self.GetTransactionByOfferRequest = function (userUUID, offerRequestUUID, callback) {
-    db.func('GetTransactionByOfferRequest', [offerRequestUUID, userUUID])
+self.GetTransactionByOfferRequest = function (userUUID, roleName, offerRequestUUID, callback) {
+    db.func('GetTransactionByOfferRequest', [offerRequestUUID, userUUID, roleName])
         .then(function (data) {
             callback(null, data);
         })

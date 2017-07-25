@@ -7,8 +7,8 @@ var db = require('../db_connection');
 
 var self = {};
 
-self.GetActivatedLicensesSince = function (userUUID, sinceDate, callback) {
-    db.func('GetActivatedLicensesSince',[sinceDate, userUUID])
+self.GetActivatedLicensesSince = function (userUUID, rolename, sinceDate, callback) {
+    db.func('GetActivatedLicensesSince',[sinceDate, userUUID, rolename])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -19,8 +19,8 @@ self.GetActivatedLicensesSince = function (userUUID, sinceDate, callback) {
         });
 };
 
-self.GetTopTechnologyDataSince = function(userUUID, sinceDate, topValue, callback){
-    db.func('GetTopTechnologyDataSince', [sinceDate, topValue, userUUID])
+self.GetTopTechnologyDataSince = function(userUUID, rolename, sinceDate, topValue, callback){
+    db.func('GetTopTechnologyDataSince', [sinceDate, topValue, userUUID, rolename])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -31,8 +31,8 @@ self.GetTopTechnologyDataSince = function(userUUID, sinceDate, topValue, callbac
         });
 };
 
-self.GetWorkloadSince = function(userUUID, sinceDate, callback){
-    db.func('GetWorkloadSince', [sinceDate, userUUID])
+self.GetWorkloadSince = function(userUUID, rolename, sinceDate, callback){
+    db.func('GetWorkloadSince', [sinceDate, userUUID, rolename])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -43,8 +43,8 @@ self.GetWorkloadSince = function(userUUID, sinceDate, callback){
         });
 };
 
-self.GetMostUsedComponents = function(userUUID, sinceDate, topValue, callback){
-    db.func('GetMostUsedComponents', [sinceDate, topValue, userUUID])
+self.GetMostUsedComponents = function(userUUID, rolename, sinceDate, topValue, callback){
+    db.func('GetMostUsedComponents', [sinceDate, topValue, userUUID, rolename])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -55,8 +55,8 @@ self.GetMostUsedComponents = function(userUUID, sinceDate, topValue, callback){
         });
 };
 
-self.GetRevenuePerHour = function(userUUID, sinceDate, callback){
-    db.func('GetRevenuePerHourSince', [sinceDate, userUUID])
+self.GetRevenuePerHour = function(userUUID, rolename, sinceDate, callback){
+    db.func('GetRevenuePerHourSince', [sinceDate, userUUID, rolename])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -67,8 +67,8 @@ self.GetRevenuePerHour = function(userUUID, sinceDate, callback){
         });
 };
 
-self.GetRevenuePerDay = function(userUUID, sinceDate, callback){
-    db.func('GetRevenuePerDaySince', [sinceDate, userUUID])
+self.GetRevenuePerDay = function(userUUID, rolename, sinceDate, callback){
+    db.func('GetRevenuePerDaySince', [sinceDate, userUUID, rolename])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
