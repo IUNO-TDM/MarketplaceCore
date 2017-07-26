@@ -79,9 +79,9 @@ payment_service.createLocalInvoice = function (invoice, callback) {
 
     var options = buildOptionsForRequest(
         'POST',
-        'http',
-        'localhost',
-        8080,
+        config.HOST_SETTINGS.PAYMENT_SERVICE.PROTOCOL || 'http',
+        config.HOST_SETTINGS.PAYMENT_SERVICE.HOST || 'localhost',
+        config.HOST_SETTINGS.PAYMENT_SERVICE.PORT || 8080,
         '/v1/invoices'
     );
     options.body = invoice;
@@ -108,9 +108,9 @@ payment_service.getInvoiceTransfers = function (invoice, callback) {
     }
     var options = buildOptionsForRequest(
         'GET',
-        'http',
-        'localhost',
-        8080,
+        config.HOST_SETTINGS.PAYMENT_SERVICE.PROTOCOL || 'http',
+        config.HOST_SETTINGS.PAYMENT_SERVICE.HOST || 'localhost',
+        config.HOST_SETTINGS.PAYMENT_SERVICE.PORT || 8080,
         '/v1/invoices/' + invoice.invoiceId + '/transfers'
     );
 

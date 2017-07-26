@@ -24,6 +24,16 @@ self.HOST_SETTINGS = {
         PROTOCOL: 'http',
         HOST: 'test-tdm.fritz.box',
         PORT: 3006
+    },
+    PAYMENT_SERVICE: {
+        PROTOCOL: 'http',
+        HOST: 'localhost',
+        PORT: 8080
+    },
+    BIT_COIN_VAULT: {
+        PROTOCOL: 'http',
+        HOST: 'localhost',
+        PORT: 8081
     }
 };
 
