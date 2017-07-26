@@ -440,18 +440,17 @@ ALTER TABLE OfferRequestItems ADD CONSTRAINT OfferRequestItems_PK PRIMARY KEY ( 
 DO
 $$
 BEGIN
-	IF ((SELECT 1 FROM pg_roles WHERE rolname='dblink_loguser') is null) THEN
-	CREATE USER dblink_loguser WITH PASSWORD 'PASSWORD';  -- PUT YOUR PWD HERE
-	ALTER USER dblink_loguser WITH SUPERUSER;
+	IF ((SELECT 1 FROM pg_roles WHERE rolname='core_loguser') is null) THEN
+	CREATE USER core_loguser WITH PASSWORD 'PASSWORD';  -- PUT YOUR PWD HERE
 	END IF;
-	CREATE FOREIGN DATA WRAPPER postgresql VALIDATOR postgresql_fdw_validator;
-	CREATE SERVER fdtest FOREIGN DATA WRAPPER postgresql OPTIONS (hostaddr '127.0.0.1', dbname 'MarketplaceCore'); -- PUT YOUR DATABASENAME HERE
-	CREATE USER MAPPING FOR dblink_loguser SERVER fdtest OPTIONS (user 'dblink_loguser', password 'PASSWORD'); -- PUT YOUR PWD HERE
-	GRANT USAGE ON FOREIGN SERVER fdtest TO dblink_loguser;
-	GRANT INSERT ON TABLE logtable TO dblink_loguser;
+	CREATE FOREIGN DATA WRAPPER core_fwd VALIDATOR postgresql_fdw_validator;
+	CREATE SERVER core FOREIGN DATA WRAPPER core_fwd OPTIONS (hostaddr '127.0.0.1', dbname 'marketplacecore'); -- PUT YOUR DATABASENAME HERE
+	CREATE USER MAPPING FOR core_loguser SERVER core OPTIONS (user 'core_loguser', password 'PASSWORD'); -- PUT YOUR PWD HERE
+	GRANT USAGE ON FOREIGN SERVER core TO core_loguser;
+	GRANT INSERT ON TABLE logtable TO core_loguser;
 END;
 $$;
-
+COMMIT;
 
 -- ##########################################################################
 -- Author: Marcel Ely Gomes
@@ -528,20 +527,20 @@ $BODY$
 				 || ''', ''' || vParameters
 				 || ''', ' || 'now())';
 		 vConnName text := 'conn';
+		 vConnString text := 'dbname=marketplacecore port=5432 host=localhost user=core_loguser password=PASSWORD';
 	      vConnExist bool := (select ('{' || vConnName || '}')::text[] <@ (select dblink_get_connections()));
       BEGIN
-		set role dblink_loguser;
+
 		if(not vConnExist or vConnExist is null) then
-				perform dblink_connect(vConnName,'fdtest');
-			else
-				set role dblink_loguser;
+				perform dblink_connect(vConnName,vConnString);
 		end if;
 				perform dblink(vConnName,vSqlCmd);
 				perform dblink_disconnect(vConnName);
 				set role postgres;
       END;
   $BODY$
-  LANGUAGE plpgsql;
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
 -- ##############################################################################
 CREATE FUNCTION CreateTechnologyData (
 	  vTechnologyDataName varchar(250),
@@ -4232,6 +4231,7 @@ $$
 		perform createrole('Consumer','Consumer from technology data',null,'Admin');   --5
 	END;
 $$;
+COMMIT;
 --Create Permissions
 DO
 $$
@@ -4295,6 +4295,7 @@ $$
 
 	END;
 $$;
+COMMIT;
 
 DO
  $$
@@ -4428,6 +4429,7 @@ DO
          );
    END;
  $$;
+COMMIT;
 
 DO
 $$
@@ -4633,6 +4635,17 @@ $$
          );
 	END;
 $$;
+COMMIT;
+
+update components set componentuuid = '8f0bc514-7219-46d2-999d-c45c930c3e7c'::uuid where componentname = 'Root';
+update components set componentuuid = '570a5df0-a044-4e22-b6e6-b10af872d75c'::uuid where componentname = 'Mineralwasser';
+update components set componentuuid = '198f1571-4846-4467-967a-00427ab0208d'::uuid where componentname = 'Apfelsaft';
+update components set componentuuid = 'f6d361a9-5a6f-42ad-bff7-0913750809e4'::uuid where componentname = 'Orangensaft';
+update components set componentuuid = 'fac1ee6f-185f-47fb-8c56-af57cd428aa8'::uuid where componentname = 'Mangosaft';
+update components set componentuuid = '0425393d-5b84-4815-8eda-1c27d35766cf'::uuid where componentname = 'Kirschsaft';
+update components set componentuuid = '4cfa2890-6abd-4e21-a7ab-17613ed9a5c9'::uuid where componentname = 'Bananensaft';
+update components set componentuuid = '14b72ce5-fec1-48ec-83ff-24b124f98dc8'::uuid where componentname = 'Maracujasaft';
+update components set componentuuid = 'bf2cfd66-5b6f-4655-8e7f-04090308f6db'::uuid where componentname = 'Ananassaft';
 -- Create offerrequest, paymentinvoice, offer, payment and licenseorder
 /*DO
 $$
