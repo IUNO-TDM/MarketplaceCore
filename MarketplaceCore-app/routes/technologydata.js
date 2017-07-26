@@ -85,13 +85,13 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
 
             var imgPath = technologyData.technologydataimgref;
 
+            var path = require('path');
             if (imgPath) {
-                var path = require('path');
                 res.sendFile(path.resolve(imgPath));
             }
             else {
-                logger.info('No image found for technologyData');
-                res.sendStatus(404);
+                logger.info('No image found for technologyData. Sending default image instead');
+                res.sendFile(path.resolve('images/recipes/default.svg'));
             }
 
         }
