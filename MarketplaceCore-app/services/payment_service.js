@@ -8,6 +8,7 @@ const request = require('request');
 const config = require('../config/config_loader');
 
 var Invoice = require('../model/invoice');
+var Transfer = require('../model/transfer');
 var logger = require('../global/logger');
 var io = require('socket.io-client');
 var dbPayment = require('../database/function/payment');
@@ -50,10 +51,9 @@ payment_service.socket.on('StateChange', function (invoice) {
             extInvoiceId: invoice.invoiceId,
             depth: invoice.depth,
             confidenceState: invoice.state,
-            bitcoinTransaction: null,
-            userUUID: config.USER_UUID
+            bitcoinTransaction: null
         };
-        dbPayment.SetPayment(config.USER_UUID, paymentData, function (err, payment) {
+        dbPayment.SetPayment(config.USER, paymentData, function (err, payment) {
             if (!err) {
                 payment_service.emit('StateChange', {
                     invoice: invoice,
@@ -117,9 +117,9 @@ payment_service.getInvoiceTransfers = function (invoice, callback) {
 
     request(options, function (e, r, jsonData) {
         var err = logger.logRequestAndResponse(e, options, r, jsonData);
-        var invoice = new Invoice().CreateFromJSON(jsonData);
+        var transfers = Transfer.CreateListFromJSON(jsonData);
 
-        callback(err, invoice);
+        callback(err, transfers);
     });
 };
 

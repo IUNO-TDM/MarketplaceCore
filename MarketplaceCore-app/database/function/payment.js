@@ -7,8 +7,8 @@ var db = require('../db_connection');
 
 var self = {};
 
-self.SetPayment = function(userUUID, payment, callback) {
-    db.func('SetPayment', [payment.transactionUUID, payment.bitcoinTransaction, payment.confidenceState, payment.depth, payment.extInvoiceId, userUUID])
+self.SetPayment = function(user, payment, callback) {
+    db.func('SetPayment', [payment.transactionUUID, payment.bitcoinTransaction, payment.confidenceState, payment.depth, payment.extInvoiceId, user.uuid, user.role])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];
