@@ -4327,37 +4327,17 @@ DO
             vUserUUID,
 			vRoleName  			-- <createdby integer>
          );
-        -- Orange
+        -- 1 Wasser
         perform public.setcomponent(
-            'Orange Juice',		-- <componentname character varying>,
+            'Mineralwasser',		-- <componentname character varying>,
             'Root',	      			-- <componentparentid integer>,
-            'Orange Juice', 	-- <componentdescription character varying>,
+            'Mineralwasser', 	-- <componentdescription character varying>,
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
 			vRoleName  			-- <createdby integer>
          );
-		 -- Johannisbeersaft
-        perform public.setcomponent(
-            'Johannisbeersaft',		-- <componentname character varying>,
-            'Root',	      			-- <componentparentid integer>,
-            'Johannisbeersaft', 	-- <componentdescription character varying>,
-            '{Normal}',			-- <attributelist text[]>,
-            '{Juice Mixer}', 				-- <technologylist text[]>,
-            vUserUUID,
-			vRoleName  			-- <createdby integer>
-         );
-		  -- Orange
-        perform public.setcomponent(
-            'Orangensaft',		-- <componentname character varying>,
-            'Root',	      			-- <componentparentid integer>,
-            'Orangensaft', 	-- <componentdescription character varying>,
-            '{Normal}',			-- <attributelist text[]>,
-            '{Juice Mixer}', 				-- <technologylist text[]>,
-            vUserUUID,
-			vRoleName  			-- <createdby integer>
-         );
-		-- Apfelsaft
+        -- 2 Apfelsaft
         perform public.setcomponent(
             'Apfelsaft',		-- <componentname character varying>,
             'Root',	      			-- <componentparentid integer>,
@@ -4367,65 +4347,65 @@ DO
             vUserUUID,
 			vRoleName  			-- <createdby integer>
          );
-        -- Apple
+		 -- 3 Orange
         perform public.setcomponent(
-            'Apple Juice',		-- <componentname character varying>,
+            'Orangensaft',		-- <componentname character varying>,
             'Root',	      			-- <componentparentid integer>,
-            'Apple Juice',  	-- <componentdescription character varying>,
+            'Orangensaft', 	-- <componentdescription character varying>,
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
 			vRoleName  			-- <createdby integer>
          );
-        -- Cola
+		-- 4 Mangosaft
         perform public.setcomponent(
-            'Cola',				-- <componentname character varying>,
+            'Mangosaft',		-- <componentname character varying>,
             'Root',	      			-- <componentparentid integer>,
-            'Cola',			 	-- <componentdescription character varying>,
+            'Mangosaft', 	-- <componentdescription character varying>,
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
 			vRoleName  			-- <createdby integer>
          );
-         -- Mango
+        -- 5 Kirschsaft
         perform public.setcomponent(
-            'Mango Juice',		-- <componentname character varying>,
+            'Kirschsaft',		-- <componentname character varying>,
             'Root',	      			-- <componentparentid integer>,
-            'Mango Juice', 		-- <componentdescription character varying>,
+            'Kirschsaft',  	-- <componentdescription character varying>,
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
 			vRoleName  			-- <createdby integer>
          );
-        -- Ginger
+        -- 6 Bananensaft
         perform public.setcomponent(
-            'Ginger Sirup',		-- <componentname character varying>,
+            'Bananensaft',				-- <componentname character varying>,
             'Root',	      			-- <componentparentid integer>,
-            'Ginger Sirup', 	-- <componentdescription character varying>,
+            'Bananensaft',			 	-- <componentdescription character varying>,
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
 			vRoleName  			-- <createdby integer>
          );
-        -- Banana
+         -- 7 Maracujasaft
         perform public.setcomponent(
-            'Banana Juice',		-- <componentname character varying>,
+            'Maracujasaft',		-- <componentname character varying>,
             'Root',	      			-- <componentparentid integer>,
-            'Banana Juice', 	-- <componentdescription character varying>,
+            'Maracujasaft', 		-- <componentdescription character varying>,
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
-			vRoleName
+			vRoleName  			-- <createdby integer>
          );
-         -- Cherry
+        -- 8 Ananassaft
         perform public.setcomponent(
-            'Cherry Juice',		-- <componentname character varying>,
+            'Ananassaft',		-- <componentname character varying>,
             'Root',	      			-- <componentparentid integer>,
-            'Cherry Juice', 	-- <componentdescription character varying>,
+            'Ananassaft', 	-- <componentdescription character varying>,
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
-			vUserUUID,
-            vRoleName 			-- <createdby integer>
+            vUserUUID,
+			vRoleName  			-- <createdby integer>
          );
    END;
  $$;
@@ -4443,7 +4423,7 @@ $$
   		-- Create TechnologyData
 		-- Cherry with Mango
 
-	vComponents := (select array_agg(componentuuid) from components where componentname in ('Cherry Juice','Mango Juice'));
+	vComponents := (select array_agg(componentuuid) from components where componentname in ('Kirchsaft','Mangosaft'));
         perform public.settechnologydata(
             'CheMa',		     				 -- <technologydataname character varying>,
             '{
@@ -4482,7 +4462,7 @@ $$
 
 		 );
 		-- Other Juice
-	vComponents := (select array_agg(componentuuid) from components where componentname in ('Orangensaft','Apfelsaft','Johannisbeersaft'));
+	vComponents := (select array_agg(componentuuid) from components where componentname in ('Orangensaft','Apfelsaft','Kirschsaft'));
         perform public.settechnologydata(
             'CSaefte',		     				 -- <technologydataname character varying>,
             '{
@@ -4510,7 +4490,7 @@ $$
 				]
 			  }
 			}',	     				 -- <technologydata character varying>,
-            'Cherry with Mango', 				 -- <technologydatadescription character varying>,
+            'Orange, Apfel und Kirsch', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             50000,
 			150000,
@@ -4519,10 +4499,10 @@ $$
 			vUserUUID,
 			vRoleName
 		 );
-         -- Cherry with Cola
-        vComponents := (select array_agg(componentuuid) from components where componentname in ('Cherry Juice','Cola'));
+         -- Cherry with Banana
+        vComponents := (select array_agg(componentuuid) from components where componentname in ('Kirschsaft','Bananensaft'));
         perform public.settechnologydata(
-            'CheCo',		     				 -- <technologydataname character varying>,
+            'KiBa',		     				 -- <technologydataname character varying>,
             '{
 			  ""recipe"": {
 				""id"": ""TestProgram"",
@@ -4548,7 +4528,7 @@ $$
 				]
 			  }
 			}',	     				 -- <technologydata character varying>,
-            'Cherry with Cola', 				 -- <technologydatadescription character varying>,
+            'KiBa', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             75000,
 			200000,
@@ -4557,10 +4537,10 @@ $$
             vUserUUID,    						 -- <createdby integer>,
             vRoleName
          );
-          -- Ginger, Orange
-        vComponents := (select array_agg(componentuuid) from components where componentname in ('Ginger Sirup','Orange Juice'));
+          -- Banana, Orange
+        vComponents := (select array_agg(componentuuid) from components where componentname in ('Bananensaft','Orangensaft'));
         perform public.settechnologydata(
-            'Ginge',		     				 -- <technologydataname character varying>,
+            'Barange',		     				 -- <technologydataname character varying>,
             '{
 			  ""recipe"": {
 				""id"": ""TestProgram"",
@@ -4586,7 +4566,7 @@ $$
 				]
 			  }
 			}',	     				 -- <technologydata character varying>,
-            'Orange with Ginger', 				 -- <technologydatadescription character varying>,
+            'Orange with Banana', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             100000,
 			175000,    			 				 -- <licensefee numeric>,
@@ -4596,7 +4576,7 @@ $$
 			vRoleName
          );
          -- Banana, Mango, Orange
-        vComponents := (select array_agg(componentuuid) from components where componentname in ('Banana Juice','Mango Juice','Orange Juice'));
+        vComponents := (select array_agg(componentuuid) from components where componentname in ('Bananensaft','Mangosaft','Orangensaft'));
         perform public.settechnologydata(
             'Bamao',		     				 -- <technologydataname character varying>,
             '{
