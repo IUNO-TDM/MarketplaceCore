@@ -1520,16 +1520,13 @@ $BODY$
 				confidencestate,
 				depth,
 				extinvoiceid,
-				us.useruuid as CreatedBy,
+				py.CreatedBy as CreatedBy,
 				py.createdat at time zone 'utc',
-				ur.useruuid as UpdatedBy,
+				py.UpdatedBy as UpdatedBy,
 				py.updatedat at time zone 'utc'
 			from payment py join
 			paymentinvoice pi on
 			py.paymentinvoiceid = pi.paymentinvoiceid
-			join users us on us.userid = py.createdby
-			left outer join
-			users ur on ur.userid = py.updatedby
 			where extinvoiceid = vExtInvoiceID
         );
 
