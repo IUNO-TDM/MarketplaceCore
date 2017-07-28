@@ -810,7 +810,7 @@ CREATE FUNCTION CreateAttribute (
   LANGUAGE 'plpgsql';
 -- ##############################################################################
 -- CreateComponents
-CREATE OR REPLACE FUNCTION CreateComponent (
+CREATE FUNCTION CreateComponent (
   vComponentParentUUID uuid,
   vComponentName varchar(250),
   vComponentDescription varchar(250),
@@ -1018,7 +1018,7 @@ CREATE FUNCTION CreateTechnologyDataComponents (
   LANGUAGE 'plpgsql';
 -- ##############################################################################
 -- CreateComponentsTechnologies
-CREATE OR REPLACE FUNCTION CreateComponentsTechnologies (
+CREATE FUNCTION CreateComponentsTechnologies (
   vComponentUUID uuid,
   vTechnologyList text[],
   vRoleName varchar
@@ -1079,7 +1079,7 @@ CREATE OR REPLACE FUNCTION CreateComponentsTechnologies (
   LANGUAGE 'plpgsql';
 -- ##############################################################################
 -- CreateComponentsTechnologies
-CREATE OR REPLACE FUNCTION CreateComponentsTechnologies (
+CREATE FUNCTION CreateComponentsTechnologies (
   vComponentUUID uuid,
   vTechnologyList text[],
   vRoleName varchar
@@ -1140,7 +1140,7 @@ CREATE OR REPLACE FUNCTION CreateComponentsTechnologies (
   LANGUAGE 'plpgsql';
 -- ##############################################################################
 --  CreateOfferRequest
-CREATE OR REPLACE FUNCTION public.createofferrequest(
+CREATE FUNCTION public.createofferrequest(
     IN vitems jsonb,
     IN vhsmid character varying,
     IN vuseruuid uuid,
@@ -1965,7 +1965,7 @@ Create a complete Technology Data
 Input paramteres: none
 Return Value: Table with all TechnologyData
 ######################################################*/
-CREATE OR REPLACE FUNCTION GetAllTechnologyData(vUserUUID uuid, vRoleName varchar)
+CREATE FUNCTION GetAllTechnologyData(vUserUUID uuid, vRoleName varchar)
 	RETURNS TABLE
     	(
 			technologydatauuid uuid,
@@ -3121,7 +3121,7 @@ Input paramteres: vSinceDate  timestamp
 				  vTopValue integer
 Return Value: TechnologyDataName, Rank value
 ######################################################*/
-CREATE OR REPLACE FUNCTION public.gettoptechnologydatasince(
+CREATE FUNCTION public.gettoptechnologydatasince(
     IN vsincedate timestamp without time zone,
     IN vtopvalue integer,
 	IN vUserUUID uuid,
@@ -3229,7 +3229,7 @@ $$
 Input paramteres: vSinceDate  timestamp
 Return Value: TechnologyDataName, Date, Amount, DayHour
 ######################################################*/
-CREATE OR REPLACE FUNCTION GetWorkloadSince(
+CREATE FUNCTION GetWorkloadSince(
 		vSinceDate timestamp without time zone,
 		vUserUUID uuid,
 		vRoleName varchar
@@ -3530,7 +3530,7 @@ $$ LANGUAGE 'plpgsql';
 -- ##########################################################################
 Input paramteres: vOfferRequestUUID uuid
 ######################################################*/
-CREATE OR REPLACE FUNCTION GetTransactionByOfferRequest(
+CREATE FUNCTION GetTransactionByOfferRequest(
 		vOfferRequestUUID uuid,
 		vUserUUID uuid,
 		vRoleName varchar
@@ -3799,25 +3799,37 @@ Input paramteres: vRoleName varchar,
 				  vFunctionName varchar(250),
 				  vRoleNameUser varchar
 ######################################################*/
-create function SetPermission(
-		vRoleName varchar,
-		vFunctionName varchar(250),
-		vUserUUID uuid,
-		vRoleNameUser varchar
-	)
-RETURNS void AS
-$$
+CREATE FUNCTION public.setpermission(
+    vrolename character varying,
+    vfunctionname character varying,
+    vuseruuid uuid,
+    vrolenameuser character varying)
+  RETURNS void AS
+$BODY$
 	DECLARE vFunctionID integer := (select nextval('FunctionID'));
 		vThisFunctionName varchar := 'SetPermission';
 		vIsAllowed boolean := (select public.checkPermissions(vRoleNameUser, vThisFunctionName));
 		vRoleId integer := (select roleid from roles where rolename = vRoleName);
+		vFunctionExists boolean := (select exists(select 1 from functions where functionname = vfunctionname));
 	BEGIN
-		if(vIsAllowed) then
-			insert into functions (FunctionID, FunctionName)
-			values (vFunctionID, vFunctionName);
 
-			insert into rolespermissions(RoleId,FunctionId)
-			values (vRoleId, vFunctionId);
+		if(vIsAllowed) then
+
+			--Proof if the function alread exists
+			if(not vFunctionExists) then
+				insert into functions (FunctionID, FunctionName)
+				values (vFunctionID, vFunctionName);
+
+				insert into rolespermissions(RoleId,FunctionId)
+				values (vRoleId, vFunctionId);
+			else
+
+			 vFunctionID := (select functionid from functions where functionname = vFunctionName);
+			 insert into rolespermissions(RoleId,FunctionId)
+				values (vRoleId, vFunctionId);
+
+			end if;
+
 		else
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
 		 RETURN;
@@ -3837,7 +3849,9 @@ $$
 		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetPermission';
 		RETURN;
 	END;
-$$ LANGUAGE PLPGSQL;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -4054,7 +4068,7 @@ $$
 Input paramteres: vTechnologyDataName varchar(250)
 				  vUserUUID uuid
 ######################################################*/
-create or replace function DeleteTechnologyData(vTechnologyDataName varchar(250), vUserUUID uuid, vRoleName varchar)
+create function DeleteTechnologyData(vTechnologyDataName varchar(250), vUserUUID uuid, vRoleName varchar)
 RETURNS void AS
 $$
 	DECLARE
@@ -4124,7 +4138,7 @@ LANGUAGE PLPGSQL;
 Input paramteres: vRoleName varchar
 				  vFunctionName varchar
 ######################################################*/
-CREATE OR REPLACE FUNCTION checkPermissions(
+CREATE FUNCTION checkPermissions(
 		vRoleName varchar,
 		vFunctionName varchar
 	)
@@ -4177,7 +4191,7 @@ $BODY$
   ROWS 1000;
 --######################################################
 --GetTechnologyDataOwnerById
-CREATE OR REPLACE FUNCTION public.gettechnologydataownerbyid(
+CREATE FUNCTION public.gettechnologydataownerbyid(
     IN vtechnologydatauuid uuid,
     IN vUserUUID uuid,
     IN vRoleName character varying
@@ -4224,30 +4238,208 @@ insert into rolespermissions(roleid, functionid) values (0,1);
 DO
 $$
 	BEGIN
-		perform createrole('PaymentService','Service used on the payment', null,'Admin');   --1
-		perform createrole('Machine','Role for machines', null,'Admin');   --2
-		perform createrole('Api','Role for api functions', null,'Admin');   --3
-		perform createrole('TechnologyDataOwner','Owner of technology data', null,'Admin'); --4
-		perform createrole('Consumer','Consumer from technology data',null,'Admin');   --5
+		perform createrole('Public','Everyone that visit the marketplace without login. The public role Is only allowed to read a pre defined area (e.g. Landing Page).', null,'Admin');
+		perform createrole('MachineOperator','It can be the machine owner as well as the machine operator.', null,'Admin');
+		perform createrole('TechnologyDataOwner','Is the creator and administrator of Technology Data', null,'Admin');
+		perform createrole('MarketplaceComponent','Is the creator and administrator of Technology Data', null,'Admin');
+		perform createrole('TechnologyAdmin','Administrate technologies.', null,'Admin');
 	END;
 $$;
-COMMIT;
 --Create Permissions
 DO
 $$
 	BEGIN
-		perform SetPermission('Admin','CreateAttribute',null,'Admin');
-		perform SetPermission('Admin','CreateComponent',null,'Admin');
-		perform SetPermission('Admin','CreateComponentsAttribute',null,'Admin');
-		perform SetPermission('Admin','CreateComponentsTechnologies',null,'Admin');
-		perform SetPermission('Admin','CreateLicenseOrder',null,'Admin');
-		perform SetPermission('Admin','CreateOffer',null,'Admin');
-		perform SetPermission('Admin','CreateOfferRequest',null,'Admin');
-		perform SetPermission('Admin','CreatePaymentInvoice',null,'Admin');
-		perform SetPermission('Admin','CreateTag',null,'Admin');
-		perform SetPermission('Admin','CreateTechnology',null,'Admin');
-		perform SetPermission('Admin','CreateTechnologyData',null,'Admin');
-		perform SetPermission('Admin','CreateTechnologyDataComponents',null,'Admin');
+		--Public
+		perform SetPermission('Public', 'GetMostUsedComponents',null,'Admin');
+		perform SetPermission('Public', 'GetRevenuePerDaySince',null,'Admin');
+		perform SetPermission('Public', 'GetWorkLoadSince',null,'Admin');
+
+		-- MachineOperator
+		--perform SetPermission('Admin','CreateAttribute',null,'Admin');
+		--perform SetPermission('Admin','CreateComponent',null,'Admin');
+		--perform SetPermission('Admin','CreateComponentsAttribute',null,'Admin');
+		--perform SetPermission('Admin','CreateComponentsTechnologies',null,'Admin');
+		--perform SetPermission('Admin','CreateLicenseOrder',null,'Admin');
+		perform SetPermission('MachineOperator','CreateOffer',null,'Admin');
+		perform SetPermission('MachineOperator','CreateOfferRequest',null,'Admin');
+		perform SetPermission('MachineOperator','CreatePaymentInvoice',null,'Admin');
+		--perform SetPermission('Admin','CreateTag',null,'Admin');
+		--perform SetPermission('Admin','CreateTechnology',null,'Admin');
+		--perform SetPermission('Admin','CreateTechnologyData',null,'Admin');
+		--perform SetPermission('Admin','CreateTechnologyDataComponents',null,'Admin');
+		--perform SetPermission('Admin','DeleteTechnologyData',null,'Admin');
+		perform SetPermission('MachineOperator','GetAllAttributes',null,'Admin');
+		perform SetPermission('MachineOperator','GetActivatedLicensesSince',null,'Admin');
+		perform SetPermission('MachineOperator','GetAllComponents',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetAllOffers',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetAllTags',null,'Admin');
+		--perform SetPermission('Admin', 'GetAllTechnlogies',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetAllUsers',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetAttributeById',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetAttributeByName',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetComponentById',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetComponentByName',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetComponentsByTechnology',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetComponentsForTechnologyDataId',null,'Admin');
+		--perform SetPermission('Admin', 'GetLicenseFeeByTransaction',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetMostUsedComponents',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetOfferById',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetOfferByRequestId',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetOfferForPaymentInvoice',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferForTicket',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetOfferForTransaction',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetPaymentInvoiceForOfferRequest',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetRevenuePerDaySince',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTagById',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTagByName',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTechnologyById',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTechnologyByName',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTechnologyDataById',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTechnologyDataByName',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTechnologyDataByOfferRequest',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTechnologyDataByParams',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTechnologyForOfferRequest',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTopTechnologyDataSince',null,'Admin');
+		--perform SetPermission('Admin', 'GetTransactionById',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetTransactionByOfferRequest',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetWorkLoadSince',null,'Admin');
+		--perform SetPermission('Admin', 'SetComponent',null,'Admin');
+		perform SetPermission('MachineOperator', 'SetPayment',null,'Admin');
+		perform SetPermission('MachineOperator', 'SetPaymentInvoiceOffer',null,'Admin');
+		perform SetPermission('MachineOperator', 'SetTechnologyData',null,'Admin');
+		--perform SetPermission('Admin', 'CreateTechnologyDataTags',null,'Admin');
+		perform SetPermission('MachineOperator', 'GetLicenseFeeByTechnologyData',null,'Admin');
+		--perform SetPermission('Admin', 'GetTechnologyDataOwnerById',null,'Admin');
+
+		--TechnologyDataOwner
+		perform SetPermission('TechnologyDataOwner','CreateAttribute',null,'Admin');
+		perform SetPermission('TechnologyDataOwner','CreateComponent',null,'Admin');
+		perform SetPermission('TechnologyDataOwner','CreateComponentsAttribute',null,'Admin');
+		perform SetPermission('TechnologyDataOwner','CreateComponentsTechnologies',null,'Admin');
+		--perform SetPermission('Admin','CreateLicenseOrder',null,'Admin');
+		--perform SetPermission('Admin','CreateOffer',null,'Admin');
+		--perform SetPermission('Admin','CreateOfferRequest',null,'Admin');
+		--perform SetPermission('Admin','CreatePaymentInvoice',null,'Admin');
+		perform SetPermission('TechnologyDataOwner','CreateTag',null,'Admin');
+		--perform SetPermission('Admin','CreateTechnology',null,'Admin');
+		perform SetPermission('TechnologyDataOwner','CreateTechnologyData',null,'Admin');
+		perform SetPermission('TechnologyDataOwner','CreateTechnologyDataComponents',null,'Admin');
+		perform SetPermission('TechnologyDataOwner','DeleteTechnologyData',null,'Admin');
+		perform SetPermission('TechnologyDataOwner','GetAllAttributes',null,'Admin');
+		--perform SetPermission('Admin','GetActivatedLicensesSince',null,'Admin');
+		perform SetPermission('TechnologyDataOwner','GetAllComponents',null,'Admin');
+		--perform SetPermission('Admin', 'GetAllOffers',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetAllTags',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetAllTechnlogies',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetAllUsers',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetAttributeById',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetAttributeByName',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetComponentById',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetComponentByName',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetComponentsByTechnology',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetComponentsForTechnologyDataId',null,'Admin');
+		--perform SetPermission('Admin', 'GetLicenseFeeByTransaction',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetMostUsedComponents',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferById',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferByRequestId',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferForPaymentInvoice',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferForTicket',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferForTransaction',null,'Admin');
+		--perform SetPermission('Admin', 'GetPaymentInvoiceForOfferRequest',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetRevenuePerDaySince',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetTagById',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetTagByName',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetTechnologyById',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetTechnologyByName',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetTechnologyDataById',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetTechnologyDataByName',null,'Admin');
+		--perform SetPermission('Admin', 'GetTechnologyDataByOfferRequest',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetTechnologyDataByParams',null,'Admin');
+		--perform SetPermission('Admin', 'GetTechnologyForOfferRequest',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetTopTechnologyDataSince',null,'Admin');
+		--perform SetPermission('Admin', 'GetTransactionById',null,'Admin');
+		--perform SetPermission('Admin', 'GetTransactionByOfferRequest',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'GetWorkLoadSince',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'SetComponent',null,'Admin');
+		--perform SetPermission('Admin', 'SetPayment',null,'Admin');
+		--perform SetPermission('Admin', 'SetPaymentInvoiceOffer',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'SetTechnologyData',null,'Admin');
+		perform SetPermission('TechnologyDataOwner', 'CreateTechnologyDataTags',null,'Admin');
+		--perform SetPermission('Admin', 'GetLicenseFeeByTechnologyData',null,'Admin');
+		--perform SetPermission('Admin', 'GetTechnologyDataOwnerById',null,'Admin');
+
+		--MarketplaceComponent
+
+		--TechnologyAdmin
+		perform SetPermission('TechnologyAdmin','CreateAttribute',null,'Admin');
+		perform SetPermission('TechnologyAdmin','CreateComponent',null,'Admin');
+		perform SetPermission('TechnologyAdmin','CreateComponentsAttribute',null,'Admin');
+		perform SetPermission('TechnologyAdmin','CreateComponentsTechnologies',null,'Admin');
+		--perform SetPermission('Admin','CreateLicenseOrder',null,'Admin');
+		--perform SetPermission('Admin','CreateOffer',null,'Admin');
+		--perform SetPermission('Admin','CreateOfferRequest',null,'Admin');
+		--perform SetPermission('Admin','CreatePaymentInvoice',null,'Admin');
+		perform SetPermission('TechnologyAdmin','CreateTag',null,'Admin');
+		perform SetPermission('TechnologyAdmin','CreateTechnology',null,'Admin');
+		--perform SetPermission('Admin','CreateTechnologyData',null,'Admin');
+		--perform SetPermission('Admin','CreateTechnologyDataComponents',null,'Admin');
+		perform SetPermission('TechnologyAdmin','DeleteTechnologyData',null,'Admin');
+		--perform SetPermission('Admin','GetAllAttributes',null,'Admin');
+		--perform SetPermission('Admin','GetActivatedLicensesSince',null,'Admin');
+		--perform SetPermission('Admin','GetAllComponents',null,'Admin');
+		--perform SetPermission('Admin', 'GetAllOffers',null,'Admin');
+		--perform SetPermission('Admin', 'GetAllTags',null,'Admin');
+		perform SetPermission('TechnologyAdmin', 'GetAllTechnlogies',null,'Admin');
+		--perform SetPermission('Admin', 'GetAllUsers',null,'Admin');
+		--perform SetPermission('Admin', 'GetAttributeById',null,'Admin');
+		--perform SetPermission('Admin', 'GetAttributeByName',null,'Admin');
+		--perform SetPermission('Admin', 'GetComponentById',null,'Admin');
+		--perform SetPermission('Admin', 'GetComponentByName',null,'Admin');
+		--perform SetPermission('Admin', 'GetComponentsByTechnology',null,'Admin');
+		--perform SetPermission('Admin', 'GetComponentsForTechnologyDataId',null,'Admin');
+		--perform SetPermission('Admin', 'GetLicenseFeeByTransaction',null,'Admin');
+		--perform SetPermission('Admin', 'GetMostUsedComponents',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferById',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferByRequestId',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferForPaymentInvoice',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferForTicket',null,'Admin');
+		--perform SetPermission('Admin', 'GetOfferForTransaction',null,'Admin');
+		--perform SetPermission('Admin', 'GetPaymentInvoiceForOfferRequest',null,'Admin');
+		--perform SetPermission('Admin', 'GetRevenuePerDaySince',null,'Admin');
+		--perform SetPermission('Admin', 'GetTagById',null,'Admin');
+		--perform SetPermission('Admin', 'GetTagByName',null,'Admin');
+		perform SetPermission('TechnologyAdmin', 'GetTechnologyById',null,'Admin');
+		perform SetPermission('TechnologyAdmin', 'GetTechnologyByName',null,'Admin');
+		perform SetPermission('TechnologyAdmin', 'GetTechnologyDataById',null,'Admin');
+		perform SetPermission('TechnologyAdmin', 'GetTechnologyDataByName',null,'Admin');
+		--perform SetPermission('Admin', 'GetTechnologyDataByOfferRequest',null,'Admin');
+		perform SetPermission('TechnologyAdmin', 'GetTechnologyDataByParams',null,'Admin');
+		--perform SetPermission('Admin', 'GetTechnologyForOfferRequest',null,'Admin');
+		--perform SetPermission('Admin', 'GetTopTechnologyDataSince',null,'Admin');
+		--perform SetPermission('Admin', 'GetTransactionById',null,'Admin');
+		--perform SetPermission('Admin', 'GetTransactionByOfferRequest',null,'Admin');
+		--perform SetPermission('Admin', 'GetWorkLoadSince',null,'Admin');
+		perform SetPermission('TechnologyAdmin', 'SetComponent',null,'Admin');
+		--perform SetPermission('Admin', 'SetPayment',null,'Admin');
+		--perform SetPermission('Admin', 'SetPaymentInvoiceOffer',null,'Admin');
+		--perform SetPermission('Admin', 'SetTechnologyData',null,'Admin');
+		--perform SetPermission('Admin', 'CreateTechnologyDataTags',null,'Admin');
+		--perform SetPermission('Admin', 'GetLicenseFeeByTechnologyData',null,'Admin');
+		--perform SetPermission('Admin', 'GetTechnologyDataOwnerById',null,'Admin');
+
+		--Admin
+		--perform SetPermission('Admin','CreateAttribute',null,'Admin');
+		--perform SetPermission('Admin','CreateComponent',null,'Admin');
+		--perform SetPermission('Admin','CreateComponentsAttribute',null,'Admin');
+		--perform SetPermission('Admin','CreateComponentsTechnologies',null,'Admin');
+		--perform SetPermission('Admin','CreateLicenseOrder',null,'Admin');
+		--perform SetPermission('Admin','CreateOffer',null,'Admin');
+		--perform SetPermission('Admin','CreateOfferRequest',null,'Admin');
+		--perform SetPermission('Admin','CreatePaymentInvoice',null,'Admin');
+		--perform SetPermission('Admin','CreateTag',null,'Admin');
+		--perform SetPermission('Admin','CreateTechnology',null,'Admin');
+		--perform SetPermission('Admin','CreateTechnologyData',null,'Admin');
+		--perform SetPermission('Admin','CreateTechnologyDataComponents',null,'Admin');
 		perform SetPermission('Admin','DeleteTechnologyData',null,'Admin');
 		perform SetPermission('Admin','GetAllAttributes',null,'Admin');
 		perform SetPermission('Admin','GetActivatedLicensesSince',null,'Admin');
@@ -4284,24 +4476,25 @@ $$
 		perform SetPermission('Admin', 'GetTransactionById',null,'Admin');
 		perform SetPermission('Admin', 'GetTransactionByOfferRequest',null,'Admin');
 		perform SetPermission('Admin', 'GetWorkLoadSince',null,'Admin');
-		perform SetPermission('Admin', 'SetComponent',null,'Admin');
-		perform SetPermission('Admin', 'SetPayment',null,'Admin');
-		perform SetPermission('Admin', 'SetPaymentInvoiceOffer',null,'Admin');
-		perform SetPermission('Admin', 'SetTechnologyData',null,'Admin');
-		perform SetPermission('Admin', 'CreateTechnologyDataTags',null,'Admin');
+		--perform SetPermission('Admin', 'SetComponent',null,'Admin');
+		--perform SetPermission('Admin', 'SetPayment',null,'Admin');
+		--perform SetPermission('Admin', 'SetPaymentInvoiceOffer',null,'Admin');
+		--perform SetPermission('Admin', 'SetTechnologyData',null,'Admin');
+		--perform SetPermission('Admin', 'CreateTechnologyDataTags',null,'Admin');
 		perform SetPermission('Admin', 'GetLicenseFeeByTechnologyData',null,'Admin');
 		perform SetPermission('Admin', 'GetTechnologyDataOwnerById',null,'Admin');
 
 
+
+
 	END;
 $$;
-COMMIT;
 
 DO
  $$
-    DECLARE vUserUUID uuid := 'f6552f5c-f15b-4350-b373-418979d4c045';
+    DECLARE vUserUUID uuid := 'adb4c297-45bd-437e-ac90-9179eea41730';
 			vCompParentID uuid;
-			vRoleName varchar := 'Admin';
+			vRoleName varchar := 'TechnologyAdmin';
 	BEGIN
     	-- Just in case. set all sequences to start point
         ALTER SEQUENCE componentid RESTART WITH 1;
@@ -4314,7 +4507,7 @@ DO
             'Juice Mixer',			-- <technologyname character varying>,
             'Machine to mix juice',	-- <technologydescription character varying>,
             vUserUUID,
-			vRoleName 				-- <createdby integer>
+	    vRoleName 				-- <createdby integer>
         );
         -- Create Components & Attributes
 
@@ -4325,7 +4518,7 @@ DO
             '{Root}',			-- <attributelist text[]>,
             '{Juice Mixer}',  				-- <technologylist text[]>,
             vUserUUID,
-			vRoleName  			-- <createdby integer>
+	    vRoleName  			-- <createdby integer>
          );
         -- 1 Wasser
         perform public.setcomponent(
@@ -4335,7 +4528,7 @@ DO
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
-			vRoleName  			-- <createdby integer>
+	    vRoleName  			-- <createdby integer>
          );
         -- 2 Apfelsaft
         perform public.setcomponent(
@@ -4345,7 +4538,7 @@ DO
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
-			vRoleName  			-- <createdby integer>
+	    vRoleName  			-- <createdby integer>
          );
 		 -- 3 Orange
         perform public.setcomponent(
@@ -4355,7 +4548,7 @@ DO
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
-			vRoleName  			-- <createdby integer>
+	    vRoleName  			-- <createdby integer>
          );
 		-- 4 Mangosaft
         perform public.setcomponent(
@@ -4365,7 +4558,7 @@ DO
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
-			vRoleName  			-- <createdby integer>
+	    vRoleName  			-- <createdby integer>
          );
         -- 5 Kirschsaft
         perform public.setcomponent(
@@ -4375,7 +4568,7 @@ DO
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
-			vRoleName  			-- <createdby integer>
+	    vRoleName  			-- <createdby integer>
          );
         -- 6 Bananensaft
         perform public.setcomponent(
@@ -4385,7 +4578,7 @@ DO
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
-			vRoleName  			-- <createdby integer>
+	    vRoleName  			-- <createdby integer>
          );
          -- 7 Maracujasaft
         perform public.setcomponent(
@@ -4395,7 +4588,7 @@ DO
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
-			vRoleName  			-- <createdby integer>
+	    vRoleName  			-- <createdby integer>
          );
         -- 8 Ananassaft
         perform public.setcomponent(
@@ -4405,8 +4598,18 @@ DO
             '{Normal}',			-- <attributelist text[]>,
             '{Juice Mixer}', 				-- <technologylist text[]>,
             vUserUUID,
-			vRoleName  			-- <createdby integer>
+            vRoleName  			-- <createdby integer>
          );
+
+		update components set componentuuid = '8f0bc514-7219-46d2-999d-c45c930c3e7c'::uuid where componentname = 'Root';
+		update components set componentuuid = '570a5df0-a044-4e22-b6e6-b10af872d75c'::uuid where componentname = 'Mineralwasser';
+		update components set componentuuid = '198f1571-4846-4467-967a-00427ab0208d'::uuid where componentname = 'Apfelsaft';
+		update components set componentuuid = 'f6d361a9-5a6f-42ad-bff7-0913750809e4'::uuid where componentname = 'Orangensaft';
+		update components set componentuuid = 'fac1ee6f-185f-47fb-8c56-af57cd428aa8'::uuid where componentname = 'Mangosaft';
+		update components set componentuuid = '0425393d-5b84-4815-8eda-1c27d35766cf'::uuid where componentname = 'Kirschsaft';
+		update components set componentuuid = '4cfa2890-6abd-4e21-a7ab-17613ed9a5c9'::uuid where componentname = 'Bananensaft';
+		update components set componentuuid = '14b72ce5-fec1-48ec-83ff-24b124f98dc8'::uuid where componentname = 'Maracujasaft';
+		update components set componentuuid = 'bf2cfd66-5b6f-4655-8e7f-04090308f6db'::uuid where componentname = 'Ananassaft';
    END;
  $$;
 COMMIT;
@@ -4417,78 +4620,48 @@ $$
         DECLARE  vUserUUID uuid := 'f6552f5c-f15b-4350-b373-418979d4c045';
 				 vRoleName varchar := 'Admin';
 				 vTechnologyUUID uuid := (select technologyuuid from technologies where technologyid = 1);
-		vComponents text[];
+				 vComponents text[];
 
   BEGIN
   		-- Create TechnologyData
-		-- Cherry with Mango
-
-	vComponents := (select array_agg(componentuuid) from components where componentname in ('Kirchsaft','Mangosaft'));
+		--
+		vComponents := (select array_agg(componentuuid) from components where componentname in ('Orangensaft','Bananensaft','Maracujasaft', 'Ananassaft', 'Mineralwasser'));
+		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41732';
+		vRoleName := 'TechnologyDataOwner';
         perform public.settechnologydata(
-            'CheMa',		     				 -- <technologydataname character varying>,
+            'Karibiktraum',		     				 -- <technologydataname character varying>,
             '{
 			  ""recipe"": {
-				""id"": ""TestProgram"",
-				""lines"": [
-				  {
-					""components"": [
+					""id"": ""Karibiktraum"",
+					""lines"": [
 					  {
-						""ingredient"": ""Orangensaft"",
-						""amount"": 5
-					  },
-					  {
-						""ingredient"": ""Apfelsaft"",
-						""amount"": 5
-					  },
-					  {
-						""ingredient"": ""Johannisbeersaft"",
-						""amount"": 5
+						""components"": [
+						  {
+							""ingredient"": ""Orangensaft"",
+							""amount"": 32
+						  },
+						  {
+							""ingredient"": ""Bananensaft"",
+							""amount"": 32
+						  },
+						  {
+							""ingredient"": ""Maracujasaft"",
+							""amount"": 32
+						  },
+						  {
+							""ingredient"": ""Ananassaft"",
+							""amount"": 32
+						  },
+						  {
+							""ingredient"": ""Mineralwasser"",
+							""amount"": 32
+						  }
+						],
+						""timing"": 0,
+						""sleep"": 0
 					  }
-					],
-					""timing"": 1,
-					""sleep"": 0
+					]
 				  }
-				]
-			  }
-			}',	     				 -- <technologydata character varying>,
-            'Cherry with Mango', 				 -- <technologydatadescription character varying>,
-            vTechnologyUUID,    								 -- <vtechnologyid integer>,
-            50000,
-			150000,
-            '{Delicious, Cherry, Mango, Yummy}', -- <taglist text[]>,            						 		 -- <createdby integer>,
-            vComponents,    							 -- <componentlist integer[]>
-			vUserUUID,
-			vRoleName
-
-		 );
-		-- Other Juice
-	vComponents := (select array_agg(componentuuid) from components where componentname in ('Orangensaft','Apfelsaft','Kirschsaft'));
-        perform public.settechnologydata(
-            'CSaefte',		     				 -- <technologydataname character varying>,
-            '{
-			  ""recipe"": {
-				""id"": ""TestProgram"",
-				""lines"": [
-				  {
-					""components"": [
-					  {
-						""ingredient"": ""Orangensaft"",
-						""amount"": 5
-					  },
-					  {
-						""ingredient"": ""Apfelsaft"",
-						""amount"": 5
-					  },
-					  {
-						""ingredient"": ""Johannisbeersaft"",
-						""amount"": 5
-					  }
-					],
-					""timing"": 1,
-					""sleep"": 0
-				  }
-				]
-			  }
 			}',	     				 -- <technologydata character varying>,
             'Orange, Apfel und Kirsch', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
@@ -4499,112 +4672,132 @@ $$
 			vUserUUID,
 			vRoleName
 		 );
-         -- Cherry with Banana
-        vComponents := (select array_agg(componentuuid) from components where componentname in ('Kirschsaft','Bananensaft'));
+         --
+        vComponents := (select array_agg(componentuuid) from components where componentname in ('Mineralwasser','Apfelsaft','Maracujasaft','Ananassaft'));
+		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41732';
+		vRoleName := 'TechnologyDataOwner';
         perform public.settechnologydata(
-            'KiBa',		     				 -- <technologydataname character varying>,
+            'Anas Big Bang',		     				 -- <technologydataname character varying>,
             '{
 			  ""recipe"": {
-				""id"": ""TestProgram"",
-				""lines"": [
-				  {
-					""components"": [
+					""id"": ""Anas Big Bang"",
+					""lines"": [
 					  {
-						""ingredient"": ""Orangensaft"",
-						""amount"": 5
-					  },
-					  {
-						""ingredient"": ""Apfelsaft"",
-						""amount"": 5
-					  },
-					  {
-						""ingredient"": ""Johannisbeersaft"",
-						""amount"": 5
+						""components"": [
+						  {
+							""ingredient"": ""Mineralwasser"",
+							""amount"": 64
+						  },
+						  {
+							""ingredient"": ""Apfelsaft"",
+							""amount"": 16
+						  },
+						  {
+							""ingredient"": ""Maracujasaft"",
+							""amount"": 48
+						  },
+						  {
+							""ingredient"": ""Ananassaft"",
+							""amount"": 32
+						  }
+						],
+						""timing"": 0,
+						""sleep"": 0
 					  }
-					],
-					""timing"": 1,
-					""sleep"": 0
+					]
 				  }
-				]
-			  }
 			}',	     				 -- <technologydata character varying>,
-            'KiBa', 				 -- <technologydatadescription character varying>,
+            'Lassen Sie sich von der Geschmacksexplosion überraschen.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             75000,
 			200000,
-            '{Delicious, Cherry, Cola, Refreshing}', -- <taglist text[]>,
+            '{Delicious, Refreshing}', -- <taglist text[]>,
 	    vComponents,    		 -- <componentlist integer[]>
             vUserUUID,    						 -- <createdby integer>,
             vRoleName
          );
           -- Banana, Orange
-        vComponents := (select array_agg(componentuuid) from components where componentname in ('Bananensaft','Orangensaft'));
+        vComponents := (select array_agg(componentuuid) from components where componentname in ('Mineralwasser','Apfelsaft'));
+		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41731';
+		vRoleName := 'TechnologyDataOwner';
         perform public.settechnologydata(
-            'Barange',		     				 -- <technologydataname character varying>,
+            'Max Apfelschorle',		     				 -- <technologydataname character varying>,
             '{
 			  ""recipe"": {
-				""id"": ""TestProgram"",
-				""lines"": [
-				  {
-					""components"": [
+					""id"": ""Max Apfelschorle"",
+					""lines"": [
 					  {
-						""ingredient"": ""Orangensaft"",
-						""amount"": 5
+						""components"": [
+						  {
+							""ingredient"": ""Mineralwasser"",
+							""amount"": 32
+						  }
+						],
+						""timing"": 0,
+						""sleep"": 0
 					  },
 					  {
-						""ingredient"": ""Apfelsaft"",
-						""amount"": 5
-					  },
-					  {
-						""ingredient"": ""Johannisbeersaft"",
-						""amount"": 5
+						""components"": [
+						  {
+							""ingredient"": ""Mineralwasser"",
+							""amount"": 64
+						  },
+						  {
+							""ingredient"": ""Apfelsaft"",
+							""amount"": 64
+						  }
+						],
+						""timing"": 0,
+						""sleep"": 0
 					  }
-					],
-					""timing"": 1,
-					""sleep"": 0
+					]
 				  }
-				]
-			  }
 			}',	     				 -- <technologydata character varying>,
-            'Orange with Banana', 				 -- <technologydatadescription character varying>,
+            'Der klassische Durstlöscher, wie ihn jedes Kind kennt und liebt.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             100000,
 			175000,    			 				 -- <licensefee numeric>,
-            '{Delicious, Ginger, Orange}', -- <taglist text[]>,
+            '{Delicious, Apfelschorle}', -- <taglist text[]>,
             vComponents,
 			vUserUUID,
 			vRoleName
          );
-         -- Banana, Mango, Orange
-        vComponents := (select array_agg(componentuuid) from components where componentname in ('Bananensaft','Mangosaft','Orangensaft'));
+         -- BaKi küsst Ananass
+        vComponents := (select array_agg(componentuuid) from components where componentname in ('Kirschsaft','Bananensaft','Mineralwasser', 'Ananassaft'));
+		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41731';
+		vRoleName := 'TechnologyDataOwner';
         perform public.settechnologydata(
-            'Bamao',		     				 -- <technologydataname character varying>,
+            'BaKi küsst Ananass',		     				 -- <technologydataname character varying>,
             '{
 			  ""recipe"": {
-				""id"": ""TestProgram"",
-				""lines"": [
-				  {
-					""components"": [
+					""id"": ""BaKi küsst Ananass"",
+					""lines"": [
 					  {
-						""ingredient"": ""Orangensaft"",
-						""amount"": 5
-					  },
-					  {
-						""ingredient"": ""Apfelsaft"",
-						""amount"": 5
-					  },
-					  {
-						""ingredient"": ""Johannisbeersaft"",
-						""amount"": 5
+						""components"": [
+						  {
+							""ingredient"": ""Kirschsaft"",
+							""amount"": 60
+						  },
+						  {
+							""ingredient"": ""Bananensaft"",
+							""amount"": 60
+						  },
+						  {
+							""ingredient"": ""Mineralwasser"",
+							""amount"": 32
+						  },
+						  {
+							""ingredient"": ""Ananassaft"",
+							""amount"": 8
+						  }
+						],
+						""timing"": 0,
+						""sleep"": 0
 					  }
-					],
-					""timing"": 1,
-					""sleep"": 0
+					]
 				  }
-				]
-			  }
 			}',	     				 -- <technologydata character varying>,
-            'Delicious Banana, Mango, Orange juice', 				 -- <technologydatadescription character varying>,
+            'Der süße Kuss der Ananas trifft auf eine Bananen-Kirsch Kombination.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             50000,
 			200000,
@@ -4626,56 +4819,4 @@ update components set componentuuid = '0425393d-5b84-4815-8eda-1c27d35766cf'::uu
 update components set componentuuid = '4cfa2890-6abd-4e21-a7ab-17613ed9a5c9'::uuid where componentname = 'Bananensaft';
 update components set componentuuid = '14b72ce5-fec1-48ec-83ff-24b124f98dc8'::uuid where componentname = 'Maracujasaft';
 update components set componentuuid = 'bf2cfd66-5b6f-4655-8e7f-04090308f6db'::uuid where componentname = 'Ananassaft';
--- Create offerrequest, paymentinvoice, offer, payment and licenseorder
-/*DO
-$$
-DECLARE
-	vtechnologydatauuid uuid;
-	vAmount integer := 5;
-	vHSMID text := 'something';
-	vUserUUID uuid := (select useruuid from users limit 1);
-	vBuyerUUID uuid;
-	vInvoice text;
-	vOfferRequestUUID uuid;
-	vPaymentInvoiceUUID uuid;
-	vBitcoinTransaction text := 'Bitcoin';
-	vTickedID text := 'Some Ticket';
-	vOfferUUID uuid;
-	vCurrOfferRequest integer;
-	vCurrPaymentInvoiceID integer;
-	vCurrOfferID integer;
-	vRandomID integer;
-	vRoleName varchar := 'Admin';
 
-	BEGIN
-	FOR i IN 1..250 LOOP
-	  vRandomID := (select (trunc(random() * 3 + 1)));
-	  vInvoice := (select uuid_generate_v4())::text;
-	  vtechnologydatauuid := (select technologydatauuid from technologydata where technologydataid = vRandomID);
-	  -- Create Buyer
-	  --perform createuser('Buyer','Cool','buyer.cool@coolinc.com', null);
-	  vBuyerUUID := (select useruuid from users limit 1);
-	  -- Create OfferRequest
-	  perform createofferrequest(vtechnologydatauuid,vAmount,vHSMID,vUserUUID,vBuyerUUID, vRoleName);
-
-	  vCurrOfferRequest := (select currval('OfferRequestID'));
-	  -- Get OfferRequestUUID
-	  vOfferRequestUUID := (select offerrequestuuid from offerrequest where offerrequestid = vCurrOfferRequest)::uuid;
-	  -- Create PaymentInvoice
-	  raise info '%', vCurrOfferRequest;
-	  perform SetPaymentInvoiceOffer(vOfferRequestUUID, vInvoice, vUserUUID, vRoleName);
-	  -- Get PaymentInvoiceUUID
-	  vCurrPaymentInvoiceID := (select currval('PaymentInvoiceID'));
-	  vPaymentInvoiceUUID := (select paymentinvoiceuuid from paymentinvoice where paymentinvoiceid =  vCurrPaymentInvoiceID)::uuid;
-	  -- Create Offer
-	  --perform createoffer(vPaymentInvoiceUUID,vUserUUID);
-	  -- Create Payment
-	  --perform createpayment(vPaymentInvoiceUUID::uuid, vBitcoinTransaction, vUserUUID);
-	  -- Get OfferUUID
-	  --vCurrOfferID := (select currval('OfferID'));
-	  -- vOfferUUID := (select offeruuid from offer where offerid = vCurrOfferID)::uuid;
-	  -- Create LicenseOrder
-	  --perform createlicenseorder(vTickedID, vOfferUUID, vUserUUID);
-	END LOOP;
-	END;
-$$;*/
