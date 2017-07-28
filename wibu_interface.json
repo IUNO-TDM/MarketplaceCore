@@ -59,7 +59,7 @@
               }
             }
           },
-          "500": {
+          "400": {
             "description": "error",
             "schema": {
               "type": "object",
@@ -102,7 +102,7 @@
           "200": {
             "description": "okay"
           },
-          "500": {
+          "400": {
             "description": "error",
             "schema": {
               "type": "object",
@@ -153,7 +153,7 @@
               }
             }
           },
-          "500": {
+          "400": {
             "description": "error",
             "schema": {
               "type": "object",
@@ -196,7 +196,7 @@
           "200": {
             "description": "okay"
           },
-          "500": {
+          "400": {
             "description": "error",
             "schema": {
               "type": "object",
@@ -232,9 +232,8 @@
           "default": 6000274
         },
         "cmactid": {
-          "type": "integer",
-          "format": "uint32",
-          "default": 1000
+          "type": "string",
+          "default": "1000"
         },
         "location": {
           "type": "string",
@@ -291,7 +290,8 @@
           "default": 6000274
         },
         "productcode": {
-          "type": "string",
+          "type": "integer",
+          "format": "uint32",
           "description": "product code for encryption"
         },
         "buffer": {
@@ -345,17 +345,17 @@
       "type": "object",
       "properties": {
         "ReturnCode": {
-          "type": "integer",
-          "format": "int32",
-          "description": "error code for the user"
+          "type": "string",
+          "format": "byte",
+          "description": "error code for the user as hex string starting with 0x"
         },
         "ErrorText": {
           "type": "string",
           "description": "error message for the user"
         },
         "InternalErrorCode": {
-          "type": "integer",
-          "format": "int32",
+          "type": "string",
+          "format": "byte",
           "description": "zero for errors in php module, non zero for application errors"
         },
         "InternalErrorText": {
