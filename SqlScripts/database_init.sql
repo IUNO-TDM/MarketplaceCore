@@ -3692,15 +3692,18 @@ Input paramteres: vRoles text[](250)
 create function createrole(vRoles text[], vRoleDescription varchar(32672), vUserUUID uuid, vRolesUser text[])
 returns void as
 $$
-	Declare vRoleID integer := (select nextval('RoleID'));
+	Declare vRoleID integer;
 		vFunctionName varchar := 'CreateRole';
 		vIsAllowed boolean := (select public.checkPermissions(vRolesUser, vFunctionName));
-
+		vRoleName varchar;
 
 	BEGIN
 		if(vIsAllowed) then
-			insert into roles (RoleID, RoleName, RoleDescription)
-			values (vRoleID, vRoles, vRoleDescription);
+			FOREACH vRoleName in array vRoles LOOP
+				vRoleID := (select nextval('RoleID'));
+				insert into roles (RoleID, RoleName, RoleDescription)
+				values (vRoleID, vRoleName, vRoleDescription);
+			END LOOP;
 		else
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
 		 RETURN;
@@ -3709,15 +3712,15 @@ $$
 	 -- Begin Log if success
         perform public.createlog(0,'Created Role sucessfully', 'CreateRole',
                                 'RoleID: ' || cast(vRoleID as varchar)
-                                || ', vRoles: ' || vRoles
+                                || ', vRoles: ' || cast(vRoles as varchar)
                                 || ', RoleDescription: '
                                 || vRoleDescription);
 
 	 exception when others then
         -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateRole',
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'CreateRole',
                                 'RoleID: ' || cast(vRoleID as varchar)
-                                || ', vRoles: ' || vRoles
+                                || ', vRoles: ' || cast(vRoles as varchar)
                                 || ', RoleDescription: '
                                 || vRoleDescription);
         -- End Log if error
@@ -3745,7 +3748,8 @@ $BODY$
 	DECLARE vFunctionID integer := (select nextval('FunctionID'));
 		vThisFunctionName varchar := 'SetPermission';
 		vIsAllowed boolean := (select public.checkPermissions(vRolesUser, vThisFunctionName));
-		vRoleId integer := (select roleid from roles where rolename = vRoles);
+		vRoleId integer;
+		vRoleName varchar;
 		vFunctionExists boolean := (select exists(select 1 from functions where functionname = vfunctionname));
 	BEGIN
 
@@ -3756,13 +3760,20 @@ $BODY$
 				insert into functions (FunctionID, FunctionName)
 				values (vFunctionID, vFunctionName);
 
-				insert into rolespermissions(RoleId,FunctionId)
-				values (vRoleId, vFunctionId);
+				FOREACH vRoleName in array vRoles LOOP
+					vRoleId := (select roleid from roles where rolename = vRoleName);
+					insert into rolespermissions(RoleId,FunctionId)
+					values (vRoleId, vFunctionId);
+				END LOOP;
 			else
 
-			 vFunctionID := (select functionid from functions where functionname = vFunctionName);
-			 insert into rolespermissions(RoleId,FunctionId)
-				values (vRoleId, vFunctionId);
+				 vFunctionID := (select functionid from functions where functionname = vFunctionName);
+
+				 FOREACH vRoleName in array vRoles LOOP
+					vRoleId := (select roleid from roles where rolename = vRoleName);
+					insert into rolespermissions(RoleId,FunctionId)
+					values (vRoleId, vFunctionId);
+				 END LOOP;
 
 			end if;
 
@@ -3773,14 +3784,14 @@ $BODY$
 
 	-- Begin Log if success
         perform public.createlog(0,'Created Permission sucessfully', 'SetPermission',
-                                'PermissionID: ' || cast(vFunctionID as varchar) || ', Role: '
-                                || vRoles || ', FunctionName: ' || vFunctionName);
+                                'PermissionID: ' || cast(vFunctionID as varchar) || ', Roles: '
+                                || cast(vRoles as varchar) || ', FunctionName: ' || vFunctionName);
 
 	 exception when others then
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'SetPermission',
-                                'PermissionID: ' || cast(vFunctionID as varchar) || ', Roles '
-                                || vRoles || ', FunctionName: ' || vFunctionName);
+                                'PermissionID: ' || cast(vFunctionID as varchar) || ', Roles: '
+                                || cast(vRoles as varchar) || ', FunctionName: ' || vFunctionName);
         -- End Log if error
 		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetPermission';
 		RETURN;
@@ -4166,7 +4177,7 @@ $BODY$
 -- Description: Create Base Data for the MarketplaceCode Database
 -- Changes:
 -- ##########################################################################
-insert into roles(roleid, rolename) values (0,'{Admin}');
+insert into roles(roleid, rolename) values (0,'Admin');
 insert into functions(functionid, functionname) values (0,'CreateRole');
 insert into rolespermissions (roleid,functionid) values (0,0);
 insert into functions(functionid, functionname) values (1,'SetPermission');
@@ -4564,7 +4575,7 @@ $$
 		--
 		vComponents := (select array_agg(componentuuid) from components where componentname in ('Orangensaft','Bananensaft','Maracujasaft', 'Ananassaft', 'Mineralwasser'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41732';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Karibiktraum',		     				 -- <technologydataname character varying>,
             '{
@@ -4612,7 +4623,7 @@ $$
          --
         vComponents := (select array_agg(componentuuid) from components where componentname in ('Mineralwasser','Apfelsaft','Maracujasaft','Ananassaft'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41732';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Anas Big Bang',		     				 -- <technologydataname character varying>,
             '{
@@ -4656,7 +4667,7 @@ $$
           -- Banana, Orange
         vComponents := (select array_agg(componentuuid) from components where componentname in ('Mineralwasser','Apfelsaft'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41731';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Max Apfelschorle',		     				 -- <technologydataname character varying>,
             '{
@@ -4702,7 +4713,7 @@ $$
          -- BaKi küsst Ananass
         vComponents := (select array_agg(componentuuid) from components where componentname in ('Kirschsaft','Bananensaft','Mineralwasser', 'Ananassaft'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41731';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'BaKi küsst Ananass',		     				 -- <technologydataname character varying>,
             '{
@@ -4756,4 +4767,3 @@ update components set componentuuid = '0425393d-5b84-4815-8eda-1c27d35766cf'::uu
 update components set componentuuid = '4cfa2890-6abd-4e21-a7ab-17613ed9a5c9'::uuid where componentname = 'Bananensaft';
 update components set componentuuid = '14b72ce5-fec1-48ec-83ff-24b124f98dc8'::uuid where componentname = 'Maracujasaft';
 update components set componentuuid = 'bf2cfd66-5b6f-4655-8e7f-04090308f6db'::uuid where componentname = 'Ananassaft';
-

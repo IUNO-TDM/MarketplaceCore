@@ -3238,15 +3238,18 @@ Input paramteres: vRoles text[](250)
 create function createrole(vRoles text[], vRoleDescription varchar(32672), vUserUUID uuid, vRolesUser text[])
 returns void as
 $$
-	Declare vRoleID integer := (select nextval('RoleID'));
+	Declare vRoleID integer;
 		vFunctionName varchar := 'CreateRole';
 		vIsAllowed boolean := (select public.checkPermissions(vRolesUser, vFunctionName));
-
+		vRoleName varchar;
 
 	BEGIN
 		if(vIsAllowed) then
-			insert into roles (RoleID, RoleName, RoleDescription)
-			values (vRoleID, vRoles, vRoleDescription);
+			FOREACH vRoleName in array vRoles LOOP
+				vRoleID := (select nextval('RoleID'));
+				insert into roles (RoleID, RoleName, RoleDescription)
+				values (vRoleID, vRoleName, vRoleDescription);
+			END LOOP;
 		else
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
 		 RETURN;
@@ -3255,15 +3258,15 @@ $$
 	 -- Begin Log if success
         perform public.createlog(0,'Created Role sucessfully', 'CreateRole',
                                 'RoleID: ' || cast(vRoleID as varchar)
-                                || ', vRoles: ' || vRoles
+                                || ', vRoles: ' || cast(vRoles as varchar)
                                 || ', RoleDescription: '
                                 || vRoleDescription);
 
 	 exception when others then
         -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateRole',
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'CreateRole',
                                 'RoleID: ' || cast(vRoleID as varchar)
-                                || ', vRoles: ' || vRoles
+                                || ', vRoles: ' || cast(vRoles as varchar)
                                 || ', RoleDescription: '
                                 || vRoleDescription);
         -- End Log if error
@@ -3291,7 +3294,8 @@ $BODY$
 	DECLARE vFunctionID integer := (select nextval('FunctionID'));
 		vThisFunctionName varchar := 'SetPermission';
 		vIsAllowed boolean := (select public.checkPermissions(vRolesUser, vThisFunctionName));
-		vRoleId integer := (select roleid from roles where rolename = vRoles);
+		vRoleId integer;
+		vRoleName varchar;
 		vFunctionExists boolean := (select exists(select 1 from functions where functionname = vfunctionname));
 	BEGIN
 
@@ -3302,13 +3306,20 @@ $BODY$
 				insert into functions (FunctionID, FunctionName)
 				values (vFunctionID, vFunctionName);
 
-				insert into rolespermissions(RoleId,FunctionId)
-				values (vRoleId, vFunctionId);
+				FOREACH vRoleName in array vRoles LOOP
+					vRoleId := (select roleid from roles where rolename = vRoleName);
+					insert into rolespermissions(RoleId,FunctionId)
+					values (vRoleId, vFunctionId);
+				END LOOP;
 			else
 
-			 vFunctionID := (select functionid from functions where functionname = vFunctionName);
-			 insert into rolespermissions(RoleId,FunctionId)
-				values (vRoleId, vFunctionId);
+				 vFunctionID := (select functionid from functions where functionname = vFunctionName);
+
+				 FOREACH vRoleName in array vRoles LOOP
+					vRoleId := (select roleid from roles where rolename = vRoleName);
+					insert into rolespermissions(RoleId,FunctionId)
+					values (vRoleId, vFunctionId);
+				 END LOOP;
 
 			end if;
 
@@ -3319,14 +3330,14 @@ $BODY$
 
 	-- Begin Log if success
         perform public.createlog(0,'Created Permission sucessfully', 'SetPermission',
-                                'PermissionID: ' || cast(vFunctionID as varchar) || ', Role: '
-                                || vRoles || ', FunctionName: ' || vFunctionName);
+                                'PermissionID: ' || cast(vFunctionID as varchar) || ', Roles: '
+                                || cast(vRoles as varchar) || ', FunctionName: ' || vFunctionName);
 
 	 exception when others then
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'SetPermission',
-                                'PermissionID: ' || cast(vFunctionID as varchar) || ', Roles '
-                                || vRoles || ', FunctionName: ' || vFunctionName);
+                                'PermissionID: ' || cast(vFunctionID as varchar) || ', Roles: '
+                                || cast(vRoles as varchar) || ', FunctionName: ' || vFunctionName);
         -- End Log if error
 		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetPermission';
 		RETURN;
@@ -3626,12 +3637,12 @@ CREATE FUNCTION public.checkpermissions(
   RETURNS boolean AS
 $$
 	#variable_conflict use_column
-	DECLARE	vIsAllowed boolean; 
+	DECLARE	vIsAllowed boolean;
 		vFunctionId integer := (select functionId from functions where functionname = vFunctionName);
 	BEGIN
-		vIsAllowed := (select exists(select 1 from rolespermissions rp 
-									 join roles ro on ro.roleid = ro.roleid 
-									 where ro.rolename = ANY(vRoles) 
+		vIsAllowed := (select exists(select 1 from rolespermissions rp
+									 join roles ro on ro.roleid = ro.roleid
+									 where ro.rolename = ANY(vRoles)
 									 and functionId = vFunctionId));
 		if(vIsAllowed) then
 			return true;

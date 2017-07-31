@@ -5,7 +5,7 @@
 -- Description: Create Base Data for the MarketplaceCode Database
 -- Changes:
 -- ##########################################################################
-insert into roles(roleid, rolename) values (0,'{Admin}');
+insert into roles(roleid, rolename) values (0,'Admin');
 insert into functions(functionid, functionname) values (0,'CreateRole');
 insert into rolespermissions (roleid,functionid) values (0,0);
 insert into functions(functionid, functionname) values (1,'SetPermission');
@@ -403,7 +403,7 @@ $$
 		--
 		vComponents := (select array_agg(componentuuid) from components where componentname in ('Orangensaft','Bananensaft','Maracujasaft', 'Ananassaft', 'Mineralwasser'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41732';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Karibiktraum',		     				 -- <technologydataname character varying>,
             '{
@@ -451,7 +451,7 @@ $$
          --
         vComponents := (select array_agg(componentuuid) from components where componentname in ('Mineralwasser','Apfelsaft','Maracujasaft','Ananassaft'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41732';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Anas Big Bang',		     				 -- <technologydataname character varying>,
             '{
@@ -495,7 +495,7 @@ $$
           -- Banana, Orange
         vComponents := (select array_agg(componentuuid) from components where componentname in ('Mineralwasser','Apfelsaft'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41731';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Max Apfelschorle',		     				 -- <technologydataname character varying>,
             '{
@@ -541,7 +541,7 @@ $$
          -- BaKi küsst Ananass
         vComponents := (select array_agg(componentuuid) from components where componentname in ('Kirschsaft','Bananensaft','Mineralwasser', 'Ananassaft'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41731';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'BaKi küsst Ananass',		     				 -- <technologydataname character varying>,
             '{
