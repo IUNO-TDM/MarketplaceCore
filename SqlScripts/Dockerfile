@@ -2,7 +2,7 @@ FROM library/postgres
 
 ENV POSTGRES_USER docker
 ENV POSTGRES_PASSWORD docker
-ENV POSTGRES_DB MarketplaceCore
+ENV POSTGRES_DB marketplacecore
 
 ADD database_init.sql /docker-entrypoint-initdb.d/
 
