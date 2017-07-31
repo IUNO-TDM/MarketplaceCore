@@ -1,14 +1,14 @@
 /**
  * Created by beuttlerma on 31.05.17.
  */
-var logger = require('../../global/logger');
-var db = require('../db_connection');
+const logger = require('../../global/logger');
+const db = require('../db_connection')
 
-var self = {};
+let self = {};
 
 
-self.CreateLicenseOrder = function(ticketId, offerUUID, userUUID, callback) {
-    db.func('CreateLicenseOrder', [ticketId, offerUUID, userUUID])
+self.CreateLicenseOrder = function(ticketId, offerUUID, user, callback) {
+    db.func('CreateLicenseOrder', [ticketId, offerUUID, user.uuid, user.role])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];

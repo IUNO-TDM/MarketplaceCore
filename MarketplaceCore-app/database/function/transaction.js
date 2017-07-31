@@ -19,13 +19,16 @@ self.GetTransactionByOfferRequest = function (userUUID, roleName, offerRequestUU
 };
 
 //Get all transaction by given OfferRequest
-self.GetTransactionByID = function (userUUID, transactionUUID, callback) {
-    db.func('GetTransactionById', [transactionUUID, userUUID])
+self.GetTransactionByID = function (user, transactionUUID, callback) {
+    db.func('GetTransactionById', [transactionUUID, user.uuid, user.role])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];
+                return callback(null, data);
             }
-            callback(null, data);
+            else {
+                return callback(null, null);
+            }
         })
         .catch(function (error) {
             logger.crit(error);
