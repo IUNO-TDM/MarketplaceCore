@@ -1049,7 +1049,7 @@ CREATE FUNCTION CreateComponentsAttribute (
   	DECLARE vAttributeName text;
 		vAttrID int;
 		vComponentID integer := (select componentid from components where componentuuid = vComponentUUID);
-		vFunctionName varchar := 'SetComponent';
+		vFunctionName varchar := 'CreateComponentsAttribute';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
@@ -1826,7 +1826,7 @@ CREATE FUNCTION GetTagByID(vTagID uuid, vUserUUID uuid, vRoles text[])
     AS $$
 
 	DECLARE
-		vFunctionName varchar := 'GetTagByID';
+		vFunctionName varchar := 'GetTagById';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
@@ -1968,7 +1968,7 @@ CREATE FUNCTION GetTechnologyByID(vtechUUID uuid, vUserUUID uuid, vRoles text[])
         )
     AS $$
 	DECLARE
-		vFunctionName varchar := 'GetTechnologyByName';
+		vFunctionName varchar := 'GetTechnologyById';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
@@ -2273,7 +2273,7 @@ CREATE FUNCTION GetAttributeByID(vAttrUUID uuid, vUserUUID uuid, vRoles text[])
     AS $$
 
 	DECLARE
-		vFunctionName varchar := 'GetAttributeByID';
+		vFunctionName varchar := 'GetAttributeById';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
@@ -3373,7 +3373,7 @@ RETURNS TABLE (
 	) AS
 $$
 	DECLARE
-		vFunctionName varchar := 'GetTransactionByID';
+		vFunctionName varchar := 'GetTransactionById';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
