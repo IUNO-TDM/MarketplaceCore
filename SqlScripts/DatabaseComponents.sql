@@ -3412,7 +3412,7 @@ RETURNS TABLE (
 	) AS 
 $$	  
 	DECLARE
-		vFunctionName varchar := 'GetTransactionByID'; 
+		vFunctionName varchar := 'GetTransactionById';
 		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
 		
 	BEGIN     
@@ -3420,7 +3420,7 @@ $$
 	IF(vIsAllowed) THEN  
 
 	RETURN QUERY (select	ts.transactionuuid,
-				ts.buyer,
+				ts.buyerid,
 				ofr.offeruuid,
 				oq.offerrequestuuid,
 				py.paymentuuid,

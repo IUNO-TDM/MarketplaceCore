@@ -3824,7 +3824,7 @@ $$
 	IF(vIsAllowed) THEN
 
 	RETURN QUERY (select	ts.transactionuuid,
-				ts.buyer,
+				ts.buyerid,
 				ofr.offeruuid,
 				oq.offerrequestuuid,
 				py.paymentuuid,
