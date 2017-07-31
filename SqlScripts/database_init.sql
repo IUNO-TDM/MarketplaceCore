@@ -3816,7 +3816,7 @@ RETURNS TABLE (
 	) AS
 $$
 	DECLARE
-		vFunctionName varchar := 'GetTransactionByID';
+		vFunctionName varchar := 'GetTransactionById';
 		vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
 
 	BEGIN
