@@ -29,7 +29,7 @@ function Invoice(totalAmount, expiration, transfers, invoiceId, referenceId) {
  * @returns {*}
  * @constructor
  */
-Invoice.prototype.CreateFromJSON = function (jsonData) {
+Invoice.prototype.CreateFromJSON = Invoice.CreateFromJSON = function (jsonData) {
     if (!jsonData) {
         return null;
     }

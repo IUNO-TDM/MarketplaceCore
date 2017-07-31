@@ -57,6 +57,6 @@ self.validateToken = function (userUUID, accessToken, callback) {
     });
 
 
-}
+};
 
 module.exports = self;

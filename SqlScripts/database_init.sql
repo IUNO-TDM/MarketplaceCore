@@ -444,7 +444,7 @@ BEGIN
 	CREATE USER core_loguser WITH PASSWORD 'PASSWORD';  -- PUT YOUR PWD HERE
 	END IF;
 	CREATE FOREIGN DATA WRAPPER core_fwd VALIDATOR postgresql_fdw_validator;
-	CREATE SERVER core FOREIGN DATA WRAPPER core_fwd OPTIONS (hostaddr '127.0.0.1', dbname 'marketplacecore'); -- PUT YOUR DATABASENAME HERE
+	CREATE SERVER core FOREIGN DATA WRAPPER core_fwd OPTIONS (hostaddr '127.0.0.1', dbname 'MarketplaceCore'); -- PUT YOUR DATABASENAME HERE
 	CREATE USER MAPPING FOR core_loguser SERVER core OPTIONS (user 'core_loguser', password 'PASSWORD'); -- PUT YOUR PWD HERE
 	GRANT USAGE ON FOREIGN SERVER core TO core_loguser;
 	GRANT INSERT ON TABLE logtable TO core_loguser;
@@ -527,8 +527,8 @@ $BODY$
 				 || ''', ''' || vParameters
 				 || ''', ' || 'now())';
 		 vConnName text := 'conn';
-		 vConnString text := 'dbname=marketplacecore port=5432 host=localhost user=core_loguser password=PASSWORD';
-	     vConnExist bool := (select ('{' || vConnName || '}')::text[] <@ (select dblink_get_connections()));
+		 vConnString text := 'dbname=MarketplaceCore port=5432 host=localhost user=core_loguser password=PASSWORD';
+	      vConnExist bool := (select ('{' || vConnName || '}')::text[] <@ (select dblink_get_connections()));
       BEGIN
 
 		if(not vConnExist or vConnExist is null) then
@@ -3827,7 +3827,7 @@ RETURNS TABLE (
 	) AS
 $$
 	DECLARE
-		vFunctionName varchar := 'GetTransactionByID';
+		vFunctionName varchar := 'GetTransactionById';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
@@ -3835,7 +3835,7 @@ $$
 	IF(vIsAllowed) THEN
 
 	RETURN QUERY (select	ts.transactionuuid,
-				ts.buyer,
+				ts.buyerid,
 				ofr.offeruuid,
 				oq.offerrequestuuid,
 				py.paymentuuid,
@@ -4191,6 +4191,7 @@ $$
 		perform createrole('{TechnologyDataOwner}','Is the creator and administrator of Technology Data', null,'{Admin}');
 		perform createrole('{MarketplaceComponent}','Is the creator and administrator of Technology Data', null,'{Admin}');
 		perform createrole('{TechnologyAdmin}','Administrate technologies.', null,'{Admin}');
+		perform createrole('{MarketplaceCore}','Is the only role with access to core functions', null,'Admin');
 	END;
 $$;
 --Create Permissions
@@ -4202,6 +4203,10 @@ $$
 		perform SetPermission('{Public}', 'GetRevenuePerDaySince',null,'{Admin}');
 		perform SetPermission('{Public}', 'GetWorkLoadSince',null,'{Admin}');
 
+        --MarketplaceCore
+		perform SetPermission('MarketplaceCore', 'GetTransactionById',null,'Admin');
+		perform SetPermission('MarketplaceCore', 'SetPayment',null,'Admin');
+		perform SetPermission('MarketplaceCore', 'CreateLicenseOrder',null,'Admin');
 		-- MachineOperator
 		--perform SetPermission('{Admin}','CreateAttribute',null,'{Admin}');
 		--perform SetPermission('{Admin}','CreateComponent',null,'{Admin}');

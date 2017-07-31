@@ -6,8 +6,10 @@ const EventEmitter = require('events').EventEmitter;
 const util = require('util');
 const request = require('request');
 const config = require('../config/config_loader');
+const helper = require('../services/helper_service');
 
 var Invoice = require('../model/invoice');
+var Transfer = require('../model/transfer');
 var logger = require('../global/logger');
 var io = require('socket.io-client');
 var dbPayment = require('../database/function/payment');
@@ -33,7 +35,12 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
     }
 }
 
-payment_service.socket = io.connect('http://localhost:8080/invoices', {transports: ['websocket']});
+payment_service.socket = io.connect(helper.formatString(
+    '{0}://{1}:{2}/invoices',
+    config.HOST_SETTINGS.PAYMENT_SERVICE.PROTOCOL,
+    config.HOST_SETTINGS.PAYMENT_SERVICE.HOST,
+    config.HOST_SETTINGS.PAYMENT_SERVICE.PORT
+), {transports: ['websocket']});
 
 payment_service.socket.on('connect', function () {
     logger.debug("connected to paymentservice");
@@ -50,10 +57,9 @@ payment_service.socket.on('StateChange', function (invoice) {
             extInvoiceId: invoice.invoiceId,
             depth: invoice.depth,
             confidenceState: invoice.state,
-            bitcoinTransaction: null,
-            userUUID: config.USER_UUID
+            bitcoinTransaction: null
         };
-        dbPayment.SetPayment(config.USER_UUID, paymentData, function (err, payment) {
+        dbPayment.SetPayment(config.USER, paymentData, function (err, payment) {
             if (!err) {
                 payment_service.emit('StateChange', {
                     invoice: invoice,
@@ -117,9 +123,9 @@ payment_service.getInvoiceTransfers = function (invoice, callback) {
 
     request(options, function (e, r, jsonData) {
         var err = logger.logRequestAndResponse(e, options, r, jsonData);
-        var invoice = new Invoice().CreateFromJSON(jsonData);
+        var transfers = Transfer.CreateListFromJSON(jsonData);
 
-        callback(err, invoice);
+        callback(err, transfers);
     });
 };
 

@@ -46,6 +46,10 @@ self.OAUTH_CREDENTIALS = {
     CLIENT_ID: '',
     CLIENT_SECRET: ''
 };
+self.USER = {
+    uuid: '{uuid}',
+    role: '{role}'
+};
 
 
 module.exports = self;

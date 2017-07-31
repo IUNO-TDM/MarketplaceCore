@@ -14,9 +14,9 @@ util.inherits(LicenseService, EventEmitter);
 payment_service.on('StateChange', function (data) {
     var transactionUuid = data.invoice.referenceId;
     if (data.payment && data.payment.paydate) {
-        dbTrans.GetTransactionByID(config.USER_UUID, transactionUuid, function (err, transaction) {
+        dbTrans.GetTransactionByID(config.USER, transactionUuid, function (err, transaction) {
             if (!err && !transaction.licenseorderuuid) {
-                dbLicence.CreateLicenseOrder(null, transaction.offeruuid, config.USER_UUID, function (err, data) {
+                dbLicence.CreateLicenseOrder(null, transaction.offeruuid, config.USER, function (err, data) {
                     if (!err) {
                         license_service.emit('updateAvailable', data.offeruuid, 'TW552HSM');
                     }
