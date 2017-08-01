@@ -2592,10 +2592,12 @@ $$
 			of.paymentinvoiceid = pi.paymentinvoiceid
 			join offerrequest oq on
 			pi.offerrequestid = oq.offerrequestid
+			join offerrequestitems ri on
+			oq.offerrequestid = ri.offerrequestid
 			join technologydata td on
-			oq.technologydataid = td.technologydataid
+			ri.technologydataid = td.technologydataid
 			)
-		select count(*)::integer from activatedLinceses	where
+		select count(*)::integer from activatedLincese where
 		(select datediff('second',vTime::timestamp,activatedat::timestamp)) >= 0 AND
 		(select datediff('minute',vTime::timestamp,activatedat::timestamp)) >= 0 AND
 		(select datediff('hour',vTime::timestamp,activatedat::timestamp)) >= 0;
@@ -2634,13 +2636,15 @@ $BODY$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (	select technologydataname, count(ts.offerid)::integer, (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (	select technologydataname, count(ts.offerid)::integer, (sum(td.retailprice))/100000::numeric(21,4) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.offerid = lo.offerid
 			join offerrequest oq
 			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri on
+			oq.offerrequestid = ri.offerrequestid
 			join technologydata td
-			on oq.technologydataid = td.technologydataid
+			on ri.technologydataid = td.technologydataid
 			where (select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
@@ -2688,18 +2692,20 @@ $$
 	IF(vIsAllowed) THEN
 
 		with activatedLinceses as(
-			select * from licenseorder lo
-			join offer of on lo.offerid = of.offerid
-			join paymentinvoice pi on
-			of.paymentinvoiceid = pi.paymentinvoiceid
-			join offerrequest oq on
-			pi.offerrequestid = oq.offerrequestid
-			join technologydata td on
-			oq.technologydataid = td.technologydataid
-			join technologydatacomponents tc on
-			tc.technologydataid = td.technologydataid
-			join components co on
-			co.componentid = tc.componentid
+				select componentname, activatedat from licenseorder lo
+				join offer of on lo.offerid = of.offerid
+				join paymentinvoice pi on
+				of.paymentinvoiceid = pi.paymentinvoiceid
+				join offerrequest oq on
+				pi.offerrequestid = oq.offerrequestid
+				join offerrequestitems ri on
+				oq.offerrequestid = ri.offerrequestid
+				join technologydata td on
+				ri.technologydataid = td.technologydataid
+				join technologydatacomponents tc on
+				tc.technologydataid = td.technologydataid
+				join components co on
+				co.componentid = tc.componentid
 			),
 		rankTable as (
 		select componentname, count(componentname) as rank from activatedLinceses where
@@ -2721,23 +2727,80 @@ $$
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
 -- CreatedAt: 2017-03-07
+-- Description: Script Get most used components since given Date for one particular user
+-- ##########################################################################
+Input paramteres: vSinceDate  timestamp
+				  vTopValue integer
+Return Value: ComponentName, Amount
+######################################################*/
+CREATE FUNCTION public.GetMostUsedComponentsForUser(
+    IN vsincedate timestamp without time zone,
+    IN vtopvalue integer,
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(componentname character varying, amount integer) AS
+$BODY$
+
+	DECLARE
+		vFunctionName varchar := 'GetMostUsedComponentsForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+		with activatedLinceses as(
+			select componentname, activatedat from licenseorder lo
+			join offer of on lo.offerid = of.offerid
+			join paymentinvoice pi on
+			of.paymentinvoiceid = pi.paymentinvoiceid
+			join offerrequest oq on
+			pi.offerrequestid = oq.offerrequestid
+			join offerrequestitems ri on
+			oq.offerrequestid = ri.offerrequestid
+			join technologydata td on
+			ri.technologydataid = td.technologydataid
+			join technologydatacomponents tc on
+			tc.technologydataid = td.technologydataid
+			join components co on
+			co.componentid = tc.componentid
+			where td.createdby = vUserUUID
+			),
+		rankTable as (
+		select componentname, count(componentname) as rank from activatedLinceses 
+		where
+		(select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+		(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+		(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+		group by componentname)
+		select componentname::varchar(250), rank::integer from rankTable
+		order by rank desc limit vTopValue;
+
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+ $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000; 
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-07
 -- Description: Script Get workload since given time
 -- ##########################################################################
 Input paramteres: vSinceDate  timestamp
 Return Value: TechnologyDataName, Date, Amount, DayHour
 ######################################################*/
-CREATE FUNCTION GetWorkloadSince(
-		vSinceDate timestamp without time zone,
-		vUserUUID uuid,
-		vRoles text[]
-	)
-RETURNS TABLE (
-	  TechnologyDataName varchar(250),
-	  Date date,
-	  Amount integer,
-	  DayHour integer
-	) AS
-$$
+CREATE FUNCTION public.getworkloadsince(
+    IN vsincedate timestamp without time zone,
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(technologydataname character varying, date date, amount integer, dayhour integer) AS
+$BODY$
 
 	DECLARE
 		vFunctionName varchar := 'GetWorkloadSince';
@@ -2748,14 +2811,16 @@ $$
 	IF(vIsAllowed) THEN
 
 			with activatedLicenses as(
-				select * from licenseorder lo
+				select technologydataname, activatedat from licenseorder lo
 				join offer of on lo.offerid = of.offerid
 				join paymentinvoice pi on
 				of.paymentinvoiceid = pi.paymentinvoiceid
 				join offerrequest oq on
 				pi.offerrequestid = oq.offerrequestid
+				join offerrequestitems ri on
+				oq.offerrequestid = ri.offerrequestid
 				join technologydata td on
-				oq.technologydataid = td.technologydataid
+				ri.technologydataid = td.technologydataid
 				join technologydatacomponents tc on
 				tc.technologydataid = td.technologydataid
 				),
@@ -2776,7 +2841,10 @@ $$
 	END IF;
 
 	END;
-$$ LANGUAGE 'plpgsql';
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
