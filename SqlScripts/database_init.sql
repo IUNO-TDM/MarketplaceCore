@@ -1315,7 +1315,7 @@ CREATE FUNCTION CreateLicenseOrder (
 		VALUES(vLicenseOrderID, vLicenseOrderUUID, vTicketID, vOfferID, now(), vUserUUID, now());
 
 		-- Update Transactions table
-		UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = vCreatedBy
+		UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = vUserUUID
 		WHERE TransactionID = vTransactionID;
 
 	ELSE
@@ -4584,18 +4584,18 @@ $$
         perform public.settechnologydata(
             'Karibiktraum',		     				 -- <technologydataname character varying>,
             '{
-			  ""recipe"": {
-					""id"": ""Karibiktraum"",
-					""lines"": [
+			  "recipe": {
+					"id": "Karibiktraum",
+					"lines": [
 					  {
-						""components"": [
+						"components": [
 						  {
-							""ingredient"": ""Orangensaft"",
-							""amount"": 32
+							"ingredient": "Orangensaft",
+							"amount": 32
 						  },
 						  {
-							""ingredient"": ""Bananensaft"",
-							""amount"": 32
+							"ingredient": "Bananensaft",
+							"amount": 32
 						  },
 						  {
 							""ingredient"": ""Maracujasaft"",
@@ -4632,30 +4632,30 @@ $$
         perform public.settechnologydata(
             'Anas Big Bang',		     				 -- <technologydataname character varying>,
             '{
-			  ""recipe"": {
-					""id"": ""Anas Big Bang"",
-					""lines"": [
+			  "recipe": {
+					"id": "Anas Big Bang",
+					"lines": [
 					  {
-						""components"": [
+						"components": [
 						  {
-							""ingredient"": ""Mineralwasser"",
-							""amount"": 64
+							"ingredient": "Mineralwasser",
+							"amount": 64
 						  },
 						  {
-							""ingredient"": ""Apfelsaft"",
-							""amount"": 16
+							"ingredient": "Apfelsaft",
+							"amount": 16
 						  },
 						  {
-							""ingredient"": ""Maracujasaft"",
-							""amount"": 48
+							"ingredient": "Maracujasaft",
+							"amount": 48
 						  },
 						  {
-							""ingredient"": ""Ananassaft"",
-							""amount"": 32
+							"ingredient": "Ananassaft",
+							"amount": 32
 						  }
 						],
-						""timing"": 0,
-						""sleep"": 0
+						"timing": 0,
+						"sleep": 0
 					  }
 					]
 				  }
@@ -4676,32 +4676,32 @@ $$
         perform public.settechnologydata(
             'Max Apfelschorle',		     				 -- <technologydataname character varying>,
             '{
-			  ""recipe"": {
-					""id"": ""Max Apfelschorle"",
-					""lines"": [
+			  "recipe": {
+					"id": "Max Apfelschorle",
+					"lines": [
 					  {
-						""components"": [
+						"components": [
 						  {
-							""ingredient"": ""Mineralwasser"",
-							""amount"": 32
+							"ingredient": "Mineralwasser",
+							"amount": 32
 						  }
 						],
-						""timing"": 0,
-						""sleep"": 0
+						"timing": 0,
+						"sleep": 0
 					  },
 					  {
-						""components"": [
+						"components": [
 						  {
-							""ingredient"": ""Mineralwasser"",
-							""amount"": 64
+							"ingredient": "Mineralwasser",
+							"amount": 64
 						  },
 						  {
-							""ingredient"": ""Apfelsaft"",
-							""amount"": 64
+							"ingredient": "Apfelsaft",
+							"amount": 64
 						  }
 						],
-						""timing"": 0,
-						""sleep"": 0
+						"timing": 0,
+						"sleep": 0
 					  }
 					]
 				  }
@@ -4722,30 +4722,30 @@ $$
         perform public.settechnologydata(
             'BaKi küsst Ananass',		     				 -- <technologydataname character varying>,
             '{
-			  ""recipe"": {
-					""id"": ""BaKi küsst Ananass"",
-					""lines"": [
+			  "recipe": {
+					"id": "BaKi küsst Ananass",
+					"lines": [
 					  {
-						""components"": [
+						"components": [
 						  {
-							""ingredient"": ""Kirschsaft"",
-							""amount"": 60
+							"ingredient": "Kirschsaft",
+							"amount": 60
 						  },
 						  {
-							""ingredient"": ""Bananensaft"",
-							""amount"": 60
+							"ingredient": "Bananensaft",
+							"amount": 60
 						  },
 						  {
-							""ingredient"": ""Mineralwasser"",
-							""amount"": 32
+							"ingredient": "Mineralwasser",
+							"amount": 32
 						  },
 						  {
-							""ingredient"": ""Ananassaft"",
-							""amount"": 8
+							"ingredient": "Ananassaft",
+							"amount": 8
 						  }
 						],
-						""timing"": 0,
-						""sleep"": 0
+						"timing": 0,
+						"sleep": 0
 					  }
 					]
 				  }
