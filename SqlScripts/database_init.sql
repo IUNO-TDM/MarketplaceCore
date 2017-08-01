@@ -1305,7 +1305,7 @@ CREATE FUNCTION CreateLicenseOrder (
 				vLicenseOrderUUID uuid := (select uuid_generate_v4());
 				vOfferID integer := (select offerid from offer where offeruuid = vOfferUUID);
 				vTransactionID integer := (select transactionid from transactions where offerid = vOfferID);
-				FunctionName varchar := 'CreateLicenseOrder';
+				vFunctionName varchar := 'CreateLicenseOrder';
 				vIsAllowed boolean := (select public.checkPermissions(vRoleName, vFunctionName));
 
 	BEGIN
@@ -1315,7 +1315,7 @@ CREATE FUNCTION CreateLicenseOrder (
 		VALUES(vLicenseOrderID, vLicenseOrderUUID, vTicketID, vOfferID, now(), vUserUUID, now());
 
 		-- Update Transactions table
-		UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = vCreatedBy
+		UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = CreatedBy
 		WHERE TransactionID = vTransactionID;
 
 	ELSE
