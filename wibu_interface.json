@@ -80,7 +80,7 @@
         ],
         "summary": "Creates and activates a new license for a product and CmDongle.",
         "description": "",
-        "operationId": "doCreateOrderIUNO",
+        "operationId": "doCreateOrder",
         "consumes": [
           "application/json"
         ],
@@ -235,7 +235,7 @@
           "type": "string",
           "default": "1000"
         },
-        "location": {
+        "lcaction": {
           "type": "string",
           "default": "autoupdate"
         }
@@ -249,6 +249,11 @@
           "format": "base64",
           "description": "WibuCmRaU file encoded with base64",
           "example": "SFAgd2FzIGhlcmUhCg=="
+        },
+        "length": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "length of encoded content"
         },
         "md5": {
           "type": "string",
@@ -311,11 +316,20 @@
           "format": "base64",
           "description": "encrypted data encoded with base64"
         },
+        "length": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "length of encrypted and encoded data"
+        },
         "md5": {
           "type": "string",
           "format": "md5",
           "description": "md5 checksum of content"
-        }
+        },
+        "crc": {
+          "type": "string",
+          "description": "internal crc value of crypt operation"
+        },
       }
     },
     "Item": {
@@ -336,7 +350,8 @@
           "default": 6000274
         },
         "productcode": {
-          "type": "string",
+          "type": "integer",
+          "format": "uint32",
           "description": "product code for encryption"
         }
       }
