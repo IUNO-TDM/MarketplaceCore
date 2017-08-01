@@ -25,9 +25,9 @@ Offer.prototype.FindAll = Offer.FindAll = function () {
     throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 };
 
-Offer.prototype.FindSingle = Offer.FindSingle = function (userUUID, roleName, id, callback) {
+Offer.prototype.FindSingle = Offer.FindSingle = function (userUUID, roles, id, callback) {
 
-    db.func('GetOfferByID', [id, userUUID, roleName])
+    db.func('GetOfferByID', [id, userUUID, roles])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];

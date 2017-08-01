@@ -32,7 +32,7 @@ function TechnologyData(data) {
     }
 }
 
-TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, roleName, params, callback) {
+TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, roles, params, callback) {
     var technologies = params['technologies'];
     var tags = params['tags'];
     var components = params['components'];
@@ -47,7 +47,7 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
             technologydataname,
             ownerUUID,
             userUUID,
-            roleName
+            roles
         ], 1 //TODO: Document this parameter
     )
         .then(function (data) {
@@ -64,8 +64,8 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
         });
 };
 
-TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, roleName, id, callback) {
-    db.func('GetTechnologyDataByID', [id, userUUID, roleName])
+TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, roles, id, callback) {
+    db.func('GetTechnologyDataByID', [id, userUUID, roles])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {
@@ -78,7 +78,7 @@ TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (user
             callback(error);
         });
 };
-TechnologyData.prototype.Create = function (userUUID, roleName, callback) {
+TechnologyData.prototype.Create = function (userUUID, roles, callback) {
     db.func('SetTechnologyData',
         [   this.technologydataname,
             this.technologydata,
@@ -89,7 +89,7 @@ TechnologyData.prototype.Create = function (userUUID, roleName, callback) {
             this.taglist,
             this.componentlist,
             userUUID,
-            roleName
+            roles
         ])
         .then(function (data) {
             logger.debug(data);

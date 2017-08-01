@@ -16,7 +16,7 @@ var helper = require('../services/helper_service');
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
 
-    new TechnologyData().FindAll(req.query['userUUID'], req.token.user.rolename, req.query, function (err, data) {
+    new TechnologyData().FindAll(req.query['userUUID'], req.token.user.roles, req.query, function (err, data) {
         if (err) {
             next(err);
         }
@@ -28,7 +28,7 @@ router.get('/', validate({query: require('../schema/technologydata_schema').GetA
 
 router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.rolename, req.params['id'],   function (err, data) {
+    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'],   function (err, data) {
         if (err) {
             next(err);
         }
@@ -56,7 +56,7 @@ router.post('/', validate({
     techData.taglist = data['tagList'];
     techData.componentlist = data['componentList'];
 
-    techData.Create(req.query['userUUID'], req.token.user.rolename, function (err, data) {
+    techData.Create(req.query['userUUID'], req.token.user.roles, function (err, data) {
         if (err) {
             next(err);
         }
@@ -71,7 +71,7 @@ router.post('/', validate({
 router.get('/:id/image', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
 
-    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.rolename, req.params['id'], function (err, technologyData) {
+    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, technologyData) {
         if (err) {
             next(err);
         }
@@ -101,7 +101,7 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
 
 router.get('/:id/components', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    new Component().FindByTechnologyDataId(req.query['userUUID'], req.token.user.rolename, req.params['id'], function (err, components) {
+    new Component().FindByTechnologyDataId(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, components) {
         if (err) {
             next(err);
         }
