@@ -1,3 +1,18 @@
+DO
+$$
+BEGIN
+	IF ((SELECT 1 FROM pg_roles WHERE rolname='core_loguser') is null) THEN
+	CREATE USER core_loguser WITH PASSWORD 'PASSWORD';  -- PUT YOUR PWD HERE
+	END IF;
+	CREATE FOREIGN DATA WRAPPER core_fwd VALIDATOR postgresql_fdw_validator;
+	CREATE SERVER core FOREIGN DATA WRAPPER core_fwd OPTIONS (hostaddr '127.0.0.1', dbname 'MarketplaceCore'); -- PUT YOUR DATABASENAME HERE
+	CREATE USER MAPPING FOR core_loguser SERVER core OPTIONS (user 'core_loguser', password 'PASSWORD'); -- PUT YOUR PWD HERE
+	GRANT USAGE ON FOREIGN SERVER core TO core_loguser;
+	GRANT INSERT ON TABLE logtable TO core_loguser;
+END;
+$$;
+COMMIT;
+
 -- ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -73,8 +88,8 @@ $BODY$
 				 || ''', ''' || vParameters
 				 || ''', ' || 'now())';
 		 vConnName text := 'conn';
-		 vConnString text := 'dbname=marketplacecore port=5432 host=localhost user=core_loguser password=PASSWORD';
-	     vConnExist bool := (select ('{' || vConnName || '}')::text[] <@ (select dblink_get_connections()));
+		 vConnString text := 'dbname=MarketplaceCore port=5432 host=localhost user=core_loguser password=PASSWORD';
+	      vConnExist bool := (select ('{' || vConnName || '}')::text[] <@ (select dblink_get_connections()));
       BEGIN
 
 		if(not vConnExist or vConnExist is null) then
@@ -861,7 +876,7 @@ CREATE FUNCTION CreateLicenseOrder (
 		VALUES(vLicenseOrderID, vLicenseOrderUUID, vTicketID, vOfferID, now(), vUserUUID, now());
 
 		-- Update Transactions table
-		UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = vCreatedBy
+		UPDATE Transactions SET LicenseOrderID = vLicenseOrderID, UpdatedAt = now(), UpdatedBy = vUserUUID
 		WHERE TransactionID = vTransactionID;
 
 	ELSE
@@ -3381,7 +3396,7 @@ $$
 	IF(vIsAllowed) THEN
 
 	RETURN QUERY (select	ts.transactionuuid,
-				ts.buyer,
+				ts.buyerid,
 				ofr.offeruuid,
 				oq.offerrequestuuid,
 				py.paymentuuid,
