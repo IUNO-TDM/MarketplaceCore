@@ -1305,7 +1305,7 @@ CREATE FUNCTION CreateLicenseOrder (
 				vLicenseOrderUUID uuid := (select uuid_generate_v4());
 				vOfferID integer := (select offerid from offer where offeruuid = vOfferUUID);
 				vTransactionID integer := (select transactionid from transactions where offerid = vOfferID);
-				FunctionName varchar := 'CreateLicenseOrder';
+				vFunctionName varchar := 'CreateLicenseOrder';
 				vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
