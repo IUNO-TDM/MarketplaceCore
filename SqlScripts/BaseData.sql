@@ -19,7 +19,7 @@ $$
 		perform createrole('{TechnologyDataOwner}','Is the creator and administrator of Technology Data', null,'{Admin}');
 		perform createrole('{MarketplaceComponent}','Is the creator and administrator of Technology Data', null,'{Admin}');
 		perform createrole('{TechnologyAdmin}','Administrate technologies.', null,'{Admin}');
-		perform createrole('{MarketplaceCore}','Is the only role with access to core functions', null,'Admin');
+		perform createrole('{MarketplaceCore}','Is the only role with access to core functions', null,'{Admin}');
 	END;
 $$;
 --Create Permissions
@@ -32,9 +32,9 @@ $$
 		perform SetPermission('{Public}', 'GetWorkLoadSince',null,'{Admin}');
 
         --MarketplaceCore
-		perform SetPermission('MarketplaceCore', 'GetTransactionById',null,'Admin');
-		perform SetPermission('MarketplaceCore', 'SetPayment',null,'Admin');
-		perform SetPermission('MarketplaceCore', 'CreateLicenseOrder',null,'Admin');
+		perform SetPermission('{MarketplaceCore}', 'GetTransactionById',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'SetPayment',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'CreateLicenseOrder',null,'{Admin}');
 		-- MachineOperator
 		--perform SetPermission('{Admin}','CreateAttribute',null,'{Admin}');
 		--perform SetPermission('{Admin}','CreateComponent',null,'{Admin}');

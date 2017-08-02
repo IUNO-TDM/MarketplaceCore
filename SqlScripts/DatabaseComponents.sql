@@ -2613,6 +2613,52 @@ $$ LANGUAGE 'plpgsql';
  /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-02-28
+-- Description: Script Get amount of activated licenses by given time
+-- ##########################################################################
+Input paramteres: vTime  timestamp
+Return Value: Amount of activated licenses
+######################################################*/
+CREATE FUNCTION GetActivatedLicensesSinceForUser (vTime timestamp, vUserUUID uuid, vRoles text[])
+RETURNS integer AS
+$$
+	DECLARE
+		vFunctionName varchar := 'GetActivatedLicensesSinceForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+		with activatedLinceses as(
+			select * from licenseorder lo
+			join offer of on lo.offerid = of.offerid
+			join paymentinvoice pi on
+			of.paymentinvoiceid = pi.paymentinvoiceid
+			join offerrequest oq on
+			pi.offerrequestid = oq.offerrequestid
+			join offerrequestitems ri on
+			oq.offerrequestid = ri.offerrequestid
+			join technologydata td on
+			ri.technologydataid = td.technologydataid
+			where td.createdby = vUserUUID
+			)
+		select count(*)::integer from activatedLincese where
+		(select datediff('second',vTime::timestamp,activatedat::timestamp)) >= 0 AND
+		(select datediff('minute',vTime::timestamp,activatedat::timestamp)) >= 0 AND
+		(select datediff('hour',vTime::timestamp,activatedat::timestamp)) >= 0;
+
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN null;
+	END IF;
+
+	END;
+
+$$ LANGUAGE 'plpgsql';
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
 -- CreatedAt: 2017-03-07
 -- Description: Script Get Top x since given Date
 -- ##########################################################################
@@ -2648,6 +2694,58 @@ $BODY$
 			where (select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+			group by technologydataname
+			order by count(ts.offerid) desc limit vTopValue
+		);
+
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+
+	$BODY$
+	  LANGUAGE 'plpgsql';
+/* ##########################################################################
+-- Author: Marcel Ely Gomes
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-07
+-- Description: Script Get Top x since given Date
+-- ##########################################################################
+Input paramteres: vSinceDate  timestamp
+				  vTopValue integer
+Return Value: TechnologyDataName, Rank value
+######################################################*/
+CREATE FUNCTION public.GetTopTechnologyDataSinceForUser(
+    IN vsincedate timestamp without time zone,
+    IN vtopvalue integer,
+	IN vUserUUID uuid,
+    IN vRoles text[])
+  RETURNS TABLE(technologydataname character varying, rank integer, revenue numeric) AS
+$BODY$
+
+	DECLARE
+		vFunctionName varchar := 'GetTopTechnologyDataSinceForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (	select technologydataname, count(ts.offerid)::integer, (sum(td.retailprice))/100000::numeric(21,4) as "Revenue (in IUNOs)" from transactions ts
+			join licenseorder lo
+			on ts.offerid = lo.offerid
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri on
+			oq.offerrequestid = ri.offerrequestid
+			join technologydata td
+			on ri.technologydataid = td.technologydataid
+			where (select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+			td.createdby = vUserUUID
 			group by technologydataname
 			order by count(ts.offerid) desc limit vTopValue
 		);
@@ -2795,7 +2893,7 @@ $BODY$
 Input paramteres: vSinceDate  timestamp
 Return Value: TechnologyDataName, Date, Amount, DayHour
 ######################################################*/
-CREATE FUNCTION public.getworkloadsince(
+CREATE FUNCTION public.GetWorkloadSince(
     IN vsincedate timestamp without time zone,
     IN vuseruuid uuid,
     IN vroles text[])
@@ -2823,6 +2921,66 @@ $BODY$
 				ri.technologydataid = td.technologydataid
 				join technologydatacomponents tc on
 				tc.technologydataid = td.technologydataid
+				),
+			rankTable as (
+			select technologydataname, activatedat,
+			activatedat::date as dateValue,
+			date_part('hour',activatedat) as dayhour from activatedLicenses where
+			(select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+			group by technologydataname, activatedat )
+			select technologydataname, dateValue, count(dayhour)::integer as amount, dayhour::integer from rankTable
+			group by technologydataname,dateValue, dayhour
+			order by dayhour asc;
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+ /* ##########################################################################
+-- Author: Marcel Ely Gomes
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-07
+-- Description: Script Get workload since given time
+-- ##########################################################################
+Input paramteres: vSinceDate  timestamp
+Return Value: TechnologyDataName, Date, Amount, DayHour
+######################################################*/
+CREATE FUNCTION public.GetWorkloadSinceForUser(
+    IN vsincedate timestamp without time zone,
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(technologydataname character varying, date date, amount integer, dayhour integer) AS
+$BODY$
+
+	DECLARE
+		vFunctionName varchar := 'GetWorkloadSinceForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+			with activatedLicenses as(
+				select technologydataname, activatedat from licenseorder lo
+				join offer of on lo.offerid = of.offerid
+				join paymentinvoice pi on
+				of.paymentinvoiceid = pi.paymentinvoiceid
+				join offerrequest oq on
+				pi.offerrequestid = oq.offerrequestid
+				join offerrequestitems ri on
+				oq.offerrequestid = ri.offerrequestid
+				join technologydata td on
+				ri.technologydataid = td.technologydataid
+				join technologydatacomponents tc on
+				tc.technologydataid = td.technologydataid
+				where td.createdby = vUserUUID
 				),
 			rankTable as (
 			select technologydataname, activatedat,
@@ -3572,7 +3730,49 @@ $$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select activatedat::date, (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (select activatedat::date, (sum(td.retailprice))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join technologydata td
+			on oq.technologydataid = td.technologydataid
+			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0
+			group by activatedat::date
+			order by activatedat::date
+		);
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+	$$ LANGUAGE 'plpgsql';
+/* ##########################################################################
+-- Author: Marcel Ely Gomes
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Revenue for given user
+-- ##########################################################################
+Input paramteres: vDate timestamp
+				  vUserUUID uuid
+######################################################*/
+-- Get Revenue for given user
+create function GetRevenueForUser(vDate timestamp, vUserUUID uuid, vRoles text[])
+returns table (date date, revenue numeric(21,2))
+as
+$$
+	DECLARE
+		vFunctionName varchar := 'GetRevenueForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (select activatedat::date, (sum(td.retailprice))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.licenseorderid = lo.licenseorderid
 			join offerrequest oq
