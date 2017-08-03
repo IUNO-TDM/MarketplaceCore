@@ -67,4 +67,16 @@ self.GetRevenueForUser = function(userUUID, roles, sinceDate, callback){
         });
 };
 
+self.GetTotalRevenueForUser = function(userUUID, roles, callback){
+    db.func('GetTotalRevenueForUser', [userUUID, roles])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
 module.exports = self;
