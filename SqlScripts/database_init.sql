@@ -4605,6 +4605,7 @@ $$
 		perform SetPermission('{TechnologyDataOwner}', 'GetMostUsedComponentsForUser',null,'{Admin}');
 		perform SetPermission('{TechnologyDataOwner}', 'GetWorkloadSinceForUser',null,'{Admin}');
 		perform SetPermission('{TechnologyDataOwner}', 'GetRevenueForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTotalRevenueForUser',null,'{Admin}');
 
 		--MarketplaceComponent
 
