@@ -3760,10 +3760,12 @@ Input paramteres: vDate timestamp
 				  vUserUUID uuid
 ######################################################*/
 -- Get Revenue for given user
-create function GetRevenueForUser(vDate timestamp, vUserUUID uuid, vRoles text[])
-returns table (date date, revenue numeric(21,2))
-as
-$$
+CREATE FUNCTION public.getrevenueforuser(
+    IN vdate timestamp without time zone,
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(date date, revenue numeric) AS
+$BODY$
 	DECLARE
 		vFunctionName varchar := 'GetRevenueForUser';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
@@ -3777,11 +3779,14 @@ $$
 			on ts.licenseorderid = lo.licenseorderid
 			join offerrequest oq
 			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on oq.offerrequestid = ri.offerrequestid
 			join technologydata td
-			on oq.technologydataid = td.technologydataid
+			on ri.technologydataid = td.technologydataid
 			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0
+			(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+			td.createdby = vUserUUID
 			group by activatedat::date
 			order by activatedat::date
 		);
@@ -3791,7 +3796,10 @@ $$
 	END IF;
 
 	END;
-	$$ LANGUAGE 'plpgsql';
+	$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
