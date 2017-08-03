@@ -148,6 +148,11 @@ $$
 		perform SetPermission('{TechnologyDataOwner}', 'CreateTechnologyDataTags',null,'{Admin}');
 		--perform SetPermission('{Admin}', 'GetLicenseFeeByTechnologyData',null,'{Admin}');
 		--perform SetPermission('{Admin}', 'GetTechnologyDataOwnerById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTopTechnologyDataSinceForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetActivatedLicensesSinceForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetMostUsedComponentsForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetWorkloadSinceForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetRevenueForUser',null,'{Admin}');
 
 		--MarketplaceComponent
 
