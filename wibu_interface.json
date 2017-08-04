@@ -229,15 +229,21 @@
         "firmcode": {
           "type": "integer",
           "format": "uint32",
-          "default": 6000274
+          "description": "constant firm code by wibu for the IUNO technology data marketplace",
+          "default": "6000274",
+          "example": "6000274"
         },
         "cmactid": {
           "type": "string",
-          "default": "1000"
+          "description": "use constant value 1000 for CmDongle with Universal Firm Code",
+          "default": "1000",
+          "example": "1000"
         },
         "location": {
           "type": "string",
-          "default": "autoupdate"
+          "description": "constant value for licenses which are bound to a serial number",
+          "default": "autoupdate",
+          "example": "autoupdate"
         }
       }
     },
@@ -253,7 +259,8 @@
         "md5": {
           "type": "string",
           "format": "md5",
-          "description": "md5 checksum of content"
+          "description": "md5 checksum of content",
+          "example": "d41d8cd98f00b204e9800998ecf8427e"
         }
       }
     },
@@ -272,12 +279,16 @@
         },
         "itemid": {
           "type": "string",
-          "description": "number of articel to be licensed"
+          "format": "uuid",
+          "description": "article number and reference for issueing licenses - the IUNO recipe uuid of the marketplace core shall be used here",
+          "example": "875cacd8-78f3-11e7-9983-3b2a0b7f899c"
         },
         "quantity": {
           "type": "integer",
           "format": "int32",
-          "description": "amount of licenses to be issued"
+          "description": "amount of licenses to be issued",
+          "default": "1",
+          "example": "42"
         }
       }
     },
@@ -287,12 +298,15 @@
         "firmcode": {
           "type": "integer",
           "format": "uint32",
-          "default": 6000274
+          "description": "constant firm code by wibu for the IUNO technology data marketplace",
+          "default": "6000274",
+          "example": "6000274"
         },
         "productcode": {
           "type": "integer",
           "format": "uint32",
-          "description": "product code for encryption"
+          "description": "product code for encryption",
+          "example": "45054"
         },
         "buffer": {
           "type": "string",
@@ -309,12 +323,14 @@
         "content": {
           "type": "string",
           "format": "base64",
-          "description": "encrypted data encoded with base64"
+          "description": "encrypted data encoded with base64",
+          "example": "MDk4NzY1NDMyMWFiY2RlZmdoCg=="
         },
         "md5": {
           "type": "string",
           "format": "md5",
-          "description": "md5 checksum of content"
+          "description": "md5 checksum of content",
+          "example": "d41d8cd98f00b204e9800998ecf8427e"
         },
         "crc": {
           "type": "string",
@@ -327,22 +343,27 @@
       "properties": {
         "itemid": {
           "type": "string",
-          "description": "article number and reference for issueing licenses"
+          "format": "uuid",
+          "description": "article number and reference for issueing licenses - the IUNO recipe uuid of the marketplace core shall be used here",
+          "example": "875cacd8-78f3-11e7-9983-3b2a0b7f899c"
         },
         "itemname": {
           "type": "string",
-          "description": "name of article",
+          "description": "name of article - shall be set to IUNO recipe title",
           "example": "pangalactic gargle blaster"
         },
         "firmcode": {
           "type": "integer",
           "format": "uint32",
-          "default": 6000274
+          "description": "constant firm code by wibu for the IUNO technology data marketplace",
+          "default": "6000274",
+          "example": "6000274"
         },
         "productcode": {
           "type": "integer",
           "format": "uint32",
-          "description": "product code for encryption"
+          "description": "product code for encryption and decryption - this number must be unique for every IUNO recipe in the marketplace core",
+          "example": "45054"
         }
       }
     },
@@ -351,16 +372,16 @@
       "properties": {
         "ReturnCode": {
           "type": "string",
-          "format": "byte",
-          "description": "error code for the user as hex string starting with 0x"
+          "description": "error code for the user as hex string starting with 0x",
+          "example": "0xdeadbeef"
         },
         "ErrorText": {
           "type": "string",
-          "description": "error message for the user"
+          "description": "error message for the user",
+          "example": "this is an example error message for the user"
         },
         "InternalErrorCode": {
           "type": "string",
-          "format": "byte",
           "description": "zero for errors in php module, non zero for application errors"
         },
         "InternalErrorText": {
