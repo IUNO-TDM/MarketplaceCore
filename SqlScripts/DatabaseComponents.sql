@@ -3572,7 +3572,7 @@ $BODY$
 	-- Begin Log if success
         perform public.createlog(0,'Created Permission sucessfully', 'SetPermission',
                                 'PermissionID: ' || cast(vFunctionID as varchar) || ', Roles: '
-                                || cast(vRoles as varchar) || ', FunctionName: ' || vFunctionName);
+                                || cast(vRoles as varchar) || ',FunctionName: ' || vFunctionName);
 
 	 exception when others then
         -- Begin Log if error
