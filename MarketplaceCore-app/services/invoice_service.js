@@ -7,14 +7,14 @@ var self = {};
 var license = require('./../database/function/license');
 var async = require('async');
 
-self.generateInvoice = function (userUUID, request,transaction, roleName, callback) {
+self.generateInvoice = function (userUUID, request,transaction, roles, callback) {
 
     var items = request.result.items;
     var totalAmount = 0;
 
 
     var iterator = function(item, done){
-        license.GetLicenseFeeByTechnologyData(userUUID,item.technologydatauuid,roleName,function (err, licenseFee) {
+        license.GetLicenseFeeByTechnologyData(userUUID,item.technologydatauuid,roles,function (err, licenseFee) {
             if (err) {
                 done(err,null);
             }else{

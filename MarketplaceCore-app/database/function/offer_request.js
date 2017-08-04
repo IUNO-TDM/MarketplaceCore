@@ -7,14 +7,14 @@ var db = require('../db_connection');
 var self = {};
 
 
-self.CreateOfferRequest = function (userUUID, roleName, requestData, callback) {
+self.CreateOfferRequest = function (userUUID, roles, requestData, callback) {
     logger.debug('User UUID: ' +  userUUID);
     db.func('CreateOfferRequest',
         [   requestData,
             requestData.hsmId,
             userUUID,
             userUUID, //TODO: what is the buyer uuid?
-            roleName
+            roles
         ])
         .then(function (data) {
             logger.debug(data);
