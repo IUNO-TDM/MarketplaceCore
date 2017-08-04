@@ -4884,20 +4884,20 @@ $$
 							"amount": 32
 						  },
 						  {
-							""ingredient"": ""Maracujasaft"",
-							""amount"": 32
+							"ingredient": "Maracujasaft",
+							"amount": 32
 						  },
 						  {
-							""ingredient"": ""Ananassaft"",
-							""amount"": 32
+							"ingredient": "Ananassaft",
+							"amount": 32
 						  },
 						  {
-							""ingredient"": ""Mineralwasser"",
-							""amount"": 32
+							"ingredient": "Mineralwasser",
+							"amount": 32
 						  }
 						],
-						""timing"": 0,
-						""sleep"": 0
+						"timing": 0,
+						"sleep": 0
 					  }
 					]
 				  }
