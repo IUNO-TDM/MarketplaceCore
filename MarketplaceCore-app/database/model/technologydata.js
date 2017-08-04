@@ -92,6 +92,9 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             roles
         ])
         .then(function (data) {
+            if (data && data.length) {
+                data = data[0];
+            }
             logger.debug(data);
             callback(null, data);
         })

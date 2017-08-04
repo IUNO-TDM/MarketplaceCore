@@ -66,7 +66,7 @@ self.createItem = function (itemId, itemName, productCode, callback) {
 
 };
 
-self.encryptData = function (firmCode, productCode, data, callback) {
+self.encryptData = function (productCode, data, callback) {
     if (typeof(callback) !== 'function') {
         callback = function () {
             logger.info('[license_central_adapter] Callback not registered');
@@ -179,3 +179,28 @@ self.doLicenseUpdate = function (cmSerial, context, cmactid, location, callback)
         callback(err, licenseUpdate)
     });
 };
+
+self.createAndEncrypt = function (itemId, itemName, productCode, data, callback) {
+    self.createItem(itemId, itemName, productCode, function (err, success) {
+
+        if (err) {
+            logger.crit('[license_central_adapter] Could not create item');
+            return callback(err);
+        }
+
+        if (!success) {
+            return callback(new Error('[license_central_adapter] Something broke without error message'));
+        }
+
+        self.encryptData(productCode, data, function (err, encryptedData) {
+            if (err) {
+                logger.crit('[license_central_adapter] Could not encrypt data');
+                return callback(err);
+            }
+
+            return callback(null, encryptedData);
+        })
+    })
+};
+
+module.exports = self;

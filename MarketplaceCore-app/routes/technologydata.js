@@ -5,13 +5,14 @@
  -- Description: Routing service for TechnologyData
  -- ##########################################################################*/
 
-var express = require('express');
-var router = express.Router();
-var logger = require('../global/logger');
-var validate = require('express-jsonschema').validate;
-var TechnologyData = require('../database/model/technologydata');
-var Component = require('../database/model/component');
-var helper = require('../services/helper_service');
+const express = require('express');
+const router = express.Router();
+const logger = require('../global/logger');
+const validate = require('express-jsonschema').validate;
+const TechnologyData = require('../database/model/technologydata');
+const Component = require('../database/model/component');
+const helper = require('../services/helper_service');
+const licenseCentral = require('../adapter/license_central_adapter');
 
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
@@ -28,7 +29,7 @@ router.get('/', validate({query: require('../schema/technologydata_schema').GetA
 
 router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'],   function (err, data) {
+    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -43,27 +44,38 @@ router.post('/', validate({
     body: require('../schema/technologydata_schema').SaveDataBody,
     query: require('../schema/technologydata_schema').SaveDataQuery
 }), function (req, res, next) {
+    const data = req.body;
 
-    var techData = new TechnologyData();
-    var data = req.body;
+    //TODO: [1] Request next sequence for product id from database
+    const productCode = 12345;
 
-    techData.technologydataname = data['technologyDataName'];
-    techData.technologydata = data['technologyData'];
-    techData.technologydatadescription = data['technologyDataDescription'];
-    techData.technologyid = data['technologyUUID'];
-    techData.licensefee = data['licenseFee'];
-    techData.retailprice = data['retailPrice'];
-    techData.taglist = data['tagList'];
-    techData.componentlist = data['componentList'];
-
-    techData.Create(req.query['userUUID'], req.token.user.roles, function (err, data) {
+    licenseCentral.createAndEncrypt(productCode + '', data['technologyDataName'], productCode, data['technologyData'], function(err, encryptedData){
         if (err) {
-            next(err);
+            return next(err);
         }
 
-        var fullUrl = helper.buildFullUrlFromRequest(req);
-        res.set('Location', fullUrl + data[0]['technologydatauuid']);
-        res.sendStatus(201);
+        const techData = new TechnologyData();
+
+
+        techData.technologydataname = data['technologyDataName'];
+        techData.technologydata = encryptedData;
+        techData.technologydatadescription = data['technologyDataDescription'];
+        techData.technologyid = data['technologyUUID'];
+        techData.licensefee = data['licenseFee'];
+        techData.retailprice = data['retailPrice'];
+        techData.taglist = data['tagList'];
+        techData.componentlist = data['componentList'];
+        techData.productcode = productCode;
+
+        techData.Create(req.query['userUUID'], req.token.user.roles, function (err, data) {
+            if (err) {
+                return next(err);
+            }
+
+            const fullUrl = helper.buildFullUrlFromRequest(req);
+            res.set('Location', fullUrl + data['technologydatauuid']);
+            res.sendStatus(201);
+        });
     });
 });
 
