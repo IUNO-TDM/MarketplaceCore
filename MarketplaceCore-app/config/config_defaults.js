@@ -48,7 +48,7 @@ self.OAUTH_CREDENTIALS = {
 };
 self.USER = {
     uuid: '{uuid}',
-    role: '{role}'
+    roles: ['{role}']
 };
 
 

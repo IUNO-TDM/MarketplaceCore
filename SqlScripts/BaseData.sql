@@ -14,11 +14,12 @@ insert into rolespermissions(roleid, functionid) values (0,1);
 DO
 $$
 	BEGIN
-		perform createrole('Public','Everyone that visit the marketplace without login. The public role Is only allowed to read a pre defined area (e.g. Landing Page).', null,'Admin');
-		perform createrole('MachineOperator','It can be the machine owner as well as the machine operator.', null,'Admin');
-		perform createrole('TechnologyDataOwner','Is the creator and administrator of Technology Data', null,'Admin');
-		perform createrole('MarketplaceComponent','Is the creator and administrator of Technology Data', null,'Admin');
-		perform createrole('TechnologyAdmin','Administrate technologies.', null,'Admin');
+		perform createrole('{Public}','Everyone that visit the marketplace without login. The public role Is only allowed to read a pre defined area (e.g. Landing Page).', null,'{Admin}');
+		perform createrole('{MachineOperator}','It can be the machine owner as well as the machine operator.', null,'{Admin}');
+		perform createrole('{TechnologyDataOwner}','Is the creator and administrator of Technology Data', null,'{Admin}');
+		perform createrole('{MarketplaceComponent}','Is the creator and administrator of Technology Data', null,'{Admin}');
+		perform createrole('{TechnologyAdmin}','Administrate technologies.', null,'{Admin}');
+		perform createrole('{MarketplaceCore}','Is the only role with access to core functions', null,'{Admin}');
 	END;
 $$;
 --Create Permissions
@@ -26,239 +27,243 @@ DO
 $$
 	BEGIN
 		--Public
-		perform SetPermission('Public', 'GetMostUsedComponents',null,'Admin');
-		perform SetPermission('Public', 'GetRevenuePerDaySince',null,'Admin');
-		perform SetPermission('Public', 'GetWorkLoadSince',null,'Admin');
+		perform SetPermission('{Public}', 'GetMostUsedComponents',null,'{Admin}');
+		perform SetPermission('{Public}', 'GetRevenuePerDaySince',null,'{Admin}');
+		perform SetPermission('{Public}', 'GetWorkLoadSince',null,'{Admin}');
 
+        --MarketplaceCore
+		perform SetPermission('{MarketplaceCore}', 'GetTransactionById',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'SetPayment',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'CreateLicenseOrder',null,'{Admin}');
 		-- MachineOperator
-		--perform SetPermission('Admin','CreateAttribute',null,'Admin');
-		--perform SetPermission('Admin','CreateComponent',null,'Admin');
-		--perform SetPermission('Admin','CreateComponentsAttribute',null,'Admin');
-		--perform SetPermission('Admin','CreateComponentsTechnologies',null,'Admin');
-		--perform SetPermission('Admin','CreateLicenseOrder',null,'Admin');
-		perform SetPermission('MachineOperator','CreateOffer',null,'Admin');
-		perform SetPermission('MachineOperator','CreateOfferRequest',null,'Admin');
-		perform SetPermission('MachineOperator','CreatePaymentInvoice',null,'Admin');
-		--perform SetPermission('Admin','CreateTag',null,'Admin');
-		--perform SetPermission('Admin','CreateTechnology',null,'Admin');
-		--perform SetPermission('Admin','CreateTechnologyData',null,'Admin');
-		--perform SetPermission('Admin','CreateTechnologyDataComponents',null,'Admin');
-		--perform SetPermission('Admin','DeleteTechnologyData',null,'Admin');
-		perform SetPermission('MachineOperator','GetAllAttributes',null,'Admin');
-		perform SetPermission('MachineOperator','GetActivatedLicensesSince',null,'Admin');
-		perform SetPermission('MachineOperator','GetAllComponents',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetAllOffers',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetAllTags',null,'Admin');
-		--perform SetPermission('Admin', 'GetAllTechnlogies',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetAllUsers',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetAttributeById',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetAttributeByName',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetComponentById',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetComponentByName',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetComponentsByTechnology',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetComponentsForTechnologyDataId',null,'Admin');
-		--perform SetPermission('Admin', 'GetLicenseFeeByTransaction',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetMostUsedComponents',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetOfferById',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetOfferByRequestId',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetOfferForPaymentInvoice',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferForTicket',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetOfferForTransaction',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetPaymentInvoiceForOfferRequest',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetRevenuePerDaySince',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTagById',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTagByName',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTechnologyById',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTechnologyByName',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTechnologyDataById',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTechnologyDataByName',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTechnologyDataByOfferRequest',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTechnologyDataByParams',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTechnologyForOfferRequest',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTopTechnologyDataSince',null,'Admin');
-		--perform SetPermission('Admin', 'GetTransactionById',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetTransactionByOfferRequest',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetWorkLoadSince',null,'Admin');
-		--perform SetPermission('Admin', 'SetComponent',null,'Admin');
-		perform SetPermission('MachineOperator', 'SetPayment',null,'Admin');
-		perform SetPermission('MachineOperator', 'SetPaymentInvoiceOffer',null,'Admin');
-		perform SetPermission('MachineOperator', 'SetTechnologyData',null,'Admin');
-		--perform SetPermission('Admin', 'CreateTechnologyDataTags',null,'Admin');
-		perform SetPermission('MachineOperator', 'GetLicenseFeeByTechnologyData',null,'Admin');
-		--perform SetPermission('Admin', 'GetTechnologyDataOwnerById',null,'Admin');
+		--perform SetPermission('{Admin}','CreateAttribute',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponent',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponentsAttribute',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponentsTechnologies',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateLicenseOrder',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','CreateOffer',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','CreateOfferRequest',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','CreatePaymentInvoice',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTag',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnology',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyDataComponents',null,'{Admin}');
+		--perform SetPermission('{Admin}','DeleteTechnologyData',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','GetAllAttributes',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','GetActivatedLicensesSince',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','GetAllComponents',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetAllOffers',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetAllTags',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAllTechnlogies',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetAllUsers',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetAttributeById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetAttributeByName',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetComponentById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetComponentByName',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetComponentsByTechnology',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetComponentsForTechnologyDataId',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetLicenseFeeByTransaction',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetMostUsedComponents',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetOfferById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetOfferByRequestId',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetOfferForPaymentInvoice',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForTicket',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetOfferForTransaction',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetPaymentInvoiceForOfferRequest',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetRevenuePerDaySince',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTagById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTagByName',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyByName',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyDataById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyDataByName',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyDataByOfferRequest',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyDataByParams',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyForOfferRequest',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTopTechnologyDataSince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTransactionById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTransactionByOfferRequest',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetWorkLoadSince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetComponent',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'SetPayment',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'SetPaymentInvoiceOffer',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'SetTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'CreateTechnologyDataTags',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetLicenseFeeByTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyDataOwnerById',null,'{Admin}');
 
 		--TechnologyDataOwner
-		perform SetPermission('TechnologyDataOwner','CreateAttribute',null,'Admin');
-		perform SetPermission('TechnologyDataOwner','CreateComponent',null,'Admin');
-		perform SetPermission('TechnologyDataOwner','CreateComponentsAttribute',null,'Admin');
-		perform SetPermission('TechnologyDataOwner','CreateComponentsTechnologies',null,'Admin');
-		--perform SetPermission('Admin','CreateLicenseOrder',null,'Admin');
-		--perform SetPermission('Admin','CreateOffer',null,'Admin');
-		--perform SetPermission('Admin','CreateOfferRequest',null,'Admin');
-		--perform SetPermission('Admin','CreatePaymentInvoice',null,'Admin');
-		perform SetPermission('TechnologyDataOwner','CreateTag',null,'Admin');
-		--perform SetPermission('Admin','CreateTechnology',null,'Admin');
-		perform SetPermission('TechnologyDataOwner','CreateTechnologyData',null,'Admin');
-		perform SetPermission('TechnologyDataOwner','CreateTechnologyDataComponents',null,'Admin');
-		perform SetPermission('TechnologyDataOwner','DeleteTechnologyData',null,'Admin');
-		perform SetPermission('TechnologyDataOwner','GetAllAttributes',null,'Admin');
-		--perform SetPermission('Admin','GetActivatedLicensesSince',null,'Admin');
-		perform SetPermission('TechnologyDataOwner','GetAllComponents',null,'Admin');
-		--perform SetPermission('Admin', 'GetAllOffers',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetAllTags',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetAllTechnlogies',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetAllUsers',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetAttributeById',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetAttributeByName',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetComponentById',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetComponentByName',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetComponentsByTechnology',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetComponentsForTechnologyDataId',null,'Admin');
-		--perform SetPermission('Admin', 'GetLicenseFeeByTransaction',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetMostUsedComponents',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferById',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferByRequestId',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferForPaymentInvoice',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferForTicket',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferForTransaction',null,'Admin');
-		--perform SetPermission('Admin', 'GetPaymentInvoiceForOfferRequest',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetRevenuePerDaySince',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetTagById',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetTagByName',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetTechnologyById',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetTechnologyByName',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetTechnologyDataById',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetTechnologyDataByName',null,'Admin');
-		--perform SetPermission('Admin', 'GetTechnologyDataByOfferRequest',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetTechnologyDataByParams',null,'Admin');
-		--perform SetPermission('Admin', 'GetTechnologyForOfferRequest',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetTopTechnologyDataSince',null,'Admin');
-		--perform SetPermission('Admin', 'GetTransactionById',null,'Admin');
-		--perform SetPermission('Admin', 'GetTransactionByOfferRequest',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'GetWorkLoadSince',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'SetComponent',null,'Admin');
-		--perform SetPermission('Admin', 'SetPayment',null,'Admin');
-		--perform SetPermission('Admin', 'SetPaymentInvoiceOffer',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'SetTechnologyData',null,'Admin');
-		perform SetPermission('TechnologyDataOwner', 'CreateTechnologyDataTags',null,'Admin');
-		--perform SetPermission('Admin', 'GetLicenseFeeByTechnologyData',null,'Admin');
-		--perform SetPermission('Admin', 'GetTechnologyDataOwnerById',null,'Admin');
+		perform SetPermission('{TechnologyDataOwner}','CreateAttribute',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateComponent',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateComponentsAttribute',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateComponentsTechnologies',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateLicenseOrder',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOffer',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreatePaymentInvoice',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateTag',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnology',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateTechnologyData',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateTechnologyDataComponents',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','DeleteTechnologyData',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','GetAllAttributes',null,'{Admin}');
+		--perform SetPermission('{Admin}','GetActivatedLicensesSince',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','GetAllComponents',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAllOffers',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetAllTags',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetAllTechnlogies',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetAllUsers',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetAttributeById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetAttributeByName',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetComponentById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetComponentByName',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetComponentsByTechnology',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetComponentsForTechnologyDataId',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetLicenseFeeByTransaction',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetMostUsedComponents',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferByRequestId',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForPaymentInvoice',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForTicket',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForTransaction',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetPaymentInvoiceForOfferRequest',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetRevenuePerDaySince',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTagById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTagByName',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTechnologyById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTechnologyByName',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTechnologyDataById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTechnologyDataByName',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyDataByOfferRequest',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTechnologyDataByParams',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyForOfferRequest',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTopTechnologyDataSince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTransactionById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTransactionByOfferRequest',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetWorkLoadSince',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'SetComponent',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPayment',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPaymentInvoiceOffer',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'SetTechnologyData',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'CreateTechnologyDataTags',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetLicenseFeeByTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyDataOwnerById',null,'{Admin}');
 
 		--MarketplaceComponent
 
 		--TechnologyAdmin
-		perform SetPermission('TechnologyAdmin','CreateAttribute',null,'Admin');
-		perform SetPermission('TechnologyAdmin','CreateComponent',null,'Admin');
-		perform SetPermission('TechnologyAdmin','CreateComponentsAttribute',null,'Admin');
-		perform SetPermission('TechnologyAdmin','CreateComponentsTechnologies',null,'Admin');
-		--perform SetPermission('Admin','CreateLicenseOrder',null,'Admin');
-		--perform SetPermission('Admin','CreateOffer',null,'Admin');
-		--perform SetPermission('Admin','CreateOfferRequest',null,'Admin');
-		--perform SetPermission('Admin','CreatePaymentInvoice',null,'Admin');
-		perform SetPermission('TechnologyAdmin','CreateTag',null,'Admin');
-		perform SetPermission('TechnologyAdmin','CreateTechnology',null,'Admin');
-		--perform SetPermission('Admin','CreateTechnologyData',null,'Admin');
-		--perform SetPermission('Admin','CreateTechnologyDataComponents',null,'Admin');
-		perform SetPermission('TechnologyAdmin','DeleteTechnologyData',null,'Admin');
-		--perform SetPermission('Admin','GetAllAttributes',null,'Admin');
-		--perform SetPermission('Admin','GetActivatedLicensesSince',null,'Admin');
-		--perform SetPermission('Admin','GetAllComponents',null,'Admin');
-		--perform SetPermission('Admin', 'GetAllOffers',null,'Admin');
-		--perform SetPermission('Admin', 'GetAllTags',null,'Admin');
-		perform SetPermission('TechnologyAdmin', 'GetAllTechnlogies',null,'Admin');
-		--perform SetPermission('Admin', 'GetAllUsers',null,'Admin');
-		--perform SetPermission('Admin', 'GetAttributeById',null,'Admin');
-		--perform SetPermission('Admin', 'GetAttributeByName',null,'Admin');
-		--perform SetPermission('Admin', 'GetComponentById',null,'Admin');
-		--perform SetPermission('Admin', 'GetComponentByName',null,'Admin');
-		--perform SetPermission('Admin', 'GetComponentsByTechnology',null,'Admin');
-		--perform SetPermission('Admin', 'GetComponentsForTechnologyDataId',null,'Admin');
-		--perform SetPermission('Admin', 'GetLicenseFeeByTransaction',null,'Admin');
-		--perform SetPermission('Admin', 'GetMostUsedComponents',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferById',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferByRequestId',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferForPaymentInvoice',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferForTicket',null,'Admin');
-		--perform SetPermission('Admin', 'GetOfferForTransaction',null,'Admin');
-		--perform SetPermission('Admin', 'GetPaymentInvoiceForOfferRequest',null,'Admin');
-		--perform SetPermission('Admin', 'GetRevenuePerDaySince',null,'Admin');
-		--perform SetPermission('Admin', 'GetTagById',null,'Admin');
-		--perform SetPermission('Admin', 'GetTagByName',null,'Admin');
-		perform SetPermission('TechnologyAdmin', 'GetTechnologyById',null,'Admin');
-		perform SetPermission('TechnologyAdmin', 'GetTechnologyByName',null,'Admin');
-		perform SetPermission('TechnologyAdmin', 'GetTechnologyDataById',null,'Admin');
-		perform SetPermission('TechnologyAdmin', 'GetTechnologyDataByName',null,'Admin');
-		--perform SetPermission('Admin', 'GetTechnologyDataByOfferRequest',null,'Admin');
-		perform SetPermission('TechnologyAdmin', 'GetTechnologyDataByParams',null,'Admin');
-		--perform SetPermission('Admin', 'GetTechnologyForOfferRequest',null,'Admin');
-		--perform SetPermission('Admin', 'GetTopTechnologyDataSince',null,'Admin');
-		--perform SetPermission('Admin', 'GetTransactionById',null,'Admin');
-		--perform SetPermission('Admin', 'GetTransactionByOfferRequest',null,'Admin');
-		--perform SetPermission('Admin', 'GetWorkLoadSince',null,'Admin');
-		perform SetPermission('TechnologyAdmin', 'SetComponent',null,'Admin');
-		--perform SetPermission('Admin', 'SetPayment',null,'Admin');
-		--perform SetPermission('Admin', 'SetPaymentInvoiceOffer',null,'Admin');
-		--perform SetPermission('Admin', 'SetTechnologyData',null,'Admin');
-		--perform SetPermission('Admin', 'CreateTechnologyDataTags',null,'Admin');
-		--perform SetPermission('Admin', 'GetLicenseFeeByTechnologyData',null,'Admin');
-		--perform SetPermission('Admin', 'GetTechnologyDataOwnerById',null,'Admin');
+		perform SetPermission('{TechnologyAdmin}','CreateAttribute',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','CreateComponent',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','CreateComponentsAttribute',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','CreateComponentsTechnologies',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateLicenseOrder',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOffer',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreatePaymentInvoice',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','CreateTag',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','CreateTechnology',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyDataComponents',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','DeleteTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}','GetAllAttributes',null,'{Admin}');
+		--perform SetPermission('{Admin}','GetActivatedLicensesSince',null,'{Admin}');
+		--perform SetPermission('{Admin}','GetAllComponents',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAllOffers',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAllTags',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetAllTechnlogies',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAllUsers',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAttributeById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAttributeByName',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetComponentById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetComponentByName',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetComponentsByTechnology',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetComponentsForTechnologyDataId',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetLicenseFeeByTransaction',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetMostUsedComponents',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferByRequestId',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForPaymentInvoice',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForTicket',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForTransaction',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetPaymentInvoiceForOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetRevenuePerDaySince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTagById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTagByName',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetTechnologyById',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetTechnologyByName',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetTechnologyDataById',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetTechnologyDataByName',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyDataByOfferRequest',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetTechnologyDataByParams',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyForOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTopTechnologyDataSince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTransactionById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTransactionByOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetWorkLoadSince',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'SetComponent',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPayment',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPaymentInvoiceOffer',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'CreateTechnologyDataTags',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetLicenseFeeByTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyDataOwnerById',null,'{Admin}');
 
 		--Admin
-		--perform SetPermission('Admin','CreateAttribute',null,'Admin');
-		--perform SetPermission('Admin','CreateComponent',null,'Admin');
-		--perform SetPermission('Admin','CreateComponentsAttribute',null,'Admin');
-		--perform SetPermission('Admin','CreateComponentsTechnologies',null,'Admin');
-		--perform SetPermission('Admin','CreateLicenseOrder',null,'Admin');
-		--perform SetPermission('Admin','CreateOffer',null,'Admin');
-		--perform SetPermission('Admin','CreateOfferRequest',null,'Admin');
-		--perform SetPermission('Admin','CreatePaymentInvoice',null,'Admin');
-		--perform SetPermission('Admin','CreateTag',null,'Admin');
-		--perform SetPermission('Admin','CreateTechnology',null,'Admin');
-		--perform SetPermission('Admin','CreateTechnologyData',null,'Admin');
-		--perform SetPermission('Admin','CreateTechnologyDataComponents',null,'Admin');
-		perform SetPermission('Admin','DeleteTechnologyData',null,'Admin');
-		perform SetPermission('Admin','GetAllAttributes',null,'Admin');
-		perform SetPermission('Admin','GetActivatedLicensesSince',null,'Admin');
-		perform SetPermission('Admin','GetAllComponents',null,'Admin');
-		perform SetPermission('Admin', 'GetAllOffers',null,'Admin');
-		perform SetPermission('Admin', 'GetAllTags',null,'Admin');
-		perform SetPermission('Admin', 'GetAllTechnlogies',null,'Admin');
-		perform SetPermission('Admin', 'GetAllUsers',null,'Admin');
-		perform SetPermission('Admin', 'GetAttributeById',null,'Admin');
-		perform SetPermission('Admin', 'GetAttributeByName',null,'Admin');
-		perform SetPermission('Admin', 'GetComponentById',null,'Admin');
-		perform SetPermission('Admin', 'GetComponentByName',null,'Admin');
-		perform SetPermission('Admin', 'GetComponentsByTechnology',null,'Admin');
-		perform SetPermission('Admin', 'GetComponentsForTechnologyDataId',null,'Admin');
-		perform SetPermission('Admin', 'GetLicenseFeeByTransaction',null,'Admin');
-		perform SetPermission('Admin', 'GetMostUsedComponents',null,'Admin');
-		perform SetPermission('Admin', 'GetOfferById',null,'Admin');
-		perform SetPermission('Admin', 'GetOfferByRequestId',null,'Admin');
-		perform SetPermission('Admin', 'GetOfferForPaymentInvoice',null,'Admin');
-		perform SetPermission('Admin', 'GetOfferForTicket',null,'Admin');
-		perform SetPermission('Admin', 'GetOfferForTransaction',null,'Admin');
-		perform SetPermission('Admin', 'GetPaymentInvoiceForOfferRequest',null,'Admin');
-		perform SetPermission('Admin', 'GetRevenuePerDaySince',null,'Admin');
-		perform SetPermission('Admin', 'GetTagById',null,'Admin');
-		perform SetPermission('Admin', 'GetTagByName',null,'Admin');
-		perform SetPermission('Admin', 'GetTechnologyById',null,'Admin');
-		perform SetPermission('Admin', 'GetTechnologyByName',null,'Admin');
-		perform SetPermission('Admin', 'GetTechnologyDataById',null,'Admin');
-		perform SetPermission('Admin', 'GetTechnologyDataByName',null,'Admin');
-		perform SetPermission('Admin', 'GetTechnologyDataByOfferRequest',null,'Admin');
-		perform SetPermission('Admin', 'GetTechnologyDataByParams',null,'Admin');
-		perform SetPermission('Admin', 'GetTechnologyForOfferRequest',null,'Admin');
-		perform SetPermission('Admin', 'GetTopTechnologyDataSince',null,'Admin');
-		perform SetPermission('Admin', 'GetTransactionById',null,'Admin');
-		perform SetPermission('Admin', 'GetTransactionByOfferRequest',null,'Admin');
-		perform SetPermission('Admin', 'GetWorkLoadSince',null,'Admin');
-		--perform SetPermission('Admin', 'SetComponent',null,'Admin');
-		--perform SetPermission('Admin', 'SetPayment',null,'Admin');
-		--perform SetPermission('Admin', 'SetPaymentInvoiceOffer',null,'Admin');
-		--perform SetPermission('Admin', 'SetTechnologyData',null,'Admin');
-		--perform SetPermission('Admin', 'CreateTechnologyDataTags',null,'Admin');
-		perform SetPermission('Admin', 'GetLicenseFeeByTechnologyData',null,'Admin');
-		perform SetPermission('Admin', 'GetTechnologyDataOwnerById',null,'Admin');
+		--perform SetPermission('{Admin}','CreateAttribute',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponent',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponentsAttribute',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponentsTechnologies',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateLicenseOrder',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOffer',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreatePaymentInvoice',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTag',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnology',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyDataComponents',null,'{Admin}');
+		perform SetPermission('{Admin}','DeleteTechnologyData',null,'{Admin}');
+		perform SetPermission('{Admin}','GetAllAttributes',null,'{Admin}');
+		perform SetPermission('{Admin}','GetActivatedLicensesSince',null,'{Admin}');
+		perform SetPermission('{Admin}','GetAllComponents',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAllOffers',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAllTags',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAllTechnlogies',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAllUsers',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAttributeById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAttributeByName',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetComponentById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetComponentByName',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetComponentsByTechnology',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetComponentsForTechnologyDataId',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetLicenseFeeByTransaction',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetMostUsedComponents',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetOfferById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetOfferByRequestId',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetOfferForPaymentInvoice',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetOfferForTicket',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetOfferForTransaction',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetPaymentInvoiceForOfferRequest',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetRevenuePerDaySince',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTagById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTagByName',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyByName',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyDataById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyDataByName',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyDataByOfferRequest',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyDataByParams',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyForOfferRequest',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTopTechnologyDataSince',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTransactionById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTransactionByOfferRequest',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetWorkLoadSince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetComponent',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPayment',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPaymentInvoiceOffer',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'CreateTechnologyDataTags',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetLicenseFeeByTechnologyData',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyDataOwnerById',null,'{Admin}');
 
 
 
@@ -270,7 +275,7 @@ DO
  $$
     DECLARE vUserUUID uuid := 'adb4c297-45bd-437e-ac90-9179eea41730';
 			vCompParentID uuid;
-			vRoleName varchar := 'TechnologyAdmin';
+			vRoleName text[] := '{TechnologyAdmin}';
 	BEGIN
     	-- Just in case. set all sequences to start point
         ALTER SEQUENCE componentid RESTART WITH 1;
@@ -394,7 +399,7 @@ DO
 $$
 -- Get UserID
         DECLARE  vUserUUID uuid := 'f6552f5c-f15b-4350-b373-418979d4c045';
-				 vRoleName varchar := 'Admin';
+				 vRoleName text[] := '{Admin}';
 				 vTechnologyUUID uuid := (select technologyuuid from technologies where technologyid = 1);
 				 vComponents text[];
 
@@ -403,22 +408,22 @@ $$
 		--
 		vComponents := (select array_agg(componentuuid) from components where componentname in ('Orangensaft','Bananensaft','Maracujasaft', 'Ananassaft', 'Mineralwasser'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41732';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Karibiktraum',		     				 -- <technologydataname character varying>,
             '{
-			  ""recipe"": {
-					""id"": ""Karibiktraum"",
-					""lines"": [
+			  "recipe": {
+					"id": "Karibiktraum",
+					"lines": [
 					  {
-						""components"": [
+						"components": [
 						  {
-							""ingredient"": ""Orangensaft"",
-							""amount"": 32
+							"ingredient": "Orangensaft",
+							"amount": 32
 						  },
 						  {
-							""ingredient"": ""Bananensaft"",
-							""amount"": 32
+							"ingredient": "Bananensaft",
+							"amount": 32
 						  },
 						  {
 							""ingredient"": ""Maracujasaft"",
@@ -451,34 +456,34 @@ $$
          --
         vComponents := (select array_agg(componentuuid) from components where componentname in ('Mineralwasser','Apfelsaft','Maracujasaft','Ananassaft'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41732';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Anas Big Bang',		     				 -- <technologydataname character varying>,
             '{
-			  ""recipe"": {
-					""id"": ""Anas Big Bang"",
-					""lines"": [
+			  "recipe": {
+					"id": "Anas Big Bang",
+					"lines": [
 					  {
-						""components"": [
+						"components": [
 						  {
-							""ingredient"": ""Mineralwasser"",
-							""amount"": 64
+							"ingredient": "Mineralwasser",
+							"amount": 64
 						  },
 						  {
-							""ingredient"": ""Apfelsaft"",
-							""amount"": 16
+							"ingredient": "Apfelsaft",
+							"amount": 16
 						  },
 						  {
-							""ingredient"": ""Maracujasaft"",
-							""amount"": 48
+							"ingredient": "Maracujasaft",
+							"amount": 48
 						  },
 						  {
-							""ingredient"": ""Ananassaft"",
-							""amount"": 32
+							"ingredient": "Ananassaft",
+							"amount": 32
 						  }
 						],
-						""timing"": 0,
-						""sleep"": 0
+						"timing": 0,
+						"sleep": 0
 					  }
 					]
 				  }
@@ -495,36 +500,36 @@ $$
           -- Banana, Orange
         vComponents := (select array_agg(componentuuid) from components where componentname in ('Mineralwasser','Apfelsaft'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41731';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Max Apfelschorle',		     				 -- <technologydataname character varying>,
             '{
-			  ""recipe"": {
-					""id"": ""Max Apfelschorle"",
-					""lines"": [
+			  "recipe": {
+					"id": "Max Apfelschorle",
+					"lines": [
 					  {
-						""components"": [
+						"components": [
 						  {
-							""ingredient"": ""Mineralwasser"",
-							""amount"": 32
+							"ingredient": "Mineralwasser",
+							"amount": 32
 						  }
 						],
-						""timing"": 0,
-						""sleep"": 0
+						"timing": 0,
+						"sleep": 0
 					  },
 					  {
-						""components"": [
+						"components": [
 						  {
-							""ingredient"": ""Mineralwasser"",
-							""amount"": 64
+							"ingredient": "Mineralwasser",
+							"amount": 64
 						  },
 						  {
-							""ingredient"": ""Apfelsaft"",
-							""amount"": 64
+							"ingredient": "Apfelsaft",
+							"amount": 64
 						  }
 						],
-						""timing"": 0,
-						""sleep"": 0
+						"timing": 0,
+						"sleep": 0
 					  }
 					]
 				  }
@@ -541,34 +546,34 @@ $$
          -- BaKi küsst Ananass
         vComponents := (select array_agg(componentuuid) from components where componentname in ('Kirschsaft','Bananensaft','Mineralwasser', 'Ananassaft'));
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41731';
-		vRoleName := 'TechnologyDataOwner';
+		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'BaKi küsst Ananass',		     				 -- <technologydataname character varying>,
             '{
-			  ""recipe"": {
-					""id"": ""BaKi küsst Ananass"",
-					""lines"": [
+			  "recipe": {
+					"id": "BaKi küsst Ananass",
+					"lines": [
 					  {
-						""components"": [
+						"components": [
 						  {
-							""ingredient"": ""Kirschsaft"",
-							""amount"": 60
+							"ingredient": "Kirschsaft",
+							"amount": 60
 						  },
 						  {
-							""ingredient"": ""Bananensaft"",
-							""amount"": 60
+							"ingredient": "Bananensaft",
+							"amount": 60
 						  },
 						  {
-							""ingredient"": ""Mineralwasser"",
-							""amount"": 32
+							"ingredient": "Mineralwasser",
+							"amount": 32
 						  },
 						  {
-							""ingredient"": ""Ananassaft"",
-							""amount"": 8
+							"ingredient": "Ananassaft",
+							"amount": 8
 						  }
 						],
-						""timing"": 0,
-						""sleep"": 0
+						"timing": 0,
+						"sleep": 0
 					  }
 					]
 				  }

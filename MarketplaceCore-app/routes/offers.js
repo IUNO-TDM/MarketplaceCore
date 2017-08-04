@@ -19,7 +19,7 @@ var transaction = require('../database/function/transaction');
 router.get('/:id', validate({
     query: require('../schema/offers_schema').Offers
 }), function (req, res, next) {
-    new Offer().FindSingle(req.query['userUUID'], req.token.user.rolename, req.params['id'], function (err, data) {
+    new Offer().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         } else {
@@ -68,24 +68,24 @@ router.post('/', validate({
 
     var userUUID = req.query['userUUID'];
     var requestData = req.body;
-    var roleName = req.token.user.rolename;
+    var roles = req.token.user.roles;
 
-    offerRequest.CreateOfferRequest(userUUID, roleName, requestData, function (err, offerRequest) {
+    offerRequest.CreateOfferRequest(userUUID, roles, requestData, function (err, offerRequest) {
         if (err) {
             next(err);
         } else {
             if (!offerRequest || offerRequest.length <= 0) {
                 next(new Error('Error when creating offer request in marketplace'));
             }else{
-                transaction.GetTransactionByOfferRequest(userUUID, roleName, offerRequest.result.offerrequestuuid, function (err, transaction) {
+                transaction.GetTransactionByOfferRequest(userUUID, roles, offerRequest.result.offerrequestuuid, function (err, transaction) {
                     if (err) {
                         next(err);
                     } else {
-                        invoiceService.generateInvoice(userUUID, offerRequest, transaction[0], roleName, function (err, invoiceData) {
+                        invoiceService.generateInvoice(userUUID, offerRequest, transaction[0], roles, function (err, invoiceData) {
                             if (err) {
                                 next(err);
                             } else {
-                                payment.SetPaymentInvoiceOffer(userUUID, roleName, invoiceData, offerRequest.result.offerrequestuuid, function (err, offer) {
+                                payment.SetPaymentInvoiceOffer(userUUID, roles, invoiceData, offerRequest.result.offerrequestuuid, function (err, offer) {
                                     if (err) {
                                         next(err);
                                     } else {

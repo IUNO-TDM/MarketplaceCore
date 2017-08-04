@@ -8,7 +8,7 @@ let self = {};
 
 
 self.CreateLicenseOrder = function(ticketId, offerUUID, user, callback) {
-    db.func('CreateLicenseOrder', [ticketId, offerUUID, user.uuid, user.role])
+    db.func('CreateLicenseOrder', [ticketId, offerUUID, user.uuid, user.roles])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];
@@ -23,8 +23,8 @@ self.CreateLicenseOrder = function(ticketId, offerUUID, user, callback) {
         });
 };
 
-self.GetLicenseFeeByTechnologyData = function(userUUID, technologyDataUUID, roleName, callback) {
-    db.func('GetLicenseFeeByTechnologyData', [technologyDataUUID, userUUID, roleName])
+self.GetLicenseFeeByTechnologyData = function(userUUID, technologyDataUUID, roles, callback) {
+    db.func('GetLicenseFeeByTechnologyData', [technologyDataUUID, userUUID, roles])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];
