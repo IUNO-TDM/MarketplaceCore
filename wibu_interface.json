@@ -227,11 +227,7 @@
           "example": "SFAgd2FzIGhlcmUhCg=="
         },
         "firmcode": {
-          "type": "integer",
-          "format": "uint32",
-          "description": "constant firm code by wibu for the IUNO technology data marketplace",
-          "default": "6000274",
-          "example": "6000274"
+          "$ref": "#/definitions/FirmCode"
         },
         "cmactid": {
           "type": "string",
@@ -293,17 +289,10 @@
       "type": "object",
       "properties": {
         "firmcode": {
-          "type": "integer",
-          "format": "uint32",
-          "description": "constant firm code by wibu for the IUNO technology data marketplace",
-          "default": "6000274",
-          "example": "6000274"
+          "$ref": "#/definitions/FirmCode"
         },
         "productcode": {
-          "type": "integer",
-          "format": "uint32",
-          "description": "product code for encryption",
-          "example": "45054"
+          "$ref": "#/definitions/ProductCode"
         },
         "buffer": {
           "type": "string",
@@ -347,17 +336,10 @@
           "example": "pangalactic gargle blaster"
         },
         "firmcode": {
-          "type": "integer",
-          "format": "uint32",
-          "description": "constant firm code by wibu for the IUNO technology data marketplace",
-          "default": "6000274",
-          "example": "6000274"
+          "$ref": "#/definitions/FirmCode"
         },
         "productcode": {
-          "type": "integer",
-          "format": "uint32",
-          "description": "product code for encryption and decryption - this number must be unique for every IUNO recipe in the marketplace core",
-          "example": "45054"
+          "$ref": "#/definitions/ProductCode"
         }
       }
     },
@@ -366,6 +348,19 @@
       "format": "uuid",
       "description": "article number and reference for issueing licenses - for IUNO this field shall be set to the the product code prefixed with \"pc\"without leading zeroes",
       "example": "pc815"
+    },
+    "FirmCode": {
+      "type": "integer",
+      "format": "uint32",
+      "description": "constant firm code by wibu for the IUNO technology data marketplace",
+      "default": "6000274",
+      "example": "6000274"
+    },
+    "ProductCode": {
+      "type": "integer",
+      "format": "uint32",
+      "description": "product code for encryption",
+      "example": "45054"
     },
     "ReturnMessage": {
       "type": "object",
