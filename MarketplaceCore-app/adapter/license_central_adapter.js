@@ -4,6 +4,10 @@ const request = require('request');
 
 const fs = require('fs');
 const path = require('path');
+
+if (CONFIG.LICENSE_CENTRAL.CERT) {
+
+}
 const certFile = path.resolve(__dirname, CONFIG.LICENSE_CENTRAL.CERT.CERT_FILE_PATH);
 const keyFile = path.resolve(__dirname, CONFIG.LICENSE_CENTRAL.CERT.CERT_FILE_PATH);
 
@@ -11,23 +15,34 @@ const self = {};
 
 function buildOptionsForRequest(method, protocol, host, port, path, qs) {
 
-    return {
+    const options = {
         method: method,
         url: protocol + '://' + host + ':' + port + path,
         qs: qs,
         json: true,
-        headers: {
-            'Authorization': 'Basic ' + new Buffer(CONFIG.LICENSE_CENTRAL.BASIC_AUTH.USER + ':' + CONFIG.LICENSE_CENTRAL.BASIC_AUTH.PASSWORD).toString('base64')
-        },
-        agentOptions: {
-            cert: fs.readFileSync(certFile),
-            key: fs.readFileSync(keyFile),
-            // Or use `pfx` property replacing `cert` and `key` when using private key, certificate and CA certs in PFX or PKCS12 format:
-            // pfx: fs.readFileSync(pfxFilePath),
-            passphrase: CONFIG.LICENSE_CENTRAL.CERT.PASS_PHRASE
-            // securityOptions: 'SSL_OP_NO_SSLv3'
-        }
+        headers: {},
+        agentOptions: {}
+    };
+
+    if (CONFIG.LICENSE_CENTRAL.BASIC_AUTH) {
+        options.headers['Authorization'] =
+            'Basic ' + new Buffer(CONFIG.LICENSE_CENTRAL.BASIC_AUTH.USER + ':' + CONFIG.LICENSE_CENTRAL.BASIC_AUTH.PASSWORD).toString('base64')
     }
+
+    try {
+        options.agentOptions['cert'] = fs.readFileSync(certFile);
+        options.agentOptions['key'] = fs.readFileSync(keyFile);
+        // Or use `pfx` property replacing `cert` and `key` when using private key, certificate and CA certs in PFX or PKCS12 format:
+        // pfx: fs.readFileSync(pfxFilePath),
+        options.agentOptions['passphrase'] = CONFIG.LICENSE_CENTRAL.CERT.PASS_PHRASE
+        // securityOptions: 'SSL_OP_NO_SSLv3'
+    }
+    catch (err) {
+        logger.warn('[license_central_adapter] Error loading client certificates');
+        logger.crit(err);
+    }
+
+    return options;
 }
 
 self.createItem = function (itemId, itemName, productCode, callback) {

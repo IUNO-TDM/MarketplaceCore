@@ -63,7 +63,7 @@ self.LICENSE_CENTRAL = {
         KEY_FILE_PATH: '',
         PASS_PHRASE: ''
     },
-    FIRM_CODE: 0
+    FIRM_CODE: 6000274
 };
 
 self.USER = {
