@@ -278,10 +278,7 @@
           "description": "name of customer"
         },
         "itemid": {
-          "type": "string",
-          "format": "uuid",
-          "description": "article number and reference for issueing licenses - the IUNO recipe uuid of the marketplace core shall be used here",
-          "example": "875cacd8-78f3-11e7-9983-3b2a0b7f899c"
+          "$ref": "#/definitions/ItemId"
         },
         "quantity": {
           "type": "integer",
@@ -342,10 +339,7 @@
       "type": "object",
       "properties": {
         "itemid": {
-          "type": "string",
-          "format": "uuid",
-          "description": "article number and reference for issueing licenses - the IUNO recipe uuid of the marketplace core shall be used here",
-          "example": "875cacd8-78f3-11e7-9983-3b2a0b7f899c"
+          "$ref": "#/definitions/ItemId"
         },
         "itemname": {
           "type": "string",
@@ -366,6 +360,12 @@
           "example": "45054"
         }
       }
+    },
+    "ItemId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "article number and reference for issueing licenses - for IUNO this field shall be set to the the product code prefixed with \"pc\"without leading zeroes",
+      "example": "pc815"
     },
     "ReturnMessage": {
       "type": "object",
