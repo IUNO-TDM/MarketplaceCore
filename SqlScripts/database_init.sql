@@ -503,7 +503,7 @@ CREATE SEQUENCE FunctionID START 2;
 -- OfferRequestItemID
 CREATE SEQUENCE OfferRequestItemID START 1;
 -- ProductID
-CREATE SEQUENCE ProductID START 1;
+CREATE SEQUENCE ProductCode START 1;
 -- ##########################################################################
 -- Create Indexes
 --CREATE UNIQUE INDEX invoice_idx ON paymentinvoice (invoice);
@@ -4453,16 +4453,16 @@ $BODY$
   ROWS 1000;
 -- ##########################################################################
 -- Create new ProductID
-create function GetNewProductID(vRoles text[])
+create function GetNewProductCode(vRoles text[])
 RETURNS SetOf Integer AS
 $$
 	DECLARE
-		vFunctionName varchar := 'GetNewProductID';
+		vFunctionName varchar := 'GetNewProductCode';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
 		IF(vIsAllowed) then
-			RETURN QUERY (select nextval('ProductID')::integer);
+			RETURN QUERY (select nextval('ProductCode')::integer);
 		else
 			RAISE EXCEPTION '%', 'Insufficiency rigths';
 			RETURN;
@@ -4509,7 +4509,7 @@ $$
 		perform SetPermission('{MarketplaceCore}', 'GetTransactionById',null,'{Admin}');
 		perform SetPermission('{MarketplaceCore}', 'SetPayment',null,'{Admin}');
 		perform SetPermission('{MarketplaceCore}', 'CreateLicenseOrder',null,'{Admin}');
-		perform SetPermission('{MarketplaceCore}', 'GetNewProductID',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'GetNewProductCode',null,'{Admin}');
 		-- MachineOperator
 		--perform SetPermission('{Admin}','CreateAttribute',null,'{Admin}');
 		--perform SetPermission('{Admin}','CreateComponent',null,'{Admin}');
