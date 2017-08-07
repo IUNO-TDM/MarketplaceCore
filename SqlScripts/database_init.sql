@@ -502,6 +502,8 @@ CREATE SEQUENCE RoleID START 1;
 CREATE SEQUENCE FunctionID START 2;
 -- OfferRequestItemID
 CREATE SEQUENCE OfferRequestItemID START 1;
+-- ProductID
+CREATE SEQUENCE ProductID START 1;
 -- ##########################################################################
 -- Create Indexes
 --CREATE UNIQUE INDEX invoice_idx ON paymentinvoice (invoice);
@@ -4449,6 +4451,26 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000;
+-- ##########################################################################
+-- Create new ProductID
+create function GetNewProductID(vRoles text[])
+RETURNS SetOf Integer AS
+$$
+	DECLARE
+		vFunctionName varchar := 'GetNewProductID';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+		IF(vIsAllowed) then
+			RETURN QUERY (select nextval('ProductID')::integer);
+		else
+			RAISE EXCEPTION '%', 'Insufficiency rigths';
+			RETURN;
+	END IF;
+
+	END;
+$$
+language plpgsql;
 
 -- ##########################################################################
 -- Author: Marcel Ely Gomes
@@ -4487,6 +4509,7 @@ $$
 		perform SetPermission('{MarketplaceCore}', 'GetTransactionById',null,'{Admin}');
 		perform SetPermission('{MarketplaceCore}', 'SetPayment',null,'{Admin}');
 		perform SetPermission('{MarketplaceCore}', 'CreateLicenseOrder',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'GetNewProductID',null,'{Admin}');
 		-- MachineOperator
 		--perform SetPermission('{Admin}','CreateAttribute',null,'{Admin}');
 		--perform SetPermission('{Admin}','CreateComponent',null,'{Admin}');
