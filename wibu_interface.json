@@ -239,7 +239,7 @@
           "default": "1000",
           "example": "1000"
         },
-        "location": {
+        "lcaction": {
           "type": "string",
           "description": "constant value for licenses which are bound to a serial number",
           "default": "autoupdate",
