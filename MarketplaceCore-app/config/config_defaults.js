@@ -63,7 +63,9 @@ self.LICENSE_CENTRAL = {
         KEY_FILE_PATH: '',
         PASS_PHRASE: ''
     },
-    FIRM_CODE: 6000274
+    FIRM_CODE: 6000274,
+    CMACTID: 1000,
+    LCACTION:'autoupdate'
 };
 
 self.USER = {

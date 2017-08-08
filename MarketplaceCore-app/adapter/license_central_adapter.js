@@ -154,7 +154,7 @@ self.createAndActivateLicense = function (cmSerial, customerId, itemId, quantity
     });
 };
 
-self.doLicenseUpdate = function (cmSerial, context, cmactid, location, callback) {
+self.doLicenseUpdate = function (cmSerial, context, callback) {
     if (typeof(callback) !== 'function') {
         callback = function () {
             logger.info('[license_central_adapter] Callback not registered');
@@ -174,8 +174,8 @@ self.doLicenseUpdate = function (cmSerial, context, cmactid, location, callback)
         cmserial: cmSerial,
         context: context,
         firmcode: CONFIG.LICENSE_CENTRAL.FIRM_CODE,
-        cmactid: cmactid,
-        location: location
+        cmactid: CONFIG.LICENSE_CENTRAL.CMACTID,
+        lcaction: CONFIG.LICENSE_CENTRAL.LCACTION
     };
 
     request(options, function (e, r, message) {
