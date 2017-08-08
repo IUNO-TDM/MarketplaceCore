@@ -35,6 +35,7 @@ $$
 		perform SetPermission('{MarketplaceCore}', 'GetTransactionById',null,'{Admin}');
 		perform SetPermission('{MarketplaceCore}', 'SetPayment',null,'{Admin}');
 		perform SetPermission('{MarketplaceCore}', 'CreateLicenseOrder',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'GetNewProductID',null,'{Admin}');
 		-- MachineOperator
 		--perform SetPermission('{Admin}','CreateAttribute',null,'{Admin}');
 		--perform SetPermission('{Admin}','CreateComponent',null,'{Admin}');
@@ -148,6 +149,12 @@ $$
 		perform SetPermission('{TechnologyDataOwner}', 'CreateTechnologyDataTags',null,'{Admin}');
 		--perform SetPermission('{Admin}', 'GetLicenseFeeByTechnologyData',null,'{Admin}');
 		--perform SetPermission('{Admin}', 'GetTechnologyDataOwnerById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTopTechnologyDataSinceForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetActivatedLicensesSinceForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetMostUsedComponentsForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetWorkloadSinceForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetRevenueForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTotalRevenueForUser',null,'{Admin}');
 
 		--MarketplaceComponent
 
@@ -426,20 +433,20 @@ $$
 							"amount": 32
 						  },
 						  {
-							""ingredient"": ""Maracujasaft"",
-							""amount"": 32
+							"ingredient": "Maracujasaft",
+							"amount": 32
 						  },
 						  {
-							""ingredient"": ""Ananassaft"",
-							""amount"": 32
+							"ingredient": "Ananassaft",
+							"amount": 32
 						  },
 						  {
-							""ingredient"": ""Mineralwasser"",
-							""amount"": 32
+							"ingredient": "Mineralwasser",
+							"amount": 32
 						  }
 						],
-						""timing"": 0,
-						""sleep"": 0
+						"timing": 0,
+						"sleep": 0
 					  }
 					]
 				  }
