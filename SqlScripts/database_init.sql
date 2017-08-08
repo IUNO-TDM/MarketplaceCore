@@ -4472,6 +4472,39 @@ $$
 $$
 language plpgsql;
 
+-- #########################################################################
+create function getofferrequestbyid(vOfferRequestUUID uuid, vUserUUID uuid, vRoles text[])
+ returns table(result json) AS
+ $$
+	declare
+		vFunctionName varchar := 'GetOfferRequestById';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+	 RETURN QUERY (select row_to_json (t) as result from (
+			select offerrequestuuid,
+			(
+			select	 array_to_json(array_agg(row_to_json(d)))
+			from (select   td.TechnologyDataUUID::uuid,   oi.Amount
+				from offerrequest ofr
+				join offerrequestitems oi on oi.offerrequestid = ofr.offerrequestid
+				join technologydata td
+				on oi.technologydataid = td.technologydataid
+				where offerrequestuuid = vOfferRequestUUID
+				) d
+			 ) as items, HSMID, CreatedAt at time zone 'utc' as CreatedAt, RequestedBy
+		 from offerrequest where offerrequestuuid = vOfferRequestUUID) t
+		 );
+	ELSE
+			RAISE EXCEPTION '%', 'Insufficiency rigths';
+			RETURN;
+	END IF;
+
+	END;
+$$ language plpgsql;
+
 -- ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -4510,6 +4543,7 @@ $$
 		perform SetPermission('{MarketplaceCore}', 'SetPayment',null,'{Admin}');
 		perform SetPermission('{MarketplaceCore}', 'CreateLicenseOrder',null,'{Admin}');
 		perform SetPermission('{MarketplaceCore}', 'GetNewProductCode',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'GetOfferRequestById',null,'{Admin}');
 		-- MachineOperator
 		--perform SetPermission('{Admin}','CreateAttribute',null,'{Admin}');
 		--perform SetPermission('{Admin}','CreateComponent',null,'{Admin}');
