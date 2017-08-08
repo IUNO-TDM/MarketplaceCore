@@ -37,7 +37,10 @@ Component.prototype.FindAll = Component.FindAll = function (userUUID, roles, par
             var resultList = [];
 
             for (var key in data) {
-                resultList.push(new Component(data[key]));
+                //TODO: Remove root component from database result
+                if (data[key].componentname !== "Root") {
+                    resultList.push(new Component(data[key]));
+                }
             }
 
             callback(null, resultList);

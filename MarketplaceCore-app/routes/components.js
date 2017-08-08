@@ -16,7 +16,7 @@ var helper = require('../services/helper_service');
 router.get('/', validate({query: require('../schema/components_schema').GetAll}), function (req, res, next) {
 
     // req.token.user.role,
-    new Component().FindAll(req.query['userUUID'], req.token.user.roles, req.query, function (err, data) {
+    Component.FindAll(req.query['userUUID'], req.token.user.roles, req.query, function (err, data) {
         if (err) {
             next(err);
         }
@@ -27,7 +27,7 @@ router.get('/', validate({query: require('../schema/components_schema').GetAll})
 });
 
 router.get('/:id', validate({query: require('../schema/components_schema').GetSingle}),  function (req, res, next) {
-    new Component().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, data) {
+    Component.FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
