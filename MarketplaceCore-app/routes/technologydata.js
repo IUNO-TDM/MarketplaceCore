@@ -52,7 +52,7 @@ router.post('/', validate({
             return next(err);
         }
 
-        licenseCentral.createAndEncrypt(productCode + '', data['technologyDataName'], productCode, data['technologyData'], function(err, encryptedData){
+        licenseCentral.createAndEncrypt('pc' + productCode, data['technologyDataName'], productCode, data['technologyData'], function(err, encryptedData){
             if (err) {
                 return next(err);
             }
