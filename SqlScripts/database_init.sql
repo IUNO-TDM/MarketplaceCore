@@ -2073,12 +2073,15 @@ Get all Components
 Input paramteres: vRoles
 Return Value: Table with all Components
 ######################################################*/
-CREATE FUNCTION public.getallcomponents(vUserUUID uuid, vRoles text[])
+CREATE OR REPLACE FUNCTION public.getallcomponents(
+    IN vuseruuid uuid,
+    IN vroles text[])
   RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid integer, componentdescription character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedby uuid) AS
 $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetAllComponents';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+		vRoot varchar := 'Root';
 
 	BEGIN
 
@@ -2093,6 +2096,7 @@ $BODY$
 			cp.updatedat  at time zone 'utc',
 			cp.updatedby
 			FROM Components cp
+			WHERE cp.componentname != vRoot
 		);
 
 	ELSE
@@ -4213,7 +4217,7 @@ $BODY$
 			join technologydata td
 			on ri.technologydataid = td.technologydataid
 			where
-			td.createdby = vuseruuid
+			td.createdby = vUserUUID
 			group by activatedat::date, td.technologydataname, ri.amount
 			order by activatedat::date
 			),
@@ -4223,14 +4227,29 @@ $BODY$
 					from basis a),
 			allData as (select tn.technologydataname, dt.activatedat
 					from techname tn, dates dt
-			)
+			), benchmark as
+			(select activatedat::date, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as revenue from transactions ts
+				join licenseorder lo
+				on ts.licenseorderid = lo.licenseorderid
+				join offerrequest oq
+				on oq.offerrequestid = ts.offerrequestid
+				join offerrequestitems ri
+				on oq.offerrequestid = ri.offerrequestid
+				join technologydata td
+				on ri.technologydataid = td.technologydataid
+				group by activatedat::date
+				order by activatedat::date
+			), result as (
 			select ad.activatedat, ad.technologydataname, case when (ba.revenue is null) then 0::numeric(21,2) else ba.revenue end as revenue
-			from allData ad
-			left outer join basis ba
-			on ad.activatedat = ba.activatedat
-			and ad.technologydataname = ba.technologydataname
-			order by ad.activatedat, ad.technologydataname
-					);
+				from allData ad
+				left outer join basis ba
+				on ad.activatedat = ba.activatedat
+				and ad.technologydataname = ba.technologydataname
+			union all
+			select bm.activatedat, 'Benchmark' as technologydataname, avg(bm.revenue) from benchmark bm
+			group by bm.activatedat)
+			select r.activatedat, r.technologydataname, r.revenue from result r
+			order by r.activatedat, r.technologydataname );
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
 		 RETURN;
@@ -4500,7 +4519,41 @@ create function getofferrequestbyid(vOfferRequestUUID uuid, vUserUUID uuid, vRol
 
 	END;
 $$ language plpgsql;
+-- ##########################################################################
+CREATE FUNCTION public.gettotalrevenueforuser(
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(revenue numeric) AS
+$BODY$
+	DECLARE
+		vFunctionName varchar := 'GetTotalRevenueForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (select (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on oq.offerrequestid = ri.offerrequestid
+			join technologydata td
+			on ri.technologydataid = td.technologydataid
+			where td.createdby = vUserUUID
+		);
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+	$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
 -- ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
