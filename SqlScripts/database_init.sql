@@ -194,7 +194,6 @@ CREATE
     TechnologyID              INTEGER NOT NULL ,
     TechnologyData            VARCHAR (32672) NOT NULL ,
     LicenseFee                INTEGER NOT NULL ,
-    RetailPrice               INTEGER ,
     LicenseProductCode        INTEGER ,
     TechnologyDataDescription VARCHAR (32672) ,
     TechnologyDataThumbnail Bytea ,
@@ -549,7 +548,6 @@ CREATE FUNCTION CreateTechnologyData (
 	  vTechnologyData varchar(32672),
 	  vTechnologyDataDescription varchar(32672),
 	  vLicenseFee integer,
-	  vRetailPrice integer,
 	  vTechnologyUUID uuid,
 	  vCreatedBy uuid,
 	  vRoles text[]
@@ -577,8 +575,8 @@ CREATE FUNCTION CreateTechnologyData (
 
       BEGIN
 	IF(vIsAllowed) then
-		INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, RetailPrice, TechnologyID, CreatedBy, CreatedAt)
-        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyID, vCreatedBy, now());
+		INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, TechnologyID, CreatedBy, CreatedAt)
+        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vTechnologyID, vCreatedBy, now());
 	else
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
 		 RETURN;
@@ -592,7 +590,6 @@ CREATE FUNCTION CreateTechnologyData (
 				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
-								|| ', RetailPrice: ' || cast(vRetailPrice as varchar)
                                 || ', CreatedBy: ' || vCreatedBy);
 
         -- End Log if success
@@ -603,7 +600,6 @@ CREATE FUNCTION CreateTechnologyData (
 			tc.TechnologyUUID,
 			td.TechnologyData,
 			td.LicenseFee,
-			td.RetailPrice,
 			td.TechnologyDataDescription,
 			td.TechnologyDataThumbnail,
 			td.TechnologyDataImgRef,
@@ -624,7 +620,6 @@ CREATE FUNCTION CreateTechnologyData (
 				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
-								|| ', RetailPrice: ' || cast(vRetailPrice as varchar)
                                 || ', CreatedBy: ' || vCreatedBy);
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyData';
@@ -1707,12 +1702,11 @@ CREATE FUNCTION public.settechnologydata(
     IN vtechnologydatadescription character varying,
     IN vtechnologyuuid uuid,
     IN vlicensefee integer,
-    IN vretailprice integer,
     IN vtaglist text[],
     IN vcomponentlist text[],
     IN vcreatedby uuid,
     IN vRoles text[])
-  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, technologyuuid uuid, technologydata character varying, licensefee integer, retailprice integer, technologydatadescription character varying, technologydatathumbnail bytea, technologydataimgref character varying, taglist uuid[], componentlist uuid[], createdat timestamp with time zone, createdby uuid) AS
+  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, technologyuuid uuid, technologydata character varying, licensefee integer, technologydatadescription character varying, technologydatathumbnail bytea, technologydataimgref character varying, taglist uuid[], componentlist uuid[], createdat timestamp with time zone, createdby uuid) AS
 $BODY$
 	#variable_conflict use_column
       DECLARE 	vCompUUID uuid;
@@ -1750,7 +1744,7 @@ $BODY$
 		end if;
 
 		-- Create new TechnologyData
-		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyUUID, vCreatedBy, vRoles);
+		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vTechnologyUUID, vCreatedBy, vRoles);
 		vTechnologyDataID := (select currval('TechnologyDataID'));
 		vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
 		-- Create relation from Components to TechnologyData
@@ -1778,7 +1772,6 @@ $BODY$
 			vTechnologyUUID,
 			TechnologyData,
 			LicenseFee,
-			RetailPrice,
 			TechnologyDataDescription,
 			TechnologyDataThumbnail,
 			TechnologyDataImgRef,
@@ -1796,7 +1789,7 @@ $BODY$
 		on co.componentid = tc.componentid
 		where td.technologydataid = vTechnologyDataID
 		group by technologydatauuid, td.technologydataname, technologydata,
-			 licensefee, retailprice, technologydatadescription, technologydatathumbnail,
+			 licensefee, technologydatadescription, technologydatathumbnail,
 			 TechnologyDataImgRef, td.createdat, td.createdby
         );
 
@@ -1912,7 +1905,6 @@ CREATE FUNCTION GetAllTechnologyData(vUserUUID uuid, vRoles text[])
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
 			licensefee integer,
-			retailprice integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
 			createdat timestamp with time zone,
@@ -1934,7 +1926,6 @@ CREATE FUNCTION GetAllTechnologyData(vUserUUID uuid, vRoles text[])
 					technologydata,
 					technologydatadescription,
 					licensefee,
-					retailprice,
 					technologydatathumbnail,
 					technologydataimgref,
 					td.createdat  at time zone 'utc',
@@ -1969,7 +1960,7 @@ Return Value: Table with all TechnologyData
     IN vtechnologydatauuid uuid,
     IN vuseruuid uuid,
     IN vRoles text[])
-  RETURNS TABLE(technologydatauuid uuid, technologyuuid uuid, technologydataname character varying, technologydata character varying, technologydatadescription character varying, licensefee integer, retailprice integer, technologydatathumbnail bytea, technologydataimgref character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedyby uuid) AS
+  RETURNS TABLE(technologydatauuid uuid, technologyuuid uuid, technologydataname character varying, technologydata character varying, technologydatadescription character varying, licensefee integer, technologydatathumbnail bytea, technologydataimgref character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedyby uuid) AS
 $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetTechnologyDataById';
@@ -1985,7 +1976,6 @@ $BODY$
 				td.technologydata,
 				td.technologydatadescription,
 				td.licensefee,
-				td.retailprice,
 				td.technologydatathumbnail,
 				td.technologydataimgref,
 				td.createdat  at time zone 'utc',
@@ -2032,7 +2022,6 @@ RETURNS TABLE
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
 			licensefee integer,
-			retailprice integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
 			createdat timestamp with time zone,
@@ -2055,7 +2044,6 @@ RETURNS TABLE
 				technologydata,
 				technologydatadescription,
 				licensefee,
-				retailprice,
 				technologydatathumbnail,
 				technologydataimgref,
 				td.createdat  at time zone 'utc',
@@ -2558,7 +2546,6 @@ $BODY$
 					tt.technologyuuid,
 					td.technologydata,
 					td.licensefee,
-					td.retailprice,
 					td.licenseproductcode,
 					td.technologydatadescription,
 					td.technologydatathumbnail,
@@ -2581,7 +2568,6 @@ $BODY$
 					tt.technologyuuid,
 					td.technologydata,
 					td.licensefee,
-					td.retailprice,
 					td.licenseproductcode,
 					td.technologydatadescription,
 					td.technologydatathumbnail,
@@ -3125,7 +3111,7 @@ $BODY$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (	select td.technologydataname, count(ts.offerid)::integer, (sum(td.retailprice))/100000::numeric(21,4) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (	select td.technologydataname, count(ts.offerid)::integer, (sum(td.licensefee))/100000::numeric(21,4) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.offerid = lo.offerid
 			join offerrequest oq
@@ -3176,7 +3162,7 @@ $BODY$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (	select td.technologydataname, count(ts.offerid)::integer, (sum(td.retailprice))/100000::numeric(21,4) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (	select td.technologydataname, count(ts.offerid)::integer, (sum(td.licensefee))/100000::numeric(21,4) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.offerid = lo.offerid
 			join offerrequest oq
@@ -3775,7 +3761,6 @@ RETURNS TABLE
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
 			licensefee integer,
-			retailprice integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
 			createdat timestamp with time zone,
@@ -3798,7 +3783,6 @@ RETURNS TABLE
 			technologydata,
 			technologydatadescription,
 			licensefee,
-			retailprice,
 			technologydatathumbnail,
 			technologydataimgref,
 			td.createdat  at time zone 'utc',
@@ -4175,7 +4159,7 @@ $$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select activatedat::date, (sum(td.retailprice))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (select activatedat::date, (sum(td.licensefee))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.licenseorderid = lo.licenseorderid
 			join offerrequest oq
@@ -4209,7 +4193,7 @@ CREATE FUNCTION public.getrevenueforuser(
     IN vdate timestamp without time zone,
     IN vuseruuid uuid,
     IN vroles text[])
-  RETURNS TABLE(date date, revenue numeric) AS
+  RETURNS TABLE(date date, technologydataname character varying, revenue numeric) AS
 $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetRevenueForUser';
@@ -4219,7 +4203,7 @@ $BODY$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select activatedat::date, (sum(td.retailprice))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (with basis as (select activatedat::date, td.technologydataname, (sum(td.licensefee))*ri.amount/100000::numeric(21,2) as revenue from transactions ts
 			join licenseorder lo
 			on ts.licenseorderid = lo.licenseorderid
 			join offerrequest oq
@@ -4228,13 +4212,25 @@ $BODY$
 			on oq.offerrequestid = ri.offerrequestid
 			join technologydata td
 			on ri.technologydataid = td.technologydataid
-			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			(select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			td.createdby = vUserUUID
-			group by activatedat::date
+			where
+			td.createdby = vuseruuid
+			group by activatedat::date, td.technologydataname, ri.amount
 			order by activatedat::date
-		);
+			),
+			techName as (select distinct a.technologydataname
+					from basis a),
+			dates as (select distinct a.activatedat
+					from basis a),
+			allData as (select tn.technologydataname, dt.activatedat
+					from techname tn, dates dt
+			)
+			select ad.activatedat, ad.technologydataname, case when (ba.revenue is null) then 0::numeric(21,2) else ba.revenue end as revenue
+			from allData ad
+			left outer join basis ba
+			on ad.activatedat = ba.activatedat
+			and ad.technologydataname = ba.technologydataname
+			order by ad.activatedat, ad.technologydataname
+					);
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
 		 RETURN;
@@ -4268,7 +4264,7 @@ $$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select activatedat::date, date_part('hour',activatedat) , (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (select activatedat::date, date_part('hour',activatedat) , (sum(td.licensefee)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.licenseorderid = lo.licenseorderid
 			join offerrequest oq
