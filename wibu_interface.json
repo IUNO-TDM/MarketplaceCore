@@ -6,8 +6,8 @@
     "title": "CodeMeter License Central",
     "termsOfService": ""
   },
-  "host": "localhost:8080",
-  "basePath": "/v1",
+  "host": "http://lc.codemeter.com/26959-02",
+  "basePath": "/marketplaceapi",
   "tags": [
     {
       "name": "license",
