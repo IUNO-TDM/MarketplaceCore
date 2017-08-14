@@ -61,6 +61,7 @@ self.LICENSE_CENTRAL = {
     CERT: {
         CERT_FILE_PATH: '',
         KEY_FILE_PATH: '',
+        P12_FILE_PATH: '',
         PASS_PHRASE: ''
     },
     FIRM_CODE: 6000274,

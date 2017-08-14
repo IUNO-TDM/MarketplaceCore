@@ -5,11 +5,9 @@ const request = require('request');
 const fs = require('fs');
 const path = require('path');
 
-if (CONFIG.LICENSE_CENTRAL.CERT) {
-
-}
 const certFile = path.resolve(__dirname, CONFIG.LICENSE_CENTRAL.CERT.CERT_FILE_PATH);
 const keyFile = path.resolve(__dirname, CONFIG.LICENSE_CENTRAL.CERT.CERT_FILE_PATH);
+const p12File = path.resolve(__dirname, CONFIG.LICENSE_CENTRAL.CERT.P12_FILE_PATH);
 
 const self = {};
 
@@ -17,23 +15,24 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
 
     const options = {
         method: method,
-        url: protocol + '://' + host + ':' + port + path,
+        url: protocol + '://' + host + '/' + path,
         qs: qs,
         json: true,
         headers: {},
         agentOptions: {}
     };
 
-    if (CONFIG.LICENSE_CENTRAL.BASIC_AUTH) {
+    if (CONFIG.LICENSE_CENTRAL.BASIC_AUTH.USER && CONFIG.LICENSE_CENTRAL.BASIC_AUTH.PASSWORD) {
         options.headers['Authorization'] =
             'Basic ' + new Buffer(CONFIG.LICENSE_CENTRAL.BASIC_AUTH.USER + ':' + CONFIG.LICENSE_CENTRAL.BASIC_AUTH.PASSWORD).toString('base64')
     }
 
     try {
-        options.agentOptions['cert'] = fs.readFileSync(certFile);
-        options.agentOptions['key'] = fs.readFileSync(keyFile);
+        // options.agentOptions['cert'] = fs.readFileSync(certFile);
+        // options.agentOptions['key'] = fs.readFileSync(keyFile);
         // Or use `pfx` property replacing `cert` and `key` when using private key, certificate and CA certs in PFX or PKCS12 format:
         // pfx: fs.readFileSync(pfxFilePath),
+        pfx: fs.readFileSync(p12File);
         options.agentOptions['passphrase'] = CONFIG.LICENSE_CENTRAL.CERT.PASS_PHRASE
         // securityOptions: 'SSL_OP_NO_SSLv3'
     }
@@ -219,3 +218,9 @@ self.createAndEncrypt = function (itemId, itemName, productCode, data, callback)
 };
 
 module.exports = self;
+
+
+self.createItem('Test1234', 'Test1234', 991234, function(err, success) {
+    logger.log(err);
+    logger.log(success);
+});
