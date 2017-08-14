@@ -69,6 +69,7 @@ self.createItem = function (itemId, itemName, productCode, callback) {
     };
 
     request(options, function (e, r, message) {
+        logger.log(message);
         const err = logger.logRequestAndResponse(e, options, r, message);
 
         if (err) {
@@ -220,7 +221,7 @@ self.createAndEncrypt = function (itemId, itemName, productCode, data, callback)
 module.exports = self;
 
 
-self.createItem('Test1234', 'Test1234', 991234, function(err, success) {
+self.createItem('pc991234', 'Test1234', 991234, function(err, success) {
     logger.log(err);
     logger.log(success);
 });
