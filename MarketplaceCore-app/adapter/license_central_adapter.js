@@ -110,13 +110,7 @@ self.encryptData = function (productCode, data, callback) {
             return callback(err);
         }
 
-        let encryptedData = null;
-
-        if (message['Result']) {
-            encryptedData = message['Result'].content;
-        }
-
-        callback(err, encryptedData)
+        callback(err, message.content);
     });
 };
 
@@ -132,7 +126,7 @@ self.createAndActivateLicense = function (cmSerial, customerId, itemId, quantity
         CONFIG.HOST_SETTINGS.LICENSE_CENTRAL.PROTOCOL,
         CONFIG.HOST_SETTINGS.LICENSE_CENTRAL.HOST,
         CONFIG.HOST_SETTINGS.LICENSE_CENTRAL.PORT,
-        'doCreateOrderIUNO.php',
+        'doCreateOrder.php',
         {}
     );
 
@@ -185,13 +179,7 @@ self.doLicenseUpdate = function (cmSerial, context, callback) {
             return callback(err);
         }
 
-        let licenseUpdate = null;
-
-        if (message['Result']) {
-            licenseUpdate = message['Result'].content;
-        }
-
-        callback(err, licenseUpdate)
+        callback(err, message.content);
     });
 };
 
@@ -220,8 +208,21 @@ self.createAndEncrypt = function (itemId, itemName, productCode, data, callback)
 
 module.exports = self;
 
-
-self.createItem('pc991234', 'Test1234', 991234, function(err, success) {
-    logger.log(err);
-    logger.log(success);
-});
+// const productCode = 9912316;
+// const itemId = 'pc' + productCode;
+// const itenName = 'Item' + productCode;
+//
+// const testData = {
+//     Test1: 'TEST1',
+//     Test2: 'TEST2'
+// };
+//
+// self.createItem(itemId, itenName, productCode, function(err, success) {
+//     logger.log('error: ' + err);
+//     logger.log('sucess:' + success);
+//
+//     self.encryptData(productCode,new Buffer(JSON.stringify(testData)).toString('base64'), function (err, data) {
+//         logger.log('error: ' + err);
+//         logger.log('encrypted data: ' + data);
+//     })
+// });

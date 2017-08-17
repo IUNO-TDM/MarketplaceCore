@@ -34,4 +34,29 @@ self.CreateOfferRequest = function (userUUID, roles, requestData, callback) {
         });
 };
 
+self.GetOfferRequestById = function(offerUUID, user, callback) {
+    db.func('GetOfferRequestById',
+        [
+            offerUUID,
+            user.uuid,
+            user.roles
+        ])
+        .then(function (data) {
+            logger.debug(data);
+
+            if (data && data.length) {
+                data = data[0];
+            }
+            else {
+                data=null;
+            }
+
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
 module.exports = self;

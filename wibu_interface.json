@@ -50,30 +50,16 @@
         "responses": {
           "200": {
             "description": "okay",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "Result": {
-                  "$ref": "#/definitions/LicenseUpdate"
-                }
-              }
-            }
+            "$ref": "#/definitions/LicenseUpdate"
           },
           "400": {
             "description": "error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "ReturnMessage": {
-                  "$ref": "#/definitions/ReturnMessage"
-                }
-              }
-            }
+            "$ref": "#/definitions/LicenseUpdate"
           }
         }
       }
     },
-    "/doCreateOrderIUNO.php": {
+    "/doCreateOrder.php": {
       "post": {
         "tags": [
           "license"
@@ -144,14 +130,7 @@
         "responses": {
           "200": {
             "description": "okay",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "Result": {
-                  "$ref": "#/definitions/EncryptedData"
-                }
-              }
-            }
+            "$ref": "#/definitions/LicenseUpdate"
           },
           "400": {
             "description": "error",

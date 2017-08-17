@@ -10,7 +10,12 @@ var self = {};
 self.GetTransactionByOfferRequest = function (userUUID, roles, offerRequestUUID, callback) {
     db.func('GetTransactionByOfferRequest', [offerRequestUUID, userUUID, roles])
         .then(function (data) {
-            callback(null, data);
+            if (data && data.length) {
+                return callback(null, data[0]);
+            }
+            else {
+                return callback(null, null);
+            }
         })
         .catch(function (error) {
             logger.crit(error);

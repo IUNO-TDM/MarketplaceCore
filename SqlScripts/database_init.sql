@@ -194,7 +194,7 @@ CREATE
     TechnologyID              INTEGER NOT NULL ,
     TechnologyData            VARCHAR (32672) NOT NULL ,
     LicenseFee                INTEGER NOT NULL ,
-    LicenseProductCode        INTEGER ,
+    ProductCode               INTEGER ,
     TechnologyDataDescription VARCHAR (32672) ,
     TechnologyDataThumbnail Bytea ,
     TechnologyDataImgRef VARCHAR ,
@@ -548,6 +548,7 @@ CREATE FUNCTION CreateTechnologyData (
 	  vTechnologyData varchar(32672),
 	  vTechnologyDataDescription varchar(32672),
 	  vLicenseFee integer,
+	  vProductCode integer,
 	  vTechnologyUUID uuid,
 	  vCreatedBy uuid,
 	  vRoles text[]
@@ -557,6 +558,7 @@ CREATE FUNCTION CreateTechnologyData (
 	TechnologyDataName varchar(250),
 	TechnologyUUID uuid,
 	TechnologyData varchar(32672),
+	ProductCode integer,
 	LicenseFee integer,
 	TechnologyDataDescription varchar(32672),
 	TechnologyDataThumbnail bytea,
@@ -574,8 +576,8 @@ CREATE FUNCTION CreateTechnologyData (
 
       BEGIN
 	IF(vIsAllowed) then
-		INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, TechnologyID, CreatedBy, CreatedAt)
-        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vTechnologyID, vCreatedBy, now());
+		INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, ProductCode, TechnologyID, CreatedBy, CreatedAt)
+        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, vTechnologyID, vCreatedBy, now());
 	else
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
 		 RETURN;
@@ -589,6 +591,7 @@ CREATE FUNCTION CreateTechnologyData (
 				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
+                                || ', ProductCode: ' || cast(vProductCode as varchar)
                                 || ', CreatedBy: ' || vCreatedBy);
 
         -- End Log if success
@@ -599,6 +602,7 @@ CREATE FUNCTION CreateTechnologyData (
 			tc.TechnologyUUID,
 			td.TechnologyData,
 			td.LicenseFee,
+			td.ProductCode,
 			td.TechnologyDataDescription,
 			td.TechnologyDataThumbnail,
 			td.TechnologyDataImgRef,
@@ -619,6 +623,7 @@ CREATE FUNCTION CreateTechnologyData (
 				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
+                                || ', ProductCode: ' || cast(vProductCode as varchar)
                                 || ', CreatedBy: ' || vCreatedBy);
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyData';
@@ -1701,11 +1706,12 @@ CREATE FUNCTION public.settechnologydata(
     IN vtechnologydatadescription character varying,
     IN vtechnologyuuid uuid,
     IN vlicensefee integer,
+    IN vproductcode integer,
     IN vtaglist text[],
     IN vcomponentlist text[],
     IN vcreatedby uuid,
     IN vRoles text[])
-  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, technologyuuid uuid, technologydata character varying, licensefee integer, technologydatadescription character varying, technologydatathumbnail bytea, technologydataimgref character varying, taglist uuid[], componentlist uuid[], createdat timestamp with time zone, createdby uuid) AS
+  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, technologyuuid uuid, technologydata character varying, licensefee integer, productcode integer, technologydatadescription character varying, technologydatathumbnail bytea, technologydataimgref character varying, taglist uuid[], componentlist uuid[], createdat timestamp with time zone, createdby uuid) AS
 $BODY$
 	#variable_conflict use_column
       DECLARE 	vCompUUID uuid;
@@ -1743,7 +1749,7 @@ $BODY$
 		end if;
 
 		-- Create new TechnologyData
-		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vTechnologyUUID, vCreatedBy, vRoles);
+		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, vTechnologyUUID, vCreatedBy, vRoles);
 		vTechnologyDataID := (select currval('TechnologyDataID'));
 		vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
 		-- Create relation from Components to TechnologyData
@@ -1771,6 +1777,7 @@ $BODY$
 			vTechnologyUUID,
 			TechnologyData,
 			LicenseFee,
+			ProductCode,
 			TechnologyDataDescription,
 			TechnologyDataThumbnail,
 			TechnologyDataImgRef,
@@ -1788,7 +1795,7 @@ $BODY$
 		on co.componentid = tc.componentid
 		where td.technologydataid = vTechnologyDataID
 		group by technologydatauuid, td.technologydataname, technologydata,
-			 licensefee, technologydatadescription, technologydatathumbnail,
+			 licensefee, productcode, technologydatadescription, technologydatathumbnail,
 			 TechnologyDataImgRef, td.createdat, td.createdby
         );
 
@@ -2549,7 +2556,7 @@ $BODY$
 					tt.technologyuuid,
 					td.technologydata,
 					td.licensefee,
-					td.licenseproductcode,
+					td.productcode,
 					td.technologydatadescription,
 					td.technologydatathumbnail,
 					td.technologydataimgref,
@@ -2571,7 +2578,7 @@ $BODY$
 					tt.technologyuuid,
 					td.technologydata,
 					td.licensefee,
-					td.licenseproductcode,
+					td.productcode,
 					td.technologydatadescription,
 					td.technologydatathumbnail,
 					td.technologydataimgref,
@@ -5012,7 +5019,8 @@ $$
 			}',	     				 -- <technologydata character varying>,
             'Orange, Apfel und Kirsch', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
-            50000,
+            3,
+            999990,
             '{Delicious}', -- <taglist text[]>,            						 		 -- <createdby integer>,
             vComponents,    							 -- <componentlist integer[]>
 			vUserUUID,
@@ -5055,7 +5063,8 @@ $$
 			}',	     				 -- <technologydata character varying>,
             'Lassen Sie sich von der Geschmacksexplosion überraschen.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
-            75000,
+            2,
+            999991,
             '{Delicious, Refreshing}', -- <taglist text[]>,
 	    vComponents,    		 -- <componentlist integer[]>
             vUserUUID,    						 -- <createdby integer>,
@@ -5100,7 +5109,8 @@ $$
 			}',	     				 -- <technologydata character varying>,
             'Der klassische Durstlöscher, wie ihn jedes Kind kennt und liebt.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
-            100000,  			 				 -- <licensefee numeric>,
+            1,  			 				 -- <licensefee numeric>,
+            999992,
             '{Delicious, Apfelschorle}', -- <taglist text[]>,
             vComponents,
 			vUserUUID,
@@ -5143,7 +5153,8 @@ $$
 			}',	     				 -- <technologydata character varying>,
             'Der süße Kuss der Ananas trifft auf eine Bananen-Kirsch Kombination.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
-            50000,
+            5,
+            999993,
             '{Delicious, Banana, Orange, Mango, Tasty}', -- <taglist text[]>,
             vComponents,    								 -- <componentlist integer[]>
 			vUserUUID,

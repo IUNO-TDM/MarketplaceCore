@@ -52,7 +52,9 @@ router.post('/', validate({
             return next(err);
         }
 
-        licenseCentral.createAndEncrypt('pc' + productCode, data['technologyDataName'], productCode, data['technologyData'], function(err, encryptedData){
+        const base64Recipe = new Buffer(data['technologyData']).toString('base64');
+
+        licenseCentral.createAndEncrypt('pc' + productCode, data['technologyDataName'], productCode, base64Recipe, function(err, encryptedData){
             if (err) {
                 return next(err);
             }
@@ -63,7 +65,7 @@ router.post('/', validate({
             techData.technologydataname = data['technologyDataName'];
             techData.technologydata = encryptedData;
             techData.technologydatadescription = data['technologyDataDescription'];
-            techData.technologyid = data['technologyUUID'];
+            techData.technologyuuid = data['technologyUUID'];
             techData.licensefee = data['licenseFee'];
             techData.retailprice = data['retailPrice'];
             techData.taglist = data['tagList'];
