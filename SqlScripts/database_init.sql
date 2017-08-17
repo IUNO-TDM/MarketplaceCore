@@ -4854,6 +4854,9 @@ DO
             vUserUUID,
 	    vRoleName 				-- <createdby integer>
         );
+
+        update technologies set technologyUUID = 'da17a8fc-a5b3-40a4-b6a5-276667db027a'
+        where technologyname = 'Juice Mixer';
         -- Create Components & Attributes
 
         perform public.setcomponent(
