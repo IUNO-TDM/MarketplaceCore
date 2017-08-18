@@ -1711,7 +1711,7 @@ CREATE FUNCTION public.settechnologydata(
     IN vtaglist text[],
     IN vcomponentlist text[],
     IN vcreatedby uuid,
-    IN vRoles text[])
+    IN vroles text[])
   RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, technologyuuid uuid, technologydata character varying, licensefee integer, productcode integer, technologydatadescription character varying, technologydatathumbnail bytea, technologydataimgref character varying, taglist uuid[], componentlist uuid[], createdat timestamp with time zone, createdby uuid) AS
 $BODY$
 	#variable_conflict use_column
@@ -1736,12 +1736,14 @@ $BODY$
 			 end if;
 		END LOOP;
 		-- Proof if all Tags are avaiable
-		FOREACH vTagName in array vTagList
-		LOOP
-			 if not exists (select tagID from tags where tagname = vTagName) then
-				perform public.createtag(vTagName,vCreatedby, vRoles);
-			 end if;
-		END LOOP;
+		IF (vTagList != null) THEN
+			FOREACH vTagName in array vTagList
+			LOOP
+				 if not exists (select tagID from tags where tagname = vTagName) then
+					perform public.createtag(vTagName,vCreatedby, vRoles);
+				 end if;
+			END LOOP;
+		END IF;
 		-- Proof if technology is avaiable
 		if not exists (select technologyid from technologies where technologyuuid = vTechnologyUUID) then
 			raise exception using
@@ -1757,7 +1759,9 @@ $BODY$
 		perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList, vRoles);
 
 		-- Create relation from Tags to TechnologyData
+		IF (vTagList != null) THEN
 		perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList, CreatedBy, vRoles);
+		END IF;
 
 		-- Begin Log if success
 		perform public.createlog(0,'Set TechnologyData sucessfully', 'SetTechnologyData',
@@ -1787,9 +1791,9 @@ $BODY$
 			td.CreatedAt at time zone 'utc',
 			vCreatedBy as CreatedBy
 		from technologydata td
-		join technologydatatags tt on
+		left outer join technologydatatags tt on
 		td.technologydataid = tt.technologydataid
-		join tags tg on tt.tagid = tg.tagid
+		left outer join tags tg on tt.tagid = tg.tagid
 		join technologydatacomponents tc
 		on tc.technologydataid = td.technologydataid
 		join components co
