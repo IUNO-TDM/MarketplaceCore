@@ -5,14 +5,17 @@
  -- Description: Routing service for TechnologyData
  -- ##########################################################################*/
 
-var express = require('express');
-var router = express.Router();
-var logger = require('../global/logger');
-var validate = require('express-jsonschema').validate;
-var TechnologyData = require('../database/model/technologydata');
-var Component = require('../database/model/component');
-var helper = require('../services/helper_service');
+const express = require('express');
+const router = express.Router();
+const logger = require('../global/logger');
+const validate = require('express-jsonschema').validate;
+const TechnologyData = require('../database/model/technologydata');
+const Component = require('../database/model/component');
+const helper = require('../services/helper_service');
+const licenseCentral = require('../adapter/license_central_adapter');
+const dbProductCode = require('../database/function/productCode');
 
+const CONFIG = require('../config/config_loader');
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
 
@@ -28,7 +31,7 @@ router.get('/', validate({query: require('../schema/technologydata_schema').GetA
 
 router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'],   function (err, data) {
+    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -43,27 +46,42 @@ router.post('/', validate({
     body: require('../schema/technologydata_schema').SaveDataBody,
     query: require('../schema/technologydata_schema').SaveDataQuery
 }), function (req, res, next) {
+    const data = req.body;
 
-    var techData = new TechnologyData();
-    var data = req.body;
-
-    techData.technologydataname = data['technologyDataName'];
-    techData.technologydata = data['technologyData'];
-    techData.technologydatadescription = data['technologyDataDescription'];
-    techData.technologyid = data['technologyUUID'];
-    techData.licensefee = data['licenseFee'];
-    techData.retailprice = data['retailPrice'];
-    techData.taglist = data['tagList'];
-    techData.componentlist = data['componentList'];
-
-    techData.Create(req.query['userUUID'], req.token.user.roles, function (err, data) {
+    dbProductCode.GetNewProductCode(function(err, productCode){
         if (err) {
-            next(err);
+            return next(err);
         }
 
-        var fullUrl = helper.buildFullUrlFromRequest(req);
-        res.set('Location', fullUrl + data[0]['technologydatauuid']);
-        res.sendStatus(201);
+        const base64Recipe = new Buffer(data['technologyData']).toString('base64');
+
+        licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, data['technologyDataName'], productCode, base64Recipe, function(err, encryptedData){
+            if (err) {
+                return next(err);
+            }
+
+            const techData = new TechnologyData();
+
+
+            techData.technologydataname = data['technologyDataName'];
+            techData.technologydata = encryptedData;
+            techData.technologydatadescription = data['technologyDataDescription'];
+            techData.technologyuuid = data['technologyUUID'];
+            techData.licensefee = data['licenseFee'];
+            techData.taglist = data['tagList'];
+            techData.componentlist = data['componentList'];
+            techData.productcode = productCode;
+
+            techData.Create(req.query['userUUID'], req.token.user.roles, function (err, data) {
+                if (err) {
+                    return next(err);
+                }
+
+                const fullUrl = helper.buildFullUrlFromRequest(req);
+                res.set('Location', fullUrl + data['technologydatauuid']);
+                res.sendStatus(201);
+            });
+        });
     });
 });
 

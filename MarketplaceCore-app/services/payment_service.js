@@ -94,12 +94,16 @@ payment_service.createLocalInvoice = function (invoice, callback) {
 
     request(options, function (e, r, jsonData) {
         var err = logger.logRequestAndResponse(e, options, r, jsonData);
-        var invoice = new Invoice().CreateFromJSON(jsonData);
 
-        if (!err) {
-            payment_service.registerStateChangeUpdates(invoice.invoiceId);
+
+        if (err) {
+            logger.crit('[payment_service] error while creating local invoice');
+            return callback(err);
         }
 
+        var invoice = new Invoice().CreateFromJSON(jsonData);
+
+        payment_service.registerStateChangeUpdates(invoice.invoiceId);
         callback(err, invoice);
     });
 }
@@ -112,21 +116,28 @@ payment_service.getInvoiceTransfers = function (invoice, callback) {
             logger.info('Callback not registered');
         }
     }
-    var options = buildOptionsForRequest(
-        'GET',
-        config.HOST_SETTINGS.PAYMENT_SERVICE.PROTOCOL || 'http',
-        config.HOST_SETTINGS.PAYMENT_SERVICE.HOST || 'localhost',
-        config.HOST_SETTINGS.PAYMENT_SERVICE.PORT || 8080,
-        '/v1/invoices/' + invoice.invoiceId + '/transfers'
-    );
+    try {
+        var options = buildOptionsForRequest(
+            'GET',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.PROTOCOL || 'http',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.HOST || 'localhost',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.PORT || 8080,
+            '/v1/invoices/' + invoice.invoiceId + '/transfers'
+        );
 
 
-    request(options, function (e, r, jsonData) {
-        var err = logger.logRequestAndResponse(e, options, r, jsonData);
-        var transfers = Transfer.CreateListFromJSON(jsonData);
+        request(options, function (e, r, jsonData) {
+            var err = logger.logRequestAndResponse(e, options, r, jsonData);
+            var transfers = Transfer.CreateListFromJSON(jsonData);
 
-        callback(err, transfers);
-    });
+            callback(err, transfers);
+        });
+    }
+    catch (err) {
+        logger.crit(err);
+        callback(err);
+    }
+
 };
 
 

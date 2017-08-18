@@ -37,19 +37,44 @@ self.HOST_SETTINGS = {
         PROTOCOL: 'http',
         HOST: 'localhost',
         PORT: 8081
+    },
+    LICENSE_CENTRAL: {
+        PROTOCOL: 'https',
+        HOST: 'lc.codemeter.com/26959-02/marketplaceapi',
+        PORT: 443
     }
 };
 
 self.DB_CONNECTION_STRING = 'postgres://{0}:{1}@{2}:{3}/{4}'.format(username, password, host, port, database);
 self.LOG_LEVEL = 'debug';
+
 self.OAUTH_CREDENTIALS = {
     CLIENT_ID: '',
     CLIENT_SECRET: ''
 };
+
+self.LICENSE_CENTRAL = {
+    BASIC_AUTH: {
+        USER: '',
+        PASSWORD: ''
+    },
+    CERT: {
+        CERT_FILE_PATH: '',
+        KEY_FILE_PATH: '',
+        P12_FILE_PATH: '',
+        PASS_PHRASE: ''
+    },
+    FIRM_CODE: 6000274,
+    CMACTID: 1000,
+    LCACTION:'autoupdate'
+};
+
 self.USER = {
     uuid: '{uuid}',
     roles: ['{role}']
 };
+
+self.PRODUCT_CODE_PREFIX = 'pc';
 
 
 module.exports = self;

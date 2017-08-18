@@ -7,30 +7,30 @@ var db = require('../db_connection');
 /**
  * Creates an technologydata object from a database query result.
  *
- * @param data
  * @constructor
  */
 function TechnologyData(data) {
-    if (data) {
-        this.technologydataid = data.technologydataid;
-        this.technologydatauuid = data.technologydatauuid;
-        this.technologydataname = data.technologydataname;
-        this.technologyid = data.technologyid;
-        this.technologydata = data.technologydata;
-        this.licensefee = data.licensefee;
-        this.retailprice = data.retailprice;
-        this.licenseproductcode = data.licenseproductcode;
-        this.technologydatadescription = data.technologydatadescription;
-        this.technologydatathumbnail = data.technologydatathumbnail;
-        this.technologydataimgref = data.technologydataimgref;
-        this.createdat = data.createdat;
-        this.createdby = data.createdby;
-        this.updatedat = data.updatedat;
-        this.updatedby = data.updatedby;
-        this.componentlist = data.componentswithattribute;
-        this.taglist = data.taglist;
-    }
+    this.SetProperties(data);
 }
+
+TechnologyData.prototype.SetProperties = function (data) {
+    if (data) {
+        this.technologydataid = data.technologydataid ? data.technologydataid : this.technologydataid;
+        this.technologydatauuid = data.technologydatauuid ? data.technologydatauuid : this.technologydatauuid;
+        this.technologydataname = data.technologydataname ? data.technologydataname : this.technologydataname;
+        this.technologyuuid = data.technologyuuid ? data.technologyuuid : this.technologyuuid;
+        this.technologydata = data.technologydata ? data.technologydata : this.technologydata;
+        this.licensefee = data.licensefee ? data.licensefee : this.licensefee;
+        this.productcode = data.productcode ? data.productcode : this.productcode;
+        this.technologydatadescription = data.technologydatadescription ? data.technologydatadescription : this.technologydatadescription;
+        this.createdat = data.createdat ? data.createdat : this.createdat;
+        this.createdby = data.createdby ? data.createdby : this.createdby;
+        this.updatedat = data.updatedat ? data.updatedat : this.updatedat;
+        this.updatedby = data.updatedby ? data.updatedby : this.updatedby;
+        this.componentlist = data.componentswithattribute ? data.componentswithattribute : this.componentlist;
+        this.taglist = data.taglist ? data.taglist : this.taglist;
+    }
+};
 
 TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, roles, params, callback) {
     var technologies = params['technologies'];
@@ -42,7 +42,7 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
 
 
     db.func('GetTechnologyDataByParams',
-        [   components,
+        [components,
             technologies,
             technologydataname,
             ownerUUID,
@@ -71,6 +71,7 @@ TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (user
             if (data && data.length) {
                 data = data[0];
             }
+
             callback(null, new TechnologyData(data));
         })
         .catch(function (error) {
@@ -79,21 +80,27 @@ TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (user
         });
 };
 TechnologyData.prototype.Create = function (userUUID, roles, callback) {
+    const self = this;
     db.func('SetTechnologyData',
-        [   this.technologydataname,
+        [this.technologydataname,
             this.technologydata,
             this.technologydatadescription,
-            this.technologyid,
+            this.technologyuuid,
             this.licensefee,
-            this.retailprice,
-            this.taglist,
+            this.productcode,
+            this.taglist ? this.taglist : [''],
             this.componentlist,
             userUUID,
             roles
         ])
         .then(function (data) {
+            if (data && data.length) {
+                data = data[0];
+            }
             logger.debug(data);
-            callback(null, data);
+            self.SetProperties(data);
+
+            callback(null, self);
         })
         .catch(function (error) {
             logger.crit(error);

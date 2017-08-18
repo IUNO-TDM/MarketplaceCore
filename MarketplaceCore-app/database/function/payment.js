@@ -44,9 +44,12 @@ self.SetPaymentInvoiceOffer = function (userUUID, roles, invoice, offerRequestUU
         });
 };
 
-self.GetPaymentInvoiceForOfferRequest = function(userUUID, offerRequestUUID, callback){
-    db.func('GetPaymentInvoiceForOfferRequest', [offerRequestUUID, userUUID])
+self.GetPaymentInvoiceForOfferRequest = function(user, offerRequestUUID, callback){
+    db.func('GetPaymentInvoiceForOfferRequest', [offerRequestUUID, user.uuid, user.roles])
         .then(function (data) {
+            if (data && data.length) {
+                data = data[0];
+            }
             callback(null, data);
         })
         .catch(function (error) {

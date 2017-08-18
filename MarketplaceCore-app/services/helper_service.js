@@ -25,9 +25,19 @@ self.buildFullUrlFromRequest = function (req) {
 };
 
 self.formatString = function (string) {
-    var args = [].slice.call(arguments);
+    let args = [].slice.call(arguments);
     args.shift();
     return string.format(...args);
+};
+
+self.shortenUUID = function(uuid) {
+
+    uuid = uuid.replace(new RegExp('-', 'g'), '');
+    let base64 = new Buffer(uuid, 'hex').toString('base64');
+
+    base64 = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+    return base64;
 };
 
 

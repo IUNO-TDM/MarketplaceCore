@@ -6,8 +6,8 @@
     "title": "CodeMeter License Central",
     "termsOfService": ""
   },
-  "host": "localhost:8080",
-  "basePath": "/v1",
+  "host": "lc.codemeter.com",
+  "basePath": "/26959-02/marketplaceapi",
   "tags": [
     {
       "name": "license",
@@ -50,37 +50,23 @@
         "responses": {
           "200": {
             "description": "okay",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "Result": {
-                  "$ref": "#/definitions/LicenseUpdate"
-                }
-              }
-            }
+            "$ref": "#/definitions/LicenseUpdate"
           },
           "400": {
             "description": "error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "ReturnMessage": {
-                  "$ref": "#/definitions/ReturnMessage"
-                }
-              }
-            }
+            "$ref": "#/definitions/LicenseUpdate"
           }
         }
       }
     },
-    "/doCreateOrderIUNO.php": {
+    "/doCreateOrder.php": {
       "post": {
         "tags": [
           "license"
         ],
         "summary": "Creates and activates a new license for a product and CmDongle.",
         "description": "",
-        "operationId": "doCreateOrderIUNO",
+        "operationId": "doCreateOrder",
         "consumes": [
           "application/json"
         ],
@@ -144,14 +130,7 @@
         "responses": {
           "200": {
             "description": "okay",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "Result": {
-                  "$ref": "#/definitions/EncryptedData"
-                }
-              }
-            }
+            "$ref": "#/definitions/LicenseUpdate"
           },
           "400": {
             "description": "error",
@@ -227,17 +206,19 @@
           "example": "SFAgd2FzIGhlcmUhCg=="
         },
         "firmcode": {
-          "type": "integer",
-          "format": "uint32",
-          "default": 6000274
+          "$ref": "#/definitions/FirmCode"
         },
         "cmactid": {
           "type": "string",
-          "default": "1000"
+          "description": "use constant value 1000 for CmDongle with Universal Firm Code",
+          "default": "1000",
+          "example": "1000"
         },
-        "location": {
+        "lcaction": {
           "type": "string",
-          "default": "autoupdate"
+          "description": "constant value for licenses which are bound to a serial number",
+          "default": "autoupdate",
+          "example": "autoupdate"
         }
       }
     },
@@ -253,7 +234,8 @@
         "md5": {
           "type": "string",
           "format": "md5",
-          "description": "md5 checksum of content"
+          "description": "md5 checksum of content",
+          "example": "d41d8cd98f00b204e9800998ecf8427e"
         }
       }
     },
@@ -271,13 +253,14 @@
           "description": "name of customer"
         },
         "itemid": {
-          "type": "string",
-          "description": "number of articel to be licensed"
+          "$ref": "#/definitions/ItemId"
         },
         "quantity": {
           "type": "integer",
           "format": "int32",
-          "description": "amount of licenses to be issued"
+          "description": "amount of licenses to be issued",
+          "default": "1",
+          "example": "42"
         }
       }
     },
@@ -285,14 +268,10 @@
       "type": "object",
       "properties": {
         "firmcode": {
-          "type": "integer",
-          "format": "uint32",
-          "default": 6000274
+          "$ref": "#/definitions/FirmCode"
         },
         "productcode": {
-          "type": "integer",
-          "format": "uint32",
-          "description": "product code for encryption"
+          "$ref": "#/definitions/ProductCode"
         },
         "buffer": {
           "type": "string",
@@ -309,12 +288,18 @@
         "content": {
           "type": "string",
           "format": "base64",
-          "description": "encrypted data encoded with base64"
+          "description": "encrypted data encoded with base64",
+          "example": "MDk4NzY1NDMyMWFiY2RlZmdoCg=="
         },
         "md5": {
           "type": "string",
           "format": "md5",
-          "description": "md5 checksum of content"
+          "description": "md5 checksum of content",
+          "example": "d41d8cd98f00b204e9800998ecf8427e"
+        },
+        "crc": {
+          "type": "string",
+          "description": "internal crc value of crypt operation"
         }
       }
     },
@@ -322,40 +307,55 @@
       "type": "object",
       "properties": {
         "itemid": {
-          "type": "string",
-          "description": "article number and reference for issueing licenses"
+          "$ref": "#/definitions/ItemId"
         },
         "itemname": {
           "type": "string",
-          "description": "name of article",
+          "description": "name of article - shall be set to IUNO recipe title",
           "example": "pangalactic gargle blaster"
         },
         "firmcode": {
-          "type": "integer",
-          "format": "uint32",
-          "default": 6000274
+          "$ref": "#/definitions/FirmCode"
         },
         "productcode": {
-          "type": "string",
-          "description": "product code for encryption"
+          "$ref": "#/definitions/ProductCode"
         }
       }
+    },
+    "ItemId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "article number and reference for issueing licenses - for IUNO this field shall be set to the the product code prefixed with \"pc\"without leading zeroes",
+      "example": "pc815"
+    },
+    "FirmCode": {
+      "type": "integer",
+      "format": "uint32",
+      "description": "constant firm code by wibu for the IUNO technology data marketplace",
+      "default": "6000274",
+      "example": "6000274"
+    },
+    "ProductCode": {
+      "type": "integer",
+      "format": "uint32",
+      "description": "product code for encryption",
+      "example": "45054"
     },
     "ReturnMessage": {
       "type": "object",
       "properties": {
         "ReturnCode": {
           "type": "string",
-          "format": "byte",
-          "description": "error code for the user as hex string starting with 0x"
+          "description": "error code for the user as hex string starting with 0x",
+          "example": "0xdeadbeef"
         },
         "ErrorText": {
           "type": "string",
-          "description": "error message for the user"
+          "description": "error message for the user",
+          "example": "this is an example error message for the user"
         },
         "InternalErrorCode": {
           "type": "string",
-          "format": "byte",
           "description": "zero for errors in php module, non zero for application errors"
         },
         "InternalErrorText": {
