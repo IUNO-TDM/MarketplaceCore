@@ -40,8 +40,8 @@ self.HOST_SETTINGS = {
     },
     LICENSE_CENTRAL: {
         PROTOCOL: 'https',
-        HOST: 'localhost',
-        PORT: 80
+        HOST: 'lc.codemeter.com/26959-02/marketplaceapi',
+        PORT: 443
     }
 };
 
