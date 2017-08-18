@@ -7,6 +7,9 @@ const dbLicence = require('../database/function/license');
 const licenseCentral = require('../adapter/license_central_adapter');
 const dbPayment = require('../database/function/payment');
 const dbOfferRequest = require('../database/function/offer_request');
+const logger = require('../global/logger');
+const async = require('async');
+const helper = require('../services/helper_service');
 
 const LicenseService = function () {
     this.transaction_queue = {};
@@ -24,24 +27,51 @@ payment_service.on('StateChange', function (data) {
         }
 
         license_service.transaction_queue[transactionUuid] = true;
+        async.series([
+                function (callback) {
+                    dbTrans.GetTransactionByID(config.USER, transactionUuid, function (err, transaction) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        if (!err && !transaction.licenseorderuuid) {
+                            dbOfferRequest.GetOfferRequestById(transaction.offerrequestuuid, config.USER, function (err, offerRequest) {
+                                if (err) {
+                                    return callback(err);
+                                }
 
-        dbTrans.GetTransactionByID(config.USER, transactionUuid, function (err, transaction) {
-            if (!err && !transaction.licenseorderuuid) {
+                                for (var key in offerRequest.items) {
+                                    const item = offerRequest.items[key];
 
-                dbOfferRequest.GetOfferRequestById(transaction.offerrequestuuid, config.USER, function (err, offerRequest) {
+                                    const base64CustomerId = helper.shortenUUID(transaction['buyer']);
 
-                    offerRequest.items.
-                    licenseCentral.createAndActivateLicense(offerRequest.hsmId, transaction.buyer, itemId, quantity, function(err, success) {
+                                    licenseCentral.createAndActivateLicense(offerRequest.hsmid, base64CustomerId, config.PRODUCT_CODE_PREFIX + item.productcode, item.amount, function (err) {
+                                        if (err) {
+                                            return callback(err);
+                                        }
 
-                        dbLicence.CreateLicenseOrder(null, transaction.offeruuid, config.USER, function (err, data) {
-                            if (!err) {
-                                license_service.emit('updateAvailable', data.offeruuid, cmSerial);
-                            }
-                        });
+                                        dbLicence.CreateLicenseOrder(null, transaction.offeruuid, config.USER, function (err, data) {
+                                            if (!err) {
+                                                license_service.emit('updateAvailable', data.offeruuid, offerRequest.hsmid);
+                                            }
+
+                                            callback(err);
+                                        });
+                                    });
+                                }
+
+                            });
+                        }
                     });
-                });
-            }
-        });
+                }
+            ],
+            function (err) {
+                if (err) {
+                    logger.crit('[license_service] Error while create and activate license');
+                }
+                delete license_service.transaction_queue[transactionUuid];
+            });
+
+
     }
 });
 

@@ -74,5 +74,7 @@ self.USER = {
     roles: ['{role}']
 };
 
+self.PRODUCT_CODE_PREFIX = 'pc';
+
 
 module.exports = self;

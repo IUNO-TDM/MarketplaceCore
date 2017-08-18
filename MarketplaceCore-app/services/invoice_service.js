@@ -23,11 +23,12 @@ self.generateInvoice = function (userUUID, request,transaction, roles, callback)
         })
     };
 
-    async.concatSeries(items, iterator, function(err, res) {
-        console.log(res); // [1, 3, 2]
-        for(var fee in res){
-            totalAmount += res[fee];
+    async.concatSeries(items, iterator, function(err, item) {
+        for(var fee in item){
+            totalAmount += item[fee];
         }
+        // our virtual currency IUNO represents 1 milli bitcoin
+        totalAmount *= 100000;
 
         var invoice = {
             totalAmount: totalAmount ,
@@ -38,7 +39,11 @@ self.generateInvoice = function (userUUID, request,transaction, roles, callback)
 
         payment_service.createLocalInvoice(invoice, function (e, invoice) {
 
-            payment_service.getInvoiceTransfers(invoice, function (e,transfers) {
+            if (e) {
+                return callback(e);
+            }
+
+            payment_service.getInvoiceTransfers(invoice, function (e, transfers) {
                 var res = {
                     totalAmount: invoice.totalAmount,
                     invoiceId: invoice.invoiceId,
@@ -46,7 +51,7 @@ self.generateInvoice = function (userUUID, request,transaction, roles, callback)
                     expiration: invoice.expiration,
                     transfers: transfers
                 };
-                callback(null,res);
+                callback(null, res);
             });
 
         });

@@ -18,7 +18,10 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
         url: protocol + '://' + host + '/' + path,
         qs: qs,
         json: true,
-        headers: {},
+        headers: {
+            'content-type': 'application/json',
+            'accept': 'application/json'
+        },
         agentOptions: {}
     };
 
@@ -132,7 +135,7 @@ self.createAndActivateLicense = function (cmSerial, customerId, itemId, quantity
 
     options.body = {
         cmserial: cmSerial,
-        customerid: customerId,
+        // customerid: customerId,
         itemid: itemId,
         quantity: quantity
     };
@@ -207,22 +210,3 @@ self.createAndEncrypt = function (itemId, itemName, productCode, data, callback)
 };
 
 module.exports = self;
-
-// const productCode = 9912316;
-// const itemId = 'pc' + productCode;
-// const itenName = 'Item' + productCode;
-//
-// const testData = {
-//     Test1: 'TEST1',
-//     Test2: 'TEST2'
-// };
-//
-// self.createItem(itemId, itenName, productCode, function(err, success) {
-//     logger.log('error: ' + err);
-//     logger.log('sucess:' + success);
-//
-//     self.encryptData(productCode,new Buffer(JSON.stringify(testData)).toString('base64'), function (err, data) {
-//         logger.log('error: ' + err);
-//         logger.log('encrypted data: ' + data);
-//     })
-// });

@@ -502,7 +502,7 @@ CREATE SEQUENCE FunctionID START 2;
 -- OfferRequestItemID
 CREATE SEQUENCE OfferRequestItemID START 1;
 -- ProductID
-CREATE SEQUENCE ProductCode START 1;
+CREATE SEQUENCE ProductCode START 1000;
 -- ##########################################################################
 -- Create Indexes
 --CREATE UNIQUE INDEX invoice_idx ON paymentinvoice (invoice);
@@ -4508,7 +4508,7 @@ create function getofferrequestbyid(vOfferRequestUUID uuid, vUserUUID uuid, vRol
 			select offerrequestuuid,
 			(
 			select	 array_to_json(array_agg(row_to_json(d)))
-			from (select   td.TechnologyDataUUID::uuid,   oi.Amount
+			from (select   td.TechnologyDataUUID::uuid,   oi.Amount, td.ProductCode
 				from offerrequest ofr
 				join offerrequestitems oi on oi.offerrequestid = ofr.offerrequestid
 				join technologydata td
@@ -4984,43 +4984,11 @@ $$
 		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Karibiktraum',		     				 -- <technologydataname character varying>,
-            '{
-			  "recipe": {
-					"id": "Karibiktraum",
-					"lines": [
-					  {
-						"components": [
-						  {
-							"ingredient": "Orangensaft",
-							"amount": 32
-						  },
-						  {
-							"ingredient": "Bananensaft",
-							"amount": 32
-						  },
-						  {
-							"ingredient": "Maracujasaft",
-							"amount": 32
-						  },
-						  {
-							"ingredient": "Ananassaft",
-							"amount": 32
-						  },
-						  {
-							"ingredient": "Mineralwasser",
-							"amount": 32
-						  }
-						],
-						"timing": 0,
-						"sleep": 0
-					  }
-					]
-				  }
-			}',	     				 -- <technologydata character varying>,
+            'YZLZgIw5jKiTk8olIvkzWLfakIDDhOJnwvULU9/aMazBo2+U5rnrsrasY2LYPlNgT9lfOlBAHp3yl3qhk3ZvbjhT+GTQ6yq8qDfbY+Y2//jm2OKWLBkPmd+UZl5IHJcT5SYfgZFTDm5ldhE5iax0uLWf4LJmNLfLKebn6hWFlDVOkYBeGsjpDwCyBmGw5tQMGgjYi4B+63FVNNsvPcm/pZyIaqlpH3bhf6KsdUjq6CkBLe2FyIxvm5Q2jyWXMZOYVhAAZBeFQxFcavrsG4WXAOiC9ZlzLlSVNlUAqcrVAqxLisGtVc3Rg9ckwpvSMzaDWsLvAKLY6rSttl2FSFzYDuEd3S3mD3TLnKfshTnyB6HBClgkM4OuVmc0kRvpiu+YNEeLI7TPF5fRP4syyWgXRZgzkN0U1aAfHcobFkluXnrG4hzPp3bmA73jp0U/kLaapLQde+476vMrPnGMzNYiDGiPAofx7IQ+34NR0z5gqdFzXnSa6HA7JNYS18nXqSOTtrbK6y9HfYsqrQe1DZfYhZOMslHMWn4DYpIF+3IG1rlTy8n0eYadGIi6g0XbgqlZqESwd3xS+teQzZUAG/l+S7FIqwt3a8+WqMPWckAz7Evr0nOYkmEFWvjdL1E6StvPbU10OMLbXQqw6fKB8pOUyUOHJaaYvpGBV73eGIBp6z2RpKYgA+7BomHo2/hwcL//6lkKWyWa4PBjzqANzzLefIvoXQFkfqYTIeZ14VK76mJfrOvgNvfPCg0HtOK+YxdWSLARHJ8BDXz5DPuyvr9ughYarsaTCRflhTUKUsjUNofXpoNWIJOe',	     				 -- <technologydata character varying>,
             'Orange, Apfel und Kirsch', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             3,
-            999990,
+            1,
             '{Delicious}', -- <taglist text[]>,            						 		 -- <createdby integer>,
             vComponents,    							 -- <componentlist integer[]>
 			vUserUUID,
@@ -5032,39 +5000,11 @@ $$
 		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Anas Big Bang',		     				 -- <technologydataname character varying>,
-            '{
-			  "recipe": {
-					"id": "Anas Big Bang",
-					"lines": [
-					  {
-						"components": [
-						  {
-							"ingredient": "Mineralwasser",
-							"amount": 64
-						  },
-						  {
-							"ingredient": "Apfelsaft",
-							"amount": 16
-						  },
-						  {
-							"ingredient": "Maracujasaft",
-							"amount": 48
-						  },
-						  {
-							"ingredient": "Ananassaft",
-							"amount": 32
-						  }
-						],
-						"timing": 0,
-						"sleep": 0
-					  }
-					]
-				  }
-			}',	     				 -- <technologydata character varying>,
+            'YZLZgIw5jKiTk8olIvkzWDss1hTIL7BGCIwuvIGv4iE2Az2QBRFkehJmp+hkDmDzDuAzP0EyKEK9jp7fLDxRTzs5ECMaMoXWe6Q9FJX/B7e9XokwBuY2rGGkbNUSjS5M+S8S5BdltDgxAqmwLl8XrEGxmpyF9qw4Ep3zDSsTYE90zow0mVjlRz/92EmsNAvga8mOyhGa/gVjn7BdkqmvP8NoYQlhYL5qM+ju4iG7uCzi4CpRAnh+DXAwgF1+Q4VAnCSe0UcCNbZ6561MjtD/9reSinonk0CO5hU3bFZNRuzETkrj+GWf+YPpuoYxmic6lGrDy73IfBHL3ktjD/oxCgxnbm0kVqP4qoKOXqTP7zNFkpxTl7t2SHR92vYjJlSINoIYZOX1KEY+4XM6wvk/N2AlLArgWLfwYHLqKmTvPDizOBA7jfD6H9cdF9lU5lNzebWuf64ETQPJWY+A5miGJHWqOIdl6TUTM+Lp49ZOe5X9p3Rpe9kRjscEQObSAXmPXIUcqkOzttY3tc3987cJ/LZ74wqL8yNgrbY2rPjVI4oE1dSMKzzG6YBlhf3/xMThEnKxR2oRPgrsVfczb3AwHfhHyF5+BziQKRxxop9gXXkGxTOFn13cmk9gvXe2vdjut7hWltD29ZWf3ClUymEu6cqBuMgtP3Xz5wobNyk2QnHkuwFmqZID05+eTg==',	     				 -- <technologydata character varying>,
             'Lassen Sie sich von der Geschmacksexplosion überraschen.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             2,
-            999991,
+            1,
             '{Delicious, Refreshing}', -- <taglist text[]>,
 	    vComponents,    		 -- <componentlist integer[]>
             vUserUUID,    						 -- <createdby integer>,
@@ -5076,41 +5016,11 @@ $$
 		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
             'Max Apfelschorle',		     				 -- <technologydataname character varying>,
-            '{
-			  "recipe": {
-					"id": "Max Apfelschorle",
-					"lines": [
-					  {
-						"components": [
-						  {
-							"ingredient": "Mineralwasser",
-							"amount": 32
-						  }
-						],
-						"timing": 0,
-						"sleep": 0
-					  },
-					  {
-						"components": [
-						  {
-							"ingredient": "Mineralwasser",
-							"amount": 64
-						  },
-						  {
-							"ingredient": "Apfelsaft",
-							"amount": 64
-						  }
-						],
-						"timing": 0,
-						"sleep": 0
-					  }
-					]
-				  }
-			}',	     				 -- <technologydata character varying>,
+            'YZLZgIw5jKiTk8olIvkzWN/zBoovqfMX6vXa5hUDS1m3lAyuXvFxhuRukHHXdeeZd57RN5y++7ccMVtC4zgPRJTQH3mcMK5KI9z4qpMdFmTbYGvDLDsIi2SuY+3Ag5NB5lAmPHJLTPVEjJrJrhQg/mNCq3IKRx87JQogSSxTOyTYiLTiOPV+oCdJApU4iiboMhuxIGKig07lzDVh++25KbGTQ0mCZFrZMXX9SXgDb+TSIpca6lTy3WIJb81A7dxwTCy3VPWW24igZqBpae1nE69VRVbnw2cXuMdepS4bFEHt6cNbrAhyL85R2ZKV/x52/ZjtpxabqJv8waOKMpPgkDEPPEYUBbklw5jLpbCsK/XhlP4mnmA/CqbB+b9T9Vy/O5ZW1zSw3pgjArsjqRrhh71kL2jFoAuJi7pbAkwqyNCpkEpkJj+6HtWDO8l0O1nflIlNBKYvRZvt6BNvGDfkgOgFX3oyfrzkoMkDtu+cbt+94gnbOzW2PDLZLh5XraK2G7slNiDCaE1v9I5i1uNGbe5DbjRvk+jK7z17jmxLkJaQcQp8+DFKkP4n9dQXgtNZWvcMI/W3MwZO2H4VM0+VxWy3DjiZlBUGvB1qxjrZ/fTZozaipKTZr3cTwzldvhMspDmQEHWyKcmYqYddVcrU2ZlI4GgfC3+LvZE0aga3FxATcoRBledzc3mt9azNcoWL',	     				 -- <technologydata character varying>,
             'Der klassische Durstlöscher, wie ihn jedes Kind kennt und liebt.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             1,  			 				 -- <licensefee numeric>,
-            999992,
+            1,
             '{Delicious, Apfelschorle}', -- <taglist text[]>,
             vComponents,
 			vUserUUID,
@@ -5121,40 +5031,12 @@ $$
 		vUserUUID := 'adb4c297-45bd-437e-ac90-9179eea41731';
 		vRoleName := '{TechnologyDataOwner}';
         perform public.settechnologydata(
-            'BaKi küsst Ananass',		     				 -- <technologydataname character varying>,
-            '{
-			  "recipe": {
-					"id": "BaKi küsst Ananass",
-					"lines": [
-					  {
-						"components": [
-						  {
-							"ingredient": "Kirschsaft",
-							"amount": 60
-						  },
-						  {
-							"ingredient": "Bananensaft",
-							"amount": 60
-						  },
-						  {
-							"ingredient": "Mineralwasser",
-							"amount": 32
-						  },
-						  {
-							"ingredient": "Ananassaft",
-							"amount": 8
-						  }
-						],
-						"timing": 0,
-						"sleep": 0
-					  }
-					]
-				  }
-			}',	     				 -- <technologydata character varying>,
+            'BaKi küsst Ananass',
+            'YZLZgIw5jKiTk8olIvkzWHbwaINV8y+ehEf+AhiT3v8FJdS1mEnlblChVqWoy3NQmcy7csqhEnLUPB/7J/l+9e39/djlW0NKgjRA8heYBSpux8lknpYDLfWiJrryUkzvjck7tWrUANwg4FpW6obzBQ0FAKTTiOwVl4Pxw+j1l7NAi59tXRt8lxZB4enCtddiSSmA9BARqK9UYnC6j8fapG7gF29xv2QUyryszr4uPUypfzXwOiKiYem7PgKkNrzokXlEf7qRJK/lXUsX5vlzHs3JYsGMu8UoTJLxMHAIjT7hFPPTcTMwIIsG/mQJjMOQJB8ig9AqKejFK0My9beEQxhF8nCv7F4FpS4lUlQpJflJXdISNHedxHsPbhd16qbjOP0QEcVytosGfSzD0B0OtUzDVUwi+cUbjJUCVQ2tlA+afJSb2RkcD1J0HKUZ4wB1aFRruxheoOJwlU0t9pXG3F3K857pclZEX3F4QPI+TJx566soxou8poBd5PqYjbW5mZaFfg+4ClgH3rY1Q27FnvPfKfhvTFF6hpJu/kgjXYR2aMu+q8QJ8NW21T3Isp6sy2pJ/dWCO5T7sN+TRSWoCYdGV0ZGUzCwxIpbky5HRE9sdfQAGZgB4+Y04gYuxRguEqU7xyaqyB8X6/Jmf7Al0iUHX1wiEnLEGJJei5N9711a3r/fFbv8eF6LHjQ8dp7H',
             'Der süße Kuss der Ananas trifft auf eine Bananen-Kirsch Kombination.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             5,
-            999993,
+            1,
             '{Delicious, Banana, Orange, Mango, Tasty}', -- <taglist text[]>,
             vComponents,    								 -- <componentlist integer[]>
 			vUserUUID,

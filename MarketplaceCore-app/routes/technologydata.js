@@ -15,6 +15,7 @@ const helper = require('../services/helper_service');
 const licenseCentral = require('../adapter/license_central_adapter');
 const dbProductCode = require('../database/function/productCode');
 
+const CONFIG = require('../config/config_loader');
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
 
@@ -54,7 +55,7 @@ router.post('/', validate({
 
         const base64Recipe = new Buffer(data['technologyData']).toString('base64');
 
-        licenseCentral.createAndEncrypt('pc' + productCode, data['technologyDataName'], productCode, base64Recipe, function(err, encryptedData){
+        licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, data['technologyDataName'], productCode, base64Recipe, function(err, encryptedData){
             if (err) {
                 return next(err);
             }
@@ -67,7 +68,6 @@ router.post('/', validate({
             techData.technologydatadescription = data['technologyDataDescription'];
             techData.technologyuuid = data['technologyUUID'];
             techData.licensefee = data['licenseFee'];
-            techData.retailprice = data['retailPrice'];
             techData.taglist = data['tagList'];
             techData.componentlist = data['componentList'];
             techData.productcode = productCode;
