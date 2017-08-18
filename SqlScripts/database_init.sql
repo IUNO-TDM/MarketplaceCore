@@ -194,7 +194,7 @@ CREATE
     TechnologyID              INTEGER NOT NULL ,
     TechnologyData            VARCHAR (32672) NOT NULL ,
     LicenseFee                INTEGER NOT NULL ,
-    LicenseProductCode        INTEGER ,
+    ProductCode               INTEGER ,
     TechnologyDataDescription VARCHAR (32672) ,
     TechnologyDataThumbnail Bytea ,
     TechnologyDataImgRef VARCHAR ,
@@ -1986,6 +1986,7 @@ $BODY$
 				join technologies tc
 				on td.technologyid = tc.technologyid
 				where td.technologydatauuid = vtechnologydatauuid
+				and td.deleted is null
 		);
 
 	ELSE
@@ -2054,6 +2055,7 @@ RETURNS TABLE
 			join technologies tc
 			on td.technologyid = tc.technologyid
 			where td.technologydataname = vTechnologyDataName
+			and td.deleted is null
 		);
 
 	ELSE
@@ -2588,6 +2590,7 @@ $BODY$
 				on co.componentid = tc.componentid
 				join technologydata td on
 				td.technologydataid = tc.technologydataid
+				where td.deleted is null
 				group by td.technologydataname
 
 			)
@@ -3799,6 +3802,7 @@ RETURNS TABLE
 			join offerrequest oq
 			on oq.technologydataid = td.technologydataid
 			and oq.offerrequestuuid = vOfferRequestUUID
+			and td.deleted is null
 		);
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
@@ -4312,67 +4316,46 @@ $$
 Input paramteres: vTechnologyDataName varchar(250)
 				  vUserUUID uuid
 ######################################################*/
-create function DeleteTechnologyData(vTechnologyDataName varchar(250), vUserUUID uuid, vRoles text[])
-RETURNS void AS
-$$
+CREATE OR REPLACE FUNCTION public.deletetechnologydata(
+    IN vtechnologydatauuid uuid,
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS boolean AS
+$BODY$
+
 	DECLARE
-		vTechnologyDataId integer := (select TechnologyDataId from technologydata where technologydataname = vTechnologyDataName);
 		vFunctionName varchar := 'DeleteTechnologyData';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
 
-		IF(vIsAllowed) THEN
-		create TEMP table vDeleteValues (technologydataid integer, offerid integer, offerrequestid integer, transactionid integer, paymentinvoiceid integer, paymentid integer, licenseorderid integer);
-		-- Get all necessary IDs
-		insert into vDeleteValues (technologydataid, offerid, offerrequestid, transactionid, paymentinvoiceid, paymentid, licenseorderid)
-		select td.technologydataid, ofr.offerid, oq.offerrequestid, transactionid, pi.paymentinvoiceid, py.paymentid, lo.licenseorderid
-		from technologydata td
-		join offerrequest oq on td.technologydataid = oq.technologydataid
-		join paymentinvoice pi on pi.offerrequestid = oq.offerrequestid
-		left outer join offer ofr on ofr.paymentinvoiceid = pi.paymentinvoiceid
-		left outer join payment py on py.paymentinvoiceid = pi.paymentinvoiceid
-		left outer join licenseorder lo on lo.offerid = ofr.offerid
-		left outer join transactions ts on ts.paymentinvoiceid = pi.paymentinvoiceid
-		where td.technologydataid = vTechnologyDataId;
+	IF(vIsAllowed) THEN
 
-		-- delete transactions
-		delete from transactions where transactionid in (select transactionid from vDeleteValues);
+	 update technologydata set deleted = true
+	 where technologydatauuid = vTechnologyDataUUID;
 
-		-- delete licenseorder
-		delete from licenseorder where licenseorderid  in (select licenseorderid from vDeleteValues);
-
-		-- delete offerid
-		delete from offer where offerid in (select offerid from vDeleteValues);
-
-		-- delete payment
-		delete from payment where paymentid in (select paymentid from vDeleteValues);
-
-		-- delete paymentinvoice
-		delete from paymentinvoice where paymentinvoiceid in (select paymentinvoiceid from vDeleteValues);
-
-		-- delete offerrequest
-		delete from offerrequest where TechnologyDataId = vTechnologyDataID;
-
-		-- delete technologydatacomponents
-		delete from technologydatacomponents where TechnologyDataId = vTechnologyDataID;
-
-		-- delete technologydatatags
-		delete from technologydatatags where TechnologyDataId = vTechnologyDataID;
-
-		-- delete technologydata
-		delete from technologydata where TechnologyDataId = vTechnologyDataID;
-
-		--Drop Temp Table
-		drop table vDeleteValues;
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
-		 RETURN;
+		 RETURN false;
 	END IF;
 
+	-- Begin Log if success
+        perform public.createlog(0,'Delete TechnologyData successfull', 'DeleteTechnologyData',
+                                'TechnologyDataID: ' || cast(vtechnologydatauuid as varchar));
+
+        -- End Log if success
+        RETURN true;
+	 -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'DeleteTechnologyData',
+                                'TechnologyDataID: ' || cast(vtechnologydatauuid as varchar));
+        -- End Log if error
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyDataComponents';
+	RETURN false;
+
 	END;
-$$
-LANGUAGE PLPGSQL;
+		$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -4454,6 +4437,7 @@ $BODY$
 	RETURN QUERY (	SELECT 	td.createdby
 				FROM TechnologyData td
 				where technologydatauuid = vtechnologydatauuid
+				and td.deleted is null
 		);
 
 	ELSE

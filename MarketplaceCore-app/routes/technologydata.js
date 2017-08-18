@@ -111,4 +111,16 @@ router.get('/:id/components', validate({query: require('../schema/technologydata
     });
 });
 
+router.delete('/:id/delete', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
+
+    new TechnologyData().Delete(req.params['id'], req.query['userUUID'], req.token.user.roles,  function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
+});
+
 module.exports = router;

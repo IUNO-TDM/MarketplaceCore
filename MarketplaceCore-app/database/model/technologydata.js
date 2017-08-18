@@ -27,7 +27,7 @@ function TechnologyData(data) {
         this.createdby = data.createdby;
         this.updatedat = data.updatedat;
         this.updatedby = data.updatedby;
-        this.componentlist = data.componentlist;
+        this.componentlist = data.componentswithattribute;
         this.taglist = data.taglist;
     }
 }
@@ -103,8 +103,21 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
 TechnologyData.prototype.Update = function () {
     throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 };
-TechnologyData.prototype.Delete = function () {
-    throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
+
+TechnologyData.prototype.Delete = function (technologydatauuid, userUUID, roles, callback) {
+    db.func('deletetechnologydata',
+        [   technologydatauuid,
+            userUUID,
+            roles
+        ])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
 };
 
 module.exports = TechnologyData;
