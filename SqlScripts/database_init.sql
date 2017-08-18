@@ -201,7 +201,8 @@ CREATE
     CreatedAt            TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
     CreatedBy            UUID NOT NULL ,
     UpdatedAt            TIMESTAMP WITHOUT TIME ZONE ,
-    UpdatedBy            UUID
+    UpdatedBy            UUID,
+    Deleted              BOOLEAN
   ) ;
 ALTER TABLE TechnologyData ADD CONSTRAINT TechnologyData_PK PRIMARY KEY (
 TechnologyDataID ) ;
