@@ -88,4 +88,17 @@ router.get('/revenue/', function (req, res, next) {
 
     });
 
+router.get('/technologydata/', function (req, res, next) {
+    dbReports.GetTechnologyDataForUser(req.query['userUUID'], req.token.user.roles, function (err, data) {
+            if (err) {
+                next(err);
+            }
+
+            else {
+                logger.debug('TechDataResponse: ' + JSON.stringify(data));
+                res.json(data);
+            }
+        });
+});
+
 module.exports = router;

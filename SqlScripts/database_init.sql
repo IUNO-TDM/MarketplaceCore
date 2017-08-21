@@ -4581,6 +4581,58 @@ $BODY$
   COST 100
   ROWS 1000;
 -- ##########################################################################
+-- GetTechnologyDataForUser
+CREATE FUNCTION public.gettechnologydataforuser(
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, revenue numeric(21,2), licensefee integer, componentlist text[], technologydatadescription character varying) AS
+$BODY$
+	DECLARE
+		vFunctionName varchar := 'GetTechnologyDataForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (	with revenue as (select td.technologydataname, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as revenue from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on oq.offerrequestid = ri.offerrequestid
+			join technologydata td
+			on ri.technologydataid = td.technologydataid
+			where td.createdby = vUserUUID
+			group by td.technologydataname, ri.amount
+		)
+		select 	td.technologydatauuid,
+			td.technologydataname,
+			coalesce(rv.revenue,0) as revenue,
+			td.licensefee,
+			array_agg(co.componentname)::text[] as componentlist,
+			td.technologydatadescription
+		from technologydata td
+		left outer join revenue rv on td.technologydataname = rv.technologydataname
+		join technologydatacomponents tc
+		on tc.technologydataid = td.technologydataid
+		join components co
+		on tc.componentid = co.componentid
+		where td.createdby = vUserUUID
+		and td.deleted is null
+		group by td.technologydatauuid, td.technologydataname, td.licensefee, rv.revenue, td.technologydatadescription
+		);
+
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE;
+-- ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
 -- CreatedAt: 2017-02-07
@@ -4739,6 +4791,7 @@ $$
 		perform SetPermission('{TechnologyDataOwner}', 'GetWorkloadSinceForUser',null,'{Admin}');
 		perform SetPermission('{TechnologyDataOwner}', 'GetRevenueForUser',null,'{Admin}');
 		perform SetPermission('{TechnologyDataOwner}', 'GetTotalRevenueForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','GetTechnologyDataForUser',null,'{Admin}');
 
 		--MarketplaceComponent
 

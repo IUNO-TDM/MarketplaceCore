@@ -79,4 +79,16 @@ self.GetTotalRevenueForUser = function(userUUID, roles, callback){
         });
 };
 
+self.GetTechnologyDataForUser = function(userUUID, roles, callback){
+    db.func('GetTechnologyDataForUser', [userUUID, roles])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
 module.exports = self;
