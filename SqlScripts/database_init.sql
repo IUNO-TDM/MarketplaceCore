@@ -1701,7 +1701,7 @@ Return Value:
  TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
 ######################################################*/
 -- Set TechnologyData
-CREATE FUNCTION public.settechnologydata(
+CREATE OR REPLACE FUNCTION public.settechnologydata(
     IN vtechnologydataname character varying,
     IN vtechnologydata character varying,
     IN vtechnologydatadescription character varying,
@@ -1722,6 +1722,7 @@ $BODY$
 				vTechnologyID integer := (select technologyID from technologies where technologyUUID = vTechnologyUUID);
 				vFunctionName varchar := 'SetTechnologyData';
 				vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+				vAlreadExists integer := (select 1 from technologydata where technologydataname = vtechnologydataname);
 
 	BEGIN
 
@@ -1752,17 +1753,43 @@ $BODY$
 		end if;
 
 		-- Create new TechnologyData
-		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, vTechnologyUUID, vCreatedBy, vRoles);
-		vTechnologyDataID := (select currval('TechnologyDataID'));
-		vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
-		-- Create relation from Components to TechnologyData
-		perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList, vRoles);
+		IF(vAlreadExists is null) THEN
+			perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, vTechnologyUUID, vCreatedBy, vRoles);
+			vTechnologyDataID := (select currval('TechnologyDataID'));
+			vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
 
-		-- Create relation from Tags to TechnologyData
-		IF (vTagList != null) THEN
-		perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList, CreatedBy, vRoles);
+			RAISE NOTICE '%', vTechnologyDataID;
+			-- Create relation from Components to TechnologyData
+			perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList, vRoles);
+
+			-- Create relation from Tags to TechnologyData
+			IF (vTagList != null) THEN
+				perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList, CreatedBy, vRoles);
+			END IF;
+		ELSE
+			UPDATE technologydata set
+				TechnologyData = vTechnologyData,
+				TechnologyDataDescription = vTechnologyDataDescription,
+				TechnologyID = vTechnologyID,
+				LicenseFee = vLicenseFee,
+				ProductCode = vProductCode,
+				updatedby = vCreatedBy,
+				updatedat = now(),
+				deleted = null
+			WHERE technologydataname = vtechnologydataname;
+
+			vTechnologyDataID := (select technologydataid from technologydata where technologydataname = vtechnologydataname);
+			vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataname = vtechnologydataname);
+
+			--update tags  (delete and create it again)
+			delete from technologydatatags where technologydataid = vTechnologyDataID;
+			IF (vTagList != null) THEN
+				perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList, CreatedBy, vRoles);
+			END IF;
+			--update components (delete and create it again)
+			delete from technologydatacomponents where technologydataid = vTechnologyDataID;
+			perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList, vRoles);
 		END IF;
-
 		-- Begin Log if success
 		perform public.createlog(0,'Set TechnologyData sucessfully', 'SetTechnologyData',
 					'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
