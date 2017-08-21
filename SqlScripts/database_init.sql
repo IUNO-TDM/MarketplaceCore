@@ -4166,34 +4166,32 @@ Input paramteres: vDate timestamp
 				  vUserUUID uuid
 ######################################################*/
 -- Get Revenue per Day
-CREATE OR REPLACE FUNCTION public.getrevenueperhoursince(
-    IN vdate timestamp without time zone,
-    IN vuseruuid uuid,
-    IN vroles text[])
-  RETURNS TABLE(date date, hour double precision, revenue numeric) AS
-$BODY$
+create function GetRevenuePerDaySince(vDate timestamp, vUserUUID uuid, vRoles text[])
+returns table (date date, revenue numeric(21,2))
+as
+$$
 	DECLARE
-		vFunctionName varchar := 'GetRevenuePerHourSince';
+		vFunctionName varchar := 'GetRevenuePerDaySince';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select activatedat::date, date_part('hour',activatedat) , (sum(td.licensefee*ri.amount)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (select activatedat::date, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.licenseorderid = lo.licenseorderid
 			join offerrequest oq
 			on oq.offerrequestid = ts.offerrequestid
-			join offerequestitems ri
+			join offerrequestitems ri
 			on ri.offerrequestid = oq.offerrequestid
 			join technologydata td
 			on ri.technologydataid = td.technologydataid
 			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			      (select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			      (select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0
-			group by activatedat::date, date_part('hour',activatedat)
-			order by activatedat::date, date_part('hour',activatedat)
+			(select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
+			(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0
+			group by activatedat::date
+			order by activatedat::date
 		);
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
@@ -4201,54 +4199,7 @@ $BODY$
 	END IF;
 
 	END;
-	$BODY$
-  LANGUAGE plpgsql VOLATILE;
-/* ##########################################################################
--- Author: Marcel Ely Gomes
--- Company: Trumpf Werkzeugmaschine GmbH & Co KG
--- CreatedAt: 2017-03-09
--- Description: Script Get Revenue for given user
--- ##########################################################################
-Input paramteres: vDate timestamp
-				  vUserUUID uuid
-######################################################*/
-CREATE FUNCTION public.getrevenueperhoursince(
-    IN vdate timestamp without time zone,
-    IN vuseruuid uuid,
-    IN vroles text[])
-  RETURNS TABLE(date date, hour double precision, revenue numeric) AS
-$BODY$
-	DECLARE
-		vFunctionName varchar := 'GetRevenuePerHourSince';
-		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
-
-	BEGIN
-
-	IF(vIsAllowed) THEN
-
-	RETURN QUERY (select activatedat::date, date_part('hour',activatedat) , (sum(td.licensefee*ri.amount)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
-			join licenseorder lo
-			on ts.licenseorderid = lo.licenseorderid
-			join offerrequest oq
-			on oq.offerrequestid = ts.offerrequestid
-			join offerequestitems ri
-			on ri.offerrequestid = oq.offerrequestid
-			join technologydata td
-			on ri.technologydataid = td.technologydataid
-			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			      (select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			      (select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0
-			group by activatedat::date, date_part('hour',activatedat)
-			order by activatedat::date, date_part('hour',activatedat)
-		);
-	ELSE
-		 RAISE EXCEPTION '%', 'Insufficiency rigths';
-		 RETURN;
-	END IF;
-
-	END;
-	$BODY$
-  LANGUAGE plpgsql VOLATILE ;
+	$$ LANGUAGE 'plpgsql';
 /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -4294,6 +4245,83 @@ $$
 
 	END;
 	$$ LANGUAGE 'plpgsql';
+/* ##########################################################################
+-- Author: Marcel Ely Gomes
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Revenue for given user
+-- ##########################################################################
+Input paramteres: vDate timestamp
+				  vUserUUID uuid
+######################################################*/
+-- Get Revenue for given user
+CREATE FUNCTION public.getrevenueforuser(
+    IN vdate timestamp without time zone,
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(date date, technologydataname character varying, revenue numeric) AS
+$BODY$
+	DECLARE
+		vFunctionName varchar := 'GetRevenueForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (with basis as (select activatedat::date, td.technologydataname, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as revenue from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on oq.offerrequestid = ri.offerrequestid
+			join technologydata td
+			on ri.technologydataid = td.technologydataid
+			where
+			td.createdby = vUserUUID
+			group by activatedat::date, td.technologydataname, ri.amount
+			order by activatedat::date
+			),
+			techName as (select distinct a.technologydataname
+					from basis a),
+			dates as (select distinct a.activatedat
+					from basis a),
+			allData as (select tn.technologydataname, dt.activatedat
+					from techname tn, dates dt
+			), benchmark as
+			(select activatedat::date, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as revenue from transactions ts
+				join licenseorder lo
+				on ts.licenseorderid = lo.licenseorderid
+				join offerrequest oq
+				on oq.offerrequestid = ts.offerrequestid
+				join offerrequestitems ri
+				on oq.offerrequestid = ri.offerrequestid
+				join technologydata td
+				on ri.technologydataid = td.technologydataid
+				group by activatedat::date
+				order by activatedat::date
+			), result as (
+			select ad.activatedat, ad.technologydataname, case when (ba.revenue is null) then 0::numeric(21,2) else ba.revenue end as revenue
+				from allData ad
+				left outer join basis ba
+				on ad.activatedat = ba.activatedat
+				and ad.technologydataname = ba.technologydataname
+			union all
+			select bm.activatedat, 'Benchmark' as technologydataname, avg(bm.revenue) from benchmark bm
+			group by bm.activatedat)
+			select r.activatedat, r.technologydataname, r.revenue from result r
+			order by r.activatedat, r.technologydataname );
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+	$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -4557,6 +4585,7 @@ $$
 		perform SetPermission('{Public}', 'GetMostUsedComponents',null,'{Admin}');
 		perform SetPermission('{Public}', 'GetRevenuePerDaySince',null,'{Admin}');
 		perform SetPermission('{Public}', 'GetWorkLoadSince',null,'{Admin}');
+        perform SetPermission('{Public}', 'GetRevenuePerHourSince',null,'{Admin}');
 
         --MarketplaceCore
 		perform SetPermission('{MarketplaceCore}', 'GetTransactionById',null,'{Admin}');
