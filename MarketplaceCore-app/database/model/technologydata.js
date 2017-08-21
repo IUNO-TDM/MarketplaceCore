@@ -86,7 +86,8 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             this.technologydata,
             this.technologydatadescription,
             this.technologyuuid,
-            this.licensefee,
+            //Convert licensefee from IUNO to Satoschi
+            this.licensefee * 100000,
             this.productcode,
             this.taglist ? this.taglist : [''],
             this.componentlist,
