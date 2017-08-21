@@ -41,7 +41,7 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
     }
     catch (err) {
         logger.warn('[license_central_adapter] Error loading client certificates');
-        logger.crit(err);
+        logger.info(err);
     }
 
     return options;
@@ -208,5 +208,10 @@ self.createAndEncrypt = function (itemId, itemName, productCode, data, callback)
         })
     })
 };
+
+
+// self.createItem('pc43','43',43, function(err, data) {
+//     logger.log(err, data);
+// });
 
 module.exports = self;

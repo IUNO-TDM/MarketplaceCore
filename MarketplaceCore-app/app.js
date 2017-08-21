@@ -24,6 +24,7 @@ app.use('/offers', require('./routes/offers'));
 app.use('/offers', require('./routes/offers'));
 app.use('/reports', require('./routes/reports'));
 app.use('/myreports', require('./routes/myreports'));
+app.use('/cmdongle', require('./routes/cmdongle'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
