@@ -3710,8 +3710,10 @@ $$
 			from transactions ts
 			join offerrequest oq
 			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on oq.offerrequestid = ri.offerrequestid
 			join technologydata td
-			on oq.technologydataid = td.technologydataid
+			on ri.technologydataid = td.technologydataid
 			where ts.transactionuuid = vTransactionUUID
 		);
 	ELSE
@@ -4530,7 +4532,8 @@ create function getofferrequestbyid(vOfferRequestUUID uuid, vUserUUID uuid, vRol
 			select	 array_to_json(array_agg(row_to_json(d)))
 			from (select   td.TechnologyDataUUID::uuid,   oi.Amount, td.ProductCode
 				from offerrequest ofr
-				join offerrequestitems oi on oi.offerrequestid = ofr.offerrequestid
+				join offerrequestitems oi
+				on oi.offerrequestid = ofr.offerrequestid
 				join technologydata td
 				on oi.technologydataid = td.technologydataid
 				where offerrequestuuid = vOfferRequestUUID
