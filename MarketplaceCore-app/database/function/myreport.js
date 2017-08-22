@@ -91,4 +91,16 @@ self.GetTechnologyDataForUser = function(userUUID, roles, callback){
         });
 };
 
+self.GetRevenuePerDayForUser = function(userUUID, roles, callback){
+    db.func('GetRevenuePerDayForUser', [userUUID, roles])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
 module.exports = self;

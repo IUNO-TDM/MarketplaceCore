@@ -3168,6 +3168,7 @@ $BODY$
 			where (select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+			AND td.deleted is null
 			group by td.technologydataname
 			order by count(ts.offerid) desc limit vTopValue
 		);
@@ -3191,11 +3192,11 @@ Input paramteres: vSinceDate  timestamp
 				  vTopValue integer
 Return Value: TechnologyDataName, Rank value
 ######################################################*/
-CREATE FUNCTION public.GetTopTechnologyDataSinceForUser(
+CREATE OR REPLACE FUNCTION public.gettoptechnologydatasinceforuser(
     IN vsincedate timestamp without time zone,
     IN vtopvalue integer,
-	IN vUserUUID uuid,
-    IN vRoles text[])
+    IN vuseruuid uuid,
+    IN vroles text[])
   RETURNS TABLE(technologydataname character varying, rank integer, revenue numeric) AS
 $BODY$
 
@@ -3218,8 +3219,8 @@ $BODY$
 			on ri.technologydataid = td.technologydataid
 			where (select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
-			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
-			td.createdby = vUserUUID
+			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+			AND td.deleted is null
 			group by td.technologydataname
 			order by count(ts.offerid) desc limit vTopValue
 		);
@@ -3232,7 +3233,7 @@ $BODY$
 	END;
 
 	$BODY$
-	  LANGUAGE 'plpgsql';
+  LANGUAGE plpgsql VOLATILE;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -3278,6 +3279,7 @@ $$
 				tc.technologydataid = td.technologydataid
 				join components co on
 				co.componentid = tc.componentid
+				where td.deleted is null
 			),
 		rankTable as (
 		select componentname, count(componentname) as rank from activatedLincenses where
@@ -3397,6 +3399,7 @@ $BODY$
 				ri.technologydataid = td.technologydataid
 				join technologydatacomponents tc on
 				tc.technologydataid = td.technologydataid
+				where td.deleted is null
 				),
 			rankTable as (
 			select technologydataname, activatedat,
@@ -3457,6 +3460,7 @@ $BODY$
 				join technologydatacomponents tc on
 				tc.technologydataid = td.technologydataid
 				where td.createdby = vUserUUID
+				and td.deleted is null
 				),
 			rankTable as (
 			select technologydataname, activatedat,
@@ -4219,6 +4223,7 @@ $$
 			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0
+			AND td.deleted is null
 			group by activatedat::date
 			order by activatedat::date
 		);
@@ -4264,6 +4269,7 @@ $$
 			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
 			      (select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
 			      (select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0
+			AND td.deleted is null
 			group by activatedat::date, date_part('hour',activatedat)
 			order by activatedat::date, date_part('hour',activatedat)
 		);
@@ -4307,8 +4313,6 @@ $BODY$
 			on oq.offerrequestid = ri.offerrequestid
 			join technologydata td
 			on ri.technologydataid = td.technologydataid
-			where
-			td.createdby = vUserUUID
 			group by activatedat::date, td.technologydataname, ri.amount
 			order by activatedat::date
 			),
@@ -4318,6 +4322,7 @@ $BODY$
 					from basis a),
 			allData as (select tn.technologydataname, dt.activatedat
 					from techname tn, dates dt
+
 			), benchmark as
 			(select activatedat::date, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as revenue from transactions ts
 				join licenseorder lo
@@ -4330,14 +4335,25 @@ $BODY$
 				on ri.technologydataid = td.technologydataid
 				group by activatedat::date
 				order by activatedat::date
-			), result as (
+			), totalBench as (
 			select ad.activatedat, ad.technologydataname, case when (ba.revenue is null) then 0::numeric(21,2) else ba.revenue end as revenue
 				from allData ad
 				left outer join basis ba
 				on ad.activatedat = ba.activatedat
 				and ad.technologydataname = ba.technologydataname
+			),
+			result as (
+			select ad.activatedat, ad.technologydataname, case when (ba.revenue is null) then 0::numeric(21,2) else ba.revenue end as revenue
+				from allData ad
+				join technologydata td
+				on ad.technologydataname = td.technologydataname
+				left outer join basis ba
+				on ad.activatedat = ba.activatedat
+				and ad.technologydataname = ba.technologydataname
+				where td.createdby = vuseruuid
+				and td.deleted is null
 			union all
-			select bm.activatedat, 'Benchmark' as technologydataname, avg(bm.revenue) from benchmark bm
+			select bm.activatedat, 'Benchmark' as technologydataname, avg(bm.revenue) as revenue from totalBench bm
 			group by bm.activatedat)
 			select r.activatedat, r.technologydataname, r.revenue from result r
 			order by r.activatedat, r.technologydataname );
@@ -4348,9 +4364,7 @@ $BODY$
 
 	END;
 	$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100
-  ROWS 1000;
+  LANGUAGE plpgsql VOLATILE;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -4572,6 +4586,7 @@ $BODY$
 			join technologydata td
 			on ri.technologydataid = td.technologydataid
 			where td.createdby = vUserUUID
+			and td.deleted is null
 		);
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
@@ -4588,7 +4603,7 @@ $BODY$
 CREATE FUNCTION public.gettechnologydataforuser(
     IN vuseruuid uuid,
     IN vroles text[])
-  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, revenue numeric(21,2), licensefee integer, componentlist text[], technologydatadescription character varying) AS
+  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, revenue numeric, licensefee integer, componentlist text[], technologydatadescription character varying) AS
 $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetTechnologyDataForUser';
@@ -4609,7 +4624,7 @@ $BODY$
 			on ri.technologydataid = td.technologydataid
 			where td.createdby = vUserUUID
 			group by td.technologydataname, ri.amount
-		)
+		), result as (
 		select 	td.technologydatauuid,
 			td.technologydataname,
 			coalesce(rv.revenue,0) as revenue,
@@ -4624,8 +4639,21 @@ $BODY$
 		on tc.componentid = co.componentid
 		where td.createdby = vUserUUID
 		and td.deleted is null
-		group by td.technologydatauuid, td.technologydataname, td.licensefee, rv.revenue, td.technologydatadescription
+		group by td.technologydatauuid, td.technologydataname, td.licensefee, rv.revenue, td.technologydatadescription )
+		select 	r.technologydatauuid,
+			r.technologydataname,
+			sum(r.revenue) as revenue,
+			r.licensefee,
+			r.componentlist,
+			r.technologydatadescription
+		from result r
+		group by r.technologydatauuid,
+			r.technologydataname,
+			r.licensefee,
+			r.componentlist,
+			r.technologydatadescription
 		);
+
 
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
@@ -4634,6 +4662,43 @@ $BODY$
 
 	END;
 $BODY$
+  LANGUAGE plpgsql VOLATILE;
+-- ##########################################################################
+CREATE FUNCTION public.getrevenueperdayforuser(
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(date date, revenue numeric) AS
+$BODY$
+	DECLARE
+		vFunctionName varchar := 'GetRevenuePerForUSer';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (select activatedat::date, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on ri.offerrequestid = oq.offerrequestid
+			join technologydata td
+			on ri.technologydataid = td.technologydataid
+			where  activatedat::date = now()::date
+			and td.createdby = vUserUUID
+			and td.deleted is null
+			group by activatedat::date
+			order by activatedat::date
+		);
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+	$BODY$
   LANGUAGE plpgsql VOLATILE;
 -- ##########################################################################
 -- Author: Marcel Ely Gomes
@@ -4795,6 +4860,7 @@ $$
 		perform SetPermission('{TechnologyDataOwner}', 'GetRevenueForUser',null,'{Admin}');
 		perform SetPermission('{TechnologyDataOwner}', 'GetTotalRevenueForUser',null,'{Admin}');
 		perform SetPermission('{TechnologyDataOwner}','GetTechnologyDataForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetRevenuePerForUSer',null,'{Admin}');
 
 		--MarketplaceComponent
 
@@ -5064,8 +5130,8 @@ $$
             'YZLZgIw5jKiTk8olIvkzWLfakIDDhOJnwvULU9/aMazBo2+U5rnrsrasY2LYPlNgT9lfOlBAHp3yl3qhk3ZvbjhT+GTQ6yq8qDfbY+Y2//jm2OKWLBkPmd+UZl5IHJcT5SYfgZFTDm5ldhE5iax0uLWf4LJmNLfLKebn6hWFlDVOkYBeGsjpDwCyBmGw5tQMGgjYi4B+63FVNNsvPcm/pZyIaqlpH3bhf6KsdUjq6CkBLe2FyIxvm5Q2jyWXMZOYVhAAZBeFQxFcavrsG4WXAOiC9ZlzLlSVNlUAqcrVAqxLisGtVc3Rg9ckwpvSMzaDWsLvAKLY6rSttl2FSFzYDuEd3S3mD3TLnKfshTnyB6HBClgkM4OuVmc0kRvpiu+YNEeLI7TPF5fRP4syyWgXRZgzkN0U1aAfHcobFkluXnrG4hzPp3bmA73jp0U/kLaapLQde+476vMrPnGMzNYiDGiPAofx7IQ+34NR0z5gqdFzXnSa6HA7JNYS18nXqSOTtrbK6y9HfYsqrQe1DZfYhZOMslHMWn4DYpIF+3IG1rlTy8n0eYadGIi6g0XbgqlZqESwd3xS+teQzZUAG/l+S7FIqwt3a8+WqMPWckAz7Evr0nOYkmEFWvjdL1E6StvPbU10OMLbXQqw6fKB8pOUyUOHJaaYvpGBV73eGIBp6z2RpKYgA+7BomHo2/hwcL//6lkKWyWa4PBjzqANzzLefIvoXQFkfqYTIeZ14VK76mJfrOvgNvfPCg0HtOK+YxdWSLARHJ8BDXz5DPuyvr9ughYarsaTCRflhTUKUsjUNofXpoNWIJOe',	     				 -- <technologydata character varying>,
             'Orange, Apfel und Kirsch', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
-            3,
-            1,
+            300000,
+            100000,
             '{Delicious}', -- <taglist text[]>,            						 		 -- <createdby integer>,
             vComponents,    							 -- <componentlist integer[]>
 			vUserUUID,
@@ -5080,8 +5146,8 @@ $$
             'YZLZgIw5jKiTk8olIvkzWDss1hTIL7BGCIwuvIGv4iE2Az2QBRFkehJmp+hkDmDzDuAzP0EyKEK9jp7fLDxRTzs5ECMaMoXWe6Q9FJX/B7e9XokwBuY2rGGkbNUSjS5M+S8S5BdltDgxAqmwLl8XrEGxmpyF9qw4Ep3zDSsTYE90zow0mVjlRz/92EmsNAvga8mOyhGa/gVjn7BdkqmvP8NoYQlhYL5qM+ju4iG7uCzi4CpRAnh+DXAwgF1+Q4VAnCSe0UcCNbZ6561MjtD/9reSinonk0CO5hU3bFZNRuzETkrj+GWf+YPpuoYxmic6lGrDy73IfBHL3ktjD/oxCgxnbm0kVqP4qoKOXqTP7zNFkpxTl7t2SHR92vYjJlSINoIYZOX1KEY+4XM6wvk/N2AlLArgWLfwYHLqKmTvPDizOBA7jfD6H9cdF9lU5lNzebWuf64ETQPJWY+A5miGJHWqOIdl6TUTM+Lp49ZOe5X9p3Rpe9kRjscEQObSAXmPXIUcqkOzttY3tc3987cJ/LZ74wqL8yNgrbY2rPjVI4oE1dSMKzzG6YBlhf3/xMThEnKxR2oRPgrsVfczb3AwHfhHyF5+BziQKRxxop9gXXkGxTOFn13cmk9gvXe2vdjut7hWltD29ZWf3ClUymEu6cqBuMgtP3Xz5wobNyk2QnHkuwFmqZID05+eTg==',	     				 -- <technologydata character varying>,
             'Lassen Sie sich von der Geschmacksexplosion überraschen.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
-            2,
-            1,
+            200000,
+            100000,
             '{Delicious, Refreshing}', -- <taglist text[]>,
 	    vComponents,    		 -- <componentlist integer[]>
             vUserUUID,    						 -- <createdby integer>,
@@ -5096,8 +5162,8 @@ $$
             'YZLZgIw5jKiTk8olIvkzWN/zBoovqfMX6vXa5hUDS1m3lAyuXvFxhuRukHHXdeeZd57RN5y++7ccMVtC4zgPRJTQH3mcMK5KI9z4qpMdFmTbYGvDLDsIi2SuY+3Ag5NB5lAmPHJLTPVEjJrJrhQg/mNCq3IKRx87JQogSSxTOyTYiLTiOPV+oCdJApU4iiboMhuxIGKig07lzDVh++25KbGTQ0mCZFrZMXX9SXgDb+TSIpca6lTy3WIJb81A7dxwTCy3VPWW24igZqBpae1nE69VRVbnw2cXuMdepS4bFEHt6cNbrAhyL85R2ZKV/x52/ZjtpxabqJv8waOKMpPgkDEPPEYUBbklw5jLpbCsK/XhlP4mnmA/CqbB+b9T9Vy/O5ZW1zSw3pgjArsjqRrhh71kL2jFoAuJi7pbAkwqyNCpkEpkJj+6HtWDO8l0O1nflIlNBKYvRZvt6BNvGDfkgOgFX3oyfrzkoMkDtu+cbt+94gnbOzW2PDLZLh5XraK2G7slNiDCaE1v9I5i1uNGbe5DbjRvk+jK7z17jmxLkJaQcQp8+DFKkP4n9dQXgtNZWvcMI/W3MwZO2H4VM0+VxWy3DjiZlBUGvB1qxjrZ/fTZozaipKTZr3cTwzldvhMspDmQEHWyKcmYqYddVcrU2ZlI4GgfC3+LvZE0aga3FxATcoRBledzc3mt9azNcoWL',	     				 -- <technologydata character varying>,
             'Der klassische Durstlöscher, wie ihn jedes Kind kennt und liebt.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
-            1,  			 				 -- <licensefee numeric>,
-            1,
+            100000,  			 				 -- <licensefee numeric>,
+            100000,
             '{Delicious, Apfelschorle}', -- <taglist text[]>,
             vComponents,
 			vUserUUID,
@@ -5112,8 +5178,8 @@ $$
             'YZLZgIw5jKiTk8olIvkzWHbwaINV8y+ehEf+AhiT3v8FJdS1mEnlblChVqWoy3NQmcy7csqhEnLUPB/7J/l+9e39/djlW0NKgjRA8heYBSpux8lknpYDLfWiJrryUkzvjck7tWrUANwg4FpW6obzBQ0FAKTTiOwVl4Pxw+j1l7NAi59tXRt8lxZB4enCtddiSSmA9BARqK9UYnC6j8fapG7gF29xv2QUyryszr4uPUypfzXwOiKiYem7PgKkNrzokXlEf7qRJK/lXUsX5vlzHs3JYsGMu8UoTJLxMHAIjT7hFPPTcTMwIIsG/mQJjMOQJB8ig9AqKejFK0My9beEQxhF8nCv7F4FpS4lUlQpJflJXdISNHedxHsPbhd16qbjOP0QEcVytosGfSzD0B0OtUzDVUwi+cUbjJUCVQ2tlA+afJSb2RkcD1J0HKUZ4wB1aFRruxheoOJwlU0t9pXG3F3K857pclZEX3F4QPI+TJx566soxou8poBd5PqYjbW5mZaFfg+4ClgH3rY1Q27FnvPfKfhvTFF6hpJu/kgjXYR2aMu+q8QJ8NW21T3Isp6sy2pJ/dWCO5T7sN+TRSWoCYdGV0ZGUzCwxIpbky5HRE9sdfQAGZgB4+Y04gYuxRguEqU7xyaqyB8X6/Jmf7Al0iUHX1wiEnLEGJJei5N9711a3r/fFbv8eF6LHjQ8dp7H',
             'Der süße Kuss der Ananas trifft auf eine Bananen-Kirsch Kombination.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
-            5,
-            1,
+            500000,
+            100000,
             '{Delicious, Banana, Orange, Mango, Tasty}', -- <taglist text[]>,
             vComponents,    								 -- <componentlist integer[]>
 			vUserUUID,

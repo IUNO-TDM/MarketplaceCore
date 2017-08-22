@@ -86,6 +86,20 @@ router.get('/revenue/', function (req, res, next) {
             });
         }
 
+        else
+        if (req.query['time'] == 'today') {
+            dbReports.GetRevenuePerDayForUser(req.query['userUUID'], req.token.user.roles, function (err, data) {
+                if (err) {
+                    next(err);
+                }
+
+                else {
+                    logger.debug('TechDataResponse: ' + JSON.stringify(data));
+                    res.json(data);
+                }
+            });
+        }
+
     });
 
 router.get('/technologydata/', function (req, res, next) {
