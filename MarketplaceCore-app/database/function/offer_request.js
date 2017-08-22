@@ -8,9 +8,9 @@ var self = {};
 
 
 self.CreateOfferRequest = function (userUUID, roles, requestData, callback) {
-    logger.debug('User UUID: ' +  userUUID);
+    logger.debug('User UUID: ' + userUUID);
     db.func('CreateOfferRequest',
-        [   requestData,
+        [requestData,
             requestData.hsmId,
             userUUID,
             userUUID, //TODO: what is the buyer uuid?
@@ -23,7 +23,32 @@ self.CreateOfferRequest = function (userUUID, roles, requestData, callback) {
                 data = data[0];
             }
             else {
-                data=null;
+                data = null;
+            }
+
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
+self.GetOfferRequestById = function (offerUUID, user, callback) {
+    db.func('GetOfferRequestById',
+        [
+            offerUUID,
+            user.uuid,
+            user.roles
+        ])
+        .then(function (data) {
+            logger.debug(data);
+
+            if (data && data.length && data[0]['result']) {
+                data = data[0]['result'];
+            }
+            else {
+                data = null;
             }
 
             callback(null, data);

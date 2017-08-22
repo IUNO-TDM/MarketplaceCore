@@ -2,7 +2,7 @@
  * Created by beuttlerma on 31.05.17.
  */
 const logger = require('../../global/logger');
-const db = require('../db_connection')
+const db = require('../db_connection');
 
 let self = {};
 

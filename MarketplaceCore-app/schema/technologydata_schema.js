@@ -82,15 +82,11 @@ self.SaveDataBody = {
         },
         technologyUUID: {
             type: 'string',
-            required: false
+            required: true
         },
         licenseFee: {
-            type: 'number',
-            required: false
-        },
-        retailPrice: {
-            type: 'number',
-            required: false
+            type: 'integer',
+            required: true
         },
         tagList: {
             type: 'array',
@@ -99,8 +95,7 @@ self.SaveDataBody = {
                     type: 'string',
                     required: true
                 }
-            },
-            required: true
+            }
         },
         componentList: {
             type: 'array',

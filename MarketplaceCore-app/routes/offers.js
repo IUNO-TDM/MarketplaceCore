@@ -81,7 +81,7 @@ router.post('/', validate({
                     if (err) {
                         next(err);
                     } else {
-                        invoiceService.generateInvoice(userUUID, offerRequest, transaction[0], roles, function (err, invoiceData) {
+                        invoiceService.generateInvoice(userUUID, offerRequest, transaction, roles, function (err, invoiceData) {
                             if (err) {
                                 next(err);
                             } else {

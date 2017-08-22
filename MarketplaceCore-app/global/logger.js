@@ -108,11 +108,11 @@ logger.logRequestAndResponse = function (err, options, res, data) {
     if (err) {
         loggerOutput.err = err;
         logger.crit(loggerOutput);
-        return new Error(loggerOutput);
+        return new Error(err);
     }
     else if (res && res.statusCode > 201) {
         logger.warn(loggerOutput);
-        return new Error(loggerOutput);
+        return new Error(res.statusMessage);
     }
     else {
         logger.debug(loggerOutput);
