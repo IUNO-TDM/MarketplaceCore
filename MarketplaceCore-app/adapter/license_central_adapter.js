@@ -41,7 +41,7 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
     }
     catch (err) {
         logger.warn('[license_central_adapter] Error loading client certificates');
-        logger.crit(err);
+        logger.info(err);
     }
 
     return options;
@@ -151,7 +151,7 @@ self.createAndActivateLicense = function (cmSerial, customerId, itemId, quantity
     });
 };
 
-self.doLicenseUpdate = function (cmSerial, context, callback) {
+self.doLicenseUpdate = function (hsmId, context, callback) {
     if (typeof(callback) !== 'function') {
         callback = function () {
             logger.info('[license_central_adapter] Callback not registered');
@@ -168,7 +168,7 @@ self.doLicenseUpdate = function (cmSerial, context, callback) {
     );
 
     options.body = {
-        cmserial: cmSerial,
+        cmserial: hsmId,
         context: context,
         firmcode: CONFIG.LICENSE_CENTRAL.FIRM_CODE,
         cmactid: CONFIG.LICENSE_CENTRAL.CMACTID,
