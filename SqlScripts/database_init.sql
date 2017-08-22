@@ -4600,7 +4600,7 @@ $BODY$
   ROWS 1000;
 -- ##########################################################################
 -- GetTechnologyDataForUser
-CREATE FUNCTION public.gettechnologydataforuser(
+CREATE OR REPLACE FUNCTION public.gettechnologydataforuser(
     IN vuseruuid uuid,
     IN vroles text[])
   RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, revenue numeric, licensefee integer, componentlist text[], technologydatadescription character varying) AS
@@ -4623,7 +4623,7 @@ $BODY$
 			join technologydata td
 			on ri.technologydataid = td.technologydataid
 			where td.createdby = vUserUUID
-			group by td.technologydataname, ri.amount
+			group by td.technologydataname
 		), result as (
 		select 	td.technologydatauuid,
 			td.technologydataname,
@@ -4639,8 +4639,8 @@ $BODY$
 		on tc.componentid = co.componentid
 		where td.createdby = vUserUUID
 		and td.deleted is null
-		group by td.technologydatauuid, td.technologydataname, td.licensefee, rv.revenue, td.technologydatadescription )
-		select 	r.technologydatauuid,
+		group by td.technologydatauuid, td.technologydataname, td.licensefee, rv.revenue, td.technologydatadescription)
+		select  r.technologydatauuid,
 			r.technologydataname,
 			sum(r.revenue) as revenue,
 			r.licensefee,
@@ -4653,7 +4653,6 @@ $BODY$
 			r.componentlist,
 			r.technologydatadescription
 		);
-
 
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
