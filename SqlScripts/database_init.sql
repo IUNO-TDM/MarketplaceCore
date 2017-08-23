@@ -5130,7 +5130,7 @@ $$
             'Orange, Apfel und Kirsch', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             300000,
-            100000,
+            1,
             '{Delicious}', -- <taglist text[]>,            						 		 -- <createdby integer>,
             vComponents,    							 -- <componentlist integer[]>
 			vUserUUID,
@@ -5146,7 +5146,7 @@ $$
             'Lassen Sie sich von der Geschmacksexplosion überraschen.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             200000,
-            100000,
+            1,
             '{Delicious, Refreshing}', -- <taglist text[]>,
 	    vComponents,    		 -- <componentlist integer[]>
             vUserUUID,    						 -- <createdby integer>,
@@ -5162,7 +5162,7 @@ $$
             'Der klassische Durstlöscher, wie ihn jedes Kind kennt und liebt.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             100000,  			 				 -- <licensefee numeric>,
-            100000,
+            1,
             '{Delicious, Apfelschorle}', -- <taglist text[]>,
             vComponents,
 			vUserUUID,
@@ -5178,7 +5178,7 @@ $$
             'Der süße Kuss der Ananas trifft auf eine Bananen-Kirsch Kombination.', 				 -- <technologydatadescription character varying>,
             vTechnologyUUID,    								 -- <vtechnologyid integer>,
             500000,
-            100000,
+            1,
             '{Delicious, Banana, Orange, Mango, Tasty}', -- <taglist text[]>,
             vComponents,    								 -- <componentlist integer[]>
 			vUserUUID,
