@@ -19,6 +19,18 @@ self.GetActivatedLicensesSinceForUser = function (userUUID, roles, sinceDate, ca
         });
 };
 
+self.GetTopTechnologyDataForUser= function(userUUID, roles, topValue, callback){
+    db.func('GetTopTechnologyDataForUser', [topValue, userUUID, roles])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
 self.GetTopTechnologyDataSinceForUser= function(userUUID, roles, sinceDate, topValue, callback){
     db.func('GetTopTechnologyDataSinceForUser', [sinceDate, topValue, userUUID, roles])
         .then(function (data) {

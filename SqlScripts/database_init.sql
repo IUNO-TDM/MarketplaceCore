@@ -4700,6 +4700,51 @@ $BODY$
 	$BODY$
   LANGUAGE plpgsql VOLATILE;
 -- ##########################################################################
+CREATE FUNCTION public.GetTopTechnologyDataForUser(
+    IN vtopvalue integer,
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(technologydataname character varying, rank integer, revenue numeric) AS
+$BODY$
+
+	DECLARE
+		vFunctionName varchar := 'GetTopTechnologyDataForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (	with result as (
+				select 	td.technologydataname,
+					count(ts.offerid)::integer as rank,
+					(sum(td.licensefee*ri.amount))/100000::numeric(21,4) as revenue from transactions ts
+				join licenseorder lo
+				on ts.offerid = lo.offerid
+				join offerrequest oq
+				on oq.offerrequestid = ts.offerrequestid
+				join offerrequestitems ri on
+				oq.offerrequestid = ri.offerrequestid
+				join technologydata td
+				on ri.technologydataid = td.technologydataid
+				--where td.createdby = vuseruuid
+				AND td.deleted is null
+				group by td.technologydataname
+			)
+				select r.technologydataname, r.rank, r.revenue
+				from result r
+				order by r.rank desc, r.revenue desc limit vTopValue
+		);
+
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+	$BODY$
+  LANGUAGE plpgsql;
+-- ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
 -- CreatedAt: 2017-02-07
@@ -4860,6 +4905,7 @@ $$
 		perform SetPermission('{TechnologyDataOwner}', 'GetTotalRevenueForUser',null,'{Admin}');
 		perform SetPermission('{TechnologyDataOwner}','GetTechnologyDataForUser',null,'{Admin}');
 		perform SetPermission('{TechnologyDataOwner}', 'GetRevenuePerForUSer',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTopTechnologyDataForUser',null,'{Admin}');
 
 		--MarketplaceComponent
 
