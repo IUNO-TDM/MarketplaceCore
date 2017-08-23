@@ -27,10 +27,6 @@ self.generateInvoice = function (userUUID, request,transaction, roles, callback)
         for(var fee in item){
             totalAmount += item[fee];
         }
-        // our virtual currency IUNO represents 1 milli bitcoin
-        // totalAmount *= 100000;
-        // 2017.08.21 - The conversion is no longer needed since this is already done at input time.
-
 
         var invoice = {
             totalAmount: totalAmount ,
