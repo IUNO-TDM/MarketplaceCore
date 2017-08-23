@@ -4727,7 +4727,7 @@ $BODY$
 				oq.offerrequestid = ri.offerrequestid
 				join technologydata td
 				on ri.technologydataid = td.technologydataid
-				--where td.createdby = vuseruuid
+				where td.createdby = vuseruuid
 				AND td.deleted is null
 				group by td.technologydataname
 			)
