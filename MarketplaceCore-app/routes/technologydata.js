@@ -53,15 +53,12 @@ router.post('/', validate({
             return next(err);
         }
 
-        const base64Recipe = new Buffer(data['technologyData']).toString('base64');
-
-        licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, data['technologyDataName'], productCode, base64Recipe, function(err, encryptedData){
+        licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, data['technologyDataName'], productCode, data['technologyData'], function(err, encryptedData){
             if (err) {
                 return next(err);
             }
 
             const techData = new TechnologyData();
-
 
             techData.technologydataname = data['technologyDataName'];
             techData.technologydata = encryptedData;

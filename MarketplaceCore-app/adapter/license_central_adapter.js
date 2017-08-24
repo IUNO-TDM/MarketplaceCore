@@ -117,7 +117,7 @@ self.encryptData = function (productCode, data, callback) {
     });
 };
 
-self.createAndActivateLicense = function (cmSerial, customerId, itemId, quantity, callback) {
+self.createAndActivateLicense = function (hsmId, customerId, itemId, quantity, callback) {
     if (typeof(callback) !== 'function') {
         callback = function () {
             logger.info('[license_central_adapter] Callback not registered');
@@ -134,7 +134,7 @@ self.createAndActivateLicense = function (cmSerial, customerId, itemId, quantity
     );
 
     options.body = {
-        cmserial: cmSerial,
+        cmserial: hsmId,
         // customerid: customerId,
         itemid: itemId,
         quantity: quantity
@@ -187,6 +187,12 @@ self.doLicenseUpdate = function (hsmId, context, callback) {
 };
 
 self.createAndEncrypt = function (itemId, itemName, productCode, data, callback) {
+    if (typeof(callback) !== 'function') {
+        callback = function () {
+            logger.info('[license_central_adapter] Callback not registered');
+        }
+    }
+
     self.createItem(itemId, itemName, productCode, function (err, success) {
 
         if (err) {

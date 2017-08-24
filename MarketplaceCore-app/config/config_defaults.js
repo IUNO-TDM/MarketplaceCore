@@ -76,5 +76,4 @@ self.USER = {
 
 self.PRODUCT_CODE_PREFIX = 'pc';
 
-
 module.exports = self;
