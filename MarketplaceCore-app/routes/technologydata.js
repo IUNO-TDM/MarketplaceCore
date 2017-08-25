@@ -36,7 +36,6 @@ router.get('/:id', validate({query: require('../schema/technologydata_schema').G
             next(err);
         }
         else {
-            logger.debug('TechDataResponse: ' + JSON.stringify(data));
             res.json(data);
         }
     });

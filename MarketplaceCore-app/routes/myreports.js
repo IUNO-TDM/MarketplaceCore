@@ -17,7 +17,6 @@ router.get('/', function (req, res, next) {
                 next(err);
             }
             else {
-                logger.debug('TechDataResponse: ' + JSON.stringify(data));
                 res.json(data);
             }
         });
@@ -52,7 +51,6 @@ router.get('/workload/', function (req, res, next) {
             next(err);
         }
         else {
-            logger.debug('TechDataResponse: ' + JSON.stringify(data));
             res.json(data);
         }
     });
@@ -80,7 +78,6 @@ router.get('/revenue/', function (req, res, next) {
                 }
 
                 else {
-                    logger.debug('TechDataResponse: ' + JSON.stringify(data));
                     res.json(data);
                 }
             });
@@ -94,7 +91,7 @@ router.get('/revenue/', function (req, res, next) {
                 }
 
                 else {
-                    logger.debug('TechDataResponse: ' + JSON.stringify(data));
+                    //logger.debug('TechDataResponse: ' + JSON.stringify(data));
                     res.json(data);
                 }
             });
@@ -110,7 +107,7 @@ router.get('/technologydata/', function (req, res, next) {
             }
 
             else {
-                logger.debug('TechDataResponse: ' + JSON.stringify(data));
+                //logger.debug('TechDataResponse: ' + JSON.stringify(data));
                 res.json(data);
             }
         });
@@ -122,7 +119,6 @@ router.get('/technologydata/', function (req, res, next) {
             }
 
             else {
-                logger.debug('TechDataResponse: ' + JSON.stringify(data));
                 res.json(data);
             }
         });

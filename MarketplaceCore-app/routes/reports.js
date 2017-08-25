@@ -17,7 +17,6 @@ router.get('/', function (req, res, next) {
                    next(err);
                }
                else {
-                   logger.debug('TechDataResponse: ' + JSON.stringify(data));
                    res.json(data);
                }
            });
@@ -40,7 +39,6 @@ router.get('/favorit/', function (req, res, next) {
             next(err);
         }
         else {
-            logger.debug('TechDataResponse: ' + JSON.stringify(data));
             res.json(data);
         }
     });
@@ -52,7 +50,6 @@ router.get('/workload/', function (req, res, next) {
             next(err);
         }
         else {
-            logger.debug('TechDataResponse: ' + JSON.stringify(data));
             res.json(data);
         }
     });
@@ -66,7 +63,6 @@ router.get('/revenue/', function (req, res, next) {
                 next(err);
             }
             else {
-                logger.debug('TechDataResponse: ' + JSON.stringify(data));
                 res.json(data);
             }
         });
