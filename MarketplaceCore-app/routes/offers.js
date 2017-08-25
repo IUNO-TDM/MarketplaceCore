@@ -29,38 +29,6 @@ router.get('/:id', validate({
 
 });
 
-
-
-//
-// Those routes are not REST like and I'm not sure if they are even used some where. Let's see if someone complains
-//
-
-
-// router.get('/offerrequest/:id', validate({
-//     query: require('../schema/offers_schema').Offers
-// }), function (req, res, next) {
-//     new Offer().FindByRequest(req.query['userUUID'], req.params['id'], function (err, data) {
-//         if (err) {
-//             next(err);
-//         } else {
-//             res.json(data);
-//         }
-//     });
-//
-// });
-//
-// router.get('/paymentinvoice/:id', validate({
-//     query: require('../schema/offers_schema').Offers
-// }), function (req, res, next) {
-//     new Offer().FindByPaymentInvoice(req.query['userUUID'], req.params['id'], function (err, data) {
-//         if (err) {
-//             next(err);
-//         } else {
-//             res.json(data);
-//         }
-//     });
-// });
-
 router.post('/', validate({
     query: require('../schema/offers_schema').Offers,
     body: require('../schema/offers_schema').OfferRequestBody
