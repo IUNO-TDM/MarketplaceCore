@@ -176,13 +176,22 @@ self.doLicenseUpdate = function (hsmId, context, callback) {
     };
 
     request(options, function (e, r, message) {
+        let isOutOfDate = false;
+
         const err = logger.logRequestAndResponse(e, options, r, message);
 
         if (err) {
             return callback(err);
         }
 
-        callback(err, message.content);
+        // 205 indicates that the provided context is out of date.
+        // The context within the lcc is different
+        // After applying the sent update, the client needs to request a update again, using a new context.
+        if (r.statusCode === 205) {
+            isOutOfDate = true;
+        }
+
+        callback(err, message.content, isOutOfDate);
     });
 };
 
@@ -213,6 +222,37 @@ self.createAndEncrypt = function (itemId, itemName, productCode, data, callback)
             return callback(null, encryptedData);
         })
     })
+};
+
+self.doConfirmUpdate = function(context, callback) {
+    if (typeof(callback) !== 'function') {
+        callback = function () {
+            logger.info('[license_central_adapter] Callback not registered');
+        }
+    }
+
+    const options = buildOptionsForRequest(
+        'POST',
+        CONFIG.HOST_SETTINGS.LICENSE_CENTRAL.PROTOCOL,
+        CONFIG.HOST_SETTINGS.LICENSE_CENTRAL.HOST,
+        CONFIG.HOST_SETTINGS.LICENSE_CENTRAL.PORT,
+        'doConfirmUpdate.php',
+        {}
+    );
+
+    options.body = {
+        context: context,
+    };
+
+    request(options, function (e, r, message) {
+        const err = logger.logRequestAndResponse(e, options, r, message);
+
+        if (err) {
+            return callback(err);
+        }
+
+        callback(null);
+    });
 };
 
 module.exports = self;
