@@ -40,7 +40,7 @@
           {
             "in": "body",
             "name": "body",
-            "description": "LicenseUpdate Object",
+            "description": "LicenseContext Object",
             "required": true,
             "schema": {
               "$ref": "#/definitions/LicenseContext"
@@ -50,11 +50,62 @@
         "responses": {
           "200": {
             "description": "okay",
-            "$ref": "#/definitions/LicenseUpdate"
+            "schema": {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
+          },
+          "205": {
+            "description": "repeat",
+            "schema" : {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
           },
           "400": {
             "description": "error",
-            "$ref": "#/definitions/LicenseUpdate"
+            "schema" : {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
+          }
+        }
+      }
+    },
+    "/doConfirmUpdate.php": {
+      "post": {
+        "tags": [
+          "license"
+        ],
+        "summary": "Confirm the activation of a new license update for a CmDongle.",
+        "description": "",
+        "operationId": "doConfirmUpdate",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "ConfirmationContext Object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConfirmationContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "okay",
+            "schema" : {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
+          },
+          "400": {
+            "description": "error",
+            "schema" : {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
           }
         }
       }
@@ -130,7 +181,9 @@
         "responses": {
           "200": {
             "description": "okay",
-            "$ref": "#/definitions/LicenseUpdate"
+            "schema": {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
           },
           "400": {
             "description": "error",
@@ -219,6 +272,17 @@
           "description": "constant value for licenses which are bound to a serial number",
           "default": "autoupdate",
           "example": "autoupdate"
+        }
+      }
+    },
+    "ConfirmationContext": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "string",
+          "format": "base64",
+          "description": "WibuCmRaC file of CmContainer encoded with base64",
+          "example": "SFAgd2FzIGhlcmUhCg=="
         }
       }
     },
