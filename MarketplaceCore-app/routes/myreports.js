@@ -17,7 +17,6 @@ router.get('/', function (req, res, next) {
                 next(err);
             }
             else {
-                logger.debug('TechDataResponse: ' + JSON.stringify(data));
                 res.json(data);
             }
         });
@@ -52,7 +51,6 @@ router.get('/workload/', function (req, res, next) {
             next(err);
         }
         else {
-            logger.debug('TechDataResponse: ' + JSON.stringify(data));
             res.json(data);
         }
     });
@@ -60,7 +58,7 @@ router.get('/workload/', function (req, res, next) {
 });
 
 router.get('/revenue/', function (req, res, next) {
-    if (req.query['time'] === 'day') {
+    if (req.query['time'] == 'day') {
         dbReports.GetRevenueForUser(req.query['userUUID'], req.token.user.roles, req.query['sinceDate'], function (err, data) {
             if (err) {
                 next(err);
@@ -80,7 +78,20 @@ router.get('/revenue/', function (req, res, next) {
                 }
 
                 else {
-                    logger.debug('TechDataResponse: ' + JSON.stringify(data));
+                    res.json(data);
+                }
+            });
+        }
+
+        else
+        if (req.query['time'] == 'today') {
+            dbReports.GetRevenuePerDayForUser(req.query['userUUID'], req.token.user.roles, function (err, data) {
+                if (err) {
+                    next(err);
+                }
+
+                else {
+                    //logger.debug('TechDataResponse: ' + JSON.stringify(data));
                     res.json(data);
                 }
             });
@@ -89,16 +100,29 @@ router.get('/revenue/', function (req, res, next) {
     });
 
 router.get('/technologydata/', function (req, res, next) {
-    dbReports.GetTechnologyDataForUser(req.query['userUUID'], req.token.user.roles, function (err, data) {
+    if(!req.query['top']) {
+        dbReports.GetTechnologyDataForUser(req.query['userUUID'], req.token.user.roles, function (err, data) {
             if (err) {
                 next(err);
             }
 
             else {
-                logger.debug('TechDataResponse: ' + JSON.stringify(data));
+                //logger.debug('TechDataResponse: ' + JSON.stringify(data));
                 res.json(data);
             }
         });
+    }
+    else {
+        dbReports.GetTopTechnologyDataForUser(req.query['userUUID'], req.token.user.roles, req.query['topValue'], function (err, data) {
+            if (err) {
+                next(err);
+            }
+
+            else {
+                res.json(data);
+            }
+        });
+    }
 });
 
 module.exports = router;
