@@ -1942,6 +1942,7 @@ CREATE FUNCTION GetAllTechnologyData(vUserUUID uuid, vRoles text[])
 			technologydataname varchar(250),
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
+			productcode integer,
 			licensefee integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
@@ -1964,6 +1965,7 @@ CREATE FUNCTION GetAllTechnologyData(vUserUUID uuid, vRoles text[])
 					technologydata,
 					technologydatadescription,
 					licensefee,
+					td.productcode,
 					technologydatathumbnail,
 					technologydataimgref,
 					td.createdat  at time zone 'utc',
@@ -1998,7 +2000,7 @@ Return Value: Table with all TechnologyData
     IN vtechnologydatauuid uuid,
     IN vuseruuid uuid,
     IN vRoles text[])
-  RETURNS TABLE(technologydatauuid uuid, technologyuuid uuid, technologydataname character varying, technologydata character varying, technologydatadescription character varying, licensefee integer, technologydatathumbnail bytea, technologydataimgref character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedyby uuid) AS
+  RETURNS TABLE(technologydatauuid uuid, technologyuuid uuid, technologydataname character varying, technologydata character varying, technologydatadescription character varying, productcode integer, licensefee integer, technologydatathumbnail bytea, technologydataimgref character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedyby uuid) AS
 $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetTechnologyDataById';
@@ -2013,6 +2015,7 @@ $BODY$
 				td.technologydataname,
 				td.technologydata,
 				td.technologydatadescription,
+				td.productcode,
 				td.licensefee,
 				td.technologydatathumbnail,
 				td.technologydataimgref,
@@ -2060,6 +2063,7 @@ RETURNS TABLE
 			technologydataname varchar(250),
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
+			productcode integer,
 			licensefee integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
@@ -2082,6 +2086,7 @@ RETURNS TABLE
 				td.technologydataname,
 				technologydata,
 				technologydatadescription,
+				productcode,
 				licensefee,
 				technologydatathumbnail,
 				technologydataimgref,
