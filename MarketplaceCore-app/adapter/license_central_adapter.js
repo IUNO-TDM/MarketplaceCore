@@ -21,23 +21,21 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
         headers: {
             'content-type': 'application/json',
             'accept': 'application/json'
-        },
-        agentOptions: {}
+        }
     };
 
-    if (CONFIG.LICENSE_CENTRAL.BASIC_AUTH.USER && CONFIG.LICENSE_CENTRAL.BASIC_AUTH.PASSWORD) {
-        options.headers['Authorization'] =
-            'Basic ' + new Buffer(CONFIG.LICENSE_CENTRAL.BASIC_AUTH.USER + ':' + CONFIG.LICENSE_CENTRAL.BASIC_AUTH.PASSWORD).toString('base64')
-    }
+    // if (CONFIG.LICENSE_CENTRAL.BASIC_AUTH.USER && CONFIG.LICENSE_CENTRAL.BASIC_AUTH.PASSWORD) {
+    //     options.headers['Authorization'] =
+    //         'Basic ' + new Buffer(CONFIG.LICENSE_CENTRAL.BASIC_AUTH.USER + ':' + CONFIG.LICENSE_CENTRAL.BASIC_AUTH.PASSWORD).toString('base64')
+    // }
 
     try {
-        // options.agentOptions['cert'] = fs.readFileSync(certFile);
-        // options.agentOptions['key'] = fs.readFileSync(keyFile);
-        // Or use `pfx` property replacing `cert` and `key` when using private key, certificate and CA certs in PFX or PKCS12 format:
-        // pfx: fs.readFileSync(pfxFilePath),
-        pfx: fs.readFileSync(p12File);
-        options.agentOptions['passphrase'] = CONFIG.LICENSE_CENTRAL.CERT.PASS_PHRASE
-        // securityOptions: 'SSL_OP_NO_SSLv3'
+        // options.cert = fs.readFileSync(certFile);
+        // options.key = fs.readFileSync(keyFile);
+        options.pfx = fs.readFileSync(p12File);
+        options.passphrase = CONFIG.LICENSE_CENTRAL.CERT.PASS_PHRASE;
+        //     options.secureProtocol = 'SSLv3_method'
+        // options.securityOptions = 'SSL_OP_NO_SSLv3';
     }
     catch (err) {
         logger.warn('[license_central_adapter] Error loading client certificates');
@@ -132,7 +130,6 @@ self.createAndActivateLicense = function (hsmId, customerId, itemId, quantity, c
         'doCreateOrder.php',
         {}
     );
-
     options.body = {
         cmserial: hsmId,
         // customerid: customerId,
@@ -224,7 +221,7 @@ self.createAndEncrypt = function (itemId, itemName, productCode, data, callback)
     })
 };
 
-self.doConfirmUpdate = function(context, callback) {
+self.doConfirmUpdate = function (context, callback) {
     if (typeof(callback) !== 'function') {
         callback = function () {
             logger.info('[license_central_adapter] Callback not registered');
@@ -241,7 +238,7 @@ self.doConfirmUpdate = function(context, callback) {
     );
 
     options.body = {
-        context: context,
+        context: context
     };
 
     request(options, function (e, r, message) {
