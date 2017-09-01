@@ -3,7 +3,7 @@ var licenseCentral = require('../adapter/license_central_adapter');
 
 const cmSerial = '3-4019156';
 const customerId = 1234;
-const productCode = 10;
+const productCode = 11;
 const itemId = 'pc' + productCode;
 const itemName = 'Test ' + getRandomInt(1,999999999999999);
 const quantity = 1;
@@ -12,19 +12,20 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-licenseCentral.createItem(itemId, itemName, productCode, function(err, success) {
+// licenseCentral.createItem(itemId, itemName, productCode, function(err, success) {
+//     if (err) {
+//         console.error(err);
+//     }
+//     console.log('Create Item: ' + success);
+// });
+
+licenseCentral.createAndActivateLicense(cmSerial, customerId, itemId, quantity, function (err, success) {
     if (err) {
         console.error(err);
     }
-    console.log('Create Item: ' + success);
-
-    licenseCentral.createAndActivateLicense(cmSerial, customerId, itemId, quantity, function (err, success) {
-        if (err) {
-            console.error(err);
-        }
-        console.log('ActivateLicense: ' + success);
-    });
+    console.log('ActivateLicense: ' + success);
 });
+
 //
 // licenseCentral.doConfirmUpdate('1234', function (err) {
 //    console.log('Error: ' + err);
