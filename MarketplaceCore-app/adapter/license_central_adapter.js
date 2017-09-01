@@ -5,8 +5,6 @@ const request = require('request');
 const fs = require('fs');
 const path = require('path');
 
-const certFile = path.resolve(__dirname, CONFIG.LICENSE_CENTRAL.CERT.CERT_FILE_PATH);
-const keyFile = path.resolve(__dirname, CONFIG.LICENSE_CENTRAL.CERT.CERT_FILE_PATH);
 const p12File = path.resolve(__dirname, CONFIG.LICENSE_CENTRAL.CERT.P12_FILE_PATH);
 
 const self = {};
@@ -30,8 +28,6 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
     // }
 
     try {
-        // options.cert = fs.readFileSync(certFile);
-        // options.key = fs.readFileSync(keyFile);
         options.pfx = fs.readFileSync(p12File);
         options.passphrase = CONFIG.LICENSE_CENTRAL.CERT.PASS_PHRASE;
         //     options.secureProtocol = 'SSLv3_method'
