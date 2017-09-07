@@ -42,9 +42,15 @@ payment_service.on('StateChange', function (data) {
                                 for (var key in offerRequest.items) {
                                     const item = offerRequest.items[key];
 
-                                    const base64CustomerId = helper.shortenUUID(transaction['buyer']);
+                                    let shortUUID;
+                                    try {
+                                        shortUUID = helper.convertUUIDtoBase85(transaction['buyer']);
+                                    }
+                                    catch (err) {
+                                        shortUUID = ''
+                                    }
 
-                                    licenseCentral.createAndActivateLicense(offerRequest.hsmid, base64CustomerId, config.PRODUCT_CODE_PREFIX + item.productcode, item.amount, function (err) {
+                                    licenseCentral.createAndActivateLicense(offerRequest.hsmid, shortUUID, config.PRODUCT_CODE_PREFIX + item.productcode, item.amount, function (err) {
                                         if (err) {
                                             return callback(err);
                                         }

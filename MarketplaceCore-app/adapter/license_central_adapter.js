@@ -128,7 +128,7 @@ self.createAndActivateLicense = function (hsmId, customerId, itemId, quantity, c
     );
     options.body = {
         cmserial: hsmId,
-        // customerid: customerId,
+        customerid: customerId,
         itemid: itemId,
         quantity: quantity
     };
