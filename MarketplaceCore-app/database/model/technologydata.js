@@ -51,7 +51,6 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
         ], 1 //TODO: Document this parameter
     )
         .then(function (data) {
-            logger.debug('Database query result: ' + JSON.stringify(data));
             var resultList = [];
             for (var key in data.result) {
                 resultList.push(new TechnologyData(data.result[key]));
