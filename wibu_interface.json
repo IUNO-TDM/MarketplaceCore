@@ -1,0 +1,436 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "IUNO Interface on CodeMeter License Central",
+    "version": "1.0.0",
+    "title": "CodeMeter License Central",
+    "termsOfService": ""
+  },
+  "host": "lc.codemeter.com",
+  "basePath": "/26959-02/marketplaceapi",
+  "tags": [
+    {
+      "name": "license",
+      "description": "CodeMeter License to work with technology data"
+    },
+    {
+      "name": "article",
+      "description": ""
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/doLicenseUpdate.php": {
+      "post": {
+        "tags": [
+          "license"
+        ],
+        "summary": "Get a new license update for a CmDongle.",
+        "description": "",
+        "operationId": "doLicenseUpdate",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "LicenseContext Object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LicenseContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "okay",
+            "schema": {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
+          },
+          "205": {
+            "description": "repeat",
+            "schema" : {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
+          },
+          "400": {
+            "description": "error",
+            "schema" : {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
+          }
+        }
+      }
+    },
+    "/doConfirmUpdate.php": {
+      "post": {
+        "tags": [
+          "license"
+        ],
+        "summary": "Confirm the activation of a new license update for a CmDongle.",
+        "description": "",
+        "operationId": "doConfirmUpdate",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "ConfirmationContext Object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConfirmationContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "okay",
+            "schema" : {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
+          },
+          "400": {
+            "description": "error",
+            "schema" : {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
+          }
+        }
+      }
+    },
+    "/doCreateOrder.php": {
+      "post": {
+        "tags": [
+          "license"
+        ],
+        "summary": "Creates and activates a new license for a product and CmDongle.",
+        "description": "",
+        "operationId": "doCreateOrder",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "LicenseOrder Object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LicenseOrder"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "okay"
+          },
+          "400": {
+            "description": "error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ReturnMessage": {
+                  "$ref": "#/definitions/ReturnMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/doEncryptData.php": {
+      "post": {
+        "tags": [
+          "article"
+        ],
+        "summary": "Encrypt technologydata",
+        "description": "",
+        "operationId": "doEncryptData",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Technologydata, firmcode and productcode",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EncryptOrder"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "okay",
+            "schema": {
+              "$ref": "#/definitions/LicenseUpdate"
+            }
+          },
+          "400": {
+            "description": "error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ReturnMessage": {
+                  "$ref": "#/definitions/ReturnMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/doCreateItem.php": {
+      "post": {
+        "tags": [
+          "article"
+        ],
+        "summary": "Create a new article in the license central",
+        "description": "",
+        "operationId": "doCreateItem",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Metadata object for creating a new technolgoy data set",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Item"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "okay"
+          },
+          "400": {
+            "description": "error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ReturnMessage": {
+                  "$ref": "#/definitions/ReturnMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "LicenseContext": {
+      "type": "object",
+      "properties": {
+        "cmserial": {
+          "type": "string",
+          "description": "serial number of CmContainer as string",
+          "example": "3-312345"
+        },
+        "context": {
+          "type": "string",
+          "format": "base64",
+          "description": "WibuCmRaC file of CmContainer encoded with base64",
+          "example": "SFAgd2FzIGhlcmUhCg=="
+        },
+        "firmcode": {
+          "$ref": "#/definitions/FirmCode"
+        },
+        "cmactid": {
+          "type": "string",
+          "description": "use constant value 1000 for CmDongle with Universal Firm Code",
+          "default": "1000",
+          "example": "1000"
+        },
+        "lcaction": {
+          "type": "string",
+          "description": "constant value for licenses which are bound to a serial number",
+          "default": "autoupdate",
+          "example": "autoupdate"
+        }
+      }
+    },
+    "ConfirmationContext": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "string",
+          "format": "base64",
+          "description": "WibuCmRaC file of CmContainer encoded with base64",
+          "example": "SFAgd2FzIGhlcmUhCg=="
+        }
+      }
+    },
+    "LicenseUpdate": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "format": "base64",
+          "description": "WibuCmRaU file encoded with base64",
+          "example": "SFAgd2FzIGhlcmUhCg=="
+        },
+        "md5": {
+          "type": "string",
+          "format": "md5",
+          "description": "md5 checksum of content",
+          "example": "d41d8cd98f00b204e9800998ecf8427e"
+        }
+      }
+    },
+    "LicenseOrder": {
+      "type": "object",
+      "properties": {
+        "cmserial": {
+          "type": "string",
+          "description": "serial number of CmContainer the license is ordered for as string",
+          "example": "3-312345"
+        },
+        "customerid": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "name of customer"
+        },
+        "itemid": {
+          "$ref": "#/definitions/ItemId"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32",
+          "description": "amount of licenses to be issued",
+          "default": "1",
+          "example": "42"
+        }
+      }
+    },
+    "EncryptOrder": {
+      "type": "object",
+      "properties": {
+        "firmcode": {
+          "$ref": "#/definitions/FirmCode"
+        },
+        "productcode": {
+          "$ref": "#/definitions/ProductCode"
+        },
+        "buffer": {
+          "type": "string",
+          "format": "base64",
+          "description": "base64 encoded raw data to be encrypted",
+          "minLength": 24,
+          "example": "MDk4NzY1NDMyMWFiY2RlZmdoCg=="
+        }
+      }
+    },
+    "EncryptedData": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "format": "base64",
+          "description": "encrypted data encoded with base64",
+          "example": "MDk4NzY1NDMyMWFiY2RlZmdoCg=="
+        },
+        "md5": {
+          "type": "string",
+          "format": "md5",
+          "description": "md5 checksum of content",
+          "example": "d41d8cd98f00b204e9800998ecf8427e"
+        },
+        "crc": {
+          "type": "string",
+          "description": "internal crc value of crypt operation"
+        }
+      }
+    },
+    "Item": {
+      "type": "object",
+      "properties": {
+        "itemid": {
+          "$ref": "#/definitions/ItemId"
+        },
+        "itemname": {
+          "type": "string",
+          "description": "name of article - shall be set to IUNO recipe title",
+          "example": "pangalactic gargle blaster"
+        },
+        "firmcode": {
+          "$ref": "#/definitions/FirmCode"
+        },
+        "productcode": {
+          "$ref": "#/definitions/ProductCode"
+        }
+      }
+    },
+    "ItemId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "article number and reference for issueing licenses - for IUNO this field shall be set to the the product code prefixed with \"pc\"without leading zeroes",
+      "example": "pc815"
+    },
+    "FirmCode": {
+      "type": "integer",
+      "format": "uint32",
+      "description": "constant firm code by wibu for the IUNO technology data marketplace",
+      "default": "6000274",
+      "example": "6000274"
+    },
+    "ProductCode": {
+      "type": "integer",
+      "format": "uint32",
+      "description": "product code for encryption",
+      "example": "45054"
+    },
+    "ReturnMessage": {
+      "type": "object",
+      "properties": {
+        "ReturnCode": {
+          "type": "string",
+          "description": "error code for the user as hex string starting with 0x",
+          "example": "0xdeadbeef"
+        },
+        "ErrorText": {
+          "type": "string",
+          "description": "error message for the user",
+          "example": "this is an example error message for the user"
+        },
+        "InternalErrorCode": {
+          "type": "string",
+          "description": "zero for errors in php module, non zero for application errors"
+        },
+        "InternalErrorText": {
+          "type": "string",
+          "description": "error message for internal error"
+        },
+        "Version": {
+          "type": "string",
+          "description": "version information"
+        }
+      }
+    }
+  }
+}

@@ -1,187 +1,89 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.1.0",
+    "version": "1.0.0",
     "title": "MarketplaceCore Database Rest API",
     "contact": {
       "name": "TRUMPF Werkzeugmaschinen GmbH & Co KG"
     },
     "description": ""
   },
+  "host": "localhost:3001",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Core_Auth": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "http://localhost:3005/oauth/authorise",
+      "tokenUrl": "http://localhost:3006/oauth/token",
+      "scopes": {
+        "default": "Undefined",
+        "dashboard": "view dashboard",
+        "createRecipe": "create a recipe",
+        "viewRecipe": "view a recipe",
+        "viewSecureRecipe": "view a secure recipe",
+        "editRecipe": "edit a recipe",
+        "editSecureRecipe": "edit a secure recipe",
+        "viewUserProfile": "view the user profile",
+        "editUserProfile": "edit user profile",
+        "admin": "admin ui"
+      }
+    }
+  },
   "paths": {
-    "/users" : {
-      "post": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-
-        ],
-        "responses": {
-          "201": {
-            "description": "Successful response"
-          }
-        }
-      }
-    },
-    "/users/{userId}": {
-      "get": {
-        "description": "Returns the user for a specific userId",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_admin"
-            ]
-          }
-        ]
-      },
-      "put": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_admin"
-            ]
-          }
-        ]
-      },
-      "delete": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_admin"
-            ]
-          }
-        ]
-      }
-    },
-    "/users/{userId}/image": {
-      "post": {
-        "description": "Sets the user image",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "string",
-              "format": "byte"
-            }
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      },
-      "get": {
-        "description": "Gets the user image",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "string",
-              "format": "byte"
-            }
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      }
-    },
     "/technologydata": {
       "post": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "Create technology data",
         "parameters": [
-
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TechnologyDataSaveDataBody"
+            }
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
         ],
         "responses": {
           "201": {
-            "description": "Successful response"
+            "description": "Operation successful",
+            "headers": {
+              "location": {
+                "description": "The path to the technologydata (technologydatauuid)",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/TechnologyData"
+            }
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "401": {
+            "description": "Authentication required"
           }
         }
       },
@@ -191,7 +93,7 @@
           {
             "name": "userUUID",
             "in": "query",
-            "description": "system client userid used for authorization",
+            "description": "system client useruuid used for authorization",
             "required": true,
             "type": "integer"
           },
@@ -242,19 +144,22 @@
                 "$ref": "#/definitions/TechnologyData"
               }
             }
+          },
+          "400": {
+            "description": "bad request"
           }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_services"
-            ]
-          }
-        ]
+        }
       }
     },
     "/technologydata/{technologyDataId}": {
       "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
         "description": "Gets the technology data for a specific identifier",
         "parameters": [
           {
@@ -273,104 +178,35 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Successful response",
             "schema": {
-              "type": "string",
-              "format": "byte"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TechnologyData"
+              }
             }
           },
+          "400": {
+            "description": "bad request"
+          },
+          "401": {
+            "description": "Authorization required"
+          },
           "404": {
-            "description": "User not found"
+            "description": "technologydata not found"
           }
         }
-      },
-      "put": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "technologyDataId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_admin"
-            ]
-          }
-        ]
-      },
-      "delete": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "technologyDataId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_admin"
-            ]
-          }
-        ]
       }
     },
     "/technologydata/{technologyDataId}/image": {
-      "post": {
-        "description": "Sets the data image",
-        "parameters": [
+      "get": {
+        "security": [
           {
-            "name": "technologyDataId",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "type": "integer"
+            "Core_Auth": [
+              "default"
+            ]
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "string",
-              "format": "byte"
-            }
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      },
-      "get": {
         "description": "The image for a specific technology data",
         "parameters": [
           {
@@ -382,7 +218,7 @@
           {
             "name": "userUUID",
             "in": "query",
-            "description": "system client userid for authorization",
+            "description": "system client userUUID for authorization",
             "required": true,
             "type": "integer"
           }
@@ -396,194 +232,200 @@
             }
           },
           "404": {
-            "description": "User not found"
+            "description": "Image not found"
+          }
+        }
+      }
+    },
+    "/technologydata/{technologyDataId}/components": {
+      "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "The image for a specific technology data",
+        "parameters": [
+          {
+            "name": "technologyDataId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userUUID for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TechnologyData"
+              }
+            }
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "404": {
+            "description": "technologydata not found"
           }
         }
       }
     },
     "/offers": {
       "post": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-        ],
-        "responses": {
-          "201": {
-            "description": "created"
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
           }
-        }
-      }
-    },
-    "/offers/{offerId}": {
-      "get": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        ],
+        "description": "Create a new offer",
         "parameters": [
           {
-            "name": "offerId",
-            "in": "path",
-            "description": "",
+            "name": "body",
+            "in": "body",
             "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "okay"
-          }
-        }
-      }
-    },
-    "/offers/{offerId}/payment": {
-      "post": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "name": "offerId",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "okay"
-          }
-        }
-      }
-    },
-    "/attributes": {
-      "post": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-
-        ],
-        "responses": {
-          "201": {
-            "description": "Successful response"
-          }
-        }
-      },
-      "get": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
+            "schema": {
+              "$ref": "#/definitions/OfferRequestBody"
+            }
+          },
           {
             "name": "userUUID",
             "in": "query",
-            "description": "system client userid used for authorization",
             "required": true,
-            "type": "integer"
+            "type": "string"
           }
         ],
         "responses": {
-          "200": {
-            "description": "Successful response"
+          "201": {
+            "description": "Operation successful",
+            "schema": {
+              "$ref": "#/definitions/Invoice"
+            }
+          },
+          "400": {
+            "description": "bad request"
           }
         }
       }
     },
-    "/attributes/{id}": {
+    "/offers/{id}": {
       "get": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "Get a offer based on the id",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "offerid to search for",
             "required": true,
             "type": "string"
           },
           {
             "name": "userUUID",
             "in": "query",
-            "description": "system client userid for authorization",
+            "description": "system client userUUID for authorization",
             "required": true,
             "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Offer"
+              }
+            }
+          },
+          "400": {
+            "description": "bad request"
           },
           "404": {
-            "description": "Resource not found"
+            "description": "offer not found"
           }
         }
-      },
-      "put": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_admin"
-            ]
-          }
-        ]
-      },
-      "delete": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_admin"
-            ]
-          }
-        ]
       }
     },
     "/components": {
       "post": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "Create a new component",
         "parameters": [
-
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Components"
+            }
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid used for authorization",
+            "required": true,
+            "type": "integer"
+          }
         ],
         "responses": {
           "201": {
-            "description": "Successful response"
+            "description": "Operation successful",
+            "headers": {
+              "location": {
+                "description": "The path to the component (componentuuid)",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Components"
+            }
+          },
+          "400": {
+            "description": "bad request"
           }
         }
       },
       "get": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "Get component for the given componentName or get all components",
         "parameters": [
+          {
+            "name": "componentName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
           {
             "name": "userUUID",
             "in": "query",
@@ -594,114 +436,34 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response"
+            "description": "Operation successful",
+            "schema": {
+              "$ref": "#/definitions/Components"
+            }
+          },
+          "400": {
+            "description": "bad request"
           }
         }
       }
     },
     "/components/{id}": {
       "get": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Resource not found"
-          }
-        }
-      },
-      "put": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
         "security": [
           {
-            "marketplacecore_auth": [
-              "read_admin"
+            "Core_Auth": [
+              "default"
             ]
           }
-        ]
-      },
-      "delete": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
+        ],
+        "description": "Get component for the given id",
         "parameters": [
           {
-            "in": "path",
             "name": "id",
+            "in": "path",
             "required": true,
             "type": "string"
           },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_admin"
-            ]
-          }
-        ]
-      }
-    },
-    "/technologies": {
-      "post": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-
-        ],
-        "responses": {
-          "201": {
-            "description": "Successful response"
-          }
-        }
-      },
-      "get": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
           {
             "name": "userUUID",
             "in": "query",
@@ -712,133 +474,81 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response"
-          }
-        }
-      }
-    },
-    "/technologies/{id}": {
-      "get": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "description": "Operation successful",
+            "schema": {
+              "$ref": "#/definitions/Components"
+            }
           },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
+          "400": {
+            "description": "bad request"
           },
           "404": {
-            "description": "Resource not found"
+            "description": "component not found"
           }
         }
-      },
-      "put": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_admin"
-            ]
-          }
-        ]
-      },
-      "delete": {
-        "description": "TODO: No final specification!!!! Just placeholder. Please finalize the specification for this route",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "security": [
-          {
-            "marketplacecore_auth": [
-              "read_admin"
-            ]
-          }
-        ]
-      }
-    }
-  },
-  "securityDefinitions": {
-    "marketplacecore_auth": {
-      "type": "oauth2",
-      "authorizationUrl": "to be defined",
-      "flow": "implicit",
-      "scopes": {
-        "write_public": "public users write right",
-        "read_public": "public users write right",
-        "read_admin": "admin read right",
-        "write_admin": "admin write right",
-        "write_services": "web system and machine services right",
-        "read_services": "web system and machine services right"
       }
     }
   },
   "definitions": {
-    "User": {
+    "Offer": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "firstname": {
+        "offeruuid": {
           "type": "string"
         },
-        "lastname": {
+        "paymentinvoiceuuid": {
           "type": "string"
         },
-        "email": {
+        "createdat": {
           "type": "string"
         },
-        "thumbnail": {
+        "createdby": {
           "type": "string"
+        }
+      }
+    },
+    "TechnologyDataSaveDataBody": {
+      "type": "object",
+      "properties": {
+        "technologyDataName": {
+          "type": "string"
+        },
+        "technologyData": {
+          "type": "string"
+        },
+        "technologyDataDescription": {
+          "type": "string"
+        },
+        "technologyUUID": {
+          "type": "string"
+        },
+        "licenseFee": {
+          "type": "number"
+        },
+        "retailPrice": {
+          "type": "number"
+        },
+        "tagList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tagName": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "componentList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "componentName": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },
@@ -868,6 +578,59 @@
         },
         "updatedby": {
           "type": "string"
+        }
+      }
+    },
+    "OfferRequestBody": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "dataId": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "hsmId": {
+          "type": "string"
+        }
+      }
+    },
+    "Invoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "invoice": {
+          "type": "string"
+        }
+      }
+    },
+    "Components": {
+      "type": "object",
+      "properties": {
+        "componentName": {
+          "type": "string"
+        },
+        "componentParentName": {
+          "type": "string"
+        },
+        "componentDescription": {
+          "type": "string"
+        },
+        "attributeList": {
+          "type": "array"
+        },
+        "technologyList": {
+          "type": "array"
         }
       }
     }

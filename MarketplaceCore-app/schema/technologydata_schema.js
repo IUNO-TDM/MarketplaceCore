@@ -14,10 +14,6 @@ self.GetAll = {
             type: 'string',
             required: true
         },
-        name: {
-            type: 'string',
-            required: false
-        },
         tags: {
             type: 'array',
             items: {
@@ -39,11 +35,19 @@ self.GetAll = {
             },
             required: false
         },
+        technologydataname: {
+            type: 'string',
+            required: false
+        },
         attributes: {
             type: 'array',
             items: {
                 type: 'string'
             },
+            required: false
+        },
+        ownerUUID: {
+            type: 'string',
             required: false
         }
     }
@@ -78,15 +82,11 @@ self.SaveDataBody = {
         },
         technologyUUID: {
             type: 'string',
-            required: false
+            required: true
         },
         licenseFee: {
-            type: 'number',
-            required: false
-        },
-        retailPrice: {
-            type: 'number',
-            required: false
+            type: 'integer',
+            required: true
         },
         tagList: {
             type: 'array',
@@ -95,8 +95,7 @@ self.SaveDataBody = {
                     type: 'string',
                     required: true
                 }
-            },
-            required: true
+            }
         },
         componentList: {
             type: 'array',

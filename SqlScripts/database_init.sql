@@ -1,3 +1,441 @@
+-- Generiert von Oracle SQL Developer Data Modeler 4.0.3.853
+--   am/um:        2017-07-14 11:28:05 MESZ
+--   Site:      DB2/UDB 8.1
+--   Typ:      DB2/UDB 8.1
+
+CREATE
+  TABLE Attributes
+  (
+    AttributeID   INTEGER NOT NULL ,
+    AttributeUUID UUID ,
+    AttributeName VARCHAR (250) NOT NULL ,
+    CreatedAt     TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
+    CreatedBy     UUID NOT NULL ,
+    UpdatedAt     TIMESTAMP WITHOUT TIME ZONE ,
+    UpdatedBy     UUID
+  ) ;
+ALTER TABLE Attributes ADD CONSTRAINT Attribubes_PK PRIMARY KEY ( AttributeID )
+;
+ALTER TABLE Attributes ADD CONSTRAINT Attributes__UN UNIQUE ( AttributeName ) ;
+
+CREATE
+  TABLE Components
+  (
+    ComponentID          INTEGER NOT NULL ,
+    ComponentUUID        UUID ,
+    ComponentName        VARCHAR (250) ,
+    ComponentParentID    INTEGER ,
+    ComponentDescription VARCHAR (32672) ,
+    CreatedAt            TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
+    CreatedBy            UUID NOT NULL ,
+    UpdatedAt            TIMESTAMP WITHOUT TIME ZONE ,
+    UpdatedBy            UUID
+  ) ;
+ALTER TABLE Components ADD CONSTRAINT Components_PK PRIMARY KEY ( ComponentID )
+;
+ALTER TABLE Components ADD CONSTRAINT Components__UN UNIQUE ( ComponentName ) ;
+
+CREATE
+  TABLE ComponentsAttribute
+  (
+    ComponentID INTEGER NOT NULL ,
+    AttributeID INTEGER NOT NULL
+  ) ;
+ALTER TABLE ComponentsAttribute ADD CONSTRAINT ComponentsAttribute_PK PRIMARY
+KEY ( AttributeID, ComponentID ) ;
+
+CREATE
+  TABLE ComponentsTechnologies
+  (
+    ComponentID  INTEGER NOT NULL ,
+    TechnologyID INTEGER NOT NULL
+  ) ;
+ALTER TABLE ComponentsTechnologies ADD CONSTRAINT ComponentsTechnologies_PK
+PRIMARY KEY ( ComponentID, TechnologyID ) ;
+
+CREATE
+  TABLE LicenseOrder
+  (
+    LicenseOrderID   INTEGER NOT NULL ,
+    LicenseOrderUUID UUID ,
+    TicketID         VARCHAR (32672) ,
+    OfferID          INTEGER NOT NULL ,
+    ActivatedAt      TIMESTAMP WITHOUT TIME ZONE ,
+    CreatedAt        TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
+    CreatedBy        UUID NOT NULL
+  ) ;
+ALTER TABLE LicenseOrder ADD CONSTRAINT LicenseOrder_PK PRIMARY KEY (
+LicenseOrderID ) ;
+
+CREATE
+  TABLE LogStatus
+  (
+    LogStatusID          INTEGER NOT NULL ,
+    LogStatus            VARCHAR (50) ,
+    LogStatusDescription VARCHAR (250)
+  ) ;
+ALTER TABLE LogStatus ADD CONSTRAINT LogStatus_PK PRIMARY KEY ( LogStatusID ) ;
+
+CREATE
+  TABLE LogTable
+  (
+    LogID         INTEGER NOT NULL ,
+    LogStatusID   INTEGER NOT NULL ,
+    LogMessage    VARCHAR (32672) NOT NULL ,
+    LogObjectName VARCHAR (250) ,
+    Parameters    VARCHAR (32672) ,
+    CreatedAt     TIMESTAMP WITHOUT TIME ZONE NOT NULL
+  ) ;
+ALTER TABLE LogTable ADD CONSTRAINT LogTable_PK PRIMARY KEY ( LogID ) ;
+
+INSERT INTO LogStatus VALUES (0,'Sucessed','Operation has successed');
+INSERT INTO LogStatus VALUES (1,'ERROR','Operation has failed');
+INSERT INTO LogStatus VALUES (2,'PENDING','Operation is pending');
+
+CREATE
+  TABLE Offer
+  (
+    OfferID          INTEGER NOT NULL ,
+    OfferUUID        UUID ,
+    PaymentInvoiceID INTEGER NOT NULL ,
+    CreatedAt        TIMESTAMP WITHOUT TIME ZONE ,
+    CreatedBy        UUID NOT NULL
+  ) ;
+ALTER TABLE Offer ADD CONSTRAINT Offer_PK PRIMARY KEY ( OfferID ) ;
+
+CREATE
+  TABLE OfferRequest
+  (
+    OfferRequestID   INTEGER NOT NULL ,
+    OfferRequestUUID UUID ,
+    HSMID            VARCHAR ,
+    CreatedAt        TIMESTAMP WITHOUT TIME ZONE ,
+    RequestedBy      UUID NOT NULL
+  ) ;
+ALTER TABLE OfferRequest ADD CONSTRAINT OfferRequest_PK PRIMARY KEY (
+OfferRequestID ) ;
+
+CREATE TABLE OfferRequestItems
+  (
+    OfferRequestItemID INTEGER NOT NULL ,
+    OfferRequestID     INTEGER,
+    TechnologyDataID	INTEGER,
+    Amount INTEGER NOT NULL
+  ) ;
+
+
+CREATE
+  TABLE Payment
+  (
+    PaymentID          INTEGER NOT NULL ,
+    PaymentUUID        UUID ,
+    PaymentInvoiceID   INTEGER NOT NULL ,
+    PayDate            TIMESTAMP WITHOUT TIME ZONE ,
+    ConfidenceState    VARCHAR (250) ,
+    Depth              INTEGER ,
+    BitcoinTransaction VARCHAR (32672) ,
+    ExtInvoiceID       UUID ,
+    CreatedAt          TIMESTAMP WITHOUT TIME ZONE ,
+    CreatedBy          UUID NOT NULL ,
+    UpdatedBy          UUID ,
+    UpdatedAt          TIMESTAMP WITHOUT TIME ZONE
+  ) ;
+ALTER TABLE Payment ADD CONSTRAINT Payment_PK PRIMARY KEY ( PaymentID ) ;
+
+CREATE
+  TABLE PaymentInvoice
+  (
+    PaymentInvoiceID   INTEGER NOT NULL ,
+    PaymentInvoiceUUID UUID ,
+    OfferRequestID     INTEGER NOT NULL ,
+    Invoice            VARCHAR (32672) ,
+    CreatedAt          TIMESTAMP WITHOUT TIME ZONE ,
+    CreatedBy          UUID NOT NULL
+  ) ;
+ALTER TABLE PaymentInvoice ADD CONSTRAINT PaymentInvoice_PK PRIMARY KEY (
+PaymentInvoiceID ) ;
+
+CREATE
+  TABLE Tags
+  (
+    TagID     INTEGER NOT NULL ,
+    TagUUID   UUID ,
+    TagName   VARCHAR (250) NOT NULL ,
+    CreatedAt TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
+    CreatedBy UUID NOT NULL ,
+    UpdatedAt TIMESTAMP WITHOUT TIME ZONE ,
+    UpdatedBy UUID
+  ) ;
+ALTER TABLE Tags ADD CONSTRAINT Tags_PK PRIMARY KEY ( TagID ) ;
+
+CREATE
+  TABLE Technologies
+  (
+    TechnologyID          INTEGER NOT NULL ,
+    TechnologyUUID        UUID ,
+    TechnologyName        VARCHAR (250) NOT NULL ,
+    TechnologyDescription VARCHAR (32672) ,
+    CreatedAt             TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
+    CreatedBy             UUID NOT NULL ,
+    UpdatedAt             TIMESTAMP WITHOUT TIME ZONE ,
+    UpdatedBy             UUID
+  ) ;
+ALTER TABLE Technologies ADD CONSTRAINT Technologies_PK PRIMARY KEY (
+TechnologyID ) ;
+ALTER TABLE Technologies ADD CONSTRAINT Technologies__UN UNIQUE (
+TechnologyName ) ;
+
+CREATE
+  TABLE TechnologyData
+  (
+    TechnologyDataID          INTEGER NOT NULL ,
+    TechnologyDataUUID        UUID ,
+    TechnologyDataName        VARCHAR (250) NOT NULL ,
+    TechnologyID              INTEGER NOT NULL ,
+    TechnologyData            VARCHAR (32672) NOT NULL ,
+    LicenseFee                INTEGER NOT NULL ,
+    ProductCode               INTEGER ,
+    TechnologyDataDescription VARCHAR (32672) ,
+    TechnologyDataThumbnail Bytea ,
+    TechnologyDataImgRef VARCHAR ,
+    CreatedAt            TIMESTAMP WITHOUT TIME ZONE NOT NULL ,
+    CreatedBy            UUID NOT NULL ,
+    UpdatedAt            TIMESTAMP WITHOUT TIME ZONE ,
+    UpdatedBy            UUID,
+    Deleted              BOOLEAN
+  ) ;
+ALTER TABLE TechnologyData ADD CONSTRAINT TechnologyData_PK PRIMARY KEY (
+TechnologyDataID ) ;
+ALTER TABLE TechnologyData ADD CONSTRAINT TechnologyData__UN UNIQUE (
+TechnologyDataName ) ;
+
+CREATE
+  TABLE TechnologyDataComponents
+  (
+    TechnologyDataID INTEGER NOT NULL ,
+    ComponentID      INTEGER NOT NULL
+  ) ;
+ALTER TABLE TechnologyDataComponents ADD CONSTRAINT TechnologyDataComponents_PK
+PRIMARY KEY ( TechnologyDataID, ComponentID ) ;
+
+CREATE
+  TABLE TechnologyDataTags
+  (
+    TechnologyDataID INTEGER NOT NULL ,
+    TagID            INTEGER NOT NULL
+  ) ;
+ALTER TABLE TechnologyDataTags ADD CONSTRAINT TechnologyDataTag_PK PRIMARY KEY
+( TechnologyDataID, TagID ) ;
+
+CREATE
+  TABLE Transactions
+  (
+    TransactionID    INTEGER NOT NULL ,
+    TransactionUUID  UUID ,
+    BuyerID          UUID,
+    OfferID          INTEGER ,
+    OfferRequestID   INTEGER NOT NULL ,
+    PaymentID        INTEGER ,
+    PaymentInvoiceID INTEGER ,
+    LicenseOrderID   INTEGER ,
+    CreatedAt        TIMESTAMP WITHOUT TIME ZONE ,
+    CreatedBy        UUID NOT NULL ,
+    UpdatedAt        TIMESTAMP WITHOUT TIME ZONE ,
+    UpdatedBy        UUID
+  ) ;
+ALTER TABLE Transactions ADD CONSTRAINT Transactions_PK PRIMARY KEY (
+TransactionID ) ;
+
+CREATE
+  TABLE Functions
+  (
+    FunctionID   INTEGER NOT NULL ,
+    FunctionName VARCHAR (250)
+  ) ;
+ALTER TABLE Functions ADD CONSTRAINT Functions_PK PRIMARY KEY ( FunctionID ) ;
+
+CREATE
+  TABLE Roles
+  (
+    RoleId           INTEGER NOT NULL ,
+    RoleName         VARCHAR ,
+    RoleDescription VARCHAR
+  ) ;
+
+ALTER TABLE Roles ADD CONSTRAINT Roles_PK PRIMARY KEY ( RoleId ) ;
+
+CREATE
+  TABLE RolesPermissions
+  (
+    RoleId     INTEGER NOT NULL ,
+    FunctionId INTEGER NOT NULL
+  ) ;
+
+ALTER TABLE RolesPermissions ADD CONSTRAINT RolesPermissions_PK PRIMARY KEY (
+RoleId, FunctionId ) ;
+
+ALTER TABLE RolesPermissions ADD CONSTRAINT RolesPermissions_Functions_FK
+
+FOREIGN KEY ( FunctionId ) REFERENCES Functions ( FunctionID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE RolesPermissions ADD CONSTRAINT RolesPermissions_Roles_FK FOREIGN
+KEY ( RoleId ) REFERENCES Roles ( RoleId ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE ComponentsAttribute ADD CONSTRAINT
+ComponentsAttribute_Attribubes_FK FOREIGN KEY ( AttributeID ) REFERENCES
+Attributes ( AttributeID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE ComponentsAttribute ADD CONSTRAINT
+ComponentsAttribute_Components_FK FOREIGN KEY ( ComponentID ) REFERENCES
+Components ( ComponentID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE ComponentsTechnologies ADD CONSTRAINT
+ComponentsTechnologies_Components_FK FOREIGN KEY ( ComponentID ) REFERENCES
+Components ( ComponentID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE ComponentsTechnologies ADD CONSTRAINT
+ComponentsTechnologies_Technologies_FK FOREIGN KEY ( TechnologyID ) REFERENCES
+Technologies ( TechnologyID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE Components ADD CONSTRAINT Components_Components_FK FOREIGN KEY (
+ComponentParentID ) REFERENCES Components ( ComponentID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE LicenseOrder ADD CONSTRAINT LicenseOrder_Offer_FK FOREIGN KEY (
+OfferID ) REFERENCES Offer ( OfferID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE LogTable ADD CONSTRAINT LogTable_LogStatus_FK FOREIGN KEY (
+LogStatusID ) REFERENCES LogStatus ( LogStatusID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE OfferRequestItems ADD CONSTRAINT OfferRequestItems_OfferRequest_FK
+FOREIGN KEY ( OfferRequestID ) REFERENCES OfferRequest ( OfferRequestID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE OfferRequestItems ADD CONSTRAINT
+OfferRequestItems_TechnologyData_FK FOREIGN KEY ( TechnologyDataID ) REFERENCES
+TechnologyData ( TechnologyDataID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE Offer ADD CONSTRAINT Offer_PaymentInvoice_FK FOREIGN KEY (
+PaymentInvoiceID ) REFERENCES PaymentInvoice ( PaymentInvoiceID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE PaymentInvoice ADD CONSTRAINT PaymentInvoice_OfferRequest_FK
+FOREIGN KEY ( OfferRequestID ) REFERENCES OfferRequest ( OfferRequestID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE Payment ADD CONSTRAINT Payment_PaymentInvoice_FK FOREIGN KEY (
+PaymentInvoiceID ) REFERENCES PaymentInvoice ( PaymentInvoiceID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE TechnologyDataComponents ADD CONSTRAINT
+TechnologyDataComponents_Components_FK FOREIGN KEY ( ComponentID ) REFERENCES
+Components ( ComponentID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE TechnologyDataComponents ADD CONSTRAINT
+TechnologyDataComponents_TechnologyData_FK FOREIGN KEY ( TechnologyDataID )
+REFERENCES TechnologyData ( TechnologyDataID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE TechnologyDataTags ADD CONSTRAINT TechnologyDataTags_Tags_FK
+FOREIGN KEY ( TagID ) REFERENCES Tags ( TagID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE TechnologyDataTags ADD CONSTRAINT
+TechnologyDataTags_TechnologyData_FK FOREIGN KEY ( TechnologyDataID )
+REFERENCES TechnologyData ( TechnologyDataID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE TechnologyData ADD CONSTRAINT TechnologyData_Technologies_FK
+FOREIGN KEY ( TechnologyID ) REFERENCES Technologies ( TechnologyID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE Transactions ADD CONSTRAINT Transactions_LicenseOrder_FK FOREIGN
+KEY ( LicenseOrderID ) REFERENCES LicenseOrder ( LicenseOrderID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE Transactions ADD CONSTRAINT Transactions_OfferRequest_FK FOREIGN
+KEY ( OfferRequestID ) REFERENCES OfferRequest ( OfferRequestID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE Transactions ADD CONSTRAINT Transactions_Offer_FK FOREIGN KEY (
+OfferID ) REFERENCES Offer ( OfferID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE Transactions ADD CONSTRAINT Transactions_PaymentInvoice_FK FOREIGN
+KEY ( PaymentInvoiceID ) REFERENCES PaymentInvoice ( PaymentInvoiceID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE Transactions ADD CONSTRAINT Transactions_Payment_FK FOREIGN KEY (
+PaymentID ) REFERENCES Payment ( PaymentID ) ON
+DELETE
+  NO ACTION;
+
+ALTER TABLE OfferRequestItems ADD CONSTRAINT OfferRequestItems_PK PRIMARY KEY ( OfferRequestItemID, OfferRequestID, TechnologyDataID ) ;
+
+
+-- Zusammenfassungsbericht für Oracle SQL Developer Data Modeler:
+--
+-- CREATE TABLE                            19
+-- CREATE INDEX                             0
+-- ALTER TABLE                             45
+-- CREATE VIEW                              0
+-- CREATE PACKAGE                           0
+-- CREATE PACKAGE BODY                      0
+-- CREATE PROCEDURE                         0
+-- CREATE FUNCTION                          0
+-- CREATE TRIGGER                           0
+-- ALTER TRIGGER                            0
+-- CREATE STRUCTURED TYPE                   0
+-- CREATE ALIAS                             0
+-- CREATE BUFFERPOOL                        0
+-- CREATE DATABASE                          0
+-- CREATE DISTINCT TYPE                     0
+-- CREATE INSTANCE                          0
+-- CREATE DATABASE PARTITION GROUP          0
+-- CREATE SCHEMA                            0
+-- CREATE SEQUENCE                          0
+-- CREATE TABLESPACE                        0
+--
+-- DROP TABLESPACE                          0
+-- DROP DATABASE                            0
+--
+-- ERRORS                                   0
+-- WARNINGS                                 0
+
+
 -- Create LogUser
 DO
 $$
@@ -65,7 +503,7 @@ CREATE SEQUENCE FunctionID START 2;
 -- OfferRequestItemID
 CREATE SEQUENCE OfferRequestItemID START 1;
 -- ProductID
-CREATE SEQUENCE ProductID START 1;
+CREATE SEQUENCE ProductCode START 1000;
 -- ##########################################################################
 -- Create Indexes
 --CREATE UNIQUE INDEX invoice_idx ON paymentinvoice (invoice);
@@ -111,7 +549,7 @@ CREATE FUNCTION CreateTechnologyData (
 	  vTechnologyData varchar(32672),
 	  vTechnologyDataDescription varchar(32672),
 	  vLicenseFee integer,
-	  vRetailPrice integer,
+	  vProductCode integer,
 	  vTechnologyUUID uuid,
 	  vCreatedBy uuid,
 	  vRoles text[]
@@ -121,8 +559,8 @@ CREATE FUNCTION CreateTechnologyData (
 	TechnologyDataName varchar(250),
 	TechnologyUUID uuid,
 	TechnologyData varchar(32672),
+	ProductCode integer,
 	LicenseFee integer,
-	etailPrice integer,
 	TechnologyDataDescription varchar(32672),
 	TechnologyDataThumbnail bytea,
 	TechnologyDataImgRef character varying,
@@ -139,8 +577,8 @@ CREATE FUNCTION CreateTechnologyData (
 
       BEGIN
 	IF(vIsAllowed) then
-		INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, RetailPrice, TechnologyID, CreatedBy, CreatedAt)
-        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyID, vCreatedBy, now());
+		INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, ProductCode, TechnologyID, CreatedBy, CreatedAt)
+        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, vTechnologyID, vCreatedBy, now());
 	else
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
 		 RETURN;
@@ -154,7 +592,7 @@ CREATE FUNCTION CreateTechnologyData (
 				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
-								|| ', RetailPrice: ' || cast(vRetailPrice as varchar)
+                                || ', ProductCode: ' || cast(vProductCode as varchar)
                                 || ', CreatedBy: ' || vCreatedBy);
 
         -- End Log if success
@@ -165,7 +603,7 @@ CREATE FUNCTION CreateTechnologyData (
 			tc.TechnologyUUID,
 			td.TechnologyData,
 			td.LicenseFee,
-			td.RetailPrice,
+			td.ProductCode,
 			td.TechnologyDataDescription,
 			td.TechnologyDataThumbnail,
 			td.TechnologyDataImgRef,
@@ -186,7 +624,7 @@ CREATE FUNCTION CreateTechnologyData (
 				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
-								|| ', RetailPrice: ' || cast(vRetailPrice as varchar)
+                                || ', ProductCode: ' || cast(vProductCode as varchar)
                                 || ', CreatedBy: ' || vCreatedBy);
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyData';
@@ -1263,18 +1701,18 @@ Return Value:
  TODO: Rollback in Exception | Exception from Subfunctions | Change Return Value
 ######################################################*/
 -- Set TechnologyData
-CREATE FUNCTION public.settechnologydata(
+CREATE OR REPLACE FUNCTION public.settechnologydata(
     IN vtechnologydataname character varying,
     IN vtechnologydata character varying,
     IN vtechnologydatadescription character varying,
     IN vtechnologyuuid uuid,
     IN vlicensefee integer,
-    IN vretailprice integer,
+    IN vproductcode integer,
     IN vtaglist text[],
     IN vcomponentlist text[],
     IN vcreatedby uuid,
-    IN vRoles text[])
-  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, technologyuuid uuid, technologydata character varying, licensefee integer, retailprice integer, technologydatadescription character varying, technologydatathumbnail bytea, technologydataimgref character varying, taglist uuid[], componentlist uuid[], createdat timestamp with time zone, createdby uuid) AS
+    IN vroles text[])
+  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, technologyuuid uuid, technologydata character varying, licensefee integer, productcode integer, technologydatadescription character varying, technologydatathumbnail bytea, technologydataimgref character varying, taglist uuid[], componentlist uuid[], createdat timestamp with time zone, createdby uuid) AS
 $BODY$
 	#variable_conflict use_column
       DECLARE 	vCompUUID uuid;
@@ -1284,6 +1722,7 @@ $BODY$
 				vTechnologyID integer := (select technologyID from technologies where technologyUUID = vTechnologyUUID);
 				vFunctionName varchar := 'SetTechnologyData';
 				vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+				vAlreadExists integer := (select 1 from technologydata where technologydataname = vtechnologydataname);
 
 	BEGIN
 
@@ -1298,12 +1737,14 @@ $BODY$
 			 end if;
 		END LOOP;
 		-- Proof if all Tags are avaiable
-		FOREACH vTagName in array vTagList
-		LOOP
-			 if not exists (select tagID from tags where tagname = vTagName) then
-				perform public.createtag(vTagName,vCreatedby, vRoles);
-			 end if;
-		END LOOP;
+		IF (vTagList != null) THEN
+			FOREACH vTagName in array vTagList
+			LOOP
+				 if not exists (select tagID from tags where tagname = vTagName) then
+					perform public.createtag(vTagName,vCreatedby, vRoles);
+				 end if;
+			END LOOP;
+		END IF;
 		-- Proof if technology is avaiable
 		if not exists (select technologyid from technologies where technologyuuid = vTechnologyUUID) then
 			raise exception using
@@ -1312,15 +1753,43 @@ $BODY$
 		end if;
 
 		-- Create new TechnologyData
-		perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vRetailPrice, vTechnologyUUID, vCreatedBy, vRoles);
-		vTechnologyDataID := (select currval('TechnologyDataID'));
-		vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
-		-- Create relation from Components to TechnologyData
-		perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList, vRoles);
+		IF(vAlreadExists is null) THEN
+			perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, vTechnologyUUID, vCreatedBy, vRoles);
+			vTechnologyDataID := (select currval('TechnologyDataID'));
+			vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
 
-		-- Create relation from Tags to TechnologyData
-		perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList, CreatedBy, vRoles);
+			RAISE NOTICE '%', vTechnologyDataID;
+			-- Create relation from Components to TechnologyData
+			perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList, vRoles);
 
+			-- Create relation from Tags to TechnologyData
+			IF (vTagList != null) THEN
+				perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList, CreatedBy, vRoles);
+			END IF;
+		ELSE
+			UPDATE technologydata set
+				TechnologyData = vTechnologyData,
+				TechnologyDataDescription = vTechnologyDataDescription,
+				TechnologyID = vTechnologyID,
+				LicenseFee = vLicenseFee,
+				ProductCode = vProductCode,
+				updatedby = vCreatedBy,
+				updatedat = now(),
+				deleted = null
+			WHERE technologydataname = vtechnologydataname;
+
+			vTechnologyDataID := (select technologydataid from technologydata where technologydataname = vtechnologydataname);
+			vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataname = vtechnologydataname);
+
+			--update tags  (delete and create it again)
+			delete from technologydatatags where technologydataid = vTechnologyDataID;
+			IF (vTagList != null) THEN
+				perform public.CreateTechnologyDataTags(vTechnologyDataUUID, vTagList, CreatedBy, vRoles);
+			END IF;
+			--update components (delete and create it again)
+			delete from technologydatacomponents where technologydataid = vTechnologyDataID;
+			perform public.CreateTechnologyDataComponents(vTechnologyDataUUID, vComponentList, vRoles);
+		END IF;
 		-- Begin Log if success
 		perform public.createlog(0,'Set TechnologyData sucessfully', 'SetTechnologyData',
 					'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
@@ -1340,7 +1809,7 @@ $BODY$
 			vTechnologyUUID,
 			TechnologyData,
 			LicenseFee,
-			RetailPrice,
+			ProductCode,
 			TechnologyDataDescription,
 			TechnologyDataThumbnail,
 			TechnologyDataImgRef,
@@ -1349,16 +1818,16 @@ $BODY$
 			td.CreatedAt at time zone 'utc',
 			vCreatedBy as CreatedBy
 		from technologydata td
-		join technologydatatags tt on
+		left outer join technologydatatags tt on
 		td.technologydataid = tt.technologydataid
-		join tags tg on tt.tagid = tg.tagid
+		left outer join tags tg on tt.tagid = tg.tagid
 		join technologydatacomponents tc
 		on tc.technologydataid = td.technologydataid
 		join components co
 		on co.componentid = tc.componentid
 		where td.technologydataid = vTechnologyDataID
 		group by technologydatauuid, td.technologydataname, technologydata,
-			 licensefee, retailprice, technologydatadescription, technologydatathumbnail,
+			 licensefee, productcode, technologydatadescription, technologydatathumbnail,
 			 TechnologyDataImgRef, td.createdat, td.createdby
         );
 
@@ -1473,8 +1942,8 @@ CREATE FUNCTION GetAllTechnologyData(vUserUUID uuid, vRoles text[])
 			technologydataname varchar(250),
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
+			productcode integer,
 			licensefee integer,
-			retailprice integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
 			createdat timestamp with time zone,
@@ -1496,7 +1965,7 @@ CREATE FUNCTION GetAllTechnologyData(vUserUUID uuid, vRoles text[])
 					technologydata,
 					technologydatadescription,
 					licensefee,
-					retailprice,
+					td.productcode,
 					technologydatathumbnail,
 					technologydataimgref,
 					td.createdat  at time zone 'utc',
@@ -1531,7 +2000,7 @@ Return Value: Table with all TechnologyData
     IN vtechnologydatauuid uuid,
     IN vuseruuid uuid,
     IN vRoles text[])
-  RETURNS TABLE(technologydatauuid uuid, technologyuuid uuid, technologydataname character varying, technologydata character varying, technologydatadescription character varying, licensefee integer, retailprice integer, technologydatathumbnail bytea, technologydataimgref character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedyby uuid) AS
+  RETURNS TABLE(technologydatauuid uuid, technologyuuid uuid, technologydataname character varying, technologydata character varying, technologydatadescription character varying, productcode integer, licensefee integer, technologydatathumbnail bytea, technologydataimgref character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedyby uuid) AS
 $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetTechnologyDataById';
@@ -1546,8 +2015,8 @@ $BODY$
 				td.technologydataname,
 				td.technologydata,
 				td.technologydatadescription,
+				td.productcode,
 				td.licensefee,
-				td.retailprice,
 				td.technologydatathumbnail,
 				td.technologydataimgref,
 				td.createdat  at time zone 'utc',
@@ -1558,6 +2027,7 @@ $BODY$
 				join technologies tc
 				on td.technologyid = tc.technologyid
 				where td.technologydatauuid = vtechnologydatauuid
+				and td.deleted is null
 		);
 
 	ELSE
@@ -1593,8 +2063,8 @@ RETURNS TABLE
 			technologydataname varchar(250),
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
+			productcode integer,
 			licensefee integer,
-			retailprice integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
 			createdat timestamp with time zone,
@@ -1616,8 +2086,8 @@ RETURNS TABLE
 				td.technologydataname,
 				technologydata,
 				technologydatadescription,
+				productcode,
 				licensefee,
-				retailprice,
 				technologydatathumbnail,
 				technologydataimgref,
 				td.createdat  at time zone 'utc',
@@ -1628,6 +2098,7 @@ RETURNS TABLE
 			join technologies tc
 			on td.technologyid = tc.technologyid
 			where td.technologydataname = vTechnologyDataName
+			and td.deleted is null
 		);
 
 	ELSE
@@ -1647,12 +2118,15 @@ Get all Components
 Input paramteres: vRoles
 Return Value: Table with all Components
 ######################################################*/
-CREATE FUNCTION public.getallcomponents(vUserUUID uuid, vRoles text[])
+CREATE OR REPLACE FUNCTION public.getallcomponents(
+    IN vuseruuid uuid,
+    IN vroles text[])
   RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid integer, componentdescription character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedby uuid) AS
 $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetAllComponents';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+		vRoot varchar := 'Root';
 
 	BEGIN
 
@@ -1667,6 +2141,7 @@ $BODY$
 			cp.updatedat  at time zone 'utc',
 			cp.updatedby
 			FROM Components cp
+			WHERE cp.componentname != vRoot
 		);
 
 	ELSE
@@ -2120,8 +2595,7 @@ $BODY$
 					tt.technologyuuid,
 					td.technologydata,
 					td.licensefee,
-					td.retailprice,
-					td.licenseproductcode,
+					td.productcode,
 					td.technologydatadescription,
 					td.technologydatathumbnail,
 					td.technologydataimgref,
@@ -2143,8 +2617,7 @@ $BODY$
 					tt.technologyuuid,
 					td.technologydata,
 					td.licensefee,
-					td.retailprice,
-					td.licenseproductcode,
+					td.productcode,
 					td.technologydatadescription,
 					td.technologydatathumbnail,
 					td.technologydataimgref,
@@ -2160,6 +2633,7 @@ $BODY$
 				on co.componentid = tc.componentid
 				join technologydata td on
 				td.technologydataid = tc.technologydataid
+				where td.deleted is null
 				group by td.technologydataname
 
 			)
@@ -2687,7 +3161,7 @@ $BODY$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (	select td.technologydataname, count(ts.offerid)::integer, (sum(td.retailprice))/100000::numeric(21,4) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (	select td.technologydataname, count(ts.offerid)::integer, (sum(td.licensefee*ri.amount))/100000::numeric(21,4) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.offerid = lo.offerid
 			join offerrequest oq
@@ -2699,6 +3173,7 @@ $BODY$
 			where (select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+			AND td.deleted is null
 			group by td.technologydataname
 			order by count(ts.offerid) desc limit vTopValue
 		);
@@ -2722,11 +3197,11 @@ Input paramteres: vSinceDate  timestamp
 				  vTopValue integer
 Return Value: TechnologyDataName, Rank value
 ######################################################*/
-CREATE FUNCTION public.GetTopTechnologyDataSinceForUser(
+CREATE OR REPLACE FUNCTION public.gettoptechnologydatasinceforuser(
     IN vsincedate timestamp without time zone,
     IN vtopvalue integer,
-	IN vUserUUID uuid,
-    IN vRoles text[])
+    IN vuseruuid uuid,
+    IN vroles text[])
   RETURNS TABLE(technologydataname character varying, rank integer, revenue numeric) AS
 $BODY$
 
@@ -2738,7 +3213,7 @@ $BODY$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (	select td.technologydataname, count(ts.offerid)::integer, (sum(td.retailprice))/100000::numeric(21,4) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (	select td.technologydataname, count(ts.offerid)::integer, (sum(td.licensefee*ri.amount))/100000::numeric(21,4) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.offerid = lo.offerid
 			join offerrequest oq
@@ -2749,8 +3224,8 @@ $BODY$
 			on ri.technologydataid = td.technologydataid
 			where (select datediff('second',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('minute',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
-			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0 AND
-			td.createdby = vUserUUID
+			(select datediff('hour',vSinceDate::timestamp,activatedat::timestamp)) >= 0
+			AND td.deleted is null
 			group by td.technologydataname
 			order by count(ts.offerid) desc limit vTopValue
 		);
@@ -2763,7 +3238,7 @@ $BODY$
 	END;
 
 	$BODY$
-	  LANGUAGE 'plpgsql';
+  LANGUAGE plpgsql VOLATILE;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -2809,6 +3284,7 @@ $$
 				tc.technologydataid = td.technologydataid
 				join components co on
 				co.componentid = tc.componentid
+				where td.deleted is null
 			),
 		rankTable as (
 		select componentname, count(componentname) as rank from activatedLincenses where
@@ -2928,6 +3404,7 @@ $BODY$
 				ri.technologydataid = td.technologydataid
 				join technologydatacomponents tc on
 				tc.technologydataid = td.technologydataid
+				where td.deleted is null
 				),
 			rankTable as (
 			select technologydataname, activatedat,
@@ -2988,6 +3465,7 @@ $BODY$
 				join technologydatacomponents tc on
 				tc.technologydataid = td.technologydataid
 				where td.createdby = vUserUUID
+				and td.deleted is null
 				),
 			rankTable as (
 			select technologydataname, activatedat,
@@ -3241,8 +3719,10 @@ $$
 			from transactions ts
 			join offerrequest oq
 			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on oq.offerrequestid = ri.offerrequestid
 			join technologydata td
-			on oq.technologydataid = td.technologydataid
+			on ri.technologydataid = td.technologydataid
 			where ts.transactionuuid = vTransactionUUID
 		);
 	ELSE
@@ -3337,7 +3817,6 @@ RETURNS TABLE
 			technologydata varchar(32672),
 			technologydatadescription varchar(32672),
 			licensefee integer,
-			retailprice integer,
 			technologydatathumbnail bytea,
 			technologydataimgref varchar(4000),
 			createdat timestamp with time zone,
@@ -3360,7 +3839,6 @@ RETURNS TABLE
 			technologydata,
 			technologydatadescription,
 			licensefee,
-			retailprice,
 			technologydatathumbnail,
 			technologydataimgref,
 			td.createdat  at time zone 'utc',
@@ -3373,6 +3851,7 @@ RETURNS TABLE
 			join offerrequest oq
 			on oq.technologydataid = td.technologydataid
 			and oq.offerrequestuuid = vOfferRequestUUID
+			and td.deleted is null
 		);
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
@@ -3737,16 +4216,19 @@ $$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select activatedat::date, (sum(td.retailprice))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (select activatedat::date, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.licenseorderid = lo.licenseorderid
 			join offerrequest oq
 			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on ri.offerrequestid = oq.offerrequestid
 			join technologydata td
-			on oq.technologydataid = td.technologydataid
+			on ri.technologydataid = td.technologydataid
 			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
 			(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0
+			AND td.deleted is null
 			group by activatedat::date
 			order by activatedat::date
 		);
@@ -3757,56 +4239,6 @@ $$
 
 	END;
 	$$ LANGUAGE 'plpgsql';
-/* ##########################################################################
--- Author: Marcel Ely Gomes
--- Company: Trumpf Werkzeugmaschine GmbH & Co KG
--- CreatedAt: 2017-03-09
--- Description: Script Get Revenue for given user
--- ##########################################################################
-Input paramteres: vDate timestamp
-				  vUserUUID uuid
-######################################################*/
--- Get Revenue for given user
-CREATE FUNCTION public.getrevenueforuser(
-    IN vdate timestamp without time zone,
-    IN vuseruuid uuid,
-    IN vroles text[])
-  RETURNS TABLE(date date, revenue numeric) AS
-$BODY$
-	DECLARE
-		vFunctionName varchar := 'GetRevenueForUser';
-		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
-
-	BEGIN
-
-	IF(vIsAllowed) THEN
-
-	RETURN QUERY (select activatedat::date, (sum(td.retailprice))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
-			join licenseorder lo
-			on ts.licenseorderid = lo.licenseorderid
-			join offerrequest oq
-			on oq.offerrequestid = ts.offerrequestid
-			join offerrequestitems ri
-			on oq.offerrequestid = ri.offerrequestid
-			join technologydata td
-			on ri.technologydataid = td.technologydataid
-			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			(select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			(select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0 AND
-			td.createdby = vUserUUID
-			group by activatedat::date
-			order by activatedat::date
-		);
-	ELSE
-		 RAISE EXCEPTION '%', 'Insufficiency rigths';
-		 RETURN;
-	END IF;
-
-	END;
-	$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100
-  ROWS 1000;
 /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -3830,16 +4262,19 @@ $$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select activatedat::date, date_part('hour',activatedat) , (sum(td.retailprice)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+	RETURN QUERY (select activatedat::date, date_part('hour',activatedat) , (sum(td.licensefee*ri.amount)/100000)::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
 			join licenseorder lo
 			on ts.licenseorderid = lo.licenseorderid
 			join offerrequest oq
 			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on ri.offerrequestid = oq.offerrequestid
 			join technologydata td
-			on oq.technologydataid = td.technologydataid
+			on ri.technologydataid = td.technologydataid
 			where (select datediff('second',vDate::timestamp,activatedat::timestamp)) >= 0 AND
 			      (select datediff('minute',vDate::timestamp,activatedat::timestamp)) >= 0 AND
 			      (select datediff('hour',vDate::timestamp,activatedat::timestamp)) >= 0
+			AND td.deleted is null
 			group by activatedat::date, date_part('hour',activatedat)
 			order by activatedat::date, date_part('hour',activatedat)
 		);
@@ -3850,6 +4285,91 @@ $$
 
 	END;
 	$$ LANGUAGE 'plpgsql';
+/* ##########################################################################
+-- Author: Marcel Ely Gomes
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-03-09
+-- Description: Script Get Revenue for given user
+-- ##########################################################################
+Input paramteres: vDate timestamp
+				  vUserUUID uuid
+######################################################*/
+-- Get Revenue for given user
+CREATE FUNCTION public.getrevenueforuser(
+    IN vdate timestamp without time zone,
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(date date, technologydataname character varying, revenue numeric) AS
+$BODY$
+	DECLARE
+		vFunctionName varchar := 'GetRevenueForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (with basis as (select activatedat::date, td.technologydataname, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as revenue from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on oq.offerrequestid = ri.offerrequestid
+			join technologydata td
+			on ri.technologydataid = td.technologydataid
+			group by activatedat::date, td.technologydataname, ri.amount
+			order by activatedat::date
+			),
+			techName as (select distinct a.technologydataname
+					from basis a),
+			dates as (select distinct a.activatedat
+					from basis a),
+			allData as (select tn.technologydataname, dt.activatedat
+					from techname tn, dates dt
+
+			), benchmark as
+			(select activatedat::date, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as revenue from transactions ts
+				join licenseorder lo
+				on ts.licenseorderid = lo.licenseorderid
+				join offerrequest oq
+				on oq.offerrequestid = ts.offerrequestid
+				join offerrequestitems ri
+				on oq.offerrequestid = ri.offerrequestid
+				join technologydata td
+				on ri.technologydataid = td.technologydataid
+				group by activatedat::date
+				order by activatedat::date
+			), totalBench as (
+			select ad.activatedat, ad.technologydataname, case when (ba.revenue is null) then 0::numeric(21,2) else ba.revenue end as revenue
+				from allData ad
+				left outer join basis ba
+				on ad.activatedat = ba.activatedat
+				and ad.technologydataname = ba.technologydataname
+			),
+			result as (
+			select ad.activatedat, ad.technologydataname, case when (ba.revenue is null) then 0::numeric(21,2) else ba.revenue end as revenue
+				from allData ad
+				join technologydata td
+				on ad.technologydataname = td.technologydataname
+				left outer join basis ba
+				on ad.activatedat = ba.activatedat
+				and ad.technologydataname = ba.technologydataname
+				where td.createdby = vuseruuid
+				and td.deleted is null
+			union all
+			select bm.activatedat, 'Benchmark' as technologydataname, avg(bm.revenue) as revenue from totalBench bm
+			group by bm.activatedat)
+			select r.activatedat, r.technologydataname, r.revenue from result r
+			order by r.activatedat, r.technologydataname );
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+	$BODY$
+  LANGUAGE plpgsql VOLATILE;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -3859,67 +4379,46 @@ $$
 Input paramteres: vTechnologyDataName varchar(250)
 				  vUserUUID uuid
 ######################################################*/
-create function DeleteTechnologyData(vTechnologyDataName varchar(250), vUserUUID uuid, vRoles text[])
-RETURNS void AS
-$$
+CREATE OR REPLACE FUNCTION public.deletetechnologydata(
+    IN vtechnologydatauuid uuid,
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS boolean AS
+$BODY$
+
 	DECLARE
-		vTechnologyDataId integer := (select TechnologyDataId from technologydata where technologydataname = vTechnologyDataName);
 		vFunctionName varchar := 'DeleteTechnologyData';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
 
-		IF(vIsAllowed) THEN
-		create TEMP table vDeleteValues (technologydataid integer, offerid integer, offerrequestid integer, transactionid integer, paymentinvoiceid integer, paymentid integer, licenseorderid integer);
-		-- Get all necessary IDs
-		insert into vDeleteValues (technologydataid, offerid, offerrequestid, transactionid, paymentinvoiceid, paymentid, licenseorderid)
-		select td.technologydataid, ofr.offerid, oq.offerrequestid, transactionid, pi.paymentinvoiceid, py.paymentid, lo.licenseorderid
-		from technologydata td
-		join offerrequest oq on td.technologydataid = oq.technologydataid
-		join paymentinvoice pi on pi.offerrequestid = oq.offerrequestid
-		left outer join offer ofr on ofr.paymentinvoiceid = pi.paymentinvoiceid
-		left outer join payment py on py.paymentinvoiceid = pi.paymentinvoiceid
-		left outer join licenseorder lo on lo.offerid = ofr.offerid
-		left outer join transactions ts on ts.paymentinvoiceid = pi.paymentinvoiceid
-		where td.technologydataid = vTechnologyDataId;
+	IF(vIsAllowed) THEN
 
-		-- delete transactions
-		delete from transactions where transactionid in (select transactionid from vDeleteValues);
+	 update technologydata set deleted = true
+	 where technologydatauuid = vTechnologyDataUUID;
 
-		-- delete licenseorder
-		delete from licenseorder where licenseorderid  in (select licenseorderid from vDeleteValues);
-
-		-- delete offerid
-		delete from offer where offerid in (select offerid from vDeleteValues);
-
-		-- delete payment
-		delete from payment where paymentid in (select paymentid from vDeleteValues);
-
-		-- delete paymentinvoice
-		delete from paymentinvoice where paymentinvoiceid in (select paymentinvoiceid from vDeleteValues);
-
-		-- delete offerrequest
-		delete from offerrequest where TechnologyDataId = vTechnologyDataID;
-
-		-- delete technologydatacomponents
-		delete from technologydatacomponents where TechnologyDataId = vTechnologyDataID;
-
-		-- delete technologydatatags
-		delete from technologydatatags where TechnologyDataId = vTechnologyDataID;
-
-		-- delete technologydata
-		delete from technologydata where TechnologyDataId = vTechnologyDataID;
-
-		--Drop Temp Table
-		drop table vDeleteValues;
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
-		 RETURN;
+		 RETURN false;
 	END IF;
 
+	-- Begin Log if success
+        perform public.createlog(0,'Delete TechnologyData successfull', 'DeleteTechnologyData',
+                                'TechnologyDataID: ' || cast(vtechnologydatauuid as varchar));
+
+        -- End Log if success
+        RETURN true;
+	 -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'DeleteTechnologyData',
+                                'TechnologyDataID: ' || cast(vtechnologydatauuid as varchar));
+        -- End Log if error
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyDataComponents';
+	RETURN false;
+
 	END;
-$$
-LANGUAGE PLPGSQL;
+		$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
  /* ##########################################################################
 -- Author: Marcel Ely Gomes
 -- Company: Trumpf Werkzeugmaschine GmbH & Co KG
@@ -4001,6 +4500,7 @@ $BODY$
 	RETURN QUERY (	SELECT 	td.createdby
 				FROM TechnologyData td
 				where technologydatauuid = vtechnologydatauuid
+				and td.deleted is null
 		);
 
 	ELSE
@@ -4015,16 +4515,16 @@ $BODY$
   ROWS 1000;
 -- ##########################################################################
 -- Create new ProductID
-create function GetNewProductID(vRoles text[])
+create function GetNewProductCode(vRoles text[])
 RETURNS SetOf Integer AS
 $$
 	DECLARE
-		vFunctionName varchar := 'GetNewProductID';
+		vFunctionName varchar := 'GetNewProductCode';
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
 	BEGIN
 		IF(vIsAllowed) then
-			RETURN QUERY (select nextval('ProductID')::integer);
+			RETURN QUERY (select nextval('ProductCode')::integer);
 		else
 			RAISE EXCEPTION '%', 'Insufficiency rigths';
 			RETURN;
@@ -4033,3 +4533,640 @@ $$
 	END;
 $$
 language plpgsql;
+
+-- #########################################################################
+create function getofferrequestbyid(vOfferRequestUUID uuid, vUserUUID uuid, vRoles text[])
+ returns table(result json) AS
+ $$
+	declare
+		vFunctionName varchar := 'GetOfferRequestById';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+	 RETURN QUERY (select row_to_json (t) as result from (
+			select offerrequestuuid,
+			(
+			select	 array_to_json(array_agg(row_to_json(d)))
+			from (select   td.TechnologyDataUUID::uuid,   oi.Amount, td.ProductCode
+				from offerrequest ofr
+				join offerrequestitems oi
+				on oi.offerrequestid = ofr.offerrequestid
+				join technologydata td
+				on oi.technologydataid = td.technologydataid
+				where offerrequestuuid = vOfferRequestUUID
+				) d
+			 ) as items, HSMID, CreatedAt at time zone 'utc' as CreatedAt, RequestedBy
+		 from offerrequest where offerrequestuuid = vOfferRequestUUID) t
+		 );
+	ELSE
+			RAISE EXCEPTION '%', 'Insufficiency rigths';
+			RETURN;
+	END IF;
+
+	END;
+$$ language plpgsql;
+-- ##########################################################################
+CREATE FUNCTION public.gettotalrevenueforuser(
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(revenue numeric) AS
+$BODY$
+	DECLARE
+		vFunctionName varchar := 'GetTotalRevenueForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (select (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on oq.offerrequestid = ri.offerrequestid
+			join technologydata td
+			on ri.technologydataid = td.technologydataid
+			where td.createdby = vUserUUID
+			and td.deleted is null
+		);
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+	$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+-- ##########################################################################
+-- GetTechnologyDataForUser
+CREATE OR REPLACE FUNCTION public.gettechnologydataforuser(
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, revenue numeric, licensefee integer, componentlist text[], technologydatadescription character varying) AS
+$BODY$
+	DECLARE
+		vFunctionName varchar := 'GetTechnologyDataForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (	with revenue as (select td.technologydataname, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as revenue from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on oq.offerrequestid = ri.offerrequestid
+			join technologydata td
+			on ri.technologydataid = td.technologydataid
+			where td.createdby = vUserUUID
+			group by td.technologydataname
+		), result as (
+		select 	td.technologydatauuid,
+			td.technologydataname,
+			coalesce(rv.revenue,0) as revenue,
+			td.licensefee,
+			array_agg(co.componentname)::text[] as componentlist,
+			td.technologydatadescription
+		from technologydata td
+		left outer join revenue rv on td.technologydataname = rv.technologydataname
+		join technologydatacomponents tc
+		on tc.technologydataid = td.technologydataid
+		join components co
+		on tc.componentid = co.componentid
+		where td.createdby = vUserUUID
+		and td.deleted is null
+		group by td.technologydatauuid, td.technologydataname, td.licensefee, rv.revenue, td.technologydatadescription)
+		select  r.technologydatauuid,
+			r.technologydataname,
+			sum(r.revenue) as revenue,
+			r.licensefee,
+			r.componentlist,
+			r.technologydatadescription
+		from result r
+		group by r.technologydatauuid,
+			r.technologydataname,
+			r.licensefee,
+			r.componentlist,
+			r.technologydatadescription
+		);
+
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE;
+-- ##########################################################################
+CREATE FUNCTION public.getrevenueperdayforuser(
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(date date, revenue numeric) AS
+$BODY$
+	DECLARE
+		vFunctionName varchar := 'GetRevenuePerForUSer';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (select activatedat::date, (sum(td.licensefee*ri.amount))/100000::numeric(21,2) as "Revenue (in IUNOs)" from transactions ts
+			join licenseorder lo
+			on ts.licenseorderid = lo.licenseorderid
+			join offerrequest oq
+			on oq.offerrequestid = ts.offerrequestid
+			join offerrequestitems ri
+			on ri.offerrequestid = oq.offerrequestid
+			join technologydata td
+			on ri.technologydataid = td.technologydataid
+			where  activatedat::date = now()::date
+			and td.createdby = vUserUUID
+			and td.deleted is null
+			group by activatedat::date
+			order by activatedat::date
+		);
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+	$BODY$
+  LANGUAGE plpgsql VOLATILE;
+-- ##########################################################################
+CREATE FUNCTION public.GetTopTechnologyDataForUser(
+    IN vtopvalue integer,
+    IN vuseruuid uuid,
+    IN vroles text[])
+  RETURNS TABLE(technologydataname character varying, rank integer, revenue numeric) AS
+$BODY$
+
+	DECLARE
+		vFunctionName varchar := 'GetTopTechnologyDataForUser';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+	BEGIN
+
+	IF(vIsAllowed) THEN
+
+	RETURN QUERY (	with result as (
+				select 	td.technologydataname,
+					count(ts.offerid)::integer as rank,
+					(sum(td.licensefee*ri.amount))/100000::numeric(21,4) as revenue from transactions ts
+				join licenseorder lo
+				on ts.offerid = lo.offerid
+				join offerrequest oq
+				on oq.offerrequestid = ts.offerrequestid
+				join offerrequestitems ri on
+				oq.offerrequestid = ri.offerrequestid
+				join technologydata td
+				on ri.technologydataid = td.technologydataid
+				where td.createdby = vuseruuid
+				AND td.deleted is null
+				group by td.technologydataname
+			)
+				select r.technologydataname, r.rank, r.revenue
+				from result r
+				order by r.rank desc, r.revenue desc limit vTopValue
+		);
+
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+
+	END;
+	$BODY$
+  LANGUAGE plpgsql;
+-- ##########################################################################
+-- Author: Marcel Ely Gomes
+-- Company: Trumpf Werkzeugmaschine GmbH & Co KG
+-- CreatedAt: 2017-02-07
+-- Description: Create Base Data for the MarketplaceCode Database
+-- Changes:
+-- ##########################################################################
+insert into roles(roleid, rolename) values (0,'Admin');
+insert into functions(functionid, functionname) values (0,'CreateRole');
+insert into rolespermissions (roleid,functionid) values (0,0);
+insert into functions(functionid, functionname) values (1,'SetPermission');
+insert into rolespermissions(roleid, functionid) values (0,1);
+
+DO
+$$
+	BEGIN
+		perform createrole('{Public}','Everyone that visit the marketplace without login. The public role Is only allowed to read a pre defined area (e.g. Landing Page).', null,'{Admin}');
+		perform createrole('{MachineOperator}','It can be the machine owner as well as the machine operator.', null,'{Admin}');
+		perform createrole('{TechnologyDataOwner}','Is the creator and administrator of Technology Data', null,'{Admin}');
+		perform createrole('{MarketplaceComponent}','Is the creator and administrator of Technology Data', null,'{Admin}');
+		perform createrole('{TechnologyAdmin}','Administrate technologies.', null,'{Admin}');
+		perform createrole('{MarketplaceCore}','Is the only role with access to core functions', null,'{Admin}');
+	END;
+$$;
+--Create Permissions
+DO
+$$
+	BEGIN
+		--Public
+		perform SetPermission('{Public}', 'GetMostUsedComponents',null,'{Admin}');
+		perform SetPermission('{Public}', 'GetRevenuePerDaySince',null,'{Admin}');
+		perform SetPermission('{Public}', 'GetWorkLoadSince',null,'{Admin}');
+        perform SetPermission('{Public}', 'GetRevenuePerHourSince',null,'{Admin}');
+
+        --MarketplaceCore
+		perform SetPermission('{MarketplaceCore}', 'GetTransactionById',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'SetPayment',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'CreateLicenseOrder',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'GetNewProductCode',null,'{Admin}');
+		perform SetPermission('{MarketplaceCore}', 'GetOfferRequestById',null,'{Admin}');
+		-- MachineOperator
+		--perform SetPermission('{Admin}','CreateAttribute',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponent',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponentsAttribute',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponentsTechnologies',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateLicenseOrder',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','CreateOffer',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','CreateOfferRequest',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','CreatePaymentInvoice',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTag',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnology',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyDataComponents',null,'{Admin}');
+		--perform SetPermission('{Admin}','DeleteTechnologyData',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','GetAllAttributes',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','GetActivatedLicensesSince',null,'{Admin}');
+		perform SetPermission('{MachineOperator}','GetAllComponents',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetAllOffers',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetAllTags',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAllTechnlogies',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetAllUsers',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetAttributeById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetAttributeByName',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetComponentById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetComponentByName',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetComponentsByTechnology',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetComponentsForTechnologyDataId',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetLicenseFeeByTransaction',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetMostUsedComponents',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetOfferById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetOfferByRequestId',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetOfferForPaymentInvoice',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForTicket',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetOfferForTransaction',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetPaymentInvoiceForOfferRequest',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetRevenuePerDaySince',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTagById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTagByName',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyByName',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyDataById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyDataByName',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyDataByOfferRequest',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyDataByParams',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTechnologyForOfferRequest',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTopTechnologyDataSince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTransactionById',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetTransactionByOfferRequest',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetWorkLoadSince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetComponent',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'SetPayment',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'SetPaymentInvoiceOffer',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'SetTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'CreateTechnologyDataTags',null,'{Admin}');
+		perform SetPermission('{MachineOperator}', 'GetLicenseFeeByTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyDataOwnerById',null,'{Admin}');
+
+		--TechnologyDataOwner
+		perform SetPermission('{TechnologyDataOwner}','CreateAttribute',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateComponent',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateComponentsAttribute',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateComponentsTechnologies',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateLicenseOrder',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOffer',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreatePaymentInvoice',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateTag',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnology',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateTechnologyData',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','CreateTechnologyDataComponents',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','DeleteTechnologyData',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','GetAllAttributes',null,'{Admin}');
+		--perform SetPermission('{Admin}','GetActivatedLicensesSince',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','GetAllComponents',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAllOffers',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetAllTags',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetAllTechnlogies',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetAllUsers',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetAttributeById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetAttributeByName',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetComponentById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetComponentByName',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetComponentsByTechnology',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetComponentsForTechnologyDataId',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetLicenseFeeByTransaction',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetMostUsedComponents',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferByRequestId',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForPaymentInvoice',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForTicket',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForTransaction',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetPaymentInvoiceForOfferRequest',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetRevenuePerDaySince',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTagById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTagByName',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTechnologyById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTechnologyByName',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTechnologyDataById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTechnologyDataByName',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyDataByOfferRequest',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTechnologyDataByParams',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyForOfferRequest',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTopTechnologyDataSince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTransactionById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTransactionByOfferRequest',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetWorkLoadSince',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'SetComponent',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPayment',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPaymentInvoiceOffer',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'SetTechnologyData',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'CreateTechnologyDataTags',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetLicenseFeeByTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyDataOwnerById',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTopTechnologyDataSinceForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetActivatedLicensesSinceForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetMostUsedComponentsForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetWorkloadSinceForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetRevenueForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTotalRevenueForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','GetTechnologyDataForUser',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetRevenuePerForUSer',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}', 'GetTopTechnologyDataForUser',null,'{Admin}');
+
+		--MarketplaceComponent
+
+		--TechnologyAdmin
+		perform SetPermission('{TechnologyAdmin}','CreateAttribute',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','CreateComponent',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','CreateComponentsAttribute',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','CreateComponentsTechnologies',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateLicenseOrder',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOffer',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreatePaymentInvoice',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','CreateTag',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','CreateTechnology',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyDataComponents',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}','DeleteTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}','GetAllAttributes',null,'{Admin}');
+		--perform SetPermission('{Admin}','GetActivatedLicensesSince',null,'{Admin}');
+		--perform SetPermission('{Admin}','GetAllComponents',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAllOffers',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAllTags',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetAllTechnlogies',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAllUsers',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAttributeById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetAttributeByName',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetComponentById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetComponentByName',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetComponentsByTechnology',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetComponentsForTechnologyDataId',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetLicenseFeeByTransaction',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetMostUsedComponents',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferByRequestId',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForPaymentInvoice',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForTicket',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetOfferForTransaction',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetPaymentInvoiceForOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetRevenuePerDaySince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTagById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTagByName',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetTechnologyById',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetTechnologyByName',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetTechnologyDataById',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetTechnologyDataByName',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyDataByOfferRequest',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'GetTechnologyDataByParams',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyForOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTopTechnologyDataSince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTransactionById',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTransactionByOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetWorkLoadSince',null,'{Admin}');
+		perform SetPermission('{TechnologyAdmin}', 'SetComponent',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPayment',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPaymentInvoiceOffer',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'CreateTechnologyDataTags',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetLicenseFeeByTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'GetTechnologyDataOwnerById',null,'{Admin}');
+
+		--Admin
+		--perform SetPermission('{Admin}','CreateAttribute',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponent',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponentsAttribute',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateComponentsTechnologies',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateLicenseOrder',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOffer',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateOfferRequest',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreatePaymentInvoice',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTag',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnology',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}','CreateTechnologyDataComponents',null,'{Admin}');
+		perform SetPermission('{Admin}','DeleteTechnologyData',null,'{Admin}');
+		perform SetPermission('{Admin}','GetAllAttributes',null,'{Admin}');
+		perform SetPermission('{Admin}','GetActivatedLicensesSince',null,'{Admin}');
+		perform SetPermission('{Admin}','GetAllComponents',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAllOffers',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAllTags',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAllTechnlogies',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAllUsers',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAttributeById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetAttributeByName',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetComponentById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetComponentByName',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetComponentsByTechnology',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetComponentsForTechnologyDataId',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetLicenseFeeByTransaction',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetMostUsedComponents',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetOfferById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetOfferByRequestId',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetOfferForPaymentInvoice',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetOfferForTicket',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetOfferForTransaction',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetPaymentInvoiceForOfferRequest',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetRevenuePerDaySince',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTagById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTagByName',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyByName',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyDataById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyDataByName',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyDataByOfferRequest',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyDataByParams',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyForOfferRequest',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTopTechnologyDataSince',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTransactionById',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTransactionByOfferRequest',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetWorkLoadSince',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetComponent',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPayment',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetPaymentInvoiceOffer',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'SetTechnologyData',null,'{Admin}');
+		--perform SetPermission('{Admin}', 'CreateTechnologyDataTags',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetLicenseFeeByTechnologyData',null,'{Admin}');
+		perform SetPermission('{Admin}', 'GetTechnologyDataOwnerById',null,'{Admin}');
+
+
+
+
+	END;
+$$;
+
+DO
+ $$
+    DECLARE vUserUUID uuid := 'adb4c297-45bd-437e-ac90-9179eea41730';
+			vCompParentID uuid;
+			vRoleName text[] := '{TechnologyAdmin}';
+	BEGIN
+    	-- Just in case. set all sequences to start point
+        ALTER SEQUENCE componentid RESTART WITH 1;
+        ALTER SEQUENCE technologyid RESTART WITH 1;
+        ALTER SEQUENCE technologydataid RESTART WITH 1;
+        ALTER SEQUENCE tagid RESTART WITH 1;
+        ALTER SEQUENCE attributeid RESTART WITH 1;
+
+        perform public.createtechnology(
+            'Juice Mixer',			-- <technologyname character varying>,
+            'Machine to mix juice',	-- <technologydescription character varying>,
+            vUserUUID,
+	    vRoleName 				-- <createdby integer>
+        );
+
+        update technologies set technologyUUID = 'da17a8fc-a5b3-40a4-b6a5-276667db027a'
+        where technologyname = 'Juice Mixer';
+        -- Create Components & Attributes
+
+        perform public.setcomponent(
+            'Root',   			-- <componentname character varying>,
+            'Root',	      			-- <componentparentid integer>,
+            'Root component', 	-- <componentdescription character varying>,
+            '{Root}',			-- <attributelist text[]>,
+            '{Juice Mixer}',  				-- <technologylist text[]>,
+            vUserUUID,
+	    vRoleName  			-- <createdby integer>
+         );
+        -- 1 Wasser
+        perform public.setcomponent(
+            'Mineralwasser',		-- <componentname character varying>,
+            'Root',	      			-- <componentparentid integer>,
+            'Mineralwasser', 	-- <componentdescription character varying>,
+            '{Normal}',			-- <attributelist text[]>,
+            '{Juice Mixer}', 				-- <technologylist text[]>,
+            vUserUUID,
+	    vRoleName  			-- <createdby integer>
+         );
+        -- 2 Apfelsaft
+        perform public.setcomponent(
+            'Apfelsaft',		-- <componentname character varying>,
+            'Root',	      			-- <componentparentid integer>,
+            'Apfelsaft', 	-- <componentdescription character varying>,
+            '{Normal}',			-- <attributelist text[]>,
+            '{Juice Mixer}', 				-- <technologylist text[]>,
+            vUserUUID,
+	    vRoleName  			-- <createdby integer>
+         );
+		 -- 3 Orange
+        perform public.setcomponent(
+            'Orangensaft',		-- <componentname character varying>,
+            'Root',	      			-- <componentparentid integer>,
+            'Orangensaft', 	-- <componentdescription character varying>,
+            '{Normal}',			-- <attributelist text[]>,
+            '{Juice Mixer}', 				-- <technologylist text[]>,
+            vUserUUID,
+	    vRoleName  			-- <createdby integer>
+         );
+		-- 4 Mangosaft
+        perform public.setcomponent(
+            'Mangosaft',		-- <componentname character varying>,
+            'Root',	      			-- <componentparentid integer>,
+            'Mangosaft', 	-- <componentdescription character varying>,
+            '{Normal}',			-- <attributelist text[]>,
+            '{Juice Mixer}', 				-- <technologylist text[]>,
+            vUserUUID,
+	    vRoleName  			-- <createdby integer>
+         );
+        -- 5 Kirschsaft
+        perform public.setcomponent(
+            'Kirschsaft',		-- <componentname character varying>,
+            'Root',	      			-- <componentparentid integer>,
+            'Kirschsaft',  	-- <componentdescription character varying>,
+            '{Normal}',			-- <attributelist text[]>,
+            '{Juice Mixer}', 				-- <technologylist text[]>,
+            vUserUUID,
+	    vRoleName  			-- <createdby integer>
+         );
+        -- 6 Bananensaft
+        perform public.setcomponent(
+            'Bananensaft',				-- <componentname character varying>,
+            'Root',	      			-- <componentparentid integer>,
+            'Bananensaft',			 	-- <componentdescription character varying>,
+            '{Normal}',			-- <attributelist text[]>,
+            '{Juice Mixer}', 				-- <technologylist text[]>,
+            vUserUUID,
+	    vRoleName  			-- <createdby integer>
+         );
+         -- 7 Maracujasaft
+        perform public.setcomponent(
+            'Maracujasaft',		-- <componentname character varying>,
+            'Root',	      			-- <componentparentid integer>,
+            'Maracujasaft', 		-- <componentdescription character varying>,
+            '{Normal}',			-- <attributelist text[]>,
+            '{Juice Mixer}', 				-- <technologylist text[]>,
+            vUserUUID,
+	    vRoleName  			-- <createdby integer>
+         );
+        -- 8 Ananassaft
+        perform public.setcomponent(
+            'Ananassaft',		-- <componentname character varying>,
+            'Root',	      			-- <componentparentid integer>,
+            'Ananassaft', 	-- <componentdescription character varying>,
+            '{Normal}',			-- <attributelist text[]>,
+            '{Juice Mixer}', 				-- <technologylist text[]>,
+            vUserUUID,
+            vRoleName  			-- <createdby integer>
+         );
+
+		update components set componentuuid = '8f0bc514-7219-46d2-999d-c45c930c3e7c'::uuid where componentname = 'Root';
+		update components set componentuuid = '570a5df0-a044-4e22-b6e6-b10af872d75c'::uuid where componentname = 'Mineralwasser';
+		update components set componentuuid = '198f1571-4846-4467-967a-00427ab0208d'::uuid where componentname = 'Apfelsaft';
+		update components set componentuuid = 'f6d361a9-5a6f-42ad-bff7-0913750809e4'::uuid where componentname = 'Orangensaft';
+		update components set componentuuid = 'fac1ee6f-185f-47fb-8c56-af57cd428aa8'::uuid where componentname = 'Mangosaft';
+		update components set componentuuid = '0425393d-5b84-4815-8eda-1c27d35766cf'::uuid where componentname = 'Kirschsaft';
+		update components set componentuuid = '4cfa2890-6abd-4e21-a7ab-17613ed9a5c9'::uuid where componentname = 'Bananensaft';
+		update components set componentuuid = '14b72ce5-fec1-48ec-83ff-24b124f98dc8'::uuid where componentname = 'Maracujasaft';
+		update components set componentuuid = 'bf2cfd66-5b6f-4655-8e7f-04090308f6db'::uuid where componentname = 'Ananassaft';
+   END;
+ $$;
+COMMIT;
+
+update components set componentuuid = '8f0bc514-7219-46d2-999d-c45c930c3e7c'::uuid where componentname = 'Root';
+update components set componentuuid = '570a5df0-a044-4e22-b6e6-b10af872d75c'::uuid where componentname = 'Mineralwasser';
+update components set componentuuid = '198f1571-4846-4467-967a-00427ab0208d'::uuid where componentname = 'Apfelsaft';
+update components set componentuuid = 'f6d361a9-5a6f-42ad-bff7-0913750809e4'::uuid where componentname = 'Orangensaft';
+update components set componentuuid = 'fac1ee6f-185f-47fb-8c56-af57cd428aa8'::uuid where componentname = 'Mangosaft';
+update components set componentuuid = '0425393d-5b84-4815-8eda-1c27d35766cf'::uuid where componentname = 'Kirschsaft';
+update components set componentuuid = '4cfa2890-6abd-4e21-a7ab-17613ed9a5c9'::uuid where componentname = 'Bananensaft';
+update components set componentuuid = '14b72ce5-fec1-48ec-83ff-24b124f98dc8'::uuid where componentname = 'Maracujasaft';
+update components set componentuuid = 'bf2cfd66-5b6f-4655-8e7f-04090308f6db'::uuid where componentname = 'Ananassaft';

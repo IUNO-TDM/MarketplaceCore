@@ -4,12 +4,15 @@
 
 const EventEmitter = require('events').EventEmitter;
 const util = require('util');
-const http = require('http');
-const config = require('../global/constants').CONFIG;
+const request = require('request');
+const config = require('../config/config_loader');
+const helper = require('../services/helper_service');
 
+var Invoice = require('../model/invoice');
+var Transfer = require('../model/transfer');
 var logger = require('../global/logger');
 var io = require('socket.io-client');
-var queries = require('../connectors/pg-queries');
+var dbPayment = require('../database/function/payment');
 
 var PaymentService = function () {
     logger.log('a new instance of PaymentService');
@@ -19,8 +22,25 @@ var PaymentService = function () {
 const payment_service = new PaymentService();
 util.inherits(PaymentService, EventEmitter);
 
+function buildOptionsForRequest(method, protocol, host, port, path, qs) {
 
-payment_service.socket = io.connect('http://localhost:8080/invoices', {transports: ['websocket']});
+    return {
+        method: method,
+        url: protocol + '://' + host + ':' + port + path,
+        qs: qs,
+        json: true,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+}
+
+payment_service.socket = io.connect(helper.formatString(
+    '{0}://{1}:{2}/invoices',
+    config.HOST_SETTINGS.PAYMENT_SERVICE.PROTOCOL,
+    config.HOST_SETTINGS.PAYMENT_SERVICE.HOST,
+    config.HOST_SETTINGS.PAYMENT_SERVICE.PORT
+), {transports: ['websocket']});
 
 payment_service.socket.on('connect', function () {
     logger.debug("connected to paymentservice");
@@ -30,17 +50,16 @@ payment_service.socket.on('StateChange', function (invoice) {
     logger.debug("PaymentService StateChange: " + invoice);
     invoice = JSON.parse(invoice);
 
-    if (invoice.state && invoice.state != 'unknown') {
+    if (invoice.state && invoice.state !== 'unknown') {
         // Store state change in database
         var paymentData = {
             transactionUUID: invoice.referenceId,
             extInvoiceId: invoice.invoiceId,
             depth: invoice.depth,
             confidenceState: invoice.state,
-            bitcoinTransaction: null,
-            userUUID: config.USER_UUID
+            bitcoinTransaction: null
         };
-        queries.SetPayment(config.USER_UUID, paymentData, function (err, payment) {
+        dbPayment.SetPayment(config.USER, paymentData, function (err, payment) {
             if (!err) {
                 payment_service.emit('StateChange', {
                     invoice: invoice,
@@ -57,52 +76,68 @@ payment_service.socket.on('disconnect', function () {
 });
 
 payment_service.createLocalInvoice = function (invoice, callback) {
-    var body = JSON.stringify(invoice);
-    var options = {
-        hostname: 'localhost',
-        port: 8080,
-        path: '/v1/invoices/',
-        agent: false,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
-    var req = http.request(options, function (res) {
-            logger.log("Got answer from PS for CreateLocalInvoice:" + res.statusCode + ' ' + res.statusMessage);
-            res.on('data', function (data) {
-                if (res.statusCode > 201) {
-                    logger.warn('CreateLocalInvoice: Call not successful. Response: + ' + data);
-                }
+    if (typeof(callback) !== 'function') {
 
-                var invoice = JSON.parse(data);
-                payment_service.registerStateChangeUpdates(invoice.invoiceId);
-                callback(null, invoice);
-            });
+        callback = function () {
+            logger.info('Callback not registered');
         }
-    ).end(body);
-};
+    }
+
+    var options = buildOptionsForRequest(
+        'POST',
+        config.HOST_SETTINGS.PAYMENT_SERVICE.PROTOCOL || 'http',
+        config.HOST_SETTINGS.PAYMENT_SERVICE.HOST || 'localhost',
+        config.HOST_SETTINGS.PAYMENT_SERVICE.PORT || 8080,
+        '/v1/invoices'
+    );
+    options.body = invoice;
+
+    request(options, function (e, r, jsonData) {
+        var err = logger.logRequestAndResponse(e, options, r, jsonData);
+
+
+        if (err) {
+            logger.crit('[payment_service] error while creating local invoice');
+            return callback(err);
+        }
+
+        var invoice = new Invoice().CreateFromJSON(jsonData);
+
+        payment_service.registerStateChangeUpdates(invoice.invoiceId);
+        callback(err, invoice);
+    });
+}
+;
 
 payment_service.getInvoiceTransfers = function (invoice, callback) {
-    var options = {
-        hostname: 'localhost',
-        port: 8080,
-        path: '/v1/invoices/' + invoice.invoiceId + '/transfers',
-        agent: false,
-        method: 'GET'
-    };
-    var req = http.request(options, function (res) {
-            logger.log("Got answer from PS for GetInvoiceTransfer:" + res.statusCode + ' ' + res.statusMessage);
-            res.on('data', function (data) {
-                if (res.statusCode > 201) {
-                    logger.warn('GetInvoiceTransfers: Call not successful. Response: + ' + data);
-                }
+    if (typeof(callback) !== 'function') {
 
-                var transfers = JSON.parse(data.toString());
-                callback(null, transfers);
-            });
+        callback = function () {
+            logger.info('Callback not registered');
         }
-    ).end();
+    }
+    try {
+        var options = buildOptionsForRequest(
+            'GET',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.PROTOCOL || 'http',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.HOST || 'localhost',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.PORT || 8080,
+            '/v1/invoices/' + invoice.invoiceId + '/transfers'
+        );
+
+
+        request(options, function (e, r, jsonData) {
+            var err = logger.logRequestAndResponse(e, options, r, jsonData);
+            var transfers = Transfer.CreateListFromJSON(jsonData);
+
+            callback(err, transfers);
+        });
+    }
+    catch (err) {
+        logger.crit(err);
+        callback(err);
+    }
+
 };
 
 
