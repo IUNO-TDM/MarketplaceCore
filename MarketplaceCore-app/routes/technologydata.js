@@ -67,6 +67,7 @@ router.post('/', validate({
             techData.taglist = data['tagList'];
             techData.componentlist = data['componentList'];
             techData.productcode = productCode;
+            techData.technologydataimgref = imageService.getRandomImagePath();
 
             techData.Create(req.query['userUUID'], req.token.user.roles, function (err, data) {
                 if (err) {
@@ -104,8 +105,8 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
                 res.sendFile(path.resolve(imgPath));
             }
             else {
-                logger.info('No image found for technologyData. Sending random image instead');
-                res.sendFile(path.resolve(imageService.getRandomImagePath()));
+                logger.info('No image found for technologyData. Sending default image instead');
+                res.sendFile(path.resolve(imageService.getDefaultImagePathForUUID(req.params['id'])));
             }
 
         }
