@@ -14,7 +14,7 @@ const Component = require('../database/model/component');
 const helper = require('../services/helper_service');
 const licenseCentral = require('../adapter/license_central_adapter');
 const dbProductCode = require('../database/function/productCode');
-
+const imageService = require('../services/image_service');
 const CONFIG = require('../config/config_loader');
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
@@ -104,8 +104,8 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
                 res.sendFile(path.resolve(imgPath));
             }
             else {
-                logger.info('No image found for technologyData. Sending default image instead');
-                res.sendFile(path.resolve('images/recipes/default.svg'));
+                logger.info('No image found for technologyData. Sending random image instead');
+                res.sendFile(path.resolve(imageService.getRandomImagePath()));
             }
 
         }
