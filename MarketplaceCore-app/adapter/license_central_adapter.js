@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const p12File = path.resolve(__dirname, CONFIG.LICENSE_CENTRAL.CERT.P12_FILE_PATH);
+const caFile = path.resolve(CONFIG.TRUSTED_CA_FILE_PATH);
 
 const self = {};
 
@@ -19,22 +20,16 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
         headers: {
             'content-type': 'application/json',
             'accept': 'application/json'
-        }
+        },
     };
-
-    // if (CONFIG.LICENSE_CENTRAL.BASIC_AUTH.USER && CONFIG.LICENSE_CENTRAL.BASIC_AUTH.PASSWORD) {
-    //     options.headers['Authorization'] =
-    //         'Basic ' + new Buffer(CONFIG.LICENSE_CENTRAL.BASIC_AUTH.USER + ':' + CONFIG.LICENSE_CENTRAL.BASIC_AUTH.PASSWORD).toString('base64')
-    // }
 
     try {
         options.pfx = fs.readFileSync(p12File);
         options.passphrase = CONFIG.LICENSE_CENTRAL.CERT.PASS_PHRASE;
-        //     options.secureProtocol = 'SSLv3_method'
-        // options.securityOptions = 'SSL_OP_NO_SSLv3';
+        options.ca = fs.readFileSync(caFile);
     }
     catch (err) {
-        logger.warn('[license_central_adapter] Error loading client certificates');
+        logger.warn('[license_central_adapter] Error loading certificates');
         logger.info(err);
     }
 

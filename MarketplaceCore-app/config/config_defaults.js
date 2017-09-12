@@ -76,4 +76,6 @@ self.USER = {
 
 self.PRODUCT_CODE_PREFIX = 'pc';
 
+self.TRUSTED_CA_FILE_PATH = 'resources/ca_trusted/chain.pem';
+
 module.exports = self;
