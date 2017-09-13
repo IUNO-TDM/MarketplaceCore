@@ -16,6 +16,7 @@ const licenseCentral = require('../adapter/license_central_adapter');
 const dbProductCode = require('../database/function/productCode');
 const imageService = require('../services/image_service');
 const CONFIG = require('../config/config_loader');
+const path = require('path');
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
 
@@ -98,9 +99,7 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
                 return;
             }
 
-            var imgPath = technologyData.technologydataimgref;
-
-            var path = require('path');
+            const imgPath = technologyData.technologydataimgref;
             if (imgPath) {
                 res.sendFile(path.resolve(imgPath));
             }
