@@ -74,7 +74,7 @@ self.USER = {
     roles: ['{role}']
 };
 
-self.PRODUCT_CODE_PREFIX = 'pc';
+self.PRODUCT_CODE_PREFIX = 'test-pc';
 
 self.TRUSTED_CA_FILE_PATH = 'resources/ca_trusted/chain.pem';
 
