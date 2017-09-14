@@ -40,7 +40,7 @@ self.HOST_SETTINGS = {
     },
     LICENSE_CENTRAL: {
         PROTOCOL: 'https',
-        HOST: 'lc.codemeter.com/26959-02/marketplaceapi',
+        HOST: 'lc-admin.codemeter.com/26959-02/marketplaceapi',
         PORT: 443
     }
 };
@@ -74,6 +74,8 @@ self.USER = {
     roles: ['{role}']
 };
 
-self.PRODUCT_CODE_PREFIX = 'pc';
+self.PRODUCT_CODE_PREFIX = 'test-pc';
+
+self.TRUSTED_CA_FILE_PATH = 'resources/ca_trusted/chain.pem';
 
 module.exports = self;
