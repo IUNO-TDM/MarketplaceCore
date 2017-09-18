@@ -587,8 +587,8 @@ CREATE FUNCTION CreateTechnologyData (
         -- Begin Log if success
         perform public.createlog(0,'Created TechnologyData sucessfully', 'CreateTechnologyData',
                                 'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
-                                || replace(vTechnologyDataName, '''', '''''') || ', TechnologyData: ' || vTechnologyData
-                                || ', TechnologyDataDescription: ' || replace(vTechnologyDataDescription, '''', '''''')
+                                || vTechnologyDataName || ', TechnologyData: ' || vTechnologyData
+                                || ', TechnologyDataDescription: ' || vTechnologyDataDescription
 				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
@@ -619,8 +619,8 @@ CREATE FUNCTION CreateTechnologyData (
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateTechnologyData',
                                 'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
-                                || replace(vTechnologyDataName, '''', '''''') || ', TechnologyData: ' || vTechnologyData
-                                || ', TechnologyDataDescription: ' || replace(vTechnologyDataDescription, '''', '''''')
+                                || vTechnologyDataName || ', TechnologyData: ' || vTechnologyData
+                                || ', TechnologyDataDescription: ' || vTechnologyDataDescription
 				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
                                 || ', TechnologyID: ' || cast(vTechnologyID as varchar)
                                 || ', LicenseFee: ' || cast(vLicenseFee as varchar)
@@ -1793,8 +1793,8 @@ $BODY$
 		-- Begin Log if success
 		perform public.createlog(0,'Set TechnologyData sucessfully', 'SetTechnologyData',
 					'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
-					|| replace(vTechnologyDataName, '''', '''''') || ', TechnologyData: ' || vTechnologyData
-					|| ', TechnologyDataDescription: ' || replace(vTechnologyDataDescription, '''', '''''')
+					|| vTechnologyDataName || ', TechnologyData: ' || vTechnologyData
+					|| ', TechnologyDataDescription: ' || vTechnologyDataDescription
 					|| ', CreatedBy: ' || cast(vRoles as varchar));
 
 	ELSE
@@ -1835,8 +1835,8 @@ $BODY$
         -- Begin Log if error
         perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'SetTechnologyData',
                                 'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
-                                || replace(vTechnologyDataName, '''', '''''') || ', TechnologyData: ' || vTechnologyData
-                                || ', TechnologyDataDescription: ' || replace(vTechnologyDataDescription, '''', '''''')
+                                || vTechnologyDataName || ', TechnologyData: ' || vTechnologyData
+                                || ', TechnologyDataDescription: ' || vTechnologyDataDescription
                                 || ', CreatedBy: ' || cast(vCreatedby as varchar));
         -- End Log if error
         RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetTechnologyData';
