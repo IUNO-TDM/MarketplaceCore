@@ -1,6 +1,7 @@
 **MarketplaceCore Database - CHANGE-LOG**
 
 - For new patches use the next consecutive **patch number** from the list
+
 **IMPORTANT: USE ONLY [PatchDBTool](https://github.com/IUNO-TDM/PatchDBTool/tree/master/PatchDBTool) to deploy Patches**
 
 |**Patchname**                                                      |**Patch number**   |**Description**                                                                                        |**Issue Number**| **Author**     |
