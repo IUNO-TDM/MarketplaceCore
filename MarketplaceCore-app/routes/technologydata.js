@@ -48,36 +48,47 @@ router.post('/', validate({
 }), function (req, res, next) {
     const data = req.body;
 
-    dbProductCode.GetNewProductCode(function(err, productCode){
+    TechnologyData.FindByName(req.query['userUUID'], req.token.user.roles, [], function(err, tData) {
         if (err) {
             return next(err);
         }
 
-        licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, data['technologyDataName'], productCode, data['technologyData'], function(err, encryptedData){
+        if (tData) {
+            res.status(409);
+            return res.send('Technologydata with given name already exists.');
+        }
+
+        dbProductCode.GetNewProductCode(function(err, productCode){
             if (err) {
                 return next(err);
             }
 
-            const techData = new TechnologyData();
-
-            techData.technologydataname = data['technologyDataName'];
-            techData.technologydata = encryptedData;
-            techData.technologydatadescription = data['technologyDataDescription'];
-            techData.technologyuuid = data['technologyUUID'];
-            techData.licensefee = data['licenseFee'];
-            techData.taglist = data['tagList'];
-            techData.componentlist = data['componentList'];
-            techData.productcode = productCode;
-            techData.technologydataimgref = imageService.getRandomImagePath();
-
-            techData.Create(req.query['userUUID'], req.token.user.roles, function (err, data) {
+            licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, data['technologyDataName'], productCode, data['technologyData'], function(err, encryptedData){
                 if (err) {
                     return next(err);
                 }
 
-                const fullUrl = helper.buildFullUrlFromRequest(req);
-                res.set('Location', fullUrl + data['technologydatauuid']);
-                res.sendStatus(201);
+                const techData = new TechnologyData();
+
+                techData.technologydataname = data['technologyDataName'];
+                techData.technologydata = encryptedData;
+                techData.technologydatadescription = data['technologyDataDescription'];
+                techData.technologyuuid = data['technologyUUID'];
+                techData.licensefee = data['licenseFee'];
+                techData.taglist = data['tagList'];
+                techData.componentlist = data['componentList'];
+                techData.productcode = productCode;
+                techData.technologydataimgref = imageService.getRandomImagePath();
+
+                techData.Create(req.query['userUUID'], req.token.user.roles, function (err, data) {
+                    if (err) {
+                        return next(err);
+                    }
+
+                    const fullUrl = helper.buildFullUrlFromRequest(req);
+                    res.set('Location', fullUrl + data['technologydatauuid']);
+                    res.sendStatus(201);
+                });
             });
         });
     });
