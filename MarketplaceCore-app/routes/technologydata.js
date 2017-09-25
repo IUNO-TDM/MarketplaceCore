@@ -48,7 +48,7 @@ router.post('/', validate({
 }), function (req, res, next) {
     const data = req.body;
 
-    TechnologyData.FindByName(req.query['userUUID'], req.token.user.roles, [], function(err, tData) {
+    TechnologyData.FindByName(req.query['userUUID'], req.token.user.roles, data['technologyDataName'], function(err, tData) {
         if (err) {
             return next(err);
         }
