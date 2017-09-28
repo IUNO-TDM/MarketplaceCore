@@ -78,6 +78,23 @@ TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (user
             callback(error);
         });
 };
+
+TechnologyData.prototype.FindSingle = TechnologyData.FindByName = function (userUUID, roles, name, callback) {
+    db.func('GetTechnologyDataByName', [name, userUUID, roles])
+        .then(function (data) {
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
+
+            callback(null, new TechnologyData(data));
+        })
+        .catch(function (error) {
+            logger.crit(error); // print the error;
+            callback(error);
+        });
+};
+
 TechnologyData.prototype.Create = function (userUUID, roles, callback) {
     const self = this;
     db.func('SetTechnologyData',
