@@ -1,3 +1,31 @@
+--#######################################################################################################
+--TRUMPF Werkzeugmaschinen GmbH & Co KG
+--TEMPLATE FOR DATABASE PATCHES, HOT FIXES and SCHEMA CHANGES
+--Author: Marcel Ely Gomes
+--CreateAt: 2017-09-15
+--Version: 00.00.01 (Initial)
+--#######################################################################################################
+-- READ THE INSTRUCTIONS BEFORE CONTINUE - USE ONLY PatchDBTool to deploy patches to existing Databases
+-- Describe your patch here
+-- Patch Description: 
+-- 	1) Why is this Patch necessary?
+-- 	2) Which Git Issue Number is this patch solving?
+-- 	3) Which changes are going to be done?
+-- PATCH FILE NAME - THIS IS MANDATORY
+-- iuno_<databasename>_V<patchnumber>V_<creation date>.sql
+-- PatchNumber Format: 00000 whereas each new Patch increase the patchnumber by 1
+-- Example: iuno_marketplacecore_V00001V_20170913.sql
+--#######################################################################################################
+-- PUT YOUR STATEMENTS HERE:
+-- 	1) Why is this Patch necessary?
+--	With the public user wasn't possible to call the functions GetActivatedLicensesSince and GetWorkloadSince. 
+--	Furthermore there were some errors (Ambiguous Column) in the functions GetActivatedLicensesSince, GetWorkloadSince and GetMostUsedComponents
+-- 	2) Which Git Issue Number is this patch solving?
+--	#35
+-- 	3) Which changes are going to be done?
+--	The old function GetActivatedLicensesSince will be dropped
+--  Create new function GetActivatedLicensesSince and update the functions GetWorkloadSince and GetMostUsedComponents
+--: Run Patches
 DO
 $$
 BEGIN  
