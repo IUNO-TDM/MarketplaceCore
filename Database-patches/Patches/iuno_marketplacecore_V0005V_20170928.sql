@@ -2,7 +2,7 @@
 --TRUMPF Werkzeugmaschinen GmbH & Co KG
 --TEMPLATE FOR DATABASE PATCHES, HOT FIXES and SCHEMA CHANGES
 --Author: Marcel Ely Gomes
---CreateAt: 2017-09-25
+--CreateAt: 2017-09-28
 --Version: 00.00.01 (Initial)
 --#######################################################################################################
 -- READ THE INSTRUCTIONS BEFORE CONTINUE - USE ONLY PatchDBTool to deploy patches to existing Databases
@@ -45,7 +45,7 @@ $BODY$
 
     	RETURN QUERY (SELECT 	td.technologydatauuid,
 				tc.technologyuuid,
-				lower(td.technologydataname)::character varying,
+				td.technologydataname,
 				td.technologydata,
 				td.technologydatadescription,
 				td.productcode,
