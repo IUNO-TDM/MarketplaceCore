@@ -51,7 +51,7 @@ $$
 						tg.updatedat at time zone 'utc',
 						tg.updatedby
 				    FROM Technologies tg
-				    WHERE tg.technologyname = vtechName
+				    WHERE lower(tg.technologyname) = lower(vtechName)
 				 );
 
 			ELSE
@@ -61,10 +61,6 @@ $$
 
 			END;
 		    $BODY$
-		  LANGUAGE plpgsql VOLATILE
-		  COST 100
-		  ROWS 1000;
-		ALTER FUNCTION public.gettechnologybyname(character varying, uuid, text[])
-		OWNER TO postgres;	
+		  LANGUAGE plpgsql;	
 END;
 $$;
