@@ -1,4 +1,4 @@
-﻿--#######################################################################################################
+--#######################################################################################################
 --TRUMPF Werkzeugmaschinen GmbH & Co KG
 --TEMPLATE FOR DATABASE PATCHES, HOT FIXES and SCHEMA CHANGES
 --Author: Marcel Ely Gomes
@@ -28,11 +28,36 @@
 --	On the frontend there is also a check, so that acctually this function is never 
 --	going to be called by other user but the owner. But safe is safe. 
 --: Run Patches
+------------------------------------------------------------------------------------------------
+--##############################################################################################
+-- Write into the patch table: patchname, patchnumber, patchdescription and start time
+--##############################################################################################
 DO
 $$
-BEGIN		
+	DECLARE
+		PatchName varchar		 	 := 'iuno_marketplacecore_V00003V_20170920';
+		PatchNumber int 		 	 := 0003;
+		PatchDescription varchar 	 := 'At the moment it is possible to change recipes from other users. This should not be allowed.
+										The call is going to be catched on the Frontend Side. This is only a further security activity.
+										Furthermore the update functionality is going to be transfer to another function';
 
-	 CREATE OR REPLACE FUNCTION public.settechnologydata(
+	BEGIN	
+		--INSERT START VALUES TO THE PATCH TABLE
+		INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
+	END;
+$$;
+------------------------------------------------------------------------------------------------
+--##############################################################################################
+-- Run the patch itself and update patches table
+--##############################################################################################
+DO
+$$
+		DECLARE
+			vPatchNumber int := (select max(patchnumber) from patches);
+		BEGIN
+	----------------------------------------------------------------------------------------------------------------------------------------
+			
+			CREATE OR REPLACE FUNCTION public.settechnologydata(
 	    IN vtechnologydataname character varying,
 	    IN vtechnologydata character varying,
 	    IN vtechnologydatadescription character varying,
@@ -157,5 +182,13 @@ BEGIN
 	      END;
 	  $BODY$
 	  LANGUAGE plpgsql;
-END;
-$$;
+			
+	----------------------------------------------------------------------------------------------------------------------------------------
+		-- UPDATE patch table status value
+		UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;
+		--ERROR HANDLING
+		EXCEPTION WHEN OTHERS THEN
+			UPDATE patches SET status = 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || 'while creating patch.'	WHERE patchnumber = vPatchNumber;	 
+		 RETURN;
+	END;
+$$; 

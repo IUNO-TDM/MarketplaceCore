@@ -1,4 +1,4 @@
-﻿--#######################################################################################################
+--#######################################################################################################
 --TRUMPF Werkzeugmaschinen GmbH & Co KG
 --TEMPLATE FOR DATABASE PATCHES, HOT FIXES and SCHEMA CHANGES
 --Author: Marcel Ely Gomes
@@ -25,10 +25,35 @@
 -- 	3) Which changes are going to be done? 
 --	The function gettechnologybyname is going to be overwritten
 --: Run Patches
+------------------------------------------------------------------------------------------------
+--##############################################################################################
+-- Write into the patch table: patchname, patchnumber, patchdescription and start time
+--##############################################################################################
 DO
 $$
-	BEGIN		
-		CREATE OR REPLACE FUNCTION public.gettechnologybyname(
+	DECLARE
+		PatchName varchar		 	 := 'iuno_marketplacecore_V00004V_20170925';
+		PatchNumber int 		 	 := 0004;
+		PatchDescription varchar 	 := 'The function gettechnologybyname returns error due to column not known or ambiguous. 
+										Fixed putting table prefix before column name.';
+
+	BEGIN	
+		--INSERT START VALUES TO THE PATCH TABLE
+		INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
+	END;
+$$;
+------------------------------------------------------------------------------------------------
+--##############################################################################################
+-- Run the patch itself and update patches table
+--##############################################################################################
+DO
+$$
+		DECLARE
+			vPatchNumber int := (select max(patchnumber) from patches);
+		BEGIN
+	----------------------------------------------------------------------------------------------------------------------------------------
+			
+			CREATE OR REPLACE FUNCTION public.gettechnologybyname(
 		    IN vtechname character varying,
 		    IN vuseruuid uuid,
 		    IN vroles text[])
@@ -61,6 +86,14 @@ $$
 
 			END;
 		    $BODY$
-		  LANGUAGE plpgsql;	
-END;
-$$;
+		  LANGUAGE plpgsql;
+			
+	----------------------------------------------------------------------------------------------------------------------------------------
+		-- UPDATE patch table status value
+		UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;
+		--ERROR HANDLING
+		EXCEPTION WHEN OTHERS THEN
+			UPDATE patches SET status = 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || 'while creating patch.'	WHERE patchnumber = vPatchNumber;	 
+		 RETURN;
+	END;
+$$; 

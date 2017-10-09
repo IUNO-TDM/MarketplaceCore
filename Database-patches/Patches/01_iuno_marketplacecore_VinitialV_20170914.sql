@@ -31,16 +31,23 @@ BEGIN
 		CREATE TABLE patches(
 			patchname varchar,
 			patchnumber integer, 
-			executedat timestamp without time zone);
+			patchdescription varchar,
+			startat timestamp without time zone,
+			endat timestamp without time zone,
+			status varchar
+			);
 
 		INSERT INTO patches (
 				patchname,
-				patchnumber,  
-				executedat)
-		VALUES ('initial', 0, now());
+				patchnumber,   
+				patchdescription,
+				startat,
+				endat,
+				status)
+		VALUES ('initial', 0, 'First patch at all. Create patches table.', now(), now(), 'OK');
 	--ERROR HANDLING AND ROLLBACK
 	EXCEPTION WHEN OTHERS THEN
-		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyData';
+		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at Initial Patch';
 		ROLLBACK;	
 END;
 $$;

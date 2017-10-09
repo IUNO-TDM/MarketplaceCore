@@ -26,11 +26,35 @@
 --	The old function GetActivatedLicensesSince will be dropped
 --  Create new function GetActivatedLicensesSince and update the functions GetWorkloadSince and GetMostUsedComponents
 --: Run Patches
+------------------------------------------------------------------------------------------------
+--##############################################################################################
+-- Write into the patch table: patchname, patchnumber, patchdescription and start time
+--##############################################################################################
 DO
 $$
-BEGIN  
+	DECLARE
+		PatchName varchar		 	 := 'iuno_marketplacecore_V00002V_20170913';
+		PatchNumber int 		 	 := 0002;
+		PatchDescription varchar 	 := 'With the public user was not possible to call the functions GetActivatedLicensesSince and GetWorkloadSince. 
+	Furthermore there were some errors (Ambiguous Column) in the functions GetActivatedLicensesSince, GetWorkloadSince and GetMostUsedComponents';
 
-perform SetPermission('{Public}','GetActivatedLicensesSince',null,'{Admin}');
+	BEGIN	
+		--INSERT START VALUES TO THE PATCH TABLE
+		INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
+	END;
+$$;
+------------------------------------------------------------------------------------------------
+--##############################################################################################
+-- Run the patch itself and update patches table
+--##############################################################################################
+DO
+$$
+		DECLARE
+			vPatchNumber int := (select max(patchnumber) from patches);
+		BEGIN
+	----------------------------------------------------------------------------------------------------------------------------------------
+			
+			perform SetPermission('{Public}','GetActivatedLicensesSince',null,'{Admin}');
 perform SetPermission('{Public}','GetWorkloadSince',null,'{Admin}');  
  
 CREATE OR REPLACE FUNCTION public.getmostusedcomponents(
@@ -177,5 +201,13 @@ $BODY$
 
 $BODY$
   LANGUAGE plpgsql VOLATILE; 
-END;
-$$;
+			
+	----------------------------------------------------------------------------------------------------------------------------------------
+		-- UPDATE patch table status value
+		UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;
+		--ERROR HANDLING
+		EXCEPTION WHEN OTHERS THEN
+			UPDATE patches SET status = 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || 'while creating patch.'	WHERE patchnumber = vPatchNumber;	 
+		 RETURN;
+	END;
+$$; 

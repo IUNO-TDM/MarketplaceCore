@@ -26,10 +26,36 @@
 -- 	3) Which changes are going to be done?  
 --  Update the function GetTechnologyDataByName
 --: Run Patches
+------------------------------------------------------------------------------------------------
+--##############################################################################################
+-- Write into the patch table: patchname, patchnumber, patchdescription and start time
+--##############################################################################################
 DO
 $$
-	BEGIN		
-		CREATE OR REPLACE FUNCTION public.gettechnologydatabyname(
+	DECLARE
+		PatchName varchar		 	 := 'iuno_marketplacecore_V00005V_20170928';
+		PatchNumber int 		 	 := 0005;
+		PatchDescription varchar 	 := 'The function gettechnologydatabyname returns error due to column not known or ambiguous. 
+										Fixed putting table prefix before column name. Furthermore it is necessary to use lower
+										while comparing the technologydataname to avoid the use of a technologydataname twice.';
+
+	BEGIN	
+		--INSERT START VALUES TO THE PATCH TABLE
+		INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
+	END;
+$$;
+------------------------------------------------------------------------------------------------
+--##############################################################################################
+-- Run the patch itself and update patches table
+--##############################################################################################
+DO
+$$
+		DECLARE
+			vPatchNumber int := (select max(patchnumber) from patches);
+		BEGIN
+	----------------------------------------------------------------------------------------------------------------------------------------
+			
+			CREATE OR REPLACE FUNCTION public.gettechnologydatabyname(
     IN vtechnologydataname character varying,
     IN vuseruuid uuid,
     IN vroles text[])
@@ -71,5 +97,13 @@ $BODY$
 	END;
 	$BODY$
   LANGUAGE plpgsql;	
-END;
-$$;
+			
+	----------------------------------------------------------------------------------------------------------------------------------------
+		-- UPDATE patch table status value
+		UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;
+		--ERROR HANDLING
+		EXCEPTION WHEN OTHERS THEN
+			UPDATE patches SET status = 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || 'while creating patch.'	WHERE patchnumber = vPatchNumber;	 
+		 RETURN;
+	END;
+$$; 

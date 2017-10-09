@@ -25,11 +25,35 @@
 -- 	3) Which changes are going to be done?
 --	Update the functions CreateTechnologyData and SetTechnologyData
 --: Run Patches
+------------------------------------------------------------------------------------------------
+--##############################################################################################
+-- Write into the patch table: patchname, patchnumber, patchdescription and start time
+--##############################################################################################
 DO
 $$
-BEGIN
+	DECLARE
+		PatchName varchar		 	 := 'iuno_marketplacecore_V00001V_20170913';
+		PatchNumber int 		 	 := '0001';
+		PatchDescription varchar 	 := 'It is not possible to create TechnologyData with TechnologyDataName containing a quote, 
+		because the quote means "end of string" while writing the log content to the logtable. ';
 
-CREATE OR REPLACE FUNCTION public.createtechnologydata(
+	BEGIN	
+		--INSERT START VALUES TO THE PATCH TABLE
+		INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
+	END;
+$$;
+------------------------------------------------------------------------------------------------
+--##############################################################################################
+-- Run the patch itself and update patches table
+--##############################################################################################
+DO
+$$
+		DECLARE
+			vPatchNumber int := (select max(patchnumber) from patches);
+		BEGIN
+	----------------------------------------------------------------------------------------------------------------------------------------
+			
+			CREATE OR REPLACE FUNCTION public.createtechnologydata(
     IN vtechnologydataname character varying,
     IN vtechnologydata character varying,
     IN vtechnologydatadescription character varying,
@@ -249,6 +273,13 @@ $BODY$
       END;
   $BODY$
   LANGUAGE plpgsql VOLATILE;
-
-END;
-$$;
+			
+	----------------------------------------------------------------------------------------------------------------------------------------
+		-- UPDATE patch table status value
+		UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;
+		--ERROR HANDLING
+		EXCEPTION WHEN OTHERS THEN
+			UPDATE patches SET status = 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || 'while creating patch.'	WHERE patchnumber = vPatchNumber;	 
+		 RETURN;
+	END;
+$$; 
