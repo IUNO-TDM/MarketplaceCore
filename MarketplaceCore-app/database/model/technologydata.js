@@ -70,6 +70,9 @@ TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (user
             if (data && data.length) {
                 data = data[0];
             }
+            else {
+                return callback(null, null);
+            }
 
             callback(null, new TechnologyData(data));
         })
@@ -78,6 +81,25 @@ TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (user
             callback(error);
         });
 };
+
+TechnologyData.prototype.FindByName = TechnologyData.FindByName = function (userUUID, roles, name, callback) {
+    db.func('GetTechnologyDataByName', [name, userUUID, roles])
+        .then(function (data) {
+            //Only return the first element
+            if (data && data.length) {
+                data = data[0];
+            }
+            else {
+                return callback(null, null);
+            }
+            callback(null, new TechnologyData(data));
+        })
+        .catch(function (error) {
+            logger.crit(error); // print the error;
+            callback(error);
+        });
+};
+
 TechnologyData.prototype.Create = function (userUUID, roles, callback) {
     const self = this;
     db.func('SetTechnologyData',
