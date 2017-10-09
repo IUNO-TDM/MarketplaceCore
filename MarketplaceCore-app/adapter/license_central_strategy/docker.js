@@ -1,4 +1,6 @@
 
+const logger = require('../../global/logger');
+
 let self = require('./default');
 
 logger.warn('[license_central_adapter] RUNNING DOCKER (SIMULATION) MODE. LCC calls will be skipped!');
