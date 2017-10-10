@@ -22,7 +22,7 @@
 --	The call is going to be catched on the Frontend Side. This is only a further security activity.
 --	Furthermore the update functionality is going to be transfer to another function
 -- 	2) Which Git Issue Number is this patch solving?
---	#110; #36; #111
+--	#116
 -- 	3) Which changes are going to be done?
 --	Added a check to proof if the function calling user is owner from the recipe. 
 --	On the frontend there is also a check, so that acctually this function is never 
@@ -35,11 +35,10 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V00003V_20170920';
-		PatchNumber int 		 	 := 0003;
-		PatchDescription varchar 	 := 'At the moment it is possible to change recipes from other users. This should not be allowed.
-										The call is going to be catched on the Frontend Side. This is only a further security activity.
-										Furthermore the update functionality is going to be transfer to another function';
+		PatchName varchar		 	 := 'iuno_marketplacecore_V00006V_20171010';
+		PatchNumber int 		 	 := 0006;
+		PatchDescription varchar 	 := 'It is not possible to insert a new technologydata with the name an older
+		                                  technologydata that has been deleted. This patch correct the function SetTechnologyData.';
 
 	BEGIN	
 		--INSERT START VALUES TO THE PATCH TABLE
