@@ -67,8 +67,8 @@ self.GetMostUsedComponentsForUser = function(userUUID, roles, sinceDate, topValu
         });
 };
 
-self.GetRevenueForUser = function(userUUID, roles, sinceDate, callback){
-    db.func('GetRevenueForUser', [sinceDate, userUUID, roles])
+self.GetRevenuePerTechDataForUser = function(userUUID, roles, sinceDate, callback){
+    db.func('GetRevenuePerTechDataForUser', [sinceDate, userUUID, roles])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
