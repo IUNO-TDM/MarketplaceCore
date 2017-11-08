@@ -57,4 +57,25 @@ self.oAuth = function(req, res, next) {
     }
 };
 
+self.ws_oAuth = function (socket, next) {
+    try {
+        const accessToken = getBearerTokenFromHeader(socket.handshake);
+
+        authService.validateToken(accessToken, function (err, isValid, token) {
+            if (isValid) {
+                next();
+            }
+            else {
+                return next(new Error('WWW-Authenticate: Bearer realm=Valid oauth token required'));
+            }
+        })
+
+    }
+    catch (ex) {
+        logger.warn(ex);
+
+        return next(new Error('WWW-Authenticate: Bearer realm=Valid oauth token required'));
+    }
+};
+
 module.exports = self;
