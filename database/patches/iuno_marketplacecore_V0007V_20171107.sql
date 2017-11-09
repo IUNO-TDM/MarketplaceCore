@@ -34,7 +34,7 @@ $$
 	DECLARE
 		PatchName varchar		 	 := 'iuno_marketplacecore_V0007V_20171107.sql';
 		PatchNumber int 		 	 := 0007;
-		PatchDescription varchar 	 := 'Delete old functions and set permission for the new ones. This is the first of 5 patches';
+		PatchDescription varchar 	 := 'Delete old functions and set permission for the new ones. This is the first of 2 patches';
 
 	BEGIN	
 		--INSERT START VALUES TO THE PATCH TABLE
@@ -48,7 +48,7 @@ $$;
 DO
 $$
 		DECLARE
-			vPatchNumber int := (select max(patchnumber) from patches);
+			vPatchNumber int := 0007;
 			vFunctionList text[] := '{GetActivatedLicensesSince,
 					GetActivatedLicensesSinceForUser,
 					GetMostUsedComponents,
@@ -79,7 +79,7 @@ $$
 			delete from functions where functionid = vFunctionID;
 			vFunctionOID := (select oid from pg_proc where lower(proname) = lower(vFunctionName) );
 			vDropFunction := (select 'DROP FUNCTION ' || vFunctionName || '(' ||(select pg_get_function_arguments(vFunctionOID))::text || ')'); 
-			execute vDropFunction;
+			IF NOT (vDropFunction is null) THEN execute vDropFunction; END IF;
 		END LOOP;
 	
 

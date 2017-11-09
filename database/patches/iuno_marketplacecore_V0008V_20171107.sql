@@ -48,7 +48,7 @@ $$;
 DO
 $$
 		DECLARE
-			vPatchNumber int := (select max(patchnumber) from patches);
+			vPatchNumber int := 0008;
 		BEGIN
 	----------------------------------------------------------------------------------------------------------------------------------------
 
