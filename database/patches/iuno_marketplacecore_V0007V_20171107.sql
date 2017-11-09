@@ -87,6 +87,7 @@ $$
 
 --SetPermissions for new Functions
 
+		perform SetPermission('{Public, TechnologyDataOwner}','GetRevenue',null,'{Admin}');
 		perform SetPermission('{Public}','GetTotalRevenue',null,'{Admin}');
 		perform SetPermission('{TechnologyDataOwner}','GetTotalUserRevenue',null,'{Admin}');
 		perform SetPermission('{TechnologyDataOwner}','GetRevenueHistory',null,'{Admin}');
