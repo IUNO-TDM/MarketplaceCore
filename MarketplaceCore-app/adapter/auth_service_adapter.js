@@ -22,13 +22,13 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
     }
 }
 
-self.validateToken = function (userUUID, accessToken, callback) {
-    var tokenValid = false;
+self.validateToken = function (accessToken, callback) {
+
 
     if (typeof(callback) !== 'function') {
 
         callback = function () {
-            logger.info('Callback not regis§tered');
+            logger.info('Callback not registered');
         }
     }
 
@@ -44,18 +44,20 @@ self.validateToken = function (userUUID, accessToken, callback) {
     );
 
     request(options, function (e, r, token) {
-        var err = logger.logRequestAndResponse(e, options, r, token);
+        const err = logger.logRequestAndResponse(e, options, r, token);
 
         if (err) {
             return callback(err);
         }
 
-        if (token) {
-            tokenValid = token.user.id === userUUID;
-            tokenValid = tokenValid && new Date(token.accessTokenExpiresAt) > new Date();
+        if (token && new Date(token.accessTokenExpiresAt) < new Date()) {
+
+            logger.warn('[auth_service_adapter] access token expired');
+
+            return callback(null, false, token)
         }
 
-        callback(err, tokenValid, token)
+        callback(err, true, token)
     });
 
 
