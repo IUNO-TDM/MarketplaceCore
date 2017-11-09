@@ -62,6 +62,7 @@ $$
 					GetTopTechnologyDataSinceForUser,
 					GetTotalRevenueForUser,
 					GetWorkLoadSince,
+					GetWorkloadSince,
 					GetWorkLoadSinceForUser
 					}';
 			vFunctionName text;
@@ -74,7 +75,7 @@ $$
 --DELETE Permisions AND DROP OLD FUNCTIONS
 	 
 		FOREACH vFunctionName in array vFunctionList LOOP
-			vFunctionID := (select functionid from functions where lower(functionname) = lower(vFunctionName));
+			vFunctionID := (select functionid from functions where functionname = vFunctionName);
 			delete from rolespermissions where functionid = vFunctionID;
 			delete from functions where functionid = vFunctionID;
 			vFunctionOID := (select oid from pg_proc where lower(proname) = lower(vFunctionName) );
