@@ -49,14 +49,7 @@ DO
 $$
 		DECLARE
 			vPatchNumber int := (select max(patchnumber) from patches);
-		BEGIN
-	----------------------------------------------------------------------------------------------------------------------------------------
-
---DELETE Permisions AND DROP OLD FUNCTIONS 
-DO
-$$
-	DECLARE 
-		vFunctionList text[] := '{GetActivatedLicensesSince,
+			vFunctionList text[] := '{GetActivatedLicensesSince,
 					GetActivatedLicensesSinceForUser,
 					GetMostUsedComponents,
 					GetMostUsedComponentsForUser,
@@ -71,11 +64,15 @@ $$
 					GetWorkLoadSince,
 					GetWorkLoadSinceForUser
 					}';
-		vFunctionName text;
-		vFunctionID integer;
-		vDropFunction text;
-		vFunctionOID integer;
-	BEGIN
+			vFunctionName text;
+			vFunctionID integer;
+			vDropFunction text;
+			vFunctionOID integer;
+		BEGIN
+	----------------------------------------------------------------------------------------------------------------------------------------
+
+--DELETE Permisions AND DROP OLD FUNCTIONS
+	 
 		FOREACH vFunctionName in array vFunctionList LOOP
 			vFunctionID := (select functionid from functions where lower(functionname) = lower(vFunctionName));
 			delete from rolespermissions where functionid = vFunctionID;
@@ -84,21 +81,19 @@ $$
 			vDropFunction := (select 'DROP FUNCTION ' || vFunctionName || '(' ||(select pg_get_function_arguments(vFunctionOID))::text || ')'); 
 			execute vDropFunction;
 		END LOOP;
-	END
-$$;
+	
+
 
 --SetPermissions for new Functions
-DO
-$$
-	perform SetPermission('{Public}','GetTotalRevenue',null,'{Admin}');
-	perform SetPermission('{TechnologyDataOwner}','GetTotalUserRevenue',null,'{Admin}');
-	perform SetPermission('{TechnologyDataOwner}','GetRevenueHistory',null,'{Admin}');
-	perform SetPermission('{TechnologyDataOwner, Public}','GetTopTechnologyData',null,'{Admin}');
-	perform SetPermission('{Public}','GetTopComponents',null,'{Admin}');
-	perform SetPermission('{TechnologyDataOwner}','GetTechnologyDataHistory',null,'{Admin}'); 
-$$;
-			
-			
+
+		perform SetPermission('{Public}','GetTotalRevenue',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','GetTotalUserRevenue',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','GetRevenueHistory',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner, Public}','GetTopTechnologyData',null,'{Admin}');
+		perform SetPermission('{Public}','GetTopComponents',null,'{Admin}');
+		perform SetPermission('{TechnologyDataOwner}','GetTechnologyDataHistory',null,'{Admin}'); 
+	
+	 
 	----------------------------------------------------------------------------------------------------------------------------------------
 		-- UPDATE patch table status value
 		UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;

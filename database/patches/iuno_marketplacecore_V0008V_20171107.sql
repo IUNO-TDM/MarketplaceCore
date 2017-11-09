@@ -52,16 +52,14 @@ $$
 		BEGIN
 	----------------------------------------------------------------------------------------------------------------------------------------
 
---1 CREATE FUNCTION GetRevenue
-DO
-$$
+--1 CREATE FUNCTION GetRevenue 
 CREATE OR REPLACE FUNCTION public.getrevenue(
     IN vfrom timestamp without time zone,
     IN vto timestamp without time zone,
-    IN vtechnologydataname text,
+    IN vtechnologydatauuid uuid,
     IN vcreatedby uuid,
     IN vroles text[])
-  RETURNS TABLE(year text, month text, day text, hour text, technologydataname text, amount integer, revenue numeric, average numeric) AS
+  RETURNS TABLE(year text, month text, day text, hour text, technologydatauuid uuid, amount integer, revenue numeric, average numeric) AS
 $BODY$
 
 	DECLARE
@@ -80,7 +78,7 @@ $BODY$
 			case when (to_char(activatedat,'MM') is null) then '0' else to_char(activatedat,'MM') end as Month, 
 			case when (to_char(activatedat,'DD') is null) then '0' else to_char(activatedat,'DD') end as Day, 
 			case when (to_char(activatedat,'HH24') is null) then '0' else to_char(activatedat,'HH24') end as Hour, 					
-			coalesce(td.technologydataname,'Total') as technologydataname, 
+			coalesce(td.technologydatauuid,'00000000-0000-0000-0000-000000000000') as technologydatauuid, 
 			sum(ri.amount) as amount, 
 			(sum(td.licensefee*ri.amount))/100000::numeric(21,2) as revenue,
 			(AVG(td.licensefee*ri.amount))/100000::numeric(21,2) as average	
@@ -99,24 +97,24 @@ $BODY$
 					to_char(activatedat,'MM'), 
 					to_char(activatedat,'DD'), 
 					to_char(activatedat,'HH24'), 
-					td.technologydataname)
+					td.technologydatauuid)
 			order by to_char(activatedat,'YYYY') desc, 
 					to_char(activatedat,'MM') desc, 
 					to_char(activatedat,'DD') desc, 
 					to_char(activatedat,'HH24') desc, 
-					td.technologydataname,
+					td.technologydatauuid,
 					amount desc
 		)
 		select	r.year::text, 
 			r.month::text,
 			r.day::text,
 			r.hour::text,
-			r.TechnologyDataName::text,
+			r.technologydatauuid,
 			r.Amount::integer,
 			r.Revenue::numeric(21,2),
 			r.Average::numeric(21,2)
-		from revenue r 
-		where (vTechnologyDataName is null or r.technologydataname = vTechnologyDataName)
+		from revenue r  
+		where (vTechnologyDataUUID is null or r.technologydatauuid = vTechnologyDataUUID)
 		);
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
@@ -128,11 +126,8 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000;
-$$;
 --2 CREATE FUNCTION GetTotalRevenue
-DO
-$$
-	CREATE OR REPLACE FUNCTION public.gettotalrevenue(
+CREATE OR REPLACE FUNCTION public.gettotalrevenue(
     IN vfrom timestamp without time zone,
     IN vto timestamp without time zone,
     IN vdetail text,
@@ -144,22 +139,24 @@ $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetTotalRevenue'; 
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
-		vTechnologyDataName text := 'Total';
+		vTechnologyDataUUID uuid := (select uuid_nil())::uuid;
 
 	BEGIN 
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select  to_date(r.year || '-' || r.month || '-' || r.day, 'YYYY-MM-DD') as date, r.hour::text, r.technologydataname, r.amount, r.revenue from public.getrevenue(
+	RETURN QUERY (select  to_date(r.year || '-' || r.month || '-' || r.day, 'YYYY-MM-DD') as date, r.hour::text, coalesce(td.technologydataname,'Total')::text as technologydataname, r.amount, r.revenue from public.getrevenue(
 			    vFrom,
 			    vTo,
-			    vTechnologyDataName,
+			    vTechnologyDataUUID,
 			    vCreatedBy,
 			    vRoles) r
+			    left outer join technologydata td on
+			    td.technologydatauuid = r.technologydatauuid
 			    where r.year <> '0'
 			    and r.month <> '0'
 			    and r.day <> '0'
-			    and case when (vDetail = 'hour') then r.hour <> '0' else r.hour = '0' end	 
+			    and case when (vDetail = 'hour') then r.hour <> '0' else r.hour = '0' end	 			    
 			    order by r.year asc, r.month asc, r.day asc
 		);
 	ELSE
@@ -172,10 +169,7 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000;
-$$;
 --3 CREATE FUNCTION GetTotalUserRevenue
-DO
-$$
 CREATE OR REPLACE FUNCTION public.gettotaluserrevenue(
     IN vfrom timestamp without time zone,
     IN vto timestamp without time zone,
@@ -188,17 +182,19 @@ $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetTotalUserRevenue'; 
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
-		vTechnologyDataName text := 'Total';
+		vTechnologyDataUUID uuid := (select uuid_nil());
 	BEGIN 
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select  to_date(r.year || '-' || r.month || '-' || r.day, 'YYYY-MM-DD') as date, r.hour::text, r.technologydataname, r.amount, r.revenue from public.getrevenue(
+	RETURN QUERY (select  to_date(r.year || '-' || r.month || '-' || r.day, 'YYYY-MM-DD') as date, r.hour::text, coalesce(td.technologydataname,'Total')::text as technologydataname, r.amount, r.revenue from public.getrevenue(
 			    vFrom,
 			    vTo,
-			    vTechnologyDataName,
+			    vTechnologyDataUUID,
 			    vCreatedBy,
 			    vRoles) r
+			    left outer join technologydata td
+			    on td.technologydatauuid = r.technologydatauuid
 			    where r.year = '0'
 			    and r.month = '0'
 			    and r.day = '0'			    
@@ -214,10 +210,7 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000;
-$$; 
 --4 CREATE FUNCTION GetRevenueHistory
-DO
-$$
 CREATE OR REPLACE FUNCTION public.getrevenuehistory(
     IN vfrom timestamp without time zone,
     IN vto timestamp without time zone,
@@ -236,24 +229,25 @@ $BODY$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (with basis as (select * from public.getrevenue(
+	RETURN QUERY (with basis as (select r.year, r.month, r.day, r.hour, coalesce(td.technologydataname,'Total')::text as technologydataname, r.amount, r.revenue, r.average  from public.getrevenue(
 			    vfrom,
 			    vto,
 			    null,
 			    vcreatedby,
 			    vroles) r
+			join technologydata td on td.technologydatauuid = r.technologydatauuid
 			where r.year <> '0' and r.month <> '0' and r.day <> '0' and r.hour <> '0'
-			and r.technologydataname <> 'Total'
-			order by r.year, r.month, r.day, r.hour, r.technologydataname),
+			and r.technologydatauuid <> uuid_nil()
+			order by r.year, r.month, r.day, r.hour, td.technologydatauuid),
 			benchmark as (
 			select r.year, r.month, r.day, 'Benchmark'::text as technologydataname, (r.revenue/r.amount)::numeric as revenue from public.getrevenue(
 			    vfrom,
 			    vto,
 			    null,
 			    null,
-			    vroles) r
+			    vroles) r 
 			where r.year <> '0' and r.month <> '0' and r.day <> '0' and r.hour = '0'
-			and r.technologydataname = 'Total'
+			and r.technologydatauuid = uuid_nil()
 			group by r.year, r.month, r.day, r.revenue, r.amount			 
 			),
 			techName as (select distinct a.technologydataname
@@ -272,7 +266,8 @@ $BODY$
 			result as (			
 			select to_date(t.year || '-' || t.month || '-' || t.day, 'YYYY-MM-DD') as date, t.technologydataname, t.revenue from totalData t			union all 
 			select to_date(b.year || '-' || b.month || '-' || b.day, 'YYYY-MM-DD') as date, b.technologydataname, b.revenue from benchmark b)
-			select rs.date, rs.technologydataname, rs.revenue from result rs
+			select rs.date, rs.technologydataname, sum(rs.revenue) from result rs
+			group by rs.date, rs.technologydataname
 			order by rs.date asc
 			 
 		
@@ -287,14 +282,11 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000;
-$$;
 --5 CREATE FUNCTION GetTopTechnologyData
-DO
-$$
 CREATE OR REPLACE FUNCTION public.gettoptechnologydata(
     IN vfrom timestamp without time zone,
     IN vto timestamp without time zone,
-    IN vtechnologydataname text,
+    IN vtechnologydatauuid uuid,
     IN vlimit integer,
     IN vcreatedby uuid,
     IN vroles text[])
@@ -309,18 +301,21 @@ $BODY$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select r.year, r.month, r.day, r.hour, r.technologydataname, r.amount, r.revenue from 
+	RETURN QUERY (select r.year, r.month, r.day, r.hour, coalesce(td.technologydataname,'Total')::text as technologydataname, r.amount, r.revenue from 
                         getrevenue(vFrom,
 				   vTo,
-			           vTechnologyDataName,
+			           vtechnologydatauuid,
 			           vCreatedBy,
 			           vRoles) r
+			           join technologydata td
+			           on td.technologydatauuid = r.technologydatauuid
 					where r.year = '0'
 					and r.month = '0'
 					and r.day = '0'
 					and r.hour = '0' 
-					and r.technologydataname <> 'Total'		
-				order by amount desc, technologydataname
+					and td.technologydataname <> 'Total'
+					and td.deleted is null		
+				order by r.amount desc, td.technologydataname
 				limit vLimit		
 		);
 	ELSE
@@ -333,10 +328,7 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000;
-$$;
 --6 CREATE FUNCTION GetTopComponents
-DO
-$$
 CREATE OR REPLACE FUNCTION public.gettopcomponents(
     IN vfrom timestamp without time zone,
     IN vto timestamp without time zone,
@@ -387,10 +379,7 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
   ROWS 1000;
-$$;
 --7 CREATE FUNCTION GetTechnologyDataHistory
-DO
-$$
 CREATE OR REPLACE FUNCTION public.gettechnologydatahistory(
     IN vfrom timestamp without time zone,
     IN vto timestamp without time zone,
@@ -409,14 +398,16 @@ $BODY$
 
 	IF(vIsAllowed) THEN
 
-	RETURN QUERY (select r.year, r.month, r.day, r.hour, r.technologydataname, r.amount, r.revenue from public.getrevenue(
+	RETURN QUERY (select r.year, r.month, r.day, r.hour, coalesce(td.technologydataname,'Total')::text as technologydataname, r.amount, r.revenue from public.getrevenue(
 			    vFrom,
 			    vTo,
 			    null,
 			    null,
 			    vRoles) r
+			left outer join technologydata td
+			on td.technologydatauuid = r.technologydatauuid
 			where r.year <> '0' and r.month <> '0' and r.day <> '0' and r.hour <> '0'
-			and r.technologydataname <> 'Total'	
+			and r.technologydatauuid <> uuid_nil()	
 		);
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
@@ -427,10 +418,7 @@ $BODY$
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100
-  ROWS 1000;
-$$; 		
-			
-			
+  ROWS 1000; 	
 	----------------------------------------------------------------------------------------------------------------------------------------
 		-- UPDATE patch table status value
 		UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;
