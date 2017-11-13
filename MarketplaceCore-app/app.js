@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var validate = require('express-jsonschema').validate;
+const queryParser = require('express-query-int');
 var authentication = require('./services/authentication_service');
 
 var app = express();
@@ -13,6 +13,7 @@ var app = express();
 app.use(logger('dev'));
 
 app.use(bodyParser.json());
+app.use(queryParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
