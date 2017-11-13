@@ -52,7 +52,7 @@ router.get('/revenue/user', validate({
 });
 
 router.get('/revenue/technologydata/history', validate({
-    query: validation_schema.History_Query,
+    query: validation_schema.History_User_Query,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
     dbReports.GetRevenueHistory(

@@ -34,6 +34,10 @@ self.Revenue_Query = {
 self.Revenue_User_Query = {
     type: 'object',
     properties: {
+        user: {
+            type: 'string',
+            format: 'uuid'
+        },
         from: {
             type: 'string',
             format: 'date-time'
@@ -51,6 +55,25 @@ self.Revenue_User_Query = {
 };
 
 self.History_Query = {
+    type: 'object',
+    properties: {
+        from: {
+            type: 'string',
+            format: 'date-time'
+        },
+        to: {
+            type: 'string',
+            format: 'date-time'
+        },
+        require: [
+            'from',
+            'to'
+        ],
+    },
+    additionalProperties: false
+};
+
+self.History_User_Query = {
     type: 'object',
     properties: {
         from: {
@@ -92,8 +115,7 @@ self.Top_TD_Query = {
         require: [
             'from',
             'to',
-            'limit',
-            'user'
+            'limit'
         ],
     },
     additionalProperties: false
@@ -118,8 +140,7 @@ self.Top_Components_Query = {
         require: [
             'from',
             'to',
-            'limit',
-            'user'
+            'limit'
         ],
     },
     additionalProperties: false
