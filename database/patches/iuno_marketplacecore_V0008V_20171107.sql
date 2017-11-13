@@ -172,8 +172,7 @@ $BODY$
 --3 CREATE FUNCTION GetTotalUserRevenue
 CREATE OR REPLACE FUNCTION public.gettotaluserrevenue(
     IN vfrom timestamp without time zone,
-    IN vto timestamp without time zone,
-    IN vdetail text,
+    IN vto timestamp without time zone, 
     IN vcreatedby uuid,
     IN vroles text[])
   RETURNS TABLE(date date, hour text, technologydataname text, amount integer, revenue numeric) AS
@@ -214,8 +213,6 @@ $BODY$
 CREATE OR REPLACE FUNCTION public.getrevenuehistory(
     IN vfrom timestamp without time zone,
     IN vto timestamp without time zone,
-    IN vtechnologydataname text,
-    IN vdetail text,
     IN vcreatedby uuid,
     IN vroles text[])
   RETURNS TABLE(date date, technologydataname text, revenue numeric) AS
@@ -285,8 +282,7 @@ $BODY$
 --5 CREATE FUNCTION GetTopTechnologyData
 CREATE OR REPLACE FUNCTION public.gettoptechnologydata(
     IN vfrom timestamp without time zone,
-    IN vto timestamp without time zone,
-    IN vtechnologydatauuid uuid,
+    IN vto timestamp without time zone, 
     IN vlimit integer,
     IN vcreatedby uuid,
     IN vroles text[])
@@ -304,7 +300,7 @@ $BODY$
 	RETURN QUERY (select r.year, r.month, r.day, r.hour, coalesce(td.technologydataname,'Total')::text as technologydataname, r.amount, r.revenue from 
                         getrevenue(vFrom,
 				   vTo,
-			           vtechnologydatauuid,
+			           null,
 			           vCreatedBy,
 			           vRoles) r
 			           join technologydata td
@@ -382,8 +378,7 @@ $BODY$
 --7 CREATE FUNCTION GetTechnologyDataHistory
 CREATE OR REPLACE FUNCTION public.gettechnologydatahistory(
     IN vfrom timestamp without time zone,
-    IN vto timestamp without time zone,
-    IN vdetail text,
+    IN vto timestamp without time zone, 
     IN vcreatedby uuid,
     IN vroles text[])
   RETURNS TABLE(year text, month text, day text, hour text, technologydataname text, amount integer, revenue numeric) AS
