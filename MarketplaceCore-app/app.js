@@ -39,7 +39,7 @@ app.use(function(err, req, res, next) {
 
     var responseData;
 
-    if (err.name === 'JsonSchemaValidation') {
+    if (err.name === 'JsonSchemaValidation' || err.name === 'JsonSchemaValidationError') {
         // Log the error however you please
         console.log(err.message);
         // logs "express-jsonschema: Invalid data found"
