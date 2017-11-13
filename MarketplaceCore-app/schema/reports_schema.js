@@ -22,7 +22,7 @@ self.Revenue_Query = {
             type: 'string',
             enum: ['day', 'hour']
         },
-        require: [
+        required: [
             'from',
             'to',
             'detail'
@@ -46,7 +46,7 @@ self.Revenue_User_Query = {
             type: 'string',
             format: 'date-time'
         },
-        require: [
+        required: [
             'from',
             'to'
         ]
@@ -65,7 +65,7 @@ self.History_Query = {
             type: 'string',
             format: 'date-time'
         },
-        require: [
+        required: [
             'from',
             'to'
         ],
@@ -84,7 +84,7 @@ self.History_User_Query = {
             type: 'string',
             format: 'date-time'
         },
-        require: [
+        required: [
             'from',
             'to'
         ],
@@ -112,7 +112,7 @@ self.Top_TD_Query = {
             type: 'string',
             format: 'uuid'
         },
-        require: [
+        required: [
             'from',
             'to',
             'limit'
@@ -137,7 +137,7 @@ self.Top_Components_Query = {
             minimum : 1,
             maximum: 10
         },
-        require: [
+        required: [
             'from',
             'to',
             'limit'
