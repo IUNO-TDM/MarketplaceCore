@@ -20,19 +20,32 @@ const path = require('path');
 
 router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
 
-    new TechnologyData().FindAll(req.query['userUUID'], req.token.user.roles, req.query, function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
+
+    if (req.query['user']) {
+        TechnologyData.FindForUser(req.query['user'], req.token.user.id, req.token.user.roles, function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+    }
+    else {
+        TechnologyData.FindAll(req.token.user.id, req.token.user.roles, req.query, function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+    }
 });
 
 router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, data) {
+    new TechnologyData().FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -48,7 +61,7 @@ router.post('/', validate({
 }), function (req, res, next) {
     const data = req.body;
 
-    TechnologyData.FindByName(req.query['userUUID'], req.token.user.roles, data['technologyDataName'], function(err, tData) {
+    TechnologyData.FindByName(req.token.user.id, req.token.user.roles, data['technologyDataName'], function(err, tData) {
         if (err) {
             return next(err);
         }
@@ -80,7 +93,7 @@ router.post('/', validate({
                 techData.productcode = productCode;
                 techData.technologydataimgref = imageService.getRandomImagePath();
 
-                techData.Create(req.query['userUUID'], req.token.user.roles, function (err, data) {
+                techData.Create(req.token.user.id, req.token.user.roles, function (err, data) {
                     if (err) {
                         return next(err);
                     }
@@ -98,7 +111,7 @@ router.post('/', validate({
 router.get('/:id/image', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
 
-    new TechnologyData().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, technologyData) {
+    new TechnologyData().FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, technologyData) {
         if (err) {
             next(err);
         }
@@ -126,7 +139,7 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
 
 router.get('/:id/components', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
 
-    new Component().FindByTechnologyDataId(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, components) {
+    new Component().FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.params['id'], function (err, components) {
         if (err) {
             next(err);
         }
@@ -138,7 +151,7 @@ router.get('/:id/components', validate({query: require('../schema/technologydata
 
 router.delete('/:id/delete', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
 
-    new TechnologyData().Delete(req.params['id'], req.query['userUUID'], req.token.user.roles,  function (err, data) {
+    new TechnologyData().Delete(req.params['id'], req.token.user.id, req.token.user.roles,  function (err, data) {
         if (err) {
             next(err);
         }

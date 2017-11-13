@@ -32,6 +32,22 @@ TechnologyData.prototype.SetProperties = function (data) {
     }
 };
 
+TechnologyData.prototype.FindForUser = TechnologyData.FindForUser = function (user, inquirerId, inquireRoles, callback) {
+    db.func('GetTechnologyDataForUser', [user, inquireRoles])
+        .then(function (data) {
+            const resultList = [];
+            for (let key in data.result) {
+                resultList.push(new TechnologyData(data.result[key]));
+            }
+            callback(null, resultList);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
+
 TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, roles, params, callback) {
     var technologies = params['technologies'];
     var tags = params['tags'];
@@ -134,7 +150,7 @@ TechnologyData.prototype.Update = function () {
 
 TechnologyData.prototype.Delete = function (technologydatauuid, userUUID, roles, callback) {
     db.func('deletetechnologydata',
-        [   technologydatauuid,
+        [technologydatauuid,
             userUUID,
             roles
         ])
