@@ -13,8 +13,9 @@
 | iuno_marketplacecore_V0004V_20170925.sql                          | 0004              | Fix function GetTechnologyByName due to "Ambiguous Column" problem          |  [#115][i115]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0005V_20170928.sql                          | 0005              | Fix function GetTechnologyDataByName due to "Ambiguous Column" problem          |  [#112][i112]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0006V_20171010.sql                          | 0006              | Delete unique constraint on the technologydataname          |  [#116][i116]       | [@gomarcel][igomarcel]      |
-| iuno_marketplacecore_V0007V_20171010.sql                          | 0007              | Delete old reports functions         |  [#103][i103]       | [@gomarcel][igomarcel]      |
-| iuno_marketplacecore_V0008V_20171010.sql                          | 0008              | Create new functions for report          |  [#103][i103]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0007V_20171107.sql                          | 0007              | Delete old reports functions         |  [#103][i103]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0008V_20171107.sql                          | 0008              | Create new functions for report          |  [#103][i103]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0009V_20171113.sql                          | 0009              | Fix Bug in function GetTechnologyDataByParams           |  [#120][i120]       | [@gomarcel][igomarcel]      |
 
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
@@ -27,5 +28,7 @@
 [i112]: https://github.com/IUNO-TDM/MarketplaceCore/issues/112
 [i115]: https://github.com/IUNO-TDM/MarketplaceCore/issues/115
 [i116]: https://github.com/IUNO-TDM/MarketplaceCore/issues/116
+[i120]: https://github.com/IUNO-TDM/MarketplaceCore/issues/120
+
 
 [igomarcel]: https://github.com/gomarcel
