@@ -10,55 +10,27 @@ var router = express.Router();
 var logger = require('../global/logger');
 var dbReports = require('../database/function/report');
 
-router.get('/', function (req, res, next) {
-       if(req.query['sinceDate'] && req.query['topValue']) {
-           dbReports.GetTopTechnologyDataSince(req.query['userUUID'], req.token.user.roles, req.query['sinceDate'], req.query['topValue'], function (err, data) {
-               if (err) {
-                   next(err);
-               }
-               else {
-                   res.json(data);
-               }
-           });
-       }
-       else if(req.query['sinceDate']){
-           dbReports.GetActivatedLicensesSince(req.query['userUUID'], req.token.user.roles, req.query['sinceDate'], function (err, data) {
-               if (err) {
-                   next(err);
-               }
-               else {
-                   res.json(data);
-               }
-           });
-       }
-});
-
-router.get('/favorit/', function (req, res, next) {
-    dbReports.GetMostUsedComponents(req.query['userUUID'], req.token.user.roles, req.query['sinceDate'], req.query['topValue'], function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
-});
-
-router.get('/workload/', function (req, res, next) {
-    dbReports.GetWorkloadSince(req.query['userUUID'], req.token.user.roles, req.query['sinceDate'], function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
-
-});
-
 router.get('/revenue/', function (req, res, next) {
-    if(req.query['time'] === 'day') {
-        dbReports.GetRevenuePerDay(req.query['userUUID'], req.token.user.roles, req.query['sinceDate'], function (err, data) {
+    dbReports.GetTotalRevenue(req.query['from'],
+                         req.query['to'],
+                         req.query['detail'],
+                         req.query['userUUID'],
+                         req.token.user.roles, function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
+});
+
+router.get('/revenue/user', function (req, res, next) {
+    dbReports.GetTotalUserRevenue(req.query['from'],
+        req.query['to'],
+        req.query['detail'],
+        req.query['userUUID'],
+        req.token.user.roles, function (err, data) {
             if (err) {
                 next(err);
             }
@@ -66,9 +38,16 @@ router.get('/revenue/', function (req, res, next) {
                 res.json(data);
             }
         });
-    }
-    else if(req.query['time'] === 'hour'){
-        dbReports.GetRevenuePerHour(req.query['userUUID'], req.token.user.roles, req.query['sinceDate'], function (err, data) {
+});
+
+router.get('/revenue/technologydata/history', function (req, res, next) {
+        dbReports.GetRevenueHistory(req.query['from'],
+                                    req.query['to'],
+                                    req.query['technologydataname'],
+                                    req.query['detail'],
+                                    req.query['userUUID'],
+                                    req.token.user.roles,
+                                    function (err, data) {
             if (err) {
                 next(err);
             }
@@ -76,7 +55,51 @@ router.get('/revenue/', function (req, res, next) {
                 res.json(data);
             }
         });
-    }
+});
+
+router.get('/technologydata/top', function (req, res, next) {
+    dbReports.GetTopTechnologyData( req.query['from'],
+                                    req.query['to'],
+                                    req.query['limit'],
+                                    req.query['user'],
+                                    req.token.user.roles, function (err, data) {
+        if (err) {
+            next(err);
+        }
+        else {
+            res.json(data);
+        }
+    });
+});
+
+router.get('/technologydata/history', function (req, res, next) {
+    dbReports.GetTechnologyDataHistory( req.query['from'],
+                                        req.query['to'],
+                                        req.query['detail'],
+                                        req.query['userUUID'],
+                                        req.token.user.roles, function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+});
+
+router.get('/components/top', function (req, res, next) {
+    dbReports.GetTopComponents( req.query['from'],
+                                req.query['to'],
+                                req.query['limit'],
+                                req.query['userUUID'],
+                                req.token.user.roles, function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
 });
 
 module.exports = router;
