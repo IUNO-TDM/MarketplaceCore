@@ -54,11 +54,27 @@ app.use(function(err, req, res, next) {
             validations: err.validations  // All of your validation information
         };
 
-        res.json(responseData);
-    } else {
-        // pass error to next error middleware handler
-        next(err);
+        return res.json(responseData);
     }
+
+    if (err.name === 'JsonSchemaValidationError') {
+        // Log the error however you please
+        console.log(JSON.stringify(err.validationErrors));
+
+        // Set a bad request http response status or whatever you want
+        res.status(400);
+
+        // Format the response body however you want
+        responseData = {
+            statusText: 'Bad Request',
+            jsonSchemaValidation: true,
+            validations: err.validationErrors  // All of your validation information
+        };
+
+        return res.json(responseData);
+    }
+
+    next(err);
 });
 
 
