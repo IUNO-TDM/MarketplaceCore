@@ -19,8 +19,8 @@ self.GetTotalRevenue = function(from, to, detail, userUUID, roles, callback){
         });
 };
 
-self.GetTotalUserRevenue = function(from, to, detail, userUUID, roles, callback){
-    db.func('GetTotalUserRevenue', [from, to, detail, userUUID, roles])
+self.GetTotalUserRevenue = function(from, to, userUUID, roles, callback){
+    db.func('GetTotalUserRevenue', [from, to, userUUID, roles])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -31,8 +31,8 @@ self.GetTotalUserRevenue = function(from, to, detail, userUUID, roles, callback)
         });
 };
 
-self.GetRevenueHistory = function(from, to, technologydataname, detail, userUUID, roles, callback){
-    db.func('GetRevenueHistory', [from, to, technologydataname, detail,userUUID, roles])
+self.GetRevenueHistory = function(from, to, userUUID, roles, callback){
+    db.func('GetRevenueHistory', [from, to, userUUID, roles])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -44,7 +44,7 @@ self.GetRevenueHistory = function(from, to, technologydataname, detail, userUUID
 };
 
 self.GetTopTechnologyData = function(from, to, limit, user, roles, callback){
-    db.func('GetTopTechnologyData', [from, to, null, limit, user, roles])
+    db.func('GetTopTechnologyData', [from, to, limit, user, roles])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
@@ -67,8 +67,8 @@ self.GetTopComponents = function(from, to, limit, userUUID, roles, callback){
         });
 }
 
-self.GetTechnologyDataHistory = function(from, to, detail, userUUID, roles, callback){
-    db.func('GetTechnologyDataHistory', [from, to, detail, userUUID , roles])
+self.GetTechnologyDataHistory = function(from, to, userUUID, roles, callback){
+    db.func('GetTechnologyDataHistory', [from, to, userUUID , roles])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);

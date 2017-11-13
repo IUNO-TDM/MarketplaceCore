@@ -18,7 +18,8 @@ router.get('/revenue/', validate({
     query: validation_schema.Revenue_Query,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
-    dbReports.GetTotalRevenue(req.query['from'],
+    dbReports.GetTotalRevenue(
+        req.query['from'],
         req.query['to'],
         req.query['detail'],
         req.token.user.id,
