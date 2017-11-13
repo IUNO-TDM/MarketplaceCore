@@ -16,14 +16,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', validate({query: require('./schema/oauth_schema').AccessToken}), authentication.oAuth);
+app.use('/', authentication.oAuth);
 // Load all routes
 app.use('/technologydata', require('./routes/technologydata'));
 app.use('/components', require('./routes/components'));
 app.use('/offers', require('./routes/offers'));
 app.use('/offers', require('./routes/offers'));
 app.use('/reports', require('./routes/reports'));
-app.use('/myreports', require('./routes/myreports'));
 app.use('/cmdongle', require('./routes/cmdongle'));
 
 // catch 404 and forward to error handler

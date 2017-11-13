@@ -19,7 +19,7 @@ var transaction = require('../database/function/transaction');
 router.get('/:id', validate({
     query: require('../schema/offers_schema').Offers
 }), function (req, res, next) {
-    new Offer().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, data) {
+    new Offer().FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         } else {
@@ -34,7 +34,7 @@ router.post('/', validate({
     body: require('../schema/offers_schema').OfferRequestBody
 }), function (req, res, next) {
 
-    var userUUID = req.query['userUUID'];
+    var userUUID = req.token.user.id;
     var requestData = req.body;
     var roles = req.token.user.roles;
 

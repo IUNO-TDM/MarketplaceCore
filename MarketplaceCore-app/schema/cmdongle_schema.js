@@ -12,15 +12,19 @@ self.LicenseUpdate_Body = {
     properties: {
         RAC: {
             type: 'string',
-            format: 'byte',
-            required: true
-        }
-    }
+            pattern: '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$'
+        },
+        required: ['RAC']
+    },
+    additionalProperties: false
 };
 
 self.LicenseUpdate_Query = {
     type: 'object',
-    properties: {}
+    properties: {
+
+    },
+    additionalProperties: false
 };
 
 module.exports = self;

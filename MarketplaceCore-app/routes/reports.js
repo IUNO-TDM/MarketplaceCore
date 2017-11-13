@@ -5,31 +5,23 @@
  -- Description: Routing service for Reports
  -- ##########################################################################*/
 
-var express = require('express');
-var router = express.Router();
-var logger = require('../global/logger');
-var dbReports = require('../database/function/report');
+const express = require('express');
+const router = express.Router();
+const logger = require('../global/logger');
+const dbReports = require('../database/function/report');
+const {Validator, ValidationError} = require('express-json-validator-middleware');
+const validator = new Validator({allErrors: true});
+const validate = validator.validate;
+const validation_schema = require('../schema/reports_schema');
 
-router.get('/revenue/', function (req, res, next) {
+router.get('/revenue/', validate({
+    query: validation_schema.Revenue_Query,
+    body: validation_schema.Empty_Body
+}), function (req, res, next) {
     dbReports.GetTotalRevenue(req.query['from'],
-                         req.query['to'],
-                         req.query['detail'],
-                         req.query['userUUID'],
-                         req.token.user.roles, function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
-});
-
-router.get('/revenue/user', function (req, res, next) {
-    dbReports.GetTotalUserRevenue(req.query['from'],
         req.query['to'],
         req.query['detail'],
-        req.query['userUUID'],
+        req.token.user.id,
         req.token.user.roles, function (err, data) {
             if (err) {
                 next(err);
@@ -40,14 +32,15 @@ router.get('/revenue/user', function (req, res, next) {
         });
 });
 
-router.get('/revenue/technologydata/history', function (req, res, next) {
-        dbReports.GetRevenueHistory(req.query['from'],
-                                    req.query['to'],
-                                    req.query['technologydataname'],
-                                    req.query['detail'],
-                                    req.query['userUUID'],
-                                    req.token.user.roles,
-                                    function (err, data) {
+router.get('/revenue/user', validate({
+    query: validation_schema.Revenue_User_Query,
+    body: validation_schema.Empty_Body
+}), function (req, res, next) {
+    dbReports.GetTotalUserRevenue(
+        req.query['from'],
+        req.query['to'],
+        req.token.user.id,
+        req.token.user.roles, function (err, data) {
             if (err) {
                 next(err);
             }
@@ -57,27 +50,16 @@ router.get('/revenue/technologydata/history', function (req, res, next) {
         });
 });
 
-router.get('/technologydata/top', function (req, res, next) {
-    dbReports.GetTopTechnologyData( req.query['from'],
-                                    req.query['to'],
-                                    req.query['limit'],
-                                    req.query['user'],
-                                    req.token.user.roles, function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
-    });
-});
-
-router.get('/technologydata/history', function (req, res, next) {
-    dbReports.GetTechnologyDataHistory( req.query['from'],
-                                        req.query['to'],
-                                        req.query['detail'],
-                                        req.query['userUUID'],
-                                        req.token.user.roles, function (err, data) {
+router.get('/revenue/technologydata/history', validate({
+    query: validation_schema.History_Query,
+    body: validation_schema.Empty_Body
+}), function (req, res, next) {
+    dbReports.GetRevenueHistory(
+        req.query['from'],
+        req.query['to'],
+        req.token.user.id,
+        req.token.user.roles,
+        function (err, data) {
             if (err) {
                 next(err);
             }
@@ -87,12 +69,53 @@ router.get('/technologydata/history', function (req, res, next) {
         });
 });
 
-router.get('/components/top', function (req, res, next) {
-    dbReports.GetTopComponents( req.query['from'],
-                                req.query['to'],
-                                req.query['limit'],
-                                req.query['userUUID'],
-                                req.token.user.roles, function (err, data) {
+router.get('/technologydata/top', validate({
+    query: validation_schema.Top_TD_Query,
+    body: validation_schema.Empty_Body
+}), function (req, res, next) {
+    dbReports.GetTopTechnologyData(
+        req.query['from'],
+        req.query['to'],
+        req.query['limit'],
+        req.query['user'],
+        req.token.user.roles, function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+});
+
+router.get('/technologydata/history', validate({
+    query: validation_schema.History_Query,
+    body: validation_schema.Empty_Body
+}), function (req, res, next) {
+    dbReports.GetTechnologyDataHistory(
+        req.query['from'],
+        req.query['to'],
+        req.token.user.id,
+        req.token.user.roles, function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
+});
+
+router.get('/components/top', validate({
+    query: validation_schema.Top_Components_Query,
+    body: validation_schema.Empty_Body
+}), function (req, res, next) {
+    dbReports.GetTopComponents(
+        req.query['from'],
+        req.query['to'],
+        req.query['limit'],
+        req.token.user.id,
+        req.token.user.roles, function (err, data) {
             if (err) {
                 next(err);
             }

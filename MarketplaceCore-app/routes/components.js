@@ -5,18 +5,22 @@
  -- Description: Routing requests for components
  -- ##########################################################################*/
 
-var express = require('express');
-var router = express.Router();
-var logger = require('../global/logger');
-var validate = require('express-jsonschema').validate;
-var Component = require('../database/model/component');
-var helper = require('../services/helper_service');
+const express = require('express');
+const router = express.Router();
+const logger = require('../global/logger');
+
+const {Validator, ValidationError} = require('express-json-validator-middleware');
+const validator = new Validator({allErrors: true});
+const validate = validator.validate;
+const validation_schema = require('../schema/components_schema');
+
+const Component = require('../database/model/component');
+const helper = require('../services/helper_service');
 
 
-router.get('/', validate({query: require('../schema/components_schema').GetAll}), function (req, res, next) {
+router.get('/', validate({query: validation_schema.Empty_Query, body: validation_schema.Empty_Body}), function (req, res, next) {
 
-    // req.token.user.role,
-    Component.FindAll(req.query['userUUID'], req.token.user.roles, req.query, function (err, data) {
+    Component.FindAll(req.token.user.id, req.token.user.roles, req.query, function (err, data) {
         if (err) {
             next(err);
         }
@@ -26,8 +30,8 @@ router.get('/', validate({query: require('../schema/components_schema').GetAll})
     });
 });
 
-router.get('/:id', validate({query: require('../schema/components_schema').GetSingle}),  function (req, res, next) {
-    Component.FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, data) {
+router.get('/:id', validate({query: validation_schema.Empty_Query, body: validation_schema.Empty_Body}), function (req, res, next) {
+    Component.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -38,12 +42,19 @@ router.get('/:id', validate({query: require('../schema/components_schema').GetSi
 });
 
 router.post('/', validate({
-    body: require('../schema/components_schema').SaveDataBody,
-    query: require('../schema/components_schema').SaveDataQuery
+    body: validation_schema.SaveDataBody,
+    query: validation_schema.Empty_Query
 }), function (req, res, next) {
-    var comp = new Component();
 
-    var data = req.body;
+    logger.warn('[components] POST components disabled as it is not implemented correctly and should not being used.)');
+    return res.status(500).send('Route disabled!');
+
+    // TODO: Refactor validation schema before using this route.
+
+
+    const comp = new Component();
+
+    const data = req.body;
 
     comp.componentname = data['componentName'];
     comp.componentparentname = data['componentParentName']; //TODO: Refactor this. Why would we identify the parent component by name !?
@@ -51,7 +62,7 @@ router.post('/', validate({
     comp.attributelist = data['attributeList'];
     comp.technologylist = data['technologyList'];
 
-    comp.Create(req.query['userUUID'], req.token.user.roles, function (err, data) {
+    comp.Create(req.token.user.id, req.token.user.roles, function (err, data) {
         if (err) {
             next(err);
         }
