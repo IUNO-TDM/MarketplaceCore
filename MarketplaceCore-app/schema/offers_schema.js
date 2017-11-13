@@ -38,9 +38,9 @@ self.OfferRequestBody = {
         hsmId: {
             type: 'string',
             pattern: '[3-9]-[0-9]{7}$'
-        },
-        required: ['items', 'hsmId']
+        }
     },
+    required: ['items', 'hsmId'],
     additionalProperties: false
 };
 

@@ -21,13 +21,13 @@ self.Revenue_Query = {
         detail: {
             type: 'string',
             enum: ['day', 'hour']
-        },
-        required: [
-            'from',
-            'to',
-            'detail'
-        ]
+        }
     },
+    required: [
+        'from',
+        'to',
+        'detail'
+    ],
     additionalProperties: false
 };
 
@@ -45,13 +45,13 @@ self.Revenue_User_Query = {
         to: {
             type: 'string',
             format: 'date-time'
-        },
-        required: [
-            'from',
-            'to'
-        ]
+        }
     },
-    additionalProperties: false
+    additionalProperties: false,
+    required: [
+        'from',
+        'to'
+    ]
 };
 
 self.History_Query = {
@@ -64,12 +64,12 @@ self.History_Query = {
         to: {
             type: 'string',
             format: 'date-time'
-        },
-        required: [
-            'from',
-            'to'
-        ],
+        }
     },
+    required: [
+        'from',
+        'to'
+    ],
     additionalProperties: false
 };
 
@@ -83,12 +83,12 @@ self.History_User_Query = {
         to: {
             type: 'string',
             format: 'date-time'
-        },
-        required: [
-            'from',
-            'to'
-        ],
+        }
     },
+    required: [
+        'from',
+        'to'
+    ],
     additionalProperties: false
 };
 
@@ -105,19 +105,19 @@ self.Top_TD_Query = {
         },
         limit: {
             type: 'integer',
-            minimum : 1,
+            minimum: 1,
             maximum: 10
         },
         user: {
             type: 'string',
             format: 'uuid'
-        },
-        required: [
-            'from',
-            'to',
-            'limit'
-        ],
+        }
     },
+    required: [
+        'from',
+        'to',
+        'limit'
+    ],
     additionalProperties: false
 };
 
@@ -134,15 +134,15 @@ self.Top_Components_Query = {
         },
         limit: {
             type: 'integer',
-            minimum : 1,
+            minimum: 1,
             maximum: 10
-        },
-        required: [
-            'from',
-            'to',
-            'limit'
-        ],
+        }
     },
+    required: [
+        'from',
+        'to',
+        'limit'
+    ],
     additionalProperties: false
 };
 

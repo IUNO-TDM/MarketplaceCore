@@ -9,9 +9,7 @@ var self = {};
 
 self.Empty = {
     type: 'object',
-    properties: {
-
-    },
+    properties: {},
     additionalProperties: false
 };
 
@@ -32,9 +30,10 @@ self.SaveDataBody = {
         },
         technologyList: {
             type: 'array'
-        },
-        required: [ 'componentName', 'componentParentName', 'componentDescription', 'attributeList', 'technologyList']
+        }
+
     },
+    required: ['componentName', 'componentParentName', 'componentDescription', 'attributeList', 'technologyList'],
     additionalProperties: false
 };
 

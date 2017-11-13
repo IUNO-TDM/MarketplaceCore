@@ -13,17 +13,15 @@ self.LicenseUpdate_Body = {
         RAC: {
             type: 'string',
             pattern: '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$'
-        },
-        required: ['RAC']
+        }
     },
+    required: ['RAC'],
     additionalProperties: false
 };
 
 self.LicenseUpdate_Query = {
     type: 'object',
-    properties: {
-
-    },
+    properties: {},
     additionalProperties: false
 };
 
