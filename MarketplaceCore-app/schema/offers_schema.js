@@ -7,14 +7,10 @@
 
 var self = {};
 
-self.Offers = {
+self.Empty = {
     type: 'object',
-    properties: {
-        userUUID: {
-            type: 'string',
-            required: true
-        }
-    }
+    properties: {},
+    additionalProperties: false
 };
 
 self.OfferRequestBody = {
@@ -27,32 +23,25 @@ self.OfferRequestBody = {
                 properties: {
                     dataId: {
                         type: 'string',
-                        required: true
+                        format: 'uuid'
                     },
                     amount: {
                         type: 'integer',
-                        required: true
-                    }
-                }
-            },
-            required: true
+                        minimum : 1,
+                        maximum: 100
+                    },
+                    required: ['dataId', 'amount']
+                },
+                additionalProperties: false
+            }
         },
         hsmId: {
             type: 'string',
-            required: true
-        }
-    }
-};
-
-self.Payment = {
-    type: 'object',
-    properties: {
-        paymentBIP70: {
-            type: 'string',
-            required: true
-        }
+            pattern: '[3-9]-[0-9]{7}$'
+        },
+        required: ['items', 'hsmId']
     },
-    required: true
+    additionalProperties: false
 };
 
 module.exports = self;

@@ -18,7 +18,7 @@ const Component = require('../database/model/component');
 const helper = require('../services/helper_service');
 
 
-router.get('/', validate({query: validation_schema.Empty_Query, body: validation_schema.Empty_Body}), function (req, res, next) {
+router.get('/', validate({query: validation_schema.Empty, body: validation_schema.Empty}), function (req, res, next) {
 
     Component.FindAll(req.token.user.id, req.token.user.roles, req.query, function (err, data) {
         if (err) {
@@ -30,7 +30,7 @@ router.get('/', validate({query: validation_schema.Empty_Query, body: validation
     });
 });
 
-router.get('/:id', validate({query: validation_schema.Empty_Query, body: validation_schema.Empty_Body}), function (req, res, next) {
+router.get('/:id', validate({query: validation_schema.Empty, body: validation_schema.Empty}), function (req, res, next) {
     Component.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
@@ -43,7 +43,7 @@ router.get('/:id', validate({query: validation_schema.Empty_Query, body: validat
 
 router.post('/', validate({
     body: validation_schema.SaveDataBody,
-    query: validation_schema.Empty_Query
+    query: validation_schema.Empty
 }), function (req, res, next) {
 
     logger.warn('[components] POST components disabled as it is not implemented correctly and should not being used.)');

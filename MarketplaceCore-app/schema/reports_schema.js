@@ -81,7 +81,7 @@ self.Top_TD_Query = {
             format: 'date-time'
         },
         limit: {
-            type: 'number',
+            type: 'integer',
             minimum : 1,
             maximum: 10
         },
@@ -111,7 +111,7 @@ self.Top_Components_Query = {
             format: 'date-time'
         },
         limit: {
-            type: 'number',
+            type: 'integer',
             minimum : 1,
             maximum: 10
         },

@@ -7,15 +7,7 @@
 
 var self = {};
 
-self.Empty_Query = {
-    type: 'object',
-    properties: {
-
-    },
-    additionalProperties: false
-};
-
-self.Empty_Body = {
+self.Empty = {
     type: 'object',
     properties: {
 
