@@ -121,7 +121,7 @@ router.get('/:id/image', validate({
         }
         else {
             if (!technologyData || !Object.keys(technologyData).length) {
-                logger.info('No technologyData found for id: ' + req.param['id']);
+                logger.info('No technologyData found for id: ' + req.params['id']);
                 res.sendStatus(404);
 
                 return;
