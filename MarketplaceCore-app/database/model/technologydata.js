@@ -127,6 +127,7 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             this.productcode,
             this.taglist ? this.taglist : [''],
             this.componentlist,
+            this.technologydataimgref,
             userUUID,
             roles
         ])
