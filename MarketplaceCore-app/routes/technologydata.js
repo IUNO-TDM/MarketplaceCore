@@ -9,6 +9,7 @@ const express = require('express');
 const router = express.Router();
 const logger = require('../global/logger');
 const validate = require('express-jsonschema').validate;
+const validationSchema = require('../schema/technologydata_schema');
 const TechnologyData = require('../database/model/technologydata');
 const Component = require('../database/model/component');
 const helper = require('../services/helper_service');
@@ -18,7 +19,7 @@ const imageService = require('../services/image_service');
 const CONFIG = require('../config/config_loader');
 const path = require('path');
 
-router.get('/', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
+router.get('/', validate({query: validationSchema.GetAll, body: validationSchema.Empty}), function (req, res, next) {
 
 
     if (req.query['user']) {
@@ -43,7 +44,7 @@ router.get('/', validate({query: require('../schema/technologydata_schema').GetA
     }
 });
 
-router.get('/:id', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
+router.get('/:id', validate({query: validationSchema.Empty, body: validationSchema.Empty}), function (req, res, next) {
 
     new TechnologyData().FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
@@ -56,12 +57,12 @@ router.get('/:id', validate({query: require('../schema/technologydata_schema').G
 });
 
 router.post('/', validate({
-    body: require('../schema/technologydata_schema').SaveDataBody,
-    query: require('../schema/technologydata_schema').SaveDataQuery
+    body: validationSchema.SaveDataBody,
+    query: validationSchema.Empty
 }), function (req, res, next) {
     const data = req.body;
 
-    TechnologyData.FindByName(req.token.user.id, req.token.user.roles, data['technologyDataName'], function(err, tData) {
+    TechnologyData.FindByName(req.token.user.id, req.token.user.roles, data['technologyDataName'], function (err, tData) {
         if (err) {
             return next(err);
         }
@@ -71,12 +72,12 @@ router.post('/', validate({
             return res.send('Technologydata with given name already exists.');
         }
 
-        dbProductCode.GetNewProductCode(function(err, productCode){
+        dbProductCode.GetNewProductCode(function (err, productCode) {
             if (err) {
                 return next(err);
             }
 
-            licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, data['technologyDataName'], productCode, data['technologyData'], function(err, encryptedData){
+            licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, data['technologyDataName'], productCode, data['technologyData'], function (err, encryptedData) {
                 if (err) {
                     return next(err);
                 }
@@ -108,7 +109,10 @@ router.post('/', validate({
 });
 
 
-router.get('/:id/image', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
+router.get('/:id/image', validate({
+    query: validationSchema.Empty,
+    body: validationSchema.Empty
+}), function (req, res, next) {
 
 
     new TechnologyData().FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, technologyData) {
@@ -137,7 +141,10 @@ router.get('/:id/image', validate({query: require('../schema/technologydata_sche
 
 });
 
-router.get('/:id/components', validate({query: require('../schema/technologydata_schema').GetSingle}), function (req, res, next) {
+router.get('/:id/components', validate({
+    query: validationSchema.Empty,
+    body: validationSchema.Empty
+}), function (req, res, next) {
 
     new Component().FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.params['id'], function (err, components) {
         if (err) {
@@ -149,9 +156,12 @@ router.get('/:id/components', validate({query: require('../schema/technologydata
     });
 });
 
-router.delete('/:id/delete', validate({query: require('../schema/technologydata_schema').GetAll}), function (req, res, next) {
+router.delete('/:id/delete', validate({
+    query: validationSchema.GetAll,
+    body: validationSchema.Empty
+}), function (req, res, next) {
 
-    new TechnologyData().Delete(req.params['id'], req.token.user.id, req.token.user.roles,  function (err, data) {
+    new TechnologyData().Delete(req.params['id'], req.token.user.id, req.token.user.roles, function (err, data) {
         if (err) {
             next(err);
         }
