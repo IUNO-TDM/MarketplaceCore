@@ -29,9 +29,9 @@ self.OfferRequestBody = {
                         type: 'integer',
                         minimum : 1,
                         maximum: 100
-                    },
-                    required: ['dataId', 'amount']
+                    }
                 },
+                required: ['dataId', 'amount'],
                 additionalProperties: false
             }
         },
