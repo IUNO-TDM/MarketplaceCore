@@ -35,10 +35,15 @@ $$
 		PatchName varchar		 	 := 'iuno_marketplacecore_V0008V_20171107.sql';
 		PatchNumber int 		 	 := 0008;
 		PatchDescription varchar 	 := 'Create new functions to create reports and calculate revenue';
+		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN	
 		--INSERT START VALUES TO THE PATCH TABLE
-		INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
+		IF (PatchNumber <= CurrentPatch) THEN
+			RAISE EXCEPTION '%', 'Wrong patch number. Please verify your patches!';
+		ELSE
+			INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
+		END IF;	
 	END;
 $$;
 ------------------------------------------------------------------------------------------------
@@ -54,8 +59,8 @@ $$
 
 --1 CREATE FUNCTION GetRevenue 
 CREATE OR REPLACE FUNCTION public.getrevenue(
-    IN vfrom timestamp without time zone,
-    IN vto timestamp without time zone,
+    IN vfrom timestamp with time zone,
+    IN vto timestamp with time zone,
     IN vtechnologydatauuid uuid,
     IN vcreatedby uuid,
     IN vroles text[])
@@ -128,8 +133,8 @@ $BODY$
   ROWS 1000;
 --2 CREATE FUNCTION GetTotalRevenue
 CREATE OR REPLACE FUNCTION public.gettotalrevenue(
-    IN vfrom timestamp without time zone,
-    IN vto timestamp without time zone,
+    IN vfrom timestamp with time zone,
+    IN vto timestamp with time zone,
     IN vdetail text,
     IN vcreatedby uuid,
     IN vroles text[])
@@ -171,8 +176,8 @@ $BODY$
   ROWS 1000;
 --3 CREATE FUNCTION GetTotalUserRevenue
 CREATE OR REPLACE FUNCTION public.gettotaluserrevenue(
-    IN vfrom timestamp without time zone,
-    IN vto timestamp without time zone, 
+    IN vfrom timestamp with time zone,
+    IN vto timestamp with time zone,
     IN vcreatedby uuid,
     IN vroles text[])
   RETURNS TABLE(date date, hour text, technologydataname text, amount integer, revenue numeric) AS
@@ -196,7 +201,9 @@ $BODY$
 			    on td.technologydatauuid = r.technologydatauuid
 			    where r.year = '0'
 			    and r.month = '0'
-			    and r.day = '0'			    
+			    and r.day = '0'
+			    and r.hour = '0'
+			    and r.technologydatauuid = vTechnologyDataUUID			    
 			    order by r.year asc, r.month asc, r.day asc
 		);
 	ELSE
@@ -206,13 +213,11 @@ $BODY$
 
 	END;
 $BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100
-  ROWS 1000;
+  LANGUAGE plpgsql;
 --4 CREATE FUNCTION GetRevenueHistory
 CREATE OR REPLACE FUNCTION public.getrevenuehistory(
-    IN vfrom timestamp without time zone,
-    IN vto timestamp without time zone,
+    IN vfrom timestamp with time zone,
+    IN vto timestamp with time zone,
     IN vcreatedby uuid,
     IN vroles text[])
   RETURNS TABLE(date date, technologydataname text, revenue numeric) AS
@@ -281,8 +286,8 @@ $BODY$
   ROWS 1000;
 --5 CREATE FUNCTION GetTopTechnologyData
 CREATE OR REPLACE FUNCTION public.gettoptechnologydata(
-    IN vfrom timestamp without time zone,
-    IN vto timestamp without time zone, 
+    IN vfrom timestamp with time zone,
+    IN vto timestamp with time zone, 
     IN vlimit integer,
     IN vcreatedby uuid,
     IN vroles text[])
@@ -326,9 +331,9 @@ $BODY$
   ROWS 1000;
 --6 CREATE FUNCTION GetTopComponents
 CREATE OR REPLACE FUNCTION public.gettopcomponents(
-    IN vfrom timestamp without time zone,
-    IN vto timestamp without time zone,
-    IN vlimit text,
+    IN vfrom timestamp with time zone,
+    IN vto timestamp with time zone,
+    IN vlimit integer,
     IN vuseruuid uuid,
     IN vroles text[])
   RETURNS TABLE(componentname character varying, amount integer) AS
@@ -363,7 +368,7 @@ $BODY$
 		where activatedat between vFrom and vTo		
 		group by a.componentname)
 		select r.componentname::varchar(250), rank::integer from rankTable r
-		order by rank desc limit vLimit::integer);
+		order by rank desc limit vLimit);
 
 	ELSE
 		 RAISE EXCEPTION '%', 'Insufficiency rigths';
@@ -377,8 +382,8 @@ $BODY$
   ROWS 1000;
 --7 CREATE FUNCTION GetTechnologyDataHistory
 CREATE OR REPLACE FUNCTION public.gettechnologydatahistory(
-    IN vfrom timestamp without time zone,
-    IN vto timestamp without time zone, 
+    IN vfrom timestamp with time zone,
+    IN vto timestamp with time zone, 
     IN vcreatedby uuid,
     IN vroles text[])
   RETURNS TABLE(year text, month text, day text, hour text, technologydataname text, amount integer, revenue numeric) AS
