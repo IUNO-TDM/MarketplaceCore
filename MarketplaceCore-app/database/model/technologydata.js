@@ -27,7 +27,7 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.createdby = data.createdby ? data.createdby : this.createdby;
         this.updatedat = data.updatedat ? data.updatedat : this.updatedat;
         this.updatedby = data.updatedby ? data.updatedby : this.updatedby;
-        this.componentlist = data.componentlist ? data.componentlist : this.componentlist;
+        this.componentlist = data['componentswithattribute'] ? data['componentswithattribute'] : this.componentlist;
         this.taglist = data.taglist ? data.taglist : this.taglist;
         this.revenue = data.revenue ? data.revenue : this.revenue;
     }
