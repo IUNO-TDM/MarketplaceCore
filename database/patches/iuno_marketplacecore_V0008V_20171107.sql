@@ -32,14 +32,14 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V0008V_20171107.sql';
+		PatchName varchar		 	 := 'iuno_marketplacecore_V0008V_20171107';
 		PatchNumber int 		 	 := 0008;
 		PatchDescription varchar 	 := 'Create new functions to create reports and calculate revenue';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN	
 		--INSERT START VALUES TO THE PATCH TABLE
-		IF (PatchNumber >= CurrentPatch) THEN
+		IF (PatchNumber <= CurrentPatch) THEN
 			RAISE EXCEPTION '%', 'Wrong patch number. Please verify your patches!';
 		ELSE
 			INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
