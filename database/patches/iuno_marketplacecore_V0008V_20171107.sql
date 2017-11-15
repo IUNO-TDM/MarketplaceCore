@@ -39,7 +39,7 @@ $$
 
 	BEGIN	
 		--INSERT START VALUES TO THE PATCH TABLE
-		IF (PatchNumber <= CurrentPatch) THEN
+		IF (PatchNumber >= CurrentPatch) THEN
 			RAISE EXCEPTION '%', 'Wrong patch number. Please verify your patches!';
 		ELSE
 			INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
