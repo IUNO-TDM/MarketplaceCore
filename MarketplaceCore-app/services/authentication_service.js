@@ -66,6 +66,7 @@ self.ws_oAuth = function (socket, next) {
                 next();
             }
             else {
+                logger.info('[authentication_service] Websocket Client unauthorized.');
                 return next(new Error('WWW-Authenticate: Bearer realm=Valid oauth token required'));
             }
         })
