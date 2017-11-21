@@ -10,10 +10,6 @@ var self = {};
 self.GetAll = {
     type: 'object',
     properties: {
-        userUUID: {
-            type: 'string',
-            required: true
-        },
         tags: {
             type: 'array',
             items: {
@@ -53,14 +49,12 @@ self.GetAll = {
     }
 };
 
-self.GetSingle = {
+self.Empty = {
     type: 'object',
     properties: {
-        userUUID: {
-            type: 'string',
-            required: true
-        }
-    }
+
+    },
+    additionalProperties: false
 };
 
 
@@ -109,16 +103,5 @@ self.SaveDataBody = {
         }
     }
 };
-
-self.SaveDataQuery = {
-    type: 'object',
-    userUUID: {
-        type: 'string',
-        required: true
-    }
-};
-
-self.saveTechnologyData = {};
-
 
 module.exports = self;

@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var validate = require('express-jsonschema').validate;
+const queryParser = require('express-query-int');
 var authentication = require('./services/authentication_service');
 
 var app = express();
@@ -13,17 +13,17 @@ var app = express();
 app.use(logger('dev'));
 
 app.use(bodyParser.json());
+app.use(queryParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', validate({query: require('./schema/oauth_schema').AccessToken}), authentication.oAuth);
+app.use('/', authentication.oAuth);
 // Load all routes
 app.use('/technologydata', require('./routes/technologydata'));
 app.use('/components', require('./routes/components'));
 app.use('/offers', require('./routes/offers'));
 app.use('/offers', require('./routes/offers'));
 app.use('/reports', require('./routes/reports'));
-app.use('/myreports', require('./routes/myreports'));
 app.use('/cmdongle', require('./routes/cmdongle'));
 
 // catch 404 and forward to error handler
@@ -55,11 +55,27 @@ app.use(function(err, req, res, next) {
             validations: err.validations  // All of your validation information
         };
 
-        res.json(responseData);
-    } else {
-        // pass error to next error middleware handler
-        next(err);
+        return res.json(responseData);
     }
+
+    if (err.name === 'JsonSchemaValidationError') {
+        // Log the error however you please
+        console.log(JSON.stringify(err.validationErrors));
+
+        // Set a bad request http response status or whatever you want
+        res.status(400);
+
+        // Format the response body however you want
+        responseData = {
+            statusText: 'Bad Request',
+            jsonSchemaValidation: true,
+            validations: err.validationErrors  // All of your validation information
+        };
+
+        return res.json(responseData);
+    }
+
+    next(err);
 });
 
 

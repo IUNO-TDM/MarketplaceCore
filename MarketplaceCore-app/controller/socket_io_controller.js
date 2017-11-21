@@ -4,6 +4,8 @@
 
 var logger = require('../global/logger');
 const license_service = require('../services/license_service');
+const authentication = require('../services/authentication_service');
+
 function onIOLicenseConnect(socket) {
     logger.debug('Client for Licenses connected.' + socket.id);
 
@@ -25,7 +27,10 @@ function onIOLicenseConnect(socket) {
 
 module.exports = function (io) {
 
-    var namespace = io.of('/licenses');
+    // Enable bearer authentication for socket.io
+    io.use(authentication.ws_oAuth);
+
+    const namespace = io.of('/licenses');
     namespace.on('connection', onIOLicenseConnect);
     registerLicenseEvents(namespace);
 

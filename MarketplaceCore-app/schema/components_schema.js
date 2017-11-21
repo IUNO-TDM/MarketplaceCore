@@ -7,61 +7,35 @@
 
 var self = {};
 
-self.GetAll = {
+self.Empty = {
     type: 'object',
-    properties: {
-        userUUID: {
-            type: 'string',
-            required: true
-        }
-    }
-};
-
-self.GetSingle = {
-    type: 'object',
-    properties: {
-        userUUID: {
-            type: 'string',
-            required: true
-        }
-    }
+    properties: {},
+    additionalProperties: false
 };
 
 self.SaveDataBody = {
     type: 'object',
     properties: {
         componentName: {
-            type: 'string',
-            required: true
+            type: 'string'
         },
         componentParentName: {
-            type: 'string',
-            required: true
+            type: 'string'
         },
         componentDescription: {
-            type: 'string',
-            required: true
+            type: 'string'
         },
         attributeList: {
-            type: 'array',
-            required: true
+            type: 'array'
         },
         technologyList: {
-            type: 'array',
-            required: true
+            type: 'array'
         }
-    }
-};
 
-self.SaveDataQuery = {
-    type: 'object',
-    userUUID: {
-        type: 'string',
-        required: true
-    }
+    },
+    required: ['componentName', 'componentParentName', 'componentDescription', 'attributeList', 'technologyList'],
+    additionalProperties: false
 };
-
-self.saveTechnologyData = {};
 
 
 module.exports = self;

@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const logger = require('../global/logger');
-const validate = require('express-jsonschema').validate;
+
+const { Validator, ValidationError } = require('express-json-validator-middleware');
+const validator = new Validator({allErrors: true});
+const validate = validator.validate;
+
 const helper = require('../services/helper_service');
 const licenseCentral = require('../adapter/license_central_adapter');
 

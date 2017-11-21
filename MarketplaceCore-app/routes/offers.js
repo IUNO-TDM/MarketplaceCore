@@ -8,7 +8,12 @@
 var express = require('express');
 var router = express.Router();
 var logger = require('../global/logger');
-var validate = require('express-jsonschema').validate;
+
+const {Validator, ValidationError} = require('express-json-validator-middleware');
+const validator = new Validator({allErrors: true});
+const validate = validator.validate;
+const validation_schema = require('../schema/offers_schema');
+
 var invoiceService = require('../services/invoice_service');
 var helper = require('../services/helper_service');
 var Offer = require('../database/model/offer');
@@ -17,9 +22,10 @@ var payment = require('../database/function/payment');
 var transaction = require('../database/function/transaction');
 
 router.get('/:id', validate({
-    query: require('../schema/offers_schema').Offers
+    query: validation_schema.Empty,
+    body: validation_schema.Empty
 }), function (req, res, next) {
-    new Offer().FindSingle(req.query['userUUID'], req.token.user.roles, req.params['id'], function (err, data) {
+    new Offer().FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         } else {
@@ -30,11 +36,11 @@ router.get('/:id', validate({
 });
 
 router.post('/', validate({
-    query: require('../schema/offers_schema').Offers,
-    body: require('../schema/offers_schema').OfferRequestBody
+    query: validation_schema.Empty,
+    body: validation_schema.OfferRequestBody
 }), function (req, res, next) {
 
-    var userUUID = req.query['userUUID'];
+    var userUUID = req.token.user.id;
     var requestData = req.body;
     var roles = req.token.user.roles;
 

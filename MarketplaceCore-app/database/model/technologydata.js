@@ -27,10 +27,27 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.createdby = data.createdby ? data.createdby : this.createdby;
         this.updatedat = data.updatedat ? data.updatedat : this.updatedat;
         this.updatedby = data.updatedby ? data.updatedby : this.updatedby;
-        this.componentlist = data.componentswithattribute ? data.componentswithattribute : this.componentlist;
+        this.componentlist = data['componentswithattribute'] ? data['componentswithattribute'] : this.componentlist;
         this.taglist = data.taglist ? data.taglist : this.taglist;
+        this.revenue = data.revenue ? data.revenue : this.revenue;
     }
 };
+
+TechnologyData.prototype.FindForUser = TechnologyData.FindForUser = function (user, inquirerId, inquireRoles, callback) {
+    db.func('GetTechnologyDataForUser', [user, inquireRoles])
+        .then(function (data) {
+            const resultList = [];
+            for (let key in data) {
+                resultList.push(new TechnologyData(data[key]));
+            }
+            callback(null, resultList);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
 
 TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, roles, params, callback) {
     var technologies = params['technologies'];
@@ -111,6 +128,7 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             this.productcode,
             this.taglist ? this.taglist : [''],
             this.componentlist,
+            this.technologydataimgref,
             userUUID,
             roles
         ])
@@ -134,7 +152,7 @@ TechnologyData.prototype.Update = function () {
 
 TechnologyData.prototype.Delete = function (technologydatauuid, userUUID, roles, callback) {
     db.func('deletetechnologydata',
-        [   technologydatauuid,
+        [technologydatauuid,
             userUUID,
             roles
         ])

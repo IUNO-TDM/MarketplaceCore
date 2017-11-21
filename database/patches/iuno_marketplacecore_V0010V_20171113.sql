@@ -1,8 +1,8 @@
---#######################################################################################################
+﻿--#######################################################################################################
 --TRUMPF Werkzeugmaschinen GmbH & Co KG
 --TEMPLATE FOR DATABASE PATCHES, HOT FIXES and SCHEMA CHANGES
 --Author: Marcel Ely Gomes
---CreateAt: 2017-09-20
+--CreateAt: 2017-09-13
 --Version: 00.00.01 (Initial)
 --#######################################################################################################
 -- READ THE INSTRUCTIONS BEFORE CONTINUE - USE ONLY PatchDBTool to deploy patches to existing Databases
@@ -17,16 +17,15 @@
 -- Example: iuno_marketplacecore_V00001V_20170913.sql
 --#######################################################################################################
 -- PUT YOUR STATEMENTS HERE:
--- 	1) Why is this Patch necessary?
---	At the moment it's possible to change recipes from other users. This shouldn't be allowed.
---	The call is going to be catched on the Frontend Side. This is only a further security activity.
---	Furthermore the update functionality is going to be transfer to another function
--- 	2) Which Git Issue Number is this patch solving?
---	#116
--- 	3) Which changes are going to be done?
---	Added a check to proof if the function calling user is owner from the recipe. 
---	On the frontend there is also a check, so that acctually this function is never 
---	going to be called by other user but the owner. But safe is safe. 
+-- 	1) Why is this Patch necessary? 
+--	At the moment is not possible to save the imgref on the database. This script fix the bug.
+-- 	2) Which Git Issue Number is this patch solving? 
+--	#101
+-- 	3) Which changes are going to be done? 
+--	Drop Function CreateTechnologyData
+--	Create Function CreateTechnologyData with imgref as input paramater
+--	Drop Function SetTechnologyData
+--	Create Function SetTechnologyData with imgref as input parameter
 --: Run Patches
 ------------------------------------------------------------------------------------------------
 --##############################################################################################
@@ -35,14 +34,18 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V00006V_20171010';
-		PatchNumber int 		 	 := 0006;
-		PatchDescription varchar 	 := 'It is not possible to insert a new technologydata with the name an older
-		                                  technologydata that has been deleted. This patch correct the function SetTechnologyData.';
+		PatchName varchar		 	 := 'iuno_marketplacecore_V0010V_20171113';
+		PatchNumber int 		 	 := 0010;
+		PatchDescription varchar 	 := 'Allow passing the imgref to the technologydata table';
+		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN	
 		--INSERT START VALUES TO THE PATCH TABLE
-		INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
+		IF (PatchNumber <= CurrentPatch) THEN
+			RAISE EXCEPTION '%', 'Wrong patch number. Please verify your patches!';
+		ELSE
+			INSERT INTO PATCHES (patchname, patchnumber, patchdescription, startat) VALUES (PatchName, PatchNumber, PatchDescription, now());		
+		END IF;	
 	END;
 $$;
 ------------------------------------------------------------------------------------------------
@@ -52,12 +55,92 @@ $$;
 DO
 $$
 		DECLARE
-			vPatchNumber int := (select max(patchnumber) from patches);
+			vPatchNumber int := 0010;
 		BEGIN
 	----------------------------------------------------------------------------------------------------------------------------------------
-	ALTER TABLE technologydata DROP CONSTRAINT technologydata__un;
+			
+DROP FUNCTION public.createtechnologydata(character varying, character varying, character varying, integer, integer, uuid, uuid, text[]);
 
-	CREATE OR REPLACE FUNCTION public.settechnologydata(
+CREATE OR REPLACE FUNCTION public.createtechnologydata(
+    IN vtechnologydataname character varying,
+    IN vtechnologydata character varying,
+    IN vtechnologydatadescription character varying,
+    IN vlicensefee integer,
+    IN vproductcode integer,
+    IN vtechnologyuuid uuid,
+    IN vtechnologydataimgref text,
+    IN vcreatedby uuid,
+    IN vroles text[])
+  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, technologyuuid uuid, technologydata character varying, productcode integer, licensefee integer, technologydatadescription character varying, technologydatathumbnail bytea, technologydataimgref character varying, createdat timestamp with time zone, createdby uuid) AS
+$BODY$
+	#variable_conflict use_column
+      DECLARE 	vTechnologyDataID integer := (select nextval('TechnologyDataID'));
+		vTechnologyDataUUID uuid := (select uuid_generate_v4());
+		vTechnologyID integer := (select technologyid from technologies where technologyuuid = vTechnologyUUID);
+		vFunctionName varchar := 'CreateTechnologyData';
+		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+
+      BEGIN
+	IF(vIsAllowed) then
+		INSERT INTO TechnologyData(TechnologyDataID, TechnologyDataUUID, TechnologyDataName, TechnologyData, TechnologyDataDescription, LicenseFee, ProductCode, TechnologyID, technologydataimgref, CreatedBy, CreatedAt)
+        VALUES(vTechnologyDataID, vTechnologyDataUUID, vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, vTechnologyID, vtechnologydataimgref, vCreatedBy, now());
+	else
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	end if;
+
+        -- Begin Log if success
+        perform public.createlog(0,'Created TechnologyData sucessfully', 'CreateTechnologyData',
+                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
+                                || replace(vTechnologyDataName, '''', '''''') || ', TechnologyData: ' || vTechnologyData
+                                || ', TechnologyDataDescription: ' || replace(vTechnologyDataDescription, '''', '''''')
+				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
+                                || ', TechnologyID: ' || cast(vTechnologyID as varchar)
+                                || ', LicenseFee: ' || cast(vLicenseFee as varchar)
+                                || ', ProductCode: ' || cast(vProductCode as varchar)
+                                || ', CreatedBy: ' || vCreatedBy);
+
+        -- End Log if success
+        -- Return
+        RETURN QUERY (
+		select 	td.TechnologyDataUUID,
+			td.TechnologyDataName,
+			tc.TechnologyUUID,
+			td.TechnologyData,
+			td.LicenseFee,
+			td.ProductCode,
+			td.TechnologyDataDescription,
+			td.TechnologyDataThumbnail,
+			td.TechnologyDataImgRef,
+			td.CreatedAt at time zone 'utc',
+			vCreatedby as CreateBy
+		from technologydata td
+		join technologies tc on
+		td.technologyid = tc.technologyid
+		where td.technologydatauuid = vTechnologyDataUUID
+        );
+
+        exception when others then
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateTechnologyData',
+                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
+                                || replace(vTechnologyDataName, '''', '''''') || ', TechnologyData: ' || vTechnologyData
+                                || ', TechnologyDataDescription: ' || replace(vTechnologyDataDescription, '''', '''''')
+				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
+                                || ', TechnologyID: ' || cast(vTechnologyID as varchar)
+                                || ', LicenseFee: ' || cast(vLicenseFee as varchar)
+                                || ', ProductCode: ' || cast(vProductCode as varchar)
+                                || ', CreatedBy: ' || vCreatedBy);
+        -- End Log if error
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyData';
+        RETURN;
+      END;
+  $BODY$
+  LANGUAGE plpgsql; 
+  
+  DROP FUNCTION public.settechnologydata(character varying, character varying, character varying, uuid, integer, integer, text[], text[], uuid, text[]);
+
+CREATE OR REPLACE FUNCTION public.settechnologydata(
 	    IN vtechnologydataname character varying,
 	    IN vtechnologydata character varying,
 	    IN vtechnologydatadescription character varying,
@@ -66,6 +149,7 @@ $$
 	    IN vproductcode integer,
 	    IN vtaglist text[],
 	    IN vcomponentlist text[],
+	    IN vtechnologydataimgref text,						 
 	    IN vcreatedby uuid,
 	    IN vroles text[])
 	  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, technologyuuid uuid, technologydata character varying, licensefee integer, 
@@ -112,7 +196,7 @@ $$
 
 			-- Create new TechnologyData
 				IF(vAlreadExists is null) THEN
-					perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, 					vTechnologyUUID, vCreatedBy, vRoles);
+					perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, 					vTechnologyUUID, vtechnologydataimgref, vCreatedBy, vRoles);
 					vTechnologyDataID := (select currval('TechnologyDataID'));
 					vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
 
