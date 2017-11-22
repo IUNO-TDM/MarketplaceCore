@@ -2,7 +2,7 @@
  * Created by beuttlerma on 08.02.17.
  */
 
-var logger = require('../global/logger');
+const logger = require('../global/logger');
 const license_service = require('../services/license_service');
 const authentication = require('../services/authentication_service');
 
@@ -26,12 +26,12 @@ function onIOLicenseConnect(socket) {
 }
 
 module.exports = function (io) {
+    const namespace = io.of('/licenses');
 
     // Enable bearer authentication for socket.io
-    io.use(authentication.ws_oAuth);
-
-    const namespace = io.of('/licenses');
+    namespace.use(authentication.ws_oAuth);
     namespace.on('connection', onIOLicenseConnect);
+
     registerLicenseEvents(namespace);
 
 };
