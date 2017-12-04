@@ -14,8 +14,10 @@ app.use(logger('dev'));
 
 // Accept JSON only
 app.use('/', function (req, res, next) {
-    if (!req.is('application/json')) {
-        return res.status(400).send('content-type must be application/json');
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+        if (!(req.is('application/json'))) {
+            return res.status(400).send('content-type not accepted');
+        }
     }
 
     next();
