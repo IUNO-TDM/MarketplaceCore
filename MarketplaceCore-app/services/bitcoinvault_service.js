@@ -264,4 +264,4 @@ bitcoinVaultService.getPayoutTransactions = function(walletId,payoutId, accessTo
     });
 };
 
-bitcoinVaultService.getPayout(1,2,3,function(err,data) {});
+module.exports = bitcoinVaultService;
