@@ -487,6 +487,45 @@
           }
         }
       }
+    },
+    "/income/{userId}": {
+      "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "returns the current balance of the license fee income for a given User UUID",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "the user id for which the balance is displayed",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid used for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the balance in coin",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          "404": {
+            "description": "the user is unknown"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -627,10 +666,16 @@
           "type": "string"
         },
         "attributeList": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "technologyList": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }
