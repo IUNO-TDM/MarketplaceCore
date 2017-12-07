@@ -1,27 +1,20 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const queryParser = require('express-query-int');
-var authentication = require('./services/authentication_service');
+const authentication = require('./services/authentication_service');
+const contentTypeValidation = require('./services/content_type_validation');
 
-var app = express();
+const app = express();
 
 // basic setup
 app.use(logger('dev'));
 
 // Accept JSON only
-app.use('/', function (req, res, next) {
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
-        if (!(req.is('application/json'))) {
-            return res.status(400).send('content-type not accepted');
-        }
-    }
-
-    next();
-});
+app.use('/', contentTypeValidation);
 
 app.use(bodyParser.json());
 app.use(queryParser());
