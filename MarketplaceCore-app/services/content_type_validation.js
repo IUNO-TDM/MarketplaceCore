@@ -6,7 +6,7 @@ const MethodToContentTypeMapping = {
     HEAD: [''],
     POST: ['application/json'],
     PUT: ['application/json'],
-    DELETE: [],
+    DELETE: ['application/json'],
     CONNECT: [],
     OPTIONS: [],
     TRACE: [],
