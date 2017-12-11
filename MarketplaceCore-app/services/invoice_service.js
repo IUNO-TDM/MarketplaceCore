@@ -9,6 +9,11 @@ var async = require('async');
 var vault_service = require('./bitcoinvault_service');
 var Transfer = require('../model/transfer');
 var TechnologyData = require('../database/model/technologydata')
+
+var calculateLicenseFeeWithoutProvision = function(userUUID, licenseFee){
+    return licenseFee * 0.7;
+}
+
 self.generateInvoice = function (userUUID, request, transaction, roles, callback) {
 
     var items = request.result.items;
@@ -34,15 +39,15 @@ self.generateInvoice = function (userUUID, request, transaction, roles, callback
                                         if (err) {
                                             done(err);
                                         } else {
-                                            var lf = calculateLicenseFeeWithoutProvision(userId, licenseFee);
-                                            done(null, [new Transfer(address, lf)]);
+                                            var lf = calculateLicenseFeeWithoutProvision(techData.createdby, licenseFee);
+                                            done(null, [{fee: licenseFee, transfer: new Transfer(address, lf)}]);
                                         }
                                     });
                                 };
 
-                                if (wallets || wallets.length < 1) {
+                                if (!wallets || wallets.length < 1) {
                                     //create a wallet for this user
-                                    vault_service.createWalletForUserId(userId, '4711', function (err, wId) {
+                                    vault_service.createWalletForUserId(techData.createdby, '4711', function (err, wId) {
                                         if (err) {
                                             done(err, null);
                                         }
@@ -64,8 +69,10 @@ self.generateInvoice = function (userUUID, request, transaction, roles, callback
     };
 
     async.concatSeries(items, iterator, function (err, item) {
+        var transfers = [];
         for (var fee in item) {
-            totalAmount += item[fee];
+            totalAmount += item[fee].fee;
+            transfers.push(item[fee].transfer);
         }
         // our virtual currency IUNO represents 1 milli bitcoin
         // totalAmount *= 100000;
@@ -76,7 +83,7 @@ self.generateInvoice = function (userUUID, request, transaction, roles, callback
             totalAmount: totalAmount,
             referenceId: transaction.transactionuuid,
             expiration: new Date(new Date().getTime() + (2 * 60 * 60 * 1000)).toISOString(),
-            transfers: []
+            transfers: transfers
         };
 
         payment_service.createLocalInvoice(invoice, function (e, invoice) {

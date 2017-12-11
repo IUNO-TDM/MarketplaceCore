@@ -488,7 +488,7 @@
         }
       }
     },
-    "/income/{userId}": {
+    "/vault/{userId}/cumulated": {
       "get": {
         "security": [
           {
@@ -497,7 +497,7 @@
             ]
           }
         ],
-        "description": "returns the current balance of the license fee income for a given User UUID",
+        "description": "returns the current balance of the license fee income in the vault for a given User UUID",
         "parameters": [
           {
             "name": "userId",
@@ -526,9 +526,146 @@
           }
         }
       }
+    },
+    "/vault/{userId}/wallets": {
+      "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "returns the vault wallets for a user UUID",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "the user id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid used for authorization",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the balance in coin",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Wallet"
+              }
+            }
+          },
+          "404": {
+            "description": "the user is unknown"
+          }
+        }
+      }
+    },
+    "/vault/{userId}/wallets/{walletId}/payouts": {
+      "post": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "create a payout at the vault for a user and its wallet",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "the user id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "walletId",
+            "in": "path",
+            "description": "the wallet id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid used for authorization",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "the payout to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Payout"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the created Payout",
+            "schema": {
+              "$ref": "#/definitions/Payout"
+            }
+          },
+          "404": {
+            "description": "the user is unknown"
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "Payout": {
+      "description": "object describing a payout job",
+      "type": "object",
+      "properties": {
+        "payoutId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "payoutAddress": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "emptyWallet": {
+          "type": "boolean",
+          "description": "if true, the amount value will be the maximum value paid out. but it will also payout if there is less balance in the wallet"
+        },
+        "referenceId": {
+          "type": "string",
+          "description": "a place to put describing information"
+        }
+      }
+    },
+    "Wallet": {
+      "type": "object",
+      "properties": {
+        "walletId": {
+          "type": "string",
+          "format": "UUID"
+        },
+        "unconfirmed": {
+          "type": "number"
+        },
+        "confirmed": {
+          "type": "number"
+        }
+      }
+    },
     "Offer": {
       "type": "object",
       "properties": {
