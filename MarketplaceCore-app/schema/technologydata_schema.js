@@ -66,10 +66,19 @@ self.SaveData_Body = {
             maxLength: 250
         },
         technologyData: {
-            type: 'string',
-            pattern: '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$',
-            minLength: 1,
-            maxLength: 100000
+            oneOf: [
+                {
+                    type: 'string',
+                    pattern: '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$',
+                    minLength: 1,
+                    maxLength: 100000
+                },
+                {
+                    type: 'string',
+                    pattern: '\\{.*\\:\\{.*\\:.*\\}\\}',
+                    minLength: 1,
+                    maxLength: 100000
+                }]
         },
         technologyDataDescription: {
             type: 'string',
