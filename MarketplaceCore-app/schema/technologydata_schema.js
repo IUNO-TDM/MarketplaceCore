@@ -7,58 +7,55 @@
 
 var self = {};
 
-self.GetAll = {
-    type: 'object',
-    properties: {
-        tags: {
-            type: 'array',
-            items: {
-                type: 'string'
+self.Get_Query = {
+    anyOf: [
+        {
+            type: 'object',
+            properties: {
+                user: {
+                    type: 'string',
+                    format: 'uuid'
+                }
             },
-            required: false
+            additionalProperties: false
         },
-        components: {
-            type: 'array',
-            items: {
-                type: 'string'
+        {
+            type: 'object',
+            properties: {
+                technology: {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                components: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                        format: 'uuid'
+                    },
+                    additionalItems: false
+                },
+                technologydataname: {
+                    type: 'string',
+                    minLength: 1,
+                    maxLength: 250
+                },
+                ownerUUID: {
+                    type: 'string',
+                    format: 'uuid'
+                }
             },
-            required: false
-        },
-        technologies: {
-            type: 'array',
-            items: {
-                type: 'string'
-            },
-            required: false
-        },
-        technologydataname: {
-            type: 'string',
-            required: false
-        },
-        attributes: {
-            type: 'array',
-            items: {
-                type: 'string'
-            },
-            required: false
-        },
-        ownerUUID: {
-            type: 'string',
-            required: false
+            additionalProperties: false
         }
-    }
+    ]
 };
 
 self.Empty = {
     type: 'object',
-    properties: {
-
-    },
+    properties: {},
     additionalProperties: false
 };
 
 
-//TODO: Verify this schema
 self.SaveData_Body = {
     type: 'object',
     properties: {
@@ -101,7 +98,8 @@ self.SaveData_Body = {
             },
             required: true
         }
-    }
+    },
+    additionalProperties: false
 };
 
 module.exports = self;

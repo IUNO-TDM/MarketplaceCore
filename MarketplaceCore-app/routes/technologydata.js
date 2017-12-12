@@ -8,8 +8,12 @@
 const express = require('express');
 const router = express.Router();
 const logger = require('../global/logger');
-const validate = require('express-jsonschema').validate;
+
+const {Validator, ValidationError} = require('express-json-validator-middleware');
+const validator = new Validator({allErrors: true});
 const validationSchema = require('../schema/technologydata_schema');
+const validate = validator.validate;
+
 const TechnologyData = require('../database/model/technologydata');
 const Component = require('../database/model/component');
 const helper = require('../services/helper_service');
@@ -19,7 +23,7 @@ const imageService = require('../services/image_service');
 const CONFIG = require('../config/config_loader');
 const path = require('path');
 
-router.get('/', validate({query: validationSchema.GetAll, body: validationSchema.Empty}), function (req, res, next) {
+router.get('/', validate({query: validationSchema.Get_Query, body: validationSchema.Empty}), function (req, res, next) {
 
 
     if (req.query['user']) {
@@ -157,7 +161,7 @@ router.get('/:id/components', validate({
 });
 
 router.delete('/:id/delete', validate({
-    query: validationSchema.GetAll,
+    query: validationSchema.Get_Query,
     body: validationSchema.Empty
 }), function (req, res, next) {
 
