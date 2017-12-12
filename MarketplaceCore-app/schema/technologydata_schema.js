@@ -59,7 +59,7 @@ self.Empty = {
 
 
 //TODO: Verify this schema
-self.SaveDataBody = {
+self.SaveData_Body = {
     type: 'object',
     properties: {
         technologyDataName: {

@@ -57,7 +57,7 @@ router.get('/:id', validate({query: validationSchema.Empty, body: validationSche
 });
 
 router.post('/', validate({
-    body: validationSchema.SaveDataBody,
+    body: validationSchema.SaveData_Body,
     query: validationSchema.Empty
 }), function (req, res, next) {
     const data = req.body;
