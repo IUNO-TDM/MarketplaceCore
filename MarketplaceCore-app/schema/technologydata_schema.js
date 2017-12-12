@@ -58,45 +58,53 @@ self.Empty = {
 
 self.SaveData_Body = {
     type: 'object',
+    required: ['technologyDataName', 'technologyData', 'technologyDataDescription', 'technologyUUID', 'componentList'],
     properties: {
         technologyDataName: {
             type: 'string',
-            required: true
+            minLength: 1,
+            maxLength: 250
         },
         technologyData: {
             type: 'string',
-            required: true
+            pattern: '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$',
+            minLength: 1,
+            maxLength: 100000
         },
         technologyDataDescription: {
             type: 'string',
-            required: true
+            minLength: 1,
+            maxLength: 30000
         },
         technologyUUID: {
             type: 'string',
-            required: true
+            format: 'uuid'
         },
         licenseFee: {
             type: 'integer',
-            required: true
+            maximum: Number.MAX_SAFE_INTEGER
         },
         tagList: {
             type: 'array',
             items: {
                 tagName: {
                     type: 'string',
-                    required: true
+                    minLength: 1,
+                    maxLength: 250
                 }
-            }
+            },
+            additionalItems: false
         },
         componentList: {
             type: 'array',
             items: {
-                componentName: {
+                componentUUID: {
                     type: 'string',
-                    required: true
+                    minLength: 1,
+                    maxLength: 250
                 }
             },
-            required: true
+            additionalItems: false
         }
     },
     additionalProperties: false
