@@ -42,22 +42,15 @@ router.get('/:id', validate({query: validation_schema.Empty, body: validation_sc
 });
 
 router.post('/', validate({
-    body: validation_schema.SaveDataBody,
+    body: validation_schema.SaveData_Body,
     query: validation_schema.Empty
 }), function (req, res, next) {
-
-    logger.warn('[components] POST components disabled as it is not implemented correctly and should not being used.)');
-    return res.status(500).send('Route disabled!');
-
-    // TODO: Refactor validation schema before using this route.
-
-
-    const comp = new Component();
+const comp = new Component();
 
     const data = req.body;
 
     comp.componentname = data['componentName'];
-    comp.componentparentname = data['componentParentName']; //TODO: Refactor this. Why would we identify the parent component by name !?
+    comp.componentparentname = data['componentParentName'];
     comp.componentdescription = data['componentDescription'];
     comp.attributelist = data['attributeList'];
     comp.technologylist = data['technologyList'];
