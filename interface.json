@@ -488,7 +488,7 @@
         }
       }
     },
-    "/vault/{userId}/cumulated": {
+    "/vault/users/{userId}/balance": {
       "get": {
         "security": [
           {
@@ -527,7 +527,7 @@
         }
       }
     },
-    "/vault/{userId}/wallets": {
+    "/vault/users/{userId}/wallets": {
       "get": {
         "security": [
           {
@@ -569,7 +569,7 @@
         }
       }
     },
-    "/vault/{userId}/wallets/{walletId}/payouts": {
+    "/vault/users/{userId}/wallets/{walletId}/payouts": {
       "post": {
         "security": [
           {

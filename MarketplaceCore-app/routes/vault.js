@@ -8,7 +8,7 @@ const vault_service = require('../services/bitcoinvault_service');
 
 var async = require('async');
 
-router.get('/:userId/cumulated', validate({
+router.get('/users/:userId/balance', validate({
     query: validation_schema.Empty,
     body: validation_schema.Empty
 }), function (req, res, next) {
@@ -38,7 +38,7 @@ router.get('/:userId/cumulated', validate({
         }
     })
 });
-router.get('/:userId/wallets', validate({
+router.get('/users/:userId/wallets', validate({
     query: validation_schema.Empty,
     body: validation_schema.Empty
 }), function (req, res, next) {
@@ -49,11 +49,11 @@ router.get('/:userId/wallets', validate({
         } else {
             var iterateForBalance = function (wallet, done) {
                 vault_service.getCreditForWallet(wallet, '4711', function (err, unconfirmed) {
-                    if(err){
-                        done(err,null);
-                    }else{
-                        vault_service.getConfirmedCreditForWallet(wallet,'4711', function(err, confirmed){
-                            done(err, {walletId: wallet, unconfirmed: unconfirmed, confirmed:confirmed});
+                    if (err) {
+                        done(err, null);
+                    } else {
+                        vault_service.getConfirmedCreditForWallet(wallet, '4711', function (err, confirmed) {
+                            done(err, {walletId: wallet, unconfirmed: unconfirmed, confirmed: confirmed});
                         });
 
                     }
@@ -73,11 +73,10 @@ router.get('/:userId/wallets', validate({
     })
 });
 
-router.post('/:userId/wallets/:walletId/payouts', validate({
+router.post('/users/:userId/wallets/:walletId/payouts', validate({
     query: validation_schema.Empty,
     body: validation_schema.Payout
-}),function(req, res, next)
-{
+}), function (req, res, next) {
     var userId = req.param('userId');
     var walletId = req.param('walletId');
     var payout = req.body;

@@ -10,7 +10,7 @@ var vault_service = require('./bitcoinvault_service');
 var Transfer = require('../model/transfer');
 var TechnologyData = require('../database/model/technologydata')
 
-var calculateLicenseFeeWithoutProvision = function(userUUID, licenseFee){
+var calculateLicenseFeeWithoutProvision = function (userUUID, licenseFee) {
     return licenseFee * 0.7;
 }
 
@@ -26,9 +26,9 @@ self.generateInvoice = function (userUUID, request, transaction, roles, callback
                 done(err, null);
             } else {
                 TechnologyData.FindSingle(userUUID, roles, item.technologydatauuid, function (err, techData) {
-                    if(err){
-                        done(err,null);
-                    }else{
+                    if (err) {
+                        done(err, null);
+                    } else {
                         vault_service.getWalletsForUserId(techData.createdby, '4711', function (err, wallets) {
                             //if err
                             if (err) {
