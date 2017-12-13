@@ -161,7 +161,7 @@ router.get('/:id/components', validate({
 });
 
 router.delete('/:id/delete', validate({
-    query: validationSchema.Get_Query,
+    query: validationSchema.Empty,
     body: validationSchema.Empty
 }), function (req, res, next) {
 
