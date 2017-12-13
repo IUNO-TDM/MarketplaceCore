@@ -13,27 +13,49 @@ self.Empty = {
     additionalProperties: false
 };
 
-self.SaveDataBody = {
+self.SaveData_Body = {
     type: 'object',
     properties: {
         componentName: {
-            type: 'string'
+            type: 'string',
+            minLength: 1,
+            maxLength: 250
         },
         componentParentName: {
-            type: 'string'
+            type: 'string',
+            minLength: 1,
+            maxLength: 250
         },
         componentDescription: {
-            type: 'string'
+            type: 'string',
+            maxLength: 32672
         },
         attributeList: {
-            type: 'array'
+            type: 'array',
+            maxItems: 100,
+            uniqueItems: true,
+            items: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 250
+            },
+            additionalItems: false
         },
         technologyList: {
-            type: 'array'
+            type: 'array',
+            minItems: 1,
+            maxItems: 10,
+            uniqueItems: true,
+            items: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 250
+            },
+            additionalItems: false
         }
 
     },
-    required: ['componentName', 'componentParentName', 'componentDescription', 'attributeList', 'technologyList'],
+    required: ['componentName', 'technologyList'],
     additionalProperties: false
 };
 

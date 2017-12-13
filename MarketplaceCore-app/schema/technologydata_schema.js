@@ -7,101 +7,116 @@
 
 var self = {};
 
-self.GetAll = {
-    type: 'object',
-    properties: {
-        tags: {
-            type: 'array',
-            items: {
-                type: 'string'
+self.Get_Query = {
+    anyOf: [
+        {
+            type: 'object',
+            properties: {
+                user: {
+                    type: 'string',
+                    format: 'uuid'
+                }
             },
-            required: false
+            additionalProperties: false
         },
-        components: {
-            type: 'array',
-            items: {
-                type: 'string'
+        {
+            type: 'object',
+            properties: {
+                technology: {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                components: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                        format: 'uuid'
+                    },
+                    additionalItems: false
+                },
+                technologydataname: {
+                    type: 'string',
+                    minLength: 1,
+                    maxLength: 250
+                },
+                ownerUUID: {
+                    type: 'string',
+                    format: 'uuid'
+                }
             },
-            required: false
-        },
-        technologies: {
-            type: 'array',
-            items: {
-                type: 'string'
-            },
-            required: false
-        },
-        technologydataname: {
-            type: 'string',
-            required: false
-        },
-        attributes: {
-            type: 'array',
-            items: {
-                type: 'string'
-            },
-            required: false
-        },
-        ownerUUID: {
-            type: 'string',
-            required: false
+            additionalProperties: false
         }
-    }
+    ]
 };
 
 self.Empty = {
     type: 'object',
-    properties: {
-
-    },
+    properties: {},
     additionalProperties: false
 };
 
 
-//TODO: Verify this schema
-self.SaveDataBody = {
+self.SaveData_Body = {
     type: 'object',
+    required: ['technologyDataName', 'technologyData', 'technologyDataDescription', 'technologyUUID', 'componentList'],
     properties: {
         technologyDataName: {
             type: 'string',
-            required: true
+            minLength: 1,
+            maxLength: 250
         },
         technologyData: {
-            type: 'string',
-            required: true
+            oneOf: [
+                {
+                    type: 'string',
+                    pattern: '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$',
+                    minLength: 1,
+                    maxLength: 100000
+                },
+                {
+                    type: 'string',
+                    pattern: '\\{.*\\:\\{.*\\:.*\\}\\}',
+                    minLength: 1,
+                    maxLength: 100000
+                }]
         },
         technologyDataDescription: {
             type: 'string',
-            required: true
+            minLength: 1,
+            maxLength: 30000
         },
         technologyUUID: {
             type: 'string',
-            required: true
+            format: 'uuid'
         },
         licenseFee: {
             type: 'integer',
-            required: true
+            maximum: Number.MAX_SAFE_INTEGER
         },
         tagList: {
             type: 'array',
             items: {
                 tagName: {
                     type: 'string',
-                    required: true
+                    minLength: 1,
+                    maxLength: 250
                 }
-            }
+            },
+            additionalItems: false
         },
         componentList: {
             type: 'array',
             items: {
-                componentName: {
+                componentUUID: {
                     type: 'string',
-                    required: true
+                    minLength: 1,
+                    maxLength: 250
                 }
             },
-            required: true
+            additionalItems: false
         }
-    }
+    },
+    additionalProperties: false
 };
 
 module.exports = self;

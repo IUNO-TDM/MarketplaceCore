@@ -18,6 +18,7 @@
 | iuno_marketplacecore_V0009V_20171113.sql                          | 0009              | Fix Bug in function GetTechnologyDataByParams           |  [#120][i120]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0010V_20171113.sql                          | 0010              | At the moment is not possible to save the imgref on the database          |  [#101][i101]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0011V_20171122.sql                          | 0011              | Fix Bug in function GetTechnologyDataByParams           |  [#131][i131]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0012V_20171207.sql                          | 0012              | Create new function GetActivatedLicensesCountForUser           |  [#135][i135]       | [@gomarcel][igomarcel]      |
 
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
@@ -33,6 +34,7 @@
 [i120]: https://github.com/IUNO-TDM/MarketplaceCore/issues/120
 [i101]: https://github.com/IUNO-TDM/MarketplaceCore/issues/101
 [i131]: https://github.com/IUNO-TDM/MarketplaceCore/issues/131
+[i135]: https://github.com/IUNO-TDM/MarketplaceCore/issues/135
 
 
 [igomarcel]: https://github.com/gomarcel

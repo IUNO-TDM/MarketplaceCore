@@ -50,17 +50,16 @@ TechnologyData.prototype.FindForUser = TechnologyData.FindForUser = function (us
 
 
 TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, roles, params, callback) {
-    var technologies = params['technologies'];
-    var tags = params['tags'];
+    var technologyUUID = params['technology'];
     var components = params['components'];
-    var attributes = params['attributes'];
     var technologydataname = params['technologydataname'];
     var ownerUUID = params['ownerUUID'];
 
 
     db.func('GetTechnologyDataByParams',
-        [components,
-            technologies,
+        [
+            components,
+            technologyUUID,
             technologydataname,
             ownerUUID,
             userUUID,
