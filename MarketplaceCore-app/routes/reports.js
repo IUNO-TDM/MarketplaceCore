@@ -133,7 +133,7 @@ router.get('/licenses/count', validate({
 }), function (req, res, next) {
     if (req.query['activated']) {
         dbLicenses.GetActivatedLicenseCountForUser(
-            req.query['userUUID'],
+            req.query['user'],
             req.token.user, function (err, data) {
                 if (err) {
                     next(err);
