@@ -32,7 +32,7 @@ self.OfferRequestBody = {
                     }
                 },
                 required: ['dataId', 'amount'],
-                additionalItems: false
+                additionalProperties: false
             },
             additionalItems: false
         },
