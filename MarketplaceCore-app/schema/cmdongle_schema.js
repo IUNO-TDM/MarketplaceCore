@@ -19,7 +19,7 @@ self.LicenseUpdate_Body = {
     additionalProperties: false
 };
 
-self.LicenseUpdate_Query = {
+self.Empty = {
     type: 'object',
     properties: {},
     additionalProperties: false
