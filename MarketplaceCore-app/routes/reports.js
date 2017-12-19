@@ -9,6 +9,7 @@ const express = require('express');
 const router = express.Router();
 const logger = require('../global/logger');
 const dbReports = require('../database/function/report');
+const dbLicenses = require('../database/function/license');
 const {Validator, ValidationError} = require('express-json-validator-middleware');
 const validator = new Validator({allErrors: true});
 const validate = validator.validate;
@@ -124,6 +125,25 @@ router.get('/components/top', validate({
                 res.json(data);
             }
         });
+});
+
+router.get('/licenses/count', validate({
+    query: validation_schema.License_Count_Query,
+    body: validation_schema.Empty_Body
+}), function (req, res, next) {
+    if (req.query['activated']) {
+        dbLicenses.GetActivatedLicenseCountForUser(
+            req.query['userUUID'],
+            req.query['limit'],
+            req.token.user, function (err, data) {
+                if (err) {
+                    next(err);
+                }
+                else {
+                    res.json(data);
+                }
+            });
+    }
 });
 
 module.exports = router;
