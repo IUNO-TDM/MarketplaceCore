@@ -17,9 +17,13 @@
 -- Example: iuno_marketplacecore_V00001V_20170913.sql
 --#######################################################################################################
 -- PUT YOUR STATEMENTS HERE:
--- 	1) Why is this Patch necessary? 
--- 	2) Which Git Issue Number is this patch solving? 
--- 	3) Which changes are going to be done? 
+-- 	1) Why is this Patch necessary?
+-- Reports data should be in satoshis / cent level
+-- 	2) Which Git Issue Number is this patch solving?
+--  #141
+-- 	3) Which changes are going to be done?
+-- Remove conversion from satoshi to bitcoin from all functions (getrevenue, getrevenuehistory, getrevenueperdayforuser,
+-- gettechnologydatahistory, gettoptechnologydata, gettotalrevenue, gettotaluserrevenue)
 --: Run Patches
 ------------------------------------------------------------------------------------------------
 --##############################################################################################
@@ -30,7 +34,7 @@ $$
 	DECLARE
 		PatchName varchar		 := 'iuno_marketplacecore_V0014V_20171218';
 		PatchNumber int 		 := 0014;
-		PatchDescription varchar 	 := 'TEST';
+		PatchDescription varchar 	 := 'Remove conversion from satoshi to bitcoin from all functions (getrevenue, getrevenuehistory, getrevenueperdayforuser, gettechnologydatahistory, gettoptechnologydata, gettotalrevenue, gettotaluserrevenue)';
         CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN
@@ -106,7 +110,7 @@ $$
 							to_char(activatedat,'MM') asc, 
 							to_char(activatedat,'DD') asc, 
 							to_char(activatedat,'HH24') asc, 
-							td.technologydatauuid,
+							td.technologydatauuid asc,
 							amount desc
 				)
 				select	r.year::text, 
