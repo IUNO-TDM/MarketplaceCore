@@ -28,7 +28,7 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
 }
 
 bitcoinVaultService.getWalletsForUserId = function(userId,accessToken, callback){
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -51,7 +51,7 @@ bitcoinVaultService.getWalletsForUserId = function(userId,accessToken, callback)
 
 
 bitcoinVaultService.createWalletForUserId = function(userId,accessToken, callback){
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -77,7 +77,7 @@ bitcoinVaultService.createWalletForUserId = function(userId,accessToken, callbac
 };
 
 bitcoinVaultService.deleteWallet = function(walletId, accessToken, callback){
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -100,7 +100,7 @@ bitcoinVaultService.deleteWallet = function(walletId, accessToken, callback){
 
 
 bitcoinVaultService.getCreditForWallet = function(walletId, accessToken, callback){
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -121,8 +121,30 @@ bitcoinVaultService.getCreditForWallet = function(walletId, accessToken, callbac
     });
 };
 
+bitcoinVaultService.getConfirmedCreditForWallet = function(walletId, accessToken, callback){
+    if (typeof(callback) !== 'function') {
+
+        callback = function () {
+            logger.info('Callback not registered');
+        }
+    }
+
+    var options = buildOptionsForRequest(
+        'GET',
+        config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
+        config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
+        config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
+        '/v1/wallets/'+walletId + '/confirmedcredit?accessToken='+accessToken
+    );
+
+    request(options, function (e, r, credit) {
+        var err = logger.logRequestAndResponse(e, options, r, credit);
+        callback(err, credit);
+    });
+};
+
 bitcoinVaultService.getTransactionsForWallet = function(walletId, accessToken, callback){
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -144,7 +166,7 @@ bitcoinVaultService.getTransactionsForWallet = function(walletId, accessToken, c
 };
 
 bitcoinVaultService.getNewAddressForWallet = function(walletId, accessToken, callback){
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -167,7 +189,7 @@ bitcoinVaultService.getNewAddressForWallet = function(walletId, accessToken, cal
 
 
 bitcoinVaultService.payoutCredit = function(walletId, amount, address, accessToken,emptyWallet,referenceId, callback){
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -197,7 +219,7 @@ bitcoinVaultService.payoutCredit = function(walletId, amount, address, accessTok
 };
 
 bitcoinVaultService.getPayout = function(walletId, payoutId, accessToken, callback){
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -219,7 +241,7 @@ bitcoinVaultService.getPayout = function(walletId, payoutId, accessToken, callba
 };
 
 bitcoinVaultService.getPayoutIds = function(walletId, accessToken, callback){
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -243,7 +265,7 @@ bitcoinVaultService.getPayoutIds = function(walletId, accessToken, callback){
 
 
 bitcoinVaultService.getPayoutTransactions = function(walletId,payoutId, accessToken, callback){
-    if (typeof(callback) === 'function') {
+    if (typeof(callback) !== 'function') {
 
         callback = function () {
             logger.info('Callback not registered');
@@ -264,4 +286,4 @@ bitcoinVaultService.getPayoutTransactions = function(walletId,payoutId, accessTo
     });
 };
 
-bitcoinVaultService.getPayout(1,2,3,function(err,data) {});
+module.exports = bitcoinVaultService;
