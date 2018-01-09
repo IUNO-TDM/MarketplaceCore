@@ -66,14 +66,24 @@ $$
 				DECLARE
 					vFunctionName varchar := 'DeleteTechnologyData';
 					vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+					vOwnerUUID uuid := (select createdby from technologydata where technologydatauuid = vTechnologyDataUUID);
 
 				BEGIN
 
 				IF(vIsAllowed) THEN
 
+					IF (vUserUUID = vOwnerUUID) THEN
+
 					 update technologydata set deleted = true
 					 where technologydatauuid = vTechnologyDataUUID
 					 and createdby = vuseruuid;
+
+					 ELSE
+
+						 RAISE EXCEPTION '%', 'You are not allowed to delete this technologydata.';
+						 RETURN false;
+
+					 END IF;
 
 				ELSE
 					 RAISE EXCEPTION '%', 'Insufficiency rigths';
