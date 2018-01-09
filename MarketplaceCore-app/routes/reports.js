@@ -14,7 +14,7 @@ const {Validator, ValidationError} = require('express-json-validator-middleware'
 const validator = new Validator({allErrors: true});
 const validate = validator.validate;
 const validation_schema = require('../schema/reports_schema');
-
+const moment = require('moment');
 router.get('/revenue/', validate({
     query: validation_schema.Revenue_Query,
     body: validation_schema.Empty_Body
@@ -52,13 +52,17 @@ router.get('/revenue/user', validate({
         });
 });
 
+
 router.get('/revenue/technologydata/history', validate({
     query: validation_schema.History_User_Query,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
+
+    var from = req.query['from'];
+    var to = req.query['to'];
     dbReports.GetRevenueHistory(
-        req.query['from'],
-        req.query['to'],
+        from,
+        to,
         req.token.user.id,
         req.token.user.roles,
         function (err, data) {
@@ -66,7 +70,53 @@ router.get('/revenue/technologydata/history', validate({
                 next(err);
             }
             else {
-                res.json(data);
+                if (!data.length) {
+                    res.json(data);
+                } else {
+                    console.log(moment().format());
+                    const startDate = moment.utc(from);
+                    const endDate = moment.utc(to);
+
+                    var dates = [];
+                    var date = startDate.startOf('day');
+                    do {
+                        dates.push(date.toDate());
+                        date.add(1, 'day');
+                    } while (date.isBefore(endDate));
+
+
+                    var no_gap_data = {};
+                    for (var i in data) {
+                        if (!no_gap_data[(data[i].technologydataname)]) {
+                            no_gap_data[data[i].technologydataname] = [];
+
+                            for (var j in dates) {
+                                no_gap_data[data[i].technologydataname].push({
+                                    date: dates[j],
+                                    revenue: "0",
+                                    technologydataname: data[i].technologydataname
+                                });
+                            }
+                        }
+                        var date = data[i].date;
+                        var d = moment.utc([date.getFullYear(), date.getMonth(), date.getDate()]);
+                        var d2 = d.toDate();
+                        function indexOfDate(element){
+                            return (element.getTime() == d2.getTime());
+                        }
+
+                        var k = dates.findIndex(indexOfDate);
+                        no_gap_data[data[i].technologydataname][k].revenue = data[i].revenue;
+                    }
+
+                    var returnvalue = [];
+                    for (var i in no_gap_data){
+                        returnvalue = returnvalue.concat(no_gap_data[i]);
+                    }
+                    res.send(returnvalue);
+                }
+
+
             }
         });
 });
