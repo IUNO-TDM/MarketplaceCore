@@ -22,16 +22,22 @@ router.get('/revenue/', validate({
     query: validation_schema.Revenue_Query,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
+
+    var from = req.query['from'];
+    var to = req.query['to'];
+    var detail = req.query['detail'];
     dbReports.GetTotalRevenue(
-        req.query['from'],
-        req.query['to'],
-        req.query['detail'],
+        from, to, detail,
         req.token.user.id,
         req.token.user.roles, function (err, data) {
             if (err) {
                 next(err);
             }
             else {
+                if(data.length){
+                    data = reports_helper.fill_gaps_total_revenue(from,to,detail, data);
+                }
+
                 res.json(data);
             }
         });
