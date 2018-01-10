@@ -22,6 +22,7 @@
 | iuno_marketplacecore_V0013V_20171213.sql                          | 0013              | Update SetComponent and GetTechnologyDataByParams           |  [#138][i138]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0014V_20171218.sql                          | 0014              | Remove conversion from satoshi to bitcoin from all functions (getrevenue, getrevenuehistory, getrevenueperdayforuser, gettechnologydatahistory, gettoptechnologydata, gettotalrevenue, gettotaluserrevenue)           |  [#141][i141]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0015V_20180108.sql                          | 0015              | Update DeleteTechnologyData - It has to be proof if the user is allowed to do it.           |  [#127][i127]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0016V_20180110.sql                          | 0016              | Fix Sql Injection Issue in CreateLog Function          |  [#144][i144]       | [@gomarcel][igomarcel]      |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
@@ -40,6 +41,7 @@
 [i135]: https://github.com/IUNO-TDM/MarketplaceCore/issues/135
 [i138]: https://github.com/IUNO-TDM/MarketplaceCore/issues/138
 [i141]: https://github.com/IUNO-TDM/MarketplaceCore/issues/141
+[i144]: https://github.com/IUNO-TDM/MarketplaceCore/issues/144
 
 
 [igomarcel]: https://github.com/gomarcel
