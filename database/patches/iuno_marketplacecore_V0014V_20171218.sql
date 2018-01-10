@@ -59,6 +59,16 @@ $$
 			
 		alter table technologydata alter column licensefee type bigint;
 
+		-- Drop Functions
+		DROP FUNCTION public.getrevenue(timestamp with time zone, timestamp with time zone, uuid, uuid, text[]);
+		DROP FUNCTION public.getrevenuehistory(timestamp with time zone, timestamp with time zone, uuid, text[]);
+		DROP FUNCTION public.getrevenueperdayforuser(uuid, text[]);
+		DROP FUNCTION public.gettechnologydataforuser(uuid, text[]);
+		DROP FUNCTION public.gettechnologydatahistory(timestamp with time zone, timestamp with time zone, uuid, text[]);
+		DROP FUNCTION public.gettoptechnologydata(timestamp with time zone, timestamp with time zone, integer, uuid, text[]);
+		DROP FUNCTION public.gettotalrevenue(timestamp with time zone, timestamp with time zone, text, uuid, text[]);
+		DROP FUNCTION public.gettotaluserrevenue(timestamp with time zone, timestamp with time zone, uuid, text[]);
+
 		--##############################################################################################
 
 		CREATE OR REPLACE FUNCTION public.getrevenue(
