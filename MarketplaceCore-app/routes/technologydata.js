@@ -23,30 +23,35 @@ const imageService = require('../services/image_service');
 const CONFIG = require('../config/config_loader');
 const path = require('path');
 
-router.get('/', validate({query: validationSchema.Get_Query, body: validationSchema.Empty}), function (req, res, next) {
+router.get('/',
+    validate({
+        query: validationSchema.Get_Query,
+        body: validationSchema.Empty
+    }),
+    function (req, res, next) {
 
 
-    if (req.query['user']) {
-        TechnologyData.FindForUser(req.query['user'], req.token.user.id, req.token.user.roles, function (err, data) {
-            if (err) {
-                next(err);
-            }
-            else {
-                res.json(data);
-            }
-        });
-    }
-    else {
-        TechnologyData.FindAll(req.token.user.id, req.token.user.roles, req.query, function (err, data) {
-            if (err) {
-                next(err);
-            }
-            else {
-                res.json(data);
-            }
-        });
-    }
-});
+        if (req.query['user']) {
+            TechnologyData.FindForUser(req.query['user'], req.token.user.id, req.token.user.roles, function (err, data) {
+                if (err) {
+                    next(err);
+                }
+                else {
+                    res.json(data);
+                }
+            });
+        }
+        else {
+            TechnologyData.FindAll(req.token.user.id, req.token.user.roles, req.query, function (err, data) {
+                if (err) {
+                    next(err);
+                }
+                else {
+                    res.json(data);
+                }
+            });
+        }
+    });
 
 router.get('/:id', validate({query: validationSchema.Empty, body: validationSchema.Empty}), function (req, res, next) {
 
