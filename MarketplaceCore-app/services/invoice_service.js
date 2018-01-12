@@ -68,11 +68,11 @@ self.generateInvoice = function (userUUID, request, transaction, roles, callback
         })
     };
 
-    async.concatSeries(items, iterator, function (err, item) {
+    async.concatSeries(items, iterator, function (err, itemlist) {
         var transfers = [];
-        for (var fee in item) {
-            totalAmount += item[fee].fee;
-            transfers.push(item[fee].transfer);
+        for (var i in itemlist) {
+            totalAmount += itemlist[i].fee;
+            transfers.push(itemlist[i].transfer);
         }
         // our virtual currency IUNO represents 1 milli bitcoin
         // totalAmount *= 100000;
