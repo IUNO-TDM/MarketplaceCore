@@ -1,0 +1,1352 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <head xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5" />
+    <link rel="stylesheet" href="sqlspec.css" />
+    <title>MarketplaceCore - functions</title>
+    <script language="JavaScript" src="resort_table.js">
+    </script>
+    <script language="javascript">
+//
+// this hides the SVG if you are on IE, 
+// and hides the VML if you are NOT on IE.
+//
+function init()
+{
+  var isIE = navigator.userAgent.indexOf("MSIE") != -1;
+  showhideIfIE('FK_SVG', isIE, true);
+  showhideIfIE('DEPENDENCY_SVG', isIE, true);
+  showhideIfIE('MODEL_SVG', isIE, true); 
+  showhideIfIE('FK_VML', isIE, false);
+  showhideIfIE('DEPENDENCY_VML', isIE, false);
+  showhideIfIE('MODEL_VML', isIE, false);
+  
+  var node = document.getElementById('copy_url_div');
+  if (node != null)
+  {
+    var inChm = document.URL.indexOf('mk:@MSITStore') != -1;
+    node.style.display = inChm || !isIE ? 'none' : 'block';
+  }
+}   
+
+function showhideIfIE(elementName, isIE, hide)
+{
+  node = document.getElementById(elementName);
+  if (node != null) 
+  {
+    if (hide) 
+      node.style.display = isIE ? 'none' : 'block';
+    else
+      node.style.display = isIE ? 'block' : 'none';
+  }
+}
+
+function copyToClipboard(s)
+{
+  if(window.clipboardData)
+    if (clipboardData.setData)
+      clipboardData.setData('text', s);
+}
+</script>
+  </head>
+  <body onload="init()">
+    <div id="nsbanner" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <div id="bannerrow1">
+        <table class="bannerparthead" cellspacing="0" id="Table1">
+          <tr id="hdr">
+            <td class="runninghead">Database reference - MarketplaceCore</td>
+            <td class="product" />
+          </tr>
+        </table>
+      </div>
+      <div id="TitleRow">
+        <h1 class="dtH1">
+          <a href="default.htm">MarketplaceCore</a> -         
+                    functions</h1>
+      </div>
+    </div>
+    <div id="nstext">
+      <h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <font color="red">Evaluation</font>
+      </h2>
+      <p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <font color="red">
+          <b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b>
+        </font>
+      </p>
+      <h2 class="dtH2">function overview</h2>
+      <table class="dtTABLE">
+        <thead>
+          <tr valign="top">
+            <th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th>
+            <th>returns set</th>
+            <th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)" sortType="number">params</th>
+            <th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)" sortType="number">code length</th>
+            <th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)" sortType="number">dependents</th>
+            <th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)" sortType="number">depends on</th>
+            <th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccheckpermissions.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">checkpermissions</a> 
+                                        </td>
+            <td>no</td>
+            <td align="right">2 
+                                        </td>
+            <td align="right">593 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreateattribute.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createattribute</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">1,918 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatecomponent.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createcomponent</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">12 
+                                        </td>
+            <td align="right">3,177 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatecomponentsattribute.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createcomponentsattribute</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">5 
+                                        </td>
+            <td align="right">2,150 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatecomponentstechnologies.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createcomponentstechnologies</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">5 
+                                        </td>
+            <td align="right">2,113 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatelicenseorder.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createlicenseorder</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">10 
+                                        </td>
+            <td align="right">2,540 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatelog.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createlog</a> 
+                                        </td>
+            <td>no</td>
+            <td align="right">4 
+                                        </td>
+            <td align="right">246 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreateoffer.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createoffer</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">2,247 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreateofferrequest.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createofferrequest</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">6 
+                                        </td>
+            <td align="right">3,229 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatepaymentinvoice.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createpaymentinvoice</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">9 
+                                        </td>
+            <td align="right">2,677 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreaterole.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createrole</a> 
+                                        </td>
+            <td>no</td>
+            <td align="right">4 
+                                        </td>
+            <td align="right">1,587 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatetag.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createtag</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">1,697 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatetechnology.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createtechnology</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">9 
+                                        </td>
+            <td align="right">2,569 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatetechnologydata.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createtechnologydata</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">20 
+                                        </td>
+            <td align="right">4,207 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatetechnologydatacomponents.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createtechnologydatacomponents</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">5 
+                                        </td>
+            <td align="right">2,122 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publiccreatetechnologydatatags.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">createtechnologydatatags</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">6 
+                                        </td>
+            <td align="right">2,097 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicdatediff.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">datediff</a> 
+                                        </td>
+            <td>no</td>
+            <td align="right">3 
+                                        </td>
+            <td align="right">1,520 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicdeletetechnologydata.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">deletetechnologydata</a> 
+                                        </td>
+            <td>no</td>
+            <td align="right">3 
+                                        </td>
+            <td align="right">1,538 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetactivatedlicensescountforuser.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getactivatedlicensescountforuser</a> 
+                                        </td>
+            <td>no</td>
+            <td align="right">3 
+                                        </td>
+            <td align="right">964 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetallattributes.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getallattributes</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">8 
+                                        </td>
+            <td align="right">755 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetallcomponents.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getallcomponents</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">10 
+                                        </td>
+            <td align="right">939 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetalloffers.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getalloffers</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">6 
+                                        </td>
+            <td align="right">710 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetalltags.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getalltags</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">8 
+                                        </td>
+            <td align="right">715 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetalltechnologies.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getalltechnologies</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">9 
+                                        </td>
+            <td align="right">833 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetalltechnologydata.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getalltechnologydata</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">15 
+                                        </td>
+            <td align="right">1,273 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetattributebyid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getattributebyid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">9 
+                                        </td>
+            <td align="right">807 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetattributebyname.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getattributebyname</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">9 
+                                        </td>
+            <td align="right">824 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetcomponentbyid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getcomponentbyid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">11 
+                                        </td>
+            <td align="right">1,021 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetcomponentbyname.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getcomponentbyname</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">11 
+                                        </td>
+            <td align="right">961 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetcomponentsbytechnology.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getcomponentsbytechnology</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">12 
+                                        </td>
+            <td align="right">1,273 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetcomponentsfortechnologydataid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getcomponentsfortechnologydataid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">12 
+                                        </td>
+            <td align="right">1,306 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetlicensefeebytechnologydata.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getlicensefeebytechnologydata</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">4 
+                                        </td>
+            <td align="right">598 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetlicensefeebytransaction.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getlicensefeebytransaction</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">4 
+                                        </td>
+            <td align="right">808 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetnewproductcode.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getnewproductcode</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">1 
+                                        </td>
+            <td align="right">435 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetofferbyid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getofferbyid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">752 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetofferbyrequestid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getofferbyrequestid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">855 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetofferforpaymentinvoice.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getofferforpaymentinvoice</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">749 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetofferforticket.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getofferforticket</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">825 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetofferfortransaction.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getofferfortransaction</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">841 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetofferrequestbyid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getofferrequestbyid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">4 
+                                        </td>
+            <td align="right">1,040 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetpaymentinvoiceforofferrequest.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getpaymentinvoiceforofferrequest</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">8 
+                                        </td>
+            <td align="right">884 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetrevenue.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getrevenue</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">13 
+                                        </td>
+            <td align="right">2,705 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetrevenuehistory.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getrevenuehistory</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">2,730 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgetrevenueperdayforuser.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">getrevenueperdayforuser</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">4 
+                                        </td>
+            <td align="right">1,093 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettagbyid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettagbyid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">9 
+                                        </td>
+            <td align="right">758 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettagbyname.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettagbyname</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">9 
+                                        </td>
+            <td align="right">779 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettechnologybyid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettechnologybyid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">10 
+                                        </td>
+            <td align="right">868 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettechnologybyname.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettechnologybyname</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">10 
+                                        </td>
+            <td align="right">973 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettechnologydatabyid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettechnologydatabyid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">16 
+                                        </td>
+            <td align="right">1,399 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettechnologydatabyname.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettechnologydatabyname</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">16 
+                                        </td>
+            <td align="right">1,428 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettechnologydatabyofferrequest.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettechnologydatabyofferrequest</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">15 
+                                        </td>
+            <td align="right">1,409 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettechnologydatabyparams.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettechnologydatabyparams</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">3,483 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettechnologydataforuser.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettechnologydataforuser</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">8 
+                                        </td>
+            <td align="right">2,263 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettechnologydatahistory.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettechnologydatahistory</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">11 
+                                        </td>
+            <td align="right">1,142 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettechnologydataownerbyid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettechnologydataownerbyid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">4 
+                                        </td>
+            <td align="right">613 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettechnologyforofferrequest.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettechnologyforofferrequest</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">10 
+                                        </td>
+            <td align="right">1,066 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettopcomponents.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettopcomponents</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">7 
+                                        </td>
+            <td align="right">1,425 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettoptechnologydata.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettoptechnologydata</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">12 
+                                        </td>
+            <td align="right">1,237 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettotalrevenue.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettotalrevenue</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">10 
+                                        </td>
+            <td align="right">1,329 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettotaluserrevenue.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettotaluserrevenue</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">9 
+                                        </td>
+            <td align="right">1,310 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettransactionbyid.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettransactionbyid</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">14 
+                                        </td>
+            <td align="right">1,381 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicgettransactionbyofferrequest.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">gettransactionbyofferrequest</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">14 
+                                        </td>
+            <td align="right">1,404 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicsetcomponent.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">setcomponent</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">16 
+                                        </td>
+            <td align="right">4,734 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicsetpayment.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">setpayment</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">18 
+                                        </td>
+            <td align="right">5,952 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicsetpaymentinvoiceoffer.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">setpaymentinvoiceoffer</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">11 
+                                        </td>
+            <td align="right">2,427 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicsetpermission.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">setpermission</a> 
+                                        </td>
+            <td>no</td>
+            <td align="right">4 
+                                        </td>
+            <td align="right">2,180 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <a href="udf_publicsettechnologydata.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">settechnologydata</a> 
+                                        </td>
+            <td>yes</td>
+            <td align="right">24 
+                                        </td>
+            <td align="right">5,552 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td align="right">0 
+                                        </td>
+            <td> 
+                                        </td>
+          </tr>
+        </tbody>
+      </table>
+      <br />
+      <br />
+      <center>
+        <img border="0" src="udfcomplexity.png" usemap="#Largestfunctionsbycodelength" alt="Largest functions by code length" />
+      </center>
+    </div>
+    <p style="page-break-after:always" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <br />
+      <br />
+      <div id="copy_url_div">
+        <center>
+          <a href="javascript:void(0)" onclick="copyToClipboard(document.URL)">copy URL to clipboard (IE only)</a>
+        </center>
+        <br />
+      </div>
+      <center>Documentation generated by <a target="_blank" href="http://elsasoft.com">SqlSpec</a></center>
+    </p>
+    <map name="Largesttablesbysizeondisk">
+      <area title="public.logtable (69%)" shape="rect" coords="326,470,480,488" href="table_publiclogtable.htm" />
+      <area title="public.logtable (69%)" shape="poly" coords="600,300,725,300,724,302,724,304,724,306,724,308,724,310,724,313,724,315,723,317,723,319,723,321,722,323,722,325,721,328,721,330,720,332,720,334,719,336,718,338,718,340,717,342,716,344,715,346,715,348,714,350,713,352,712,354,711,356,710,358,709,360,708,362,707,364,706,366,704,368,703,369,702,371,701,373,699,375,698,376,697,378,695,380,694,382,692,383,691,385,689,386,688,388,686,389,685,391,683,392,682,394,680,395,678,397,676,398,675,399,673,401,671,402,669,403,668,404,666,406,664,407,662,408,660,409,658,410,656,411,654,412,652,413,650,414,648,415,646,415,644,416,642,417,640,418,638,418,636,419,634,420,632,420,630,421,628,421,625,422,623,422,621,423,619,423,617,423,615,424,613,424,610,424,608,424,606,424,604,424,602,424,600,425,597,424,595,424,593,424,591,424,589,424,586,424,584,424,582,423,580,423,578,423,576,422,574,422,571,421,569,421,567,420,565,420,563,419,561,418,559,418,557,417,555,416,553,415,551,415,549,414,547,413,545,412,543,411,541,410,539,409,537,408,535,407,533,406,531,404,530,403,528,402,526,401,524,399,523,398,521,397,519,395,517,394,516,392,514,391,513,389,511,388,510,386,508,385,507,383,505,382,504,380,502,378,501,376,500,375,498,373,497,371,496,369,495,368,493,366,492,364,491,362,490,360,489,358,488,356,487,354,486,352,485,350,484,348,484,346,483,344,482,342,481,340,481,338,480,336,479,334,479,332,478,330,478,328,477,325,477,323,476,321,476,319,476,317,475,315,475,313,475,310,475,308,475,306,475,304,475,302,475,300,475,297,475,295,475,293,475,291,475,289,475,286,475,284,476,282,476,280,476,278,477,276,477,274,478,271,478,269,479,267,479,265,480,263,481,261,481,259,482,257,483,255,484,253,484,251,485,249,486,247,487,245,488,243,489,241,490,239,491,237,492,235,493,233,495,231,496,230,497,228,498,226,500,224,501,223,502,221,504,219,505,217,507,216,508,214,510,213,511,211,513,210,514,208,516,207,517,205,519,204,521,202,523,201,524,200,526,198,528,197,530,196,531,195,533,193,535,192,537,191,539,190,541,189,543,188,545,187,547,186,549,185,551,184,553,184,555,183,557,182,600,300" href="table_publiclogtable.htm" />
+      <area title="public.paymentinvoice (9%)" shape="rect" coords="384,33,583,51" href="table_publicpaymentinvoice.htm" />
+      <area title="public.paymentinvoice (9%)" shape="poly" coords="600,300,557,182,559,181,561,181,563,180,565,179,567,179,570,178,572,178,574,177,576,177,578,176,580,176,582,176,585,175,587,175,589,175,591,175,593,175,595,175,598,175,600,175,602,175,604,175,606,175,608,175,611,175,613,175,615,175,617,176,619,176,621,176,624,177,626,177,600,300" href="table_publicpaymentinvoice.htm" />
+      <area title="public.payment (3%)" shape="rect" coords="676,73,827,91" href="table_publicpayment.htm" />
+      <area title="public.payment (3%)" shape="poly" coords="600,300,627,177,629,178,631,179,633,179,635,180,637,180,639,181,641,182,643,182,645,183,647,184,649,185,651,186,653,187,600,300" href="table_publicpayment.htm" />
+      <area title="public.transactions (3%)" shape="rect" coords="714,113,889,131" href="table_publictransactions.htm" />
+      <area title="public.transactions (3%)" shape="poly" coords="600,300,655,187,657,188,658,189,660,190,662,191,664,193,666,194,668,195,670,196,671,197,673,199,675,200,677,201,678,203,600,300" href="table_publictransactions.htm" />
+      <area title="public.technologydata (2%)" shape="rect" coords="738,148,934,166" href="table_publictechnologydata.htm" />
+      <area title="public.technologydata (2%)" shape="poly" coords="600,300,679,203,681,205,683,206,684,208,686,209,688,211,689,212,691,214,692,215,694,217,600,300" href="table_publictechnologydata.htm" />
+      <area title="public.licenseorder (2%)" shape="rect" coords="752,176,926,194" href="table_publiclicenseorder.htm" />
+      <area title="public.licenseorder (2%)" shape="poly" coords="600,300,694,218,696,219,697,221,698,223,700,225,701,226,702,228,703,230,705,232,600,300" href="table_publiclicenseorder.htm" />
+      <area title="public.offer (2%)" shape="rect" coords="761,203,884,220" href="table_publicoffer.htm" />
+      <area title="public.offer (2%)" shape="poly" coords="600,300,705,232,706,234,707,236,708,238,709,240,710,242,711,244,712,246,713,248,600,300" href="table_publicoffer.htm" />
+      <area title="public.offerrequest (2%)" shape="rect" coords="768,229,943,246" href="table_publicofferrequest.htm" />
+      <area title="public.offerrequest (2%)" shape="poly" coords="600,300,714,249,715,251,715,253,716,255,717,257,718,259,718,261,719,263,720,265,600,300" href="table_publicofferrequest.htm" />
+      <area title="public.offerrequestitems (1%)" shape="rect" coords="772,249,984,267" href="table_publicofferrequestitems.htm" />
+      <area title="public.offerrequestitems (1%)" shape="poly" coords="600,300,720,266,720,268,721,270,721,272,722,274,722,276,600,300" href="table_publicofferrequestitems.htm" />
+    </map>
+    <map name="Largestindexesbysizeondisk">
+      <area title="public.logtable (22%)" shape="rect" coords="747,423,901,441" href="table_publiclogtable.htm" />
+      <area title="public.logtable (22%)" shape="poly" coords="600,300,725,300,724,302,724,304,724,306,724,308,724,310,724,313,724,315,723,317,723,319,723,321,722,323,722,325,721,328,721,330,720,332,720,334,719,336,718,338,718,340,717,342,716,344,715,346,715,348,714,350,713,352,712,354,711,356,710,358,709,360,708,362,707,364,706,366,704,368,703,369,702,371,701,373,699,375,698,376,697,378,695,380,694,382,692,383,691,385,689,386,688,388,686,389,685,391,683,392,682,394,680,395,678,397,676,398,675,399,673,401,671,402,669,403,668,404,666,406,664,407,662,408,660,409,658,410,656,411,654,412,652,413,650,414,648,415,646,415,644,416,642,417,640,418,638,418,636,419,634,420,632,420,630,421,628,421,625,422,623,422,621,423,600,300" href="table_publiclogtable.htm" />
+      <area title="public.offer (6%)" shape="rect" coords="472,561,594,579" href="table_publicoffer.htm" />
+      <area title="public.offer (6%)" shape="poly" coords="600,300,621,423,619,423,617,423,615,424,613,424,610,424,608,424,606,424,604,424,602,424,600,425,597,424,595,424,593,424,591,424,589,424,586,424,584,424,582,423,580,423,578,423,576,422,574,422,600,300" href="table_publicoffer.htm" />
+      <area title="public.offerrequest (6%)" shape="rect" coords="336,505,511,523" href="table_publicofferrequest.htm" />
+      <area title="public.offerrequest (6%)" shape="poly" coords="600,300,573,422,571,421,569,421,567,420,565,420,562,419,560,418,558,418,556,417,554,416,552,415,550,414,548,413,546,413,544,412,542,411,540,410,538,409,537,408,535,406,533,405,531,404,529,403,600,300" href="table_publicofferrequest.htm" />
+      <area title="public.offerrequestitems (6%)" shape="rect" coords="246,437,459,455" href="table_publicofferrequestitems.htm" />
+      <area title="public.offerrequestitems (6%)" shape="poly" coords="600,300,529,403,527,401,525,400,524,399,522,397,520,396,518,395,517,393,515,392,514,390,512,389,510,387,509,386,507,384,506,382,505,381,503,379,502,377,500,376,499,374,498,372,497,370,495,369,600,300" href="table_publicofferrequestitems.htm" />
+      <area title="public.paymentinvoice (6%)" shape="rect" coords="233,368,432,386" href="table_publicpaymentinvoice.htm" />
+      <area title="public.paymentinvoice (6%)" shape="poly" coords="600,300,495,368,494,366,493,365,492,363,491,361,489,359,488,357,487,355,487,353,486,351,485,349,484,347,483,345,482,343,482,341,481,339,480,337,480,335,479,333,478,330,478,328,477,326,477,324,600,300" href="table_publicpaymentinvoice.htm" />
+      <area title="public.transactions (6%)" shape="rect" coords="250,300,425,317" href="table_publictransactions.htm" />
+      <area title="public.transactions (6%)" shape="poly" coords="600,300,477,324,476,321,476,319,476,317,475,315,475,313,475,311,475,308,475,306,475,304,475,302,475,300,475,298,475,295,475,293,475,291,475,289,475,287,475,285,476,282,476,280,476,278,477,276,600,300" href="table_publictransactions.htm" />
+      <area title="public.attributes (4%)" shape="rect" coords="273,228,431,246" href="table_publicattributes.htm" />
+      <area title="public.attributes (4%)" shape="poly" coords="600,300,477,275,477,273,478,271,478,269,479,267,479,265,480,263,481,261,481,259,482,257,483,254,484,252,485,250,485,248,486,246,487,244,488,243,489,241,600,300" href="table_publicattributes.htm" />
+      <area title="public.components (4%)" shape="rect" coords="274,173,449,191" href="table_publiccomponents.htm" />
+      <area title="public.components (4%)" shape="poly" coords="600,300,490,239,491,237,492,235,493,233,495,232,496,230,497,228,498,226,500,224,501,223,502,221,504,219,505,218,506,216,508,214,509,213,511,211,512,210,600,300" href="table_publiccomponents.htm" />
+      <area title="public.licenseorder (4%)" shape="rect" coords="307,117,481,135" href="table_publiclicenseorder.htm" />
+      <area title="public.licenseorder (4%)" shape="poly" coords="600,300,514,209,515,207,517,206,519,204,520,203,522,201,524,200,525,199,527,198,529,196,531,195,533,194,534,193,536,192,538,191,540,189,542,188,544,187,600,300" href="table_publiclicenseorder.htm" />
+      <area title="public.payment (4%)" shape="rect" coords="381,65,532,83" href="table_publicpayment.htm" />
+      <area title="public.payment (4%)" shape="poly" coords="600,300,546,187,548,186,550,185,552,184,554,183,556,182,558,182,560,181,562,180,564,180,566,179,568,179,570,178,572,177,574,177,577,177,579,176,581,176,600,300" href="table_publicpayment.htm" />
+      <area title="public.technologies (4%)" shape="rect" coords="605,28,782,46" href="table_publictechnologies.htm" />
+      <area title="public.technologies (4%)" shape="poly" coords="600,300,583,176,585,175,587,175,589,175,591,175,593,175,596,175,598,175,600,175,602,175,604,175,607,175,609,175,611,175,613,175,615,175,617,176,620,176,600,300" href="table_publictechnologies.htm" />
+      <area title="public.componentsattribute (2%)" shape="rect" coords="659,59,893,77" href="table_publiccomponentsattribute.htm" />
+      <area title="public.componentsattribute (2%)" shape="poly" coords="600,300,621,176,623,177,625,177,628,178,630,178,632,179,634,179,636,180,638,181,600,300" href="table_publiccomponentsattribute.htm" />
+      <area title="public.componentstechnologies (2%)" shape="rect" coords="688,84,949,102" href="table_publiccomponentstechnologies.htm" />
+      <area title="public.componentstechnologies (2%)" shape="poly" coords="600,300,640,181,642,182,644,183,646,184,648,184,650,185,652,186,654,187,656,188,600,300" href="table_publiccomponentstechnologies.htm" />
+      <area title="public.functions (2%)" shape="rect" coords="712,110,866,128" href="table_publicfunctions.htm" />
+      <area title="public.functions (2%)" shape="poly" coords="600,300,658,189,660,190,662,191,663,192,665,193,667,194,669,196,671,197,673,198,600,300" href="table_publicfunctions.htm" />
+      <area title="public.logstatus (2%)" shape="rect" coords="732,138,885,156" href="table_publiclogstatus.htm" />
+      <area title="public.logstatus (2%)" shape="poly" coords="600,300,674,199,676,201,678,202,679,203,681,205,683,206,684,208,686,209,687,211,600,300" href="table_publiclogstatus.htm" />
+      <area title="public.roles (2%)" shape="rect" coords="747,166,871,184" href="table_publicroles.htm" />
+      <area title="public.roles (2%)" shape="poly" coords="600,300,689,212,690,214,692,215,693,217,695,218,696,220,697,222,699,224,700,225,600,300" href="table_publicroles.htm" />
+      <area title="public.rolespermissions (2%)" shape="rect" coords="758,194,964,211" href="table_publicrolespermissions.htm" />
+      <area title="public.rolespermissions (2%)" shape="poly" coords="600,300,701,227,702,229,704,230,705,232,706,234,707,236,708,238,709,240,710,242,600,300" href="table_publicrolespermissions.htm" />
+      <area title="public.technologydata (2%)" shape="rect" coords="767,221,963,239" href="table_publictechnologydata.htm" />
+      <area title="public.technologydata (2%)" shape="poly" coords="600,300,711,243,712,245,713,247,714,249,715,251,716,253,716,255,717,257,718,259,600,300" href="table_publictechnologydata.htm" />
+      <area title="public.technologydatacomponents (2%)" shape="rect" coords="772,249,1052,267" href="table_publictechnologydatacomponents.htm" />
+      <area title="public.technologydatacomponents (2%)" shape="poly" coords="600,300,719,261,719,263,720,266,720,268,721,270,721,272,722,274,722,276,723,278,600,300" href="table_publictechnologydatacomponents.htm" />
+      <area title="public.tags (1%)" shape="rect" coords="774,269,894,287" href="table_publictags.htm" />
+      <area title="public.tags (1%)" shape="poly" coords="600,300,723,280,723,282,724,285,724,287,724,289,600,300" href="table_publictags.htm" />
+      <area title="public.technologydatatags (1%)" shape="rect" coords="774,283,1000,301" href="table_publictechnologydatatags.htm" />
+      <area title="public.technologydatatags (1%)" shape="poly" coords="600,300,724,290,724,292,724,294,724,296,724,299,600,300" href="table_publictechnologydatatags.htm" />
+    </map>
+    <map name="Largesttablesbyrowcount">
+      <area title="public.logtable (49%)" shape="rect" coords="604,561,758,579" href="table_publiclogtable.htm" />
+      <area title="public.logtable (49%)" shape="poly" coords="600,300,725,300,724,302,724,304,724,306,724,308,724,310,724,313,724,315,723,317,723,319,723,321,722,323,722,325,721,328,721,330,720,332,720,334,719,336,718,338,718,340,717,342,716,344,715,346,715,348,714,350,713,352,712,354,711,356,710,358,709,360,708,362,707,364,706,366,704,368,703,369,702,371,701,373,699,375,698,376,697,378,695,380,694,382,692,383,691,385,689,386,688,388,686,389,685,391,683,392,682,394,680,395,678,397,676,398,675,399,673,401,671,402,669,403,668,404,666,406,664,407,662,408,660,409,658,410,656,411,654,412,652,413,650,414,648,415,646,415,644,416,642,417,640,418,638,418,636,419,634,420,632,420,630,421,628,421,625,422,623,422,621,423,619,423,617,423,615,424,613,424,610,424,608,424,606,424,604,424,602,424,600,425,597,424,595,424,593,424,591,424,589,424,586,424,584,424,582,423,580,423,578,423,576,422,574,422,571,421,569,421,567,420,565,420,563,419,561,418,559,418,557,417,555,416,553,415,551,415,549,414,547,413,545,412,543,411,541,410,539,409,537,408,535,407,533,406,531,404,530,403,528,402,526,401,524,399,523,398,521,397,519,395,517,394,516,392,514,391,513,389,511,388,510,386,508,385,507,383,505,382,504,380,502,378,501,376,500,375,498,373,497,371,496,369,495,368,493,366,492,364,491,362,490,360,489,358,488,356,487,354,486,352,485,350,484,348,484,346,483,344,482,342,481,340,481,338,480,336,479,334,479,332,478,330,478,328,477,325,477,323,476,321,476,319,476,317,475,315,475,313,475,310,475,308,475,306,475,304,600,300" href="table_publiclogtable.htm" />
+      <area title="public.offerrequest (6%)" shape="rect" coords="251,258,426,276" href="table_publicofferrequest.htm" />
+      <area title="public.offerrequest (6%)" shape="poly" coords="600,300,475,304,475,301,475,299,475,297,475,295,475,293,475,291,475,288,475,286,475,284,476,282,476,280,476,278,477,275,477,273,478,271,478,269,479,267,479,265,480,263,481,261,481,259,482,257,483,254,484,252,600,300" href="table_publicofferrequest.htm" />
+      <area title="public.offerrequestitems (6%)" shape="rect" coords="232,182,445,200" href="table_publicofferrequestitems.htm" />
+      <area title="public.offerrequestitems (6%)" shape="poly" coords="600,300,484,252,485,250,486,248,487,246,488,244,489,242,490,240,491,238,492,236,493,234,494,232,495,231,496,229,498,227,499,225,500,223,502,222,503,220,504,218,506,217,507,215,509,213,510,212,512,210,513,209,600,300" href="table_publicofferrequestitems.htm" />
+      <area title="public.transactions (6%)" shape="rect" coords="315,107,490,125" href="table_publictransactions.htm" />
+      <area title="public.transactions (6%)" shape="poly" coords="600,300,514,208,516,207,517,205,519,204,521,203,522,201,524,200,526,199,528,197,529,196,531,195,533,194,535,193,537,191,539,190,541,189,542,188,544,187,546,186,548,185,550,185,552,184,554,183,556,182,558,181,600,300" href="table_publictransactions.htm" />
+      <area title="public.offer (6%)" shape="rect" coords="448,40,570,58" href="table_publicoffer.htm" />
+      <area title="public.offer (6%)" shape="poly" coords="600,300,559,181,561,180,563,180,565,179,568,179,570,178,572,178,574,177,576,177,578,176,580,176,583,176,585,175,587,175,589,175,591,175,593,175,596,175,598,175,600,175,602,175,604,175,606,175,609,175,611,175,600,300" href="table_publicoffer.htm" />
+      <area title="public.paymentinvoice (6%)" shape="rect" coords="670,68,869,86" href="table_publicpaymentinvoice.htm" />
+      <area title="public.paymentinvoice (6%)" shape="poly" coords="600,300,611,175,614,175,616,176,618,176,620,176,622,177,624,177,627,177,629,178,631,178,633,179,635,180,637,180,639,181,641,182,643,182,645,183,647,184,649,185,651,186,653,187,655,188,657,189,659,190,661,191,600,300" href="table_publicpaymentinvoice.htm" />
+      <area title="public.payment (6%)" shape="rect" coords="732,138,883,156" href="table_publicpayment.htm" />
+      <area title="public.payment (6%)" shape="poly" coords="600,300,662,191,664,192,665,193,667,194,669,196,671,197,673,198,674,199,676,201,678,202,680,203,681,205,683,206,684,208,686,209,688,211,689,212,691,214,692,216,694,217,695,219,696,220,698,222,600,300" href="table_publicpayment.htm" />
+      <area title="public.licenseorder (6%)" shape="rect" coords="763,208,937,226" href="table_publiclicenseorder.htm" />
+      <area title="public.licenseorder (6%)" shape="poly" coords="600,300,699,224,700,225,701,227,703,229,704,231,705,232,706,234,707,236,708,238,709,240,710,242,711,244,712,246,713,248,714,250,715,252,716,254,717,256,717,258,718,260,719,262,719,264,600,300" href="table_publiclicenseorder.htm" />
+      <area title="public.technologydatacomponents (1%)" shape="rect" coords="772,251,1052,269" href="table_publictechnologydatacomponents.htm" />
+      <area title="public.technologydatacomponents (1%)" shape="poly" coords="600,300,720,266,721,268,721,270,722,272,722,275,722,277,600,300" href="table_publictechnologydatacomponents.htm" />
+      <area title="public.rolespermissions (1%)" shape="rect" coords="774,266,980,284" href="table_publicrolespermissions.htm" />
+      <area title="public.rolespermissions (1%)" shape="poly" coords="600,300,723,278,723,281,723,283,724,285,724,287,600,300" href="table_publicrolespermissions.htm" />
+    </map>
+    <map name="Largestproceduresbycodelength">
+    </map>
+    <map name="Largestfunctionsbycodelength">
+      <area title="public.setpayment (5%)" shape="rect" coords="773,329,945,347" href="udf_publicsetpayment.htm" />
+      <area title="public.setpayment (5%)" shape="poly" coords="600,300,725,300,724,302,724,304,724,306,724,308,724,310,724,313,724,315,723,317,723,319,723,321,722,323,722,325,721,328,721,330,720,332,720,334,719,336,718,338,718,340,600,300" href="udf_publicsetpayment.htm" />
+      <area title="public.settechnologydata (5%)" shape="rect" coords="761,387,978,405" href="udf_publicsettechnologydata.htm" />
+      <area title="public.settechnologydata (5%)" shape="poly" coords="600,300,717,341,717,343,716,345,715,347,714,349,713,351,712,353,711,355,710,357,709,359,708,361,707,363,706,365,705,367,704,368,703,370,701,372,700,374,699,376,600,300" href="udf_publicsettechnologydata.htm" />
+      <area title="public.setcomponent (4%)" shape="rect" coords="738,440,926,458" href="udf_publicsetcomponent.htm" />
+      <area title="public.setcomponent (4%)" shape="poly" coords="600,300,698,376,697,378,696,379,694,381,693,383,691,384,690,386,688,387,687,389,685,390,684,392,682,393,680,395,679,396,677,398,675,399,600,300" href="udf_publicsetcomponent.htm" />
+      <area title="public.createtechnologydata (3%)" shape="rect" coords="707,485,946,503" href="udf_publiccreatetechnologydata.htm" />
+      <area title="public.createtechnologydata (3%)" shape="poly" coords="600,300,675,399,673,401,671,402,669,403,667,404,666,406,664,407,662,408,660,409,658,410,656,411,654,412,652,413,650,414,600,300" href="udf_publiccreatetechnologydata.htm" />
+      <area title="public.gettechnologydatabyparams (3%)" shape="rect" coords="669,522,956,539" href="udf_publicgettechnologydatabyparams.htm" />
+      <area title="public.gettechnologydatabyparams (3%)" shape="poly" coords="600,300,649,414,647,415,645,416,642,417,640,418,638,418,636,419,634,420,632,420,630,421,628,421,626,422,600,300" href="udf_publicgettechnologydatabyparams.htm" />
+      <area title="public.createofferrequest (2%)" shape="rect" coords="628,549,846,567" href="udf_publiccreateofferrequest.htm" />
+      <area title="public.createofferrequest (2%)" shape="poly" coords="600,300,625,422,623,422,621,423,618,423,616,423,614,424,612,424,610,424,608,424,605,424,603,424,600,300" href="udf_publiccreateofferrequest.htm" />
+      <area title="public.createcomponent (2%)" shape="rect" coords="371,555,581,573" href="udf_publiccreatecomponent.htm" />
+      <area title="public.createcomponent (2%)" shape="poly" coords="600,300,602,424,600,424,598,424,595,424,593,424,591,424,589,424,587,424,585,424,582,423,580,423,600,300" href="udf_publiccreatecomponent.htm" />
+      <area title="public.getrevenuehistory (2%)" shape="rect" coords="327,532,543,549" href="udf_publicgetrevenuehistory.htm" />
+      <area title="public.getrevenuehistory (2%)" shape="poly" coords="600,300,579,423,577,423,575,422,573,422,571,421,569,421,567,420,565,420,562,419,600,300" href="udf_publicgetrevenuehistory.htm" />
+      <area title="public.getrevenue (2%)" shape="rect" coords="344,507,513,525" href="udf_publicgetrevenue.htm" />
+      <area title="public.getrevenue (2%)" shape="poly" coords="600,300,561,418,558,418,556,417,554,416,552,415,550,414,548,414,546,413,544,412,600,300" href="udf_publicgetrevenue.htm" />
+      <area title="public.createpaymentinvoice (2%)" shape="rect" coords="246,481,489,499" href="udf_publiccreatepaymentinvoice.htm" />
+      <area title="public.createpaymentinvoice (2%)" shape="poly" coords="600,300,543,411,541,410,539,409,537,408,535,407,533,405,531,404,530,403,528,402,600,300" href="udf_publiccreatepaymentinvoice.htm" />
+      <area title="public.createtechnology (2%)" shape="rect" coords="260,455,469,472" href="udf_publiccreatetechnology.htm" />
+      <area title="public.createtechnology (2%)" shape="poly" coords="600,300,526,401,525,400,523,398,521,397,520,396,518,394,516,393,515,391,513,390,600,300" href="udf_publiccreatetechnology.htm" />
+      <area title="public.createlicenseorder (2%)" shape="rect" coords="237,428,455,446" href="udf_publiccreatelicenseorder.htm" />
+      <area title="public.createlicenseorder (2%)" shape="poly" coords="600,300,512,389,511,388,509,386,508,384,506,383,505,381,503,380,502,378,501,376,600,300" href="udf_publiccreatelicenseorder.htm" />
+      <area title="public.setpaymentinvoiceoffer (2%)" shape="rect" coords="191,403,443,421" href="udf_publicsetpaymentinvoiceoffer.htm" />
+      <area title="public.setpaymentinvoiceoffer (2%)" shape="poly" coords="600,300,500,376,499,374,498,372,496,370,495,368,494,367,493,365,492,363,600,300" href="udf_publicsetpaymentinvoiceoffer.htm" />
+      <area title="public.gettechnologydataforuser (2%)" shape="rect" coords="168,379,435,397" href="udf_publicgettechnologydataforuser.htm" />
+      <area title="public.gettechnologydataforuser (2%)" shape="poly" coords="600,300,491,361,490,359,489,357,488,355,487,353,486,351,485,349,484,347,600,300" href="udf_publicgettechnologydataforuser.htm" />
+      <area title="public.createoffer (2%)" shape="rect" coords="264,356,430,374" href="udf_publiccreateoffer.htm" />
+      <area title="public.createoffer (2%)" shape="poly" coords="600,300,484,347,483,345,482,343,481,341,481,338,480,336,479,334,479,332,600,300" href="udf_publiccreateoffer.htm" />
+      <area title="public.setpermission (1%)" shape="rect" coords="240,334,426,352" href="udf_publicsetpermission.htm" />
+      <area title="public.setpermission (1%)" shape="poly" coords="600,300,479,331,478,329,478,327,477,325,477,323,476,321,476,319,476,316,600,300" href="udf_publicsetpermission.htm" />
+      <area title="public.createcomponentsattribute (1%)" shape="rect" coords="148,312,425,330" href="udf_publiccreatecomponentsattribute.htm" />
+      <area title="public.createcomponentsattribute (1%)" shape="poly" coords="600,300,476,316,475,314,475,312,475,310,475,308,475,305,475,303,475,301,600,300" href="udf_publiccreatecomponentsattribute.htm" />
+      <area title="public.createtechnologydatacomponents (1%)" shape="rect" coords="101,281,425,299" href="udf_publiccreatetechnologydatacomponents.htm" />
+      <area title="public.createtechnologydatacomponents (1%)" shape="poly" coords="600,300,475,301,475,299,475,297,475,294,475,292,475,290,475,288,600,300" href="udf_publiccreatetechnologydatacomponents.htm" />
+      <area title="public.createcomponentstechnologies (1%)" shape="rect" coords="122,260,426,278" href="udf_publiccreatecomponentstechnologies.htm" />
+      <area title="public.createcomponentstechnologies (1%)" shape="poly" coords="600,300,475,286,476,284,476,281,476,279,477,277,477,275,477,273,600,300" href="udf_publiccreatecomponentstechnologies.htm" />
+      <area title="public.createtechnologydatatags (1%)" shape="rect" coords="160,238,429,256" href="udf_publiccreatetechnologydatatags.htm" />
+      <area title="public.createtechnologydatatags (1%)" shape="poly" coords="600,300,478,271,478,269,479,267,479,265,480,263,481,260,481,258,600,300" href="udf_publiccreatetechnologydatatags.htm" />
+      <area title="public.createattribute (1%)" shape="rect" coords="240,218,433,236" href="udf_publiccreateattribute.htm" />
+      <area title="public.createattribute (1%)" shape="poly" coords="600,300,482,257,483,255,484,253,485,251,485,249,486,247,487,245,600,300" href="udf_publiccreateattribute.htm" />
+      <area title="public.createtag (1%)" shape="rect" coords="283,200,439,218" href="udf_publiccreatetag.htm" />
+      <area title="public.createtag (1%)" shape="poly" coords="600,300,487,244,488,242,489,240,491,238,492,236,493,234,600,300" href="udf_publiccreatetag.htm" />
+      <area title="public.createrole (1%)" shape="rect" coords="285,183,445,201" href="udf_publiccreaterole.htm" />
+      <area title="public.createrole (1%)" shape="poly" coords="600,300,493,233,495,232,496,230,497,228,498,226,500,224,600,300" href="udf_publiccreaterole.htm" />
+      <area title="public.deletetechnologydata (1%)" shape="rect" coords="213,167,451,185" href="udf_publicdeletetechnologydata.htm" />
+      <area title="public.deletetechnologydata (1%)" shape="poly" coords="600,300,500,224,501,222,502,221,504,219,505,217,507,216,600,300" href="udf_publicdeletetechnologydata.htm" />
+      <area title="public.datediff (1%)" shape="rect" coords="316,151,459,169" href="udf_publicdatediff.htm" />
+      <area title="public.datediff (1%)" shape="poly" coords="600,300,507,216,508,214,510,212,511,211,513,209,600,300" href="udf_publicdatediff.htm" />
+      <area title="public.gettechnologydatabyname (1%)" shape="rect" coords="195,136,468,154" href="udf_publicgettechnologydatabyname.htm" />
+      <area title="public.gettechnologydatabyname (1%)" shape="poly" coords="600,300,514,208,516,206,518,205,519,204,521,202,600,300" href="udf_publicgettechnologydatabyname.htm" />
+      <area title="public.gettopcomponents (1%)" shape="rect" coords="259,122,478,140" href="udf_publicgettopcomponents.htm" />
+      <area title="public.gettopcomponents (1%)" shape="poly" coords="600,300,522,201,524,200,526,199,527,197,529,196,600,300" href="udf_publicgettopcomponents.htm" />
+      <area title="public.gettechnologydatabyofferrequest (1%)" shape="rect" coords="170,108,489,125" href="udf_publicgettechnologydatabyofferrequest.htm" />
+      <area title="public.gettechnologydatabyofferrequest (1%)" shape="poly" coords="600,300,530,195,532,194,534,193,536,192,538,191,600,300" href="udf_publicgettechnologydatabyofferrequest.htm" />
+      <area title="public.gettransactionbyofferrequest (1%)" shape="rect" coords="211,94,501,112" href="udf_publicgettransactionbyofferrequest.htm" />
+      <area title="public.gettransactionbyofferrequest (1%)" shape="poly" coords="600,300,539,190,541,189,543,188,545,187,547,186,600,300" href="udf_publicgettransactionbyofferrequest.htm" />
+      <area title="public.gettechnologydatabyid (1%)" shape="rect" coords="267,80,515,98" href="udf_publicgettechnologydatabyid.htm" />
+      <area title="public.gettechnologydatabyid (1%)" shape="poly" coords="600,300,548,186,550,185,552,184,554,183,556,182,600,300" href="udf_publicgettechnologydatabyid.htm" />
+      <area title="public.gettransactionbyid (1%)" shape="rect" coords="311,68,529,86" href="udf_publicgettransactionbyid.htm" />
+      <area title="public.gettransactionbyid (1%)" shape="poly" coords="600,300,557,182,559,181,561,180,563,180,565,179,600,300" href="udf_publicgettransactionbyid.htm" />
+      <area title="public.gettotalrevenue (1%)" shape="rect" coords="345,56,545,74" href="udf_publicgettotalrevenue.htm" />
+      <area title="public.gettotalrevenue (1%)" shape="poly" coords="600,300,567,179,569,178,571,178,573,177,575,177,600,300" href="udf_publicgettotalrevenue.htm" />
+      <area title="public.gettotaluserrevenue (1%)" shape="rect" coords="332,45,562,63" href="udf_publicgettotaluserrevenue.htm" />
+      <area title="public.gettotaluserrevenue (1%)" shape="poly" coords="600,300,576,177,578,176,580,176,582,176,584,175,600,300" href="udf_publicgettotaluserrevenue.htm" />
+      <area title="public.getcomponentsfortechnologydataid (1%)" shape="rect" coords="246,35,579,53" href="udf_publicgetcomponentsfortechnologydataid.htm" />
+      <area title="public.getcomponentsfortechnologydataid (1%)" shape="poly" coords="600,300,585,175,587,175,589,175,592,175,594,175,600,300" href="udf_publicgetcomponentsfortechnologydataid.htm" />
+      <area title="public.getalltechnologydata (1%)" shape="rect" coords="364,26,598,44" href="udf_publicgetalltechnologydata.htm" />
+      <area title="public.getalltechnologydata (1%)" shape="poly" coords="600,300,594,175,597,175,599,175,601,175,603,175,600,300" href="udf_publicgetalltechnologydata.htm" />
+      <area title="public.getcomponentsbytechnology (1%)" shape="rect" coords="617,34,906,52" href="udf_publicgetcomponentsbytechnology.htm" />
+      <area title="public.getcomponentsbytechnology (1%)" shape="poly" coords="600,300,603,175,606,175,608,175,610,175,612,175,600,300" href="udf_publicgetcomponentsbytechnology.htm" />
+      <area title="public.gettoptechnologydata (1%)" shape="rect" coords="634,43,875,61" href="udf_publicgettoptechnologydata.htm" />
+      <area title="public.gettoptechnologydata (1%)" shape="poly" coords="600,300,613,175,615,175,617,176,619,176,621,176,600,300" href="udf_publicgettoptechnologydata.htm" />
+      <area title="public.gettechnologydatahistory (1%)" shape="rect" coords="649,53,915,71" href="udf_publicgettechnologydatahistory.htm" />
+      <area title="public.gettechnologydatahistory (1%)" shape="poly" coords="600,300,621,176,623,177,626,177,628,178,600,300" href="udf_publicgettechnologydatahistory.htm" />
+    </map>
+    <map name="Largestviewsbycodelength">
+    </map>
+  </body>
+</html>
