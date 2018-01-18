@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?><html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><head xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5" /><link rel="stylesheet" href="sqlspec.css" /><title>MarketplaceCore - public.gettechnologydatabyname</title><script language="JavaScript" src="resort_table.js"></script><script language="javascript">
+//
+// this hides the SVG if you are on IE, 
+// and hides the VML if you are NOT on IE.
+//
+function init()
+{
+  var isIE = navigator.userAgent.indexOf("MSIE") != -1;
+  showhideIfIE('FK_SVG', isIE, true);
+  showhideIfIE('DEPENDENCY_SVG', isIE, true);
+  showhideIfIE('MODEL_SVG', isIE, true); 
+  showhideIfIE('FK_VML', isIE, false);
+  showhideIfIE('DEPENDENCY_VML', isIE, false);
+  showhideIfIE('MODEL_VML', isIE, false);
+  
+  var node = document.getElementById('copy_url_div');
+  if (node != null)
+  {
+    var inChm = document.URL.indexOf('mk:@MSITStore') != -1;
+    node.style.display = inChm || !isIE ? 'none' : 'block';
+  }
+}   
+
+function showhideIfIE(elementName, isIE, hide)
+{
+  node = document.getElementById(elementName);
+  if (node != null) 
+  {
+    if (hide) 
+      node.style.display = isIE ? 'none' : 'block';
+    else
+      node.style.display = isIE ? 'block' : 'none';
+  }
+}
+
+function copyToClipboard(s)
+{
+  if(window.clipboardData)
+    if (clipboardData.setData)
+      clipboardData.setData('text', s);
+}
+</script></head><body onload="init()"><div id="nsbanner" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><div id="bannerrow1"><table class="bannerparthead" cellspacing="0" id="Table1"><tr id="hdr"><td class="runninghead">Database reference - MarketplaceCore</td><td class="product" /></tr></table></div><div id="TitleRow"><h1 class="dtH1"><a href="default.htm">MarketplaceCore</a> -         
+                    <a href="allUDFs.htm">functions</a> -         
+                    public.gettechnologydatabyname</h1></div></div><div id="nstext"><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Description</h2><span class="desc">none</span><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Function properties</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">value</th></tr></thead><tbody><tr valign="top"><td>name</td><td>public.gettechnologydatabyname</td></tr><tr valign="top"><td>return type</td><td>pg_catalog.record 
+                  </td></tr><tr valign="top"><td>language</td><td>PLPGSQL</td></tr><tr valign="top"><td>deterministic</td><td>NO</td></tr></tbody></table><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Parameters</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">datatype</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">udt</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">in/out</th></tr></thead><tbody><tr valign="top"><td>vtechnologydataname 
+                                            </td><td>character varying 
+                                            </td><td>pg_catalog.varchar 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vuseruuid 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vroles 
+                                            </td><td>ARRAY 
+                                            </td><td>pg_catalog._text 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>technologydatauuid 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>technologyuuid 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>technologydataname 
+                                            </td><td>character varying 
+                                            </td><td>pg_catalog.varchar 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>technologydata 
+                                            </td><td>character varying 
+                                            </td><td>pg_catalog.varchar 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>technologydatadescription 
+                                            </td><td>character varying 
+                                            </td><td>pg_catalog.varchar 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>productcode 
+                                            </td><td>integer 
+                                            </td><td>pg_catalog.int4 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>licensefee 
+                                            </td><td>bigint 
+                                            </td><td>pg_catalog.int8 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>technologydatathumbnail 
+                                            </td><td>bytea 
+                                            </td><td>pg_catalog.bytea 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>technologydataimgref 
+                                            </td><td>character varying 
+                                            </td><td>pg_catalog.varchar 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>createdat 
+                                            </td><td>timestamp with time zone 
+                                            </td><td>pg_catalog.timestamptz 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>createdby 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>updatedat 
+                                            </td><td>timestamp with time zone 
+                                            </td><td>pg_catalog.timestamptz 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>updatedby 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>OUT 
+                                            </td></tr></tbody></table><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Usage</h2><pre class="csharpcode"><span class="kwrd">result</span> = <span class="kwrd">public</span>.gettechnologydatabyname(
+    my_vtechnologydataname,
+    my_vuseruuid,
+    my_vroles,
+    my_technologydatauuid,
+    my_technologyuuid,
+    my_technologydataname,
+    my_technologydata,
+    my_technologydatadescription,
+    my_productcode,
+    my_licensefee,
+    my_technologydatathumbnail,
+    my_technologydataimgref,
+    my_createdat,
+    my_createdby,
+    my_updatedat,
+    my_updatedby
+);</pre><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Code</h2><pre class="csharpcode"><span class="kwrd">CREATE</span> <span class="kwrd">FUNCTION</span> gettechnologydatabyname(vtechnologydataname <span class="kwrd">character</span> <span class="kwrd">varying</span>, vuseruuid uuid, vroles text[]) <span class="kwrd">RETURNS</span> <span class="kwrd">TABLE</span>(technologydatauuid uuid, technologyuuid uuid, technologydataname <span class="kwrd">character</span> <span class="kwrd">varying</span>, technologydata <span class="kwrd">character</span> <span class="kwrd">varying</span>, technologydatadescription <span class="kwrd">character</span> <span class="kwrd">varying</span>, productcode <span class="kwrd">integer</span>, licensefee bigint, technologydatathumbnail bytea, technologydataimgref <span class="kwrd">character</span> <span class="kwrd">varying</span>, createdat <span class="kwrd">timestamp</span> <span class="kwrd">with</span> <span class="kwrd">time</span> <span class="kwrd">zone</span>, createdby uuid, updatedat <span class="kwrd">timestamp</span> <span class="kwrd">with</span> <span class="kwrd">time</span> <span class="kwrd">zone</span>, updatedby uuid)
+    <span class="kwrd">LANGUAGE</span> plpgsql
+    <span class="kwrd">AS</span> $$
+
+    <span class="kwrd">DECLARE</span>
+
+        vFunctionName <span class="kwrd">varchar</span> := <span class="str">'GetTechnologyDataByName'</span>;
+
+        vIsAllowed <span class="kwrd">boolean</span> := (<span class="kwrd">select</span> <span class="kwrd">public</span>.checkPermissions(vRoles, vFunctionName));
+
+
+
+    <span class="kwrd">BEGIN</span>
+
+
+
+    <span class="kwrd">IF</span>(vIsAllowed) <span class="kwrd">THEN</span>
+
+
+
+        <span class="kwrd">RETURN</span> QUERY (<span class="kwrd">SELECT</span>     td.technologydatauuid,
+
+                tc.technologyuuid,
+
+                td.technologydataname,
+
+                td.technologydata,
+
+                td.technologydatadescription,
+
+                td.productcode,
+
+                td.licensefee,
+
+                td.technologydatathumbnail,
+
+                td.technologydataimgref,
+
+                td.createdat  <span class="kwrd">at</span> <span class="kwrd">time</span> <span class="kwrd">zone</span> <span class="str">'utc'</span>,
+
+                td.createdby,
+
+                td.updatedat  <span class="kwrd">at</span> <span class="kwrd">time</span> <span class="kwrd">zone</span> <span class="str">'utc'</span>,
+
+                td.updatedBy
+
+            <span class="kwrd">FROM</span> TechnologyData td
+
+            <span class="kwrd">join</span> technologies tc
+
+            <span class="kwrd">on</span> td.technologyid = tc.technologyid
+
+            <span class="kwrd">where</span> <span class="kwrd">lower</span>(td.technologydataname) = <span class="kwrd">lower</span>(vTechnologyDataName)
+
+            <span class="kwrd">and</span> td.deleted <span class="kwrd">is</span> <span class="kwrd">null</span>
+
+        );
+
+
+
+    <span class="kwrd">ELSE</span>
+
+         RAISE <span class="kwrd">EXCEPTION</span> <span class="str">'%'</span>, <span class="str">'Insufficiency rigths'</span>;
+
+         <span class="kwrd">RETURN</span>;
+
+    <span class="kwrd">END</span> <span class="kwrd">IF</span>;
+
+
+
+    <span class="kwrd">END</span>;
+
+    $$;
+
+
+</pre></div><p style="page-break-after:always" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><br /><br /><div id="copy_url_div"><center><a href="javascript:void(0)" onclick="copyToClipboard(document.URL)">copy URL to clipboard (IE only)</a></center><br /></div><center>Documentation generated by <a target="_blank" href="http://elsasoft.com">SqlSpec</a></center></p></body></html>

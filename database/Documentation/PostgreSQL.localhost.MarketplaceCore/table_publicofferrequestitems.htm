@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?><html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><head xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5" /><link rel="stylesheet" href="sqlspec.css" /><title>MarketplaceCore - public.offerrequestitems</title><script language="JavaScript" src="resort_table.js"></script><script language="javascript">
+//
+// this hides the SVG if you are on IE, 
+// and hides the VML if you are NOT on IE.
+//
+function init()
+{
+  var isIE = navigator.userAgent.indexOf("MSIE") != -1;
+  showhideIfIE('FK_SVG', isIE, true);
+  showhideIfIE('DEPENDENCY_SVG', isIE, true);
+  showhideIfIE('MODEL_SVG', isIE, true); 
+  showhideIfIE('FK_VML', isIE, false);
+  showhideIfIE('DEPENDENCY_VML', isIE, false);
+  showhideIfIE('MODEL_VML', isIE, false);
+  
+  var node = document.getElementById('copy_url_div');
+  if (node != null)
+  {
+    var inChm = document.URL.indexOf('mk:@MSITStore') != -1;
+    node.style.display = inChm || !isIE ? 'none' : 'block';
+  }
+}   
+
+function showhideIfIE(elementName, isIE, hide)
+{
+  node = document.getElementById(elementName);
+  if (node != null) 
+  {
+    if (hide) 
+      node.style.display = isIE ? 'none' : 'block';
+    else
+      node.style.display = isIE ? 'block' : 'none';
+  }
+}
+
+function copyToClipboard(s)
+{
+  if(window.clipboardData)
+    if (clipboardData.setData)
+      clipboardData.setData('text', s);
+}
+</script></head><body onload="init()"><div id="nsbanner" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><div id="bannerrow1"><table class="bannerparthead" cellspacing="0" id="Table1"><tr id="hdr"><td class="runninghead">Database reference - MarketplaceCore</td><td class="product" /></tr></table></div><div id="TitleRow"><h1 class="dtH1"><a href="default.htm">MarketplaceCore</a> -         
+                    <a href="allTables.htm">tables</a> -         
+                    public.offerrequestitems</h1></div></div><div id="nstext"><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Description</h2><span class="desc">none</span><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Table properties</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">value</th></tr></thead><tbody><tr><td>name</td><td>public.offerrequestitems 
+                  </td></tr><tr><td>rows</td><td>764 
+                  </td></tr><tr><td>pages</td><td>5 
+                  </td></tr></tbody></table><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Columns</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">column</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">datatype</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">default</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">nulls</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">PK</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">FK</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">UQ</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">comment</th></tr></thead><tbody><tr valign="top"><td>offerrequestitemid 
+                    </td><td>int4 
+                    </td><td> 
+                      </td><td>NO 
+                    </td><td>YES 
+                      </td><td> 
+                      </td><td>YES 
+                      </td><td> 
+                    </td></tr><tr valign="top"><td>offerrequestid 
+                    </td><td>int4 
+                    </td><td> 
+                      </td><td>NO 
+                    </td><td>YES 
+                      </td><td><a href="&#xA;                                  table_publicofferrequest.htm&#xA;                                ">public.offerrequest</a>.offerrequestid 
+                      </td><td>YES 
+                      </td><td> 
+                    </td></tr><tr valign="top"><td>technologydataid 
+                    </td><td>int4 
+                    </td><td> 
+                      </td><td>NO 
+                    </td><td>YES 
+                      </td><td><a href="&#xA;                                  table_publictechnologydata.htm&#xA;                                ">public.technologydata</a>.technologydataid 
+                      </td><td>YES 
+                      </td><td> 
+                    </td></tr><tr valign="top"><td>amount 
+                    </td><td>int4 
+                    </td><td> 
+                      </td><td>NO 
+                    </td><td> 
+                      </td><td> 
+                      </td><td> 
+                      </td><td> 
+                    </td></tr></tbody></table><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Indexes</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">columns</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)" sortType="number">rows</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)" sortType="number">pages</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">valid</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">description</th></tr></thead><tbody><tr valign="top"><td><a href="index_publicofferrequestitems_pk.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">offerrequestitems_pk</a></td><td>offerrequestitemid, offerrequestid, technologydataid 
+                    </td><td>764 
+                    </td><td>5 
+                    </td><td>1 
+                    </td><td>primary non-clustered unique </td></tr></tbody></table><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">Foreign key graph</h2><div id="FK_VML" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><table width="100%"><tr valign="top"><td valign="top" align="center"><v:group coordsize="1000px,1000px" coordorig="0px,0px" style="position:relative;top:20px;left:0px;width:700;height:100"><a href="table_publicofferrequest.htm"><v:shape title="public.offerrequestitems.offerrequestid --&gt; public.offerrequest.offerrequestid" fillcolor="#0000FF" strokecolor="#0000FF" style="position:absolute;cursor:hand;z-index:10;behavior:url(#default#VML);top:-10;left:135;width:10;height:10;" path="m 750,750 l 750,-750, -750,-750, -750,750, 750,750 xe"><v:fill method="linear sigma" angle="-135" type="gradient" style="behavior:url(#default#VML);" /><span title="public.offerrequestitems.offerrequestid --&gt; public.offerrequest.offerrequestid" style="white-space:nowrap;position:relative;top:17;left:-27.599999999999998;cursor:hand;font-family:verdana;font-size:10;z-index:9;background-color:white;">offerrequest</span></v:shape></a><v:shape strokeweight="1px" style="position:absolute;behavior:url(#default#VML);z-index:-1000;height:1000;width:1000;top:0;left:0;" strokecolor="gray" path="m 310,40 l 135,-10 xe" title="public.offerrequestitems.offerrequestid --&gt; public.offerrequest.offerrequestid" /><a href="table_publictechnologydata.htm"><v:shape title="public.offerrequestitems.technologydataid --&gt; public.technologydata.technologydataid" fillcolor="#0000FF" strokecolor="#0000FF" style="position:absolute;cursor:hand;z-index:10;behavior:url(#default#VML);top:-10;left:485;width:10;height:10;" path="m 750,750 l 750,-750, -750,-750, -750,750, 750,750 xe"><v:fill method="linear sigma" angle="-135" type="gradient" style="behavior:url(#default#VML);" /><span title="public.offerrequestitems.technologydataid --&gt; public.technologydata.technologydataid" style="white-space:nowrap;position:relative;top:17;left:-32.199999999999996;cursor:hand;font-family:verdana;font-size:10;z-index:9;background-color:white;">technologydata</span></v:shape></a><v:shape strokeweight="1px" style="position:absolute;behavior:url(#default#VML);z-index:-1000;height:1000;width:1000;top:0;left:0;" strokecolor="gray" path="m 310,40 l 485,-10 xe" title="public.offerrequestitems.technologydataid --&gt; public.technologydata.technologydataid" /><a href="table_publicofferrequestitems.htm"><v:shape title="table: public.offerrequestitems" fillcolor="#0000FF" strokecolor="#0000FF" style="position:absolute;cursor:hand;z-index:10;behavior:url(#default#VML);top:40;left:310;width:10;height:10;" path="m 1000,1000 l 1000,-1000, -1000,-1000, -1000,1000, 1000,1000 xe"><v:fill method="linear sigma" angle="-135" type="gradient" style="behavior:url(#default#VML);" /><span title="table: public.offerrequestitems" style="white-space:nowrap;position:relative;top:22;left:-39.099999999999994;cursor:hand;font-family:verdana;font-size:10;z-index:9;background-color:white;">offerrequestitems</span></v:shape></a></v:group></td></tr></table></div><div id="FK_SVG" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><table width="100%"><tr valign="top"><td valign="top" align="center"><embed type="image/svg+xml" pluginspage="http://www.adobe.com/svg/viewer/install/" src="foreignkey_publicofferrequestitems.svg" width="771" height="111"></embed></td></tr></table></div><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Foreign keys</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">columns</th></tr></thead><tbody><tr><td>public.offerrequestitems_offerrequest_fk</td><td>offerrequestid 
+                    </td></tr><tr><td>public.offerrequestitems_technologydata_fk</td><td>technologydataid 
+                    </td></tr></tbody></table><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">Dependency graph</h2><div id="DEPENDENCY_VML" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><table width="100%"><tr valign="top"><td valign="top" align="center"><v:group coordsize="1000px,1000px" coordorig="0px,0px" style="position:relative;top:20px;left:0px;width:700;height:100"><a href="table_publicofferrequestitems.htm"><v:shape title="table: MarketplaceCore.public.offerrequestitems" fillcolor="#0000FF" strokecolor="#0000FF" style="position:absolute;cursor:hand;z-index:10;behavior:url(#default#VML);top:-10;left:310;width:10;height:10;" path="m 1000,1000 l 1000,-1000, -1000,-1000, -1000,1000, 1000,1000 xe"><v:fill method="linear sigma" angle="-135" type="gradient" style="behavior:url(#default#VML);" /><span title="table: MarketplaceCore.public.offerrequestitems" style="white-space:nowrap;position:relative;top:22;left:-39.099999999999994;cursor:hand;font-family:verdana;font-size:10;z-index:9;background-color:white;">offerrequestitems</span></v:shape></a><a href="../PostgreSQL.localhost.MarketplaceCore/index_publicofferrequestitems_pk.htm"><v:shape title="index: public.offerrequestitems_pk" fillcolor="#990000" strokecolor="#990000" style="position:absolute;cursor:hand;z-index:10;behavior:url(#default#VML);top:40;left:310;width:10;height:10;" path="m 750,750 l 750,-750, -750,-750, -750,750, 750,750 xe"><v:fill method="linear sigma" angle="-135" type="gradient" style="behavior:url(#default#VML);" /><span title="index: public.offerrequestitems_pk" style="white-space:nowrap;position:relative;top:17;left:-46;cursor:hand;font-family:verdana;font-size:10;z-index:9;background-color:white;">offerrequestitems_pk</span></v:shape></a><v:shape strokeweight="1px" style="position:absolute;behavior:url(#default#VML);z-index:-1000;height:1000;width:1000;top:0;left:0;" strokecolor="gray" path="m 310,-10 l 310,40 xe" /></v:group></td></tr></table></div><div id="DEPENDENCY_SVG" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><table width="100%"><tr valign="top"><td valign="top" align="center"><embed type="image/svg+xml" pluginspage="http://www.adobe.com/svg/viewer/install/" src="dependency_U_publicofferrequestitems.svg" width="771" height="111"></embed></td></tr></table></div><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Code</h2><pre class="csharpcode"><span class="kwrd">CREATE</span> <span class="kwrd">TABLE</span> offerrequestitems (
+    offerrequestitemid <span class="kwrd">integer</span> <span class="kwrd">NOT</span> <span class="kwrd">NULL</span>,
+    offerrequestid <span class="kwrd">integer</span> <span class="kwrd">NOT</span> <span class="kwrd">NULL</span>,
+    technologydataid <span class="kwrd">integer</span> <span class="kwrd">NOT</span> <span class="kwrd">NULL</span>,
+    amount <span class="kwrd">integer</span> <span class="kwrd">NOT</span> <span class="kwrd">NULL</span>
+)</pre></div><p style="page-break-after:always" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><br /><br /><div id="copy_url_div"><center><a href="javascript:void(0)" onclick="copyToClipboard(document.URL)">copy URL to clipboard (IE only)</a></center><br /></div><center>Documentation generated by <a target="_blank" href="http://elsasoft.com">SqlSpec</a></center></p></body></html>

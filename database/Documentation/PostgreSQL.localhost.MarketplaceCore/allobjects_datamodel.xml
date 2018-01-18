@@ -1,0 +1,127 @@
+<SqlSpec>
+  <models>
+    <model name="all objects - localhost.MarketplaceCore">
+      <server type="PostgreSQL" name="localhost">
+        <database name="MarketplaceCore">
+          <object xtype="U" name="public.attributes" />
+          <object xtype="U" name="public.components" />
+          <object xtype="U" name="public.componentsattribute" />
+          <object xtype="U" name="public.componentstechnologies" />
+          <object xtype="U" name="public.functions" />
+          <object xtype="U" name="public.licenseorder" />
+          <object xtype="U" name="public.logstatus" />
+          <object xtype="U" name="public.logtable" />
+          <object xtype="U" name="public.offer" />
+          <object xtype="U" name="public.offerrequest" />
+          <object xtype="U" name="public.offerrequestitems" />
+          <object xtype="U" name="public.patches" />
+          <object xtype="U" name="public.payment" />
+          <object xtype="U" name="public.paymentinvoice" />
+          <object xtype="U" name="public.roles" />
+          <object xtype="U" name="public.rolespermissions" />
+          <object xtype="U" name="public.tags" />
+          <object xtype="U" name="public.technologies" />
+          <object xtype="U" name="public.technologydata" />
+          <object xtype="U" name="public.technologydatacomponents" />
+          <object xtype="U" name="public.technologydatatags" />
+          <object xtype="U" name="public.transactions" />
+          <object xtype="FN" name="public.checkpermissions" />
+          <object xtype="FN" name="public.createattribute" />
+          <object xtype="FN" name="public.createcomponent" />
+          <object xtype="FN" name="public.createcomponentsattribute" />
+          <object xtype="FN" name="public.createcomponentstechnologies" />
+          <object xtype="FN" name="public.createlicenseorder" />
+          <object xtype="FN" name="public.createlog" />
+          <object xtype="FN" name="public.createoffer" />
+          <object xtype="FN" name="public.createofferrequest" />
+          <object xtype="FN" name="public.createpaymentinvoice" />
+          <object xtype="FN" name="public.createrole" />
+          <object xtype="FN" name="public.createtag" />
+          <object xtype="FN" name="public.createtechnology" />
+          <object xtype="FN" name="public.createtechnologydata" />
+          <object xtype="FN" name="public.createtechnologydatacomponents" />
+          <object xtype="FN" name="public.createtechnologydatatags" />
+          <object xtype="FN" name="public.datediff" />
+          <object xtype="FN" name="public.deletetechnologydata" />
+          <object xtype="FN" name="public.getactivatedlicensescountforuser" />
+          <object xtype="FN" name="public.getallattributes" />
+          <object xtype="FN" name="public.getallcomponents" />
+          <object xtype="FN" name="public.getalloffers" />
+          <object xtype="FN" name="public.getalltags" />
+          <object xtype="FN" name="public.getalltechnologies" />
+          <object xtype="FN" name="public.getalltechnologydata" />
+          <object xtype="FN" name="public.getattributebyid" />
+          <object xtype="FN" name="public.getattributebyname" />
+          <object xtype="FN" name="public.getcomponentbyid" />
+          <object xtype="FN" name="public.getcomponentbyname" />
+          <object xtype="FN" name="public.getcomponentsbytechnology" />
+          <object xtype="FN" name="public.getcomponentsfortechnologydataid" />
+          <object xtype="FN" name="public.getlicensefeebytechnologydata" />
+          <object xtype="FN" name="public.getlicensefeebytransaction" />
+          <object xtype="FN" name="public.getnewproductcode" />
+          <object xtype="FN" name="public.getofferbyid" />
+          <object xtype="FN" name="public.getofferbyrequestid" />
+          <object xtype="FN" name="public.getofferforpaymentinvoice" />
+          <object xtype="FN" name="public.getofferforticket" />
+          <object xtype="FN" name="public.getofferfortransaction" />
+          <object xtype="FN" name="public.getofferrequestbyid" />
+          <object xtype="FN" name="public.getpaymentinvoiceforofferrequest" />
+          <object xtype="FN" name="public.getrevenue" />
+          <object xtype="FN" name="public.getrevenuehistory" />
+          <object xtype="FN" name="public.getrevenueperdayforuser" />
+          <object xtype="FN" name="public.gettagbyid" />
+          <object xtype="FN" name="public.gettagbyname" />
+          <object xtype="FN" name="public.gettechnologybyid" />
+          <object xtype="FN" name="public.gettechnologybyname" />
+          <object xtype="FN" name="public.gettechnologydatabyid" />
+          <object xtype="FN" name="public.gettechnologydatabyname" />
+          <object xtype="FN" name="public.gettechnologydatabyofferrequest" />
+          <object xtype="FN" name="public.gettechnologydatabyparams" />
+          <object xtype="FN" name="public.gettechnologydataforuser" />
+          <object xtype="FN" name="public.gettechnologydatahistory" />
+          <object xtype="FN" name="public.gettechnologydataownerbyid" />
+          <object xtype="FN" name="public.gettechnologyforofferrequest" />
+          <object xtype="FN" name="public.gettopcomponents" />
+          <object xtype="FN" name="public.gettoptechnologydata" />
+          <object xtype="FN" name="public.gettotalrevenue" />
+          <object xtype="FN" name="public.gettotaluserrevenue" />
+          <object xtype="FN" name="public.gettransactionbyid" />
+          <object xtype="FN" name="public.gettransactionbyofferrequest" />
+          <object xtype="FN" name="public.setcomponent" />
+          <object xtype="FN" name="public.setpayment" />
+          <object xtype="FN" name="public.setpaymentinvoiceoffer" />
+          <object xtype="FN" name="public.setpermission" />
+          <object xtype="FN" name="public.settechnologydata" />
+        </database>
+      </server>
+    </model>
+    <model name="all tables - localhost.MarketplaceCore">
+      <server type="PostgreSQL" name="localhost">
+        <database name="MarketplaceCore">
+          <object xtype="U" name="public.attributes" />
+          <object xtype="U" name="public.components" />
+          <object xtype="U" name="public.componentsattribute" />
+          <object xtype="U" name="public.componentstechnologies" />
+          <object xtype="U" name="public.functions" />
+          <object xtype="U" name="public.licenseorder" />
+          <object xtype="U" name="public.logstatus" />
+          <object xtype="U" name="public.logtable" />
+          <object xtype="U" name="public.offer" />
+          <object xtype="U" name="public.offerrequest" />
+          <object xtype="U" name="public.offerrequestitems" />
+          <object xtype="U" name="public.patches" />
+          <object xtype="U" name="public.payment" />
+          <object xtype="U" name="public.paymentinvoice" />
+          <object xtype="U" name="public.roles" />
+          <object xtype="U" name="public.rolespermissions" />
+          <object xtype="U" name="public.tags" />
+          <object xtype="U" name="public.technologies" />
+          <object xtype="U" name="public.technologydata" />
+          <object xtype="U" name="public.technologydatacomponents" />
+          <object xtype="U" name="public.technologydatatags" />
+          <object xtype="U" name="public.transactions" />
+        </database>
+      </server>
+    </model>
+  </models>
+</SqlSpec>
