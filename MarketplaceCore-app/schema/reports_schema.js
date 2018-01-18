@@ -146,6 +146,25 @@ self.Top_Components_Query = {
     additionalProperties: false
 };
 
+self.License_Count_Query = {
+    type: 'object',
+    properties: {
+        activated: {
+            type: 'string',
+            enum: ['true']
+        },
+        user: {
+            type: 'string',
+            format: 'uuid'
+        }
+    },
+    required: [
+        'activated',
+        'user'
+    ],
+    additionalProperties: false
+};
+
 self.Empty_Body = {
     type: 'object',
     properties: {},

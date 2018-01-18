@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="utf-8"?><html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><head xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5" /><link rel="stylesheet" href="sqlspec.css" /><title>MarketplaceCore - public.gettechnologydatabyparams</title><script language="JavaScript" src="resort_table.js"></script><script language="javascript">
+//
+// this hides the SVG if you are on IE, 
+// and hides the VML if you are NOT on IE.
+//
+function init()
+{
+  var isIE = navigator.userAgent.indexOf("MSIE") != -1;
+  showhideIfIE('FK_SVG', isIE, true);
+  showhideIfIE('DEPENDENCY_SVG', isIE, true);
+  showhideIfIE('MODEL_SVG', isIE, true); 
+  showhideIfIE('FK_VML', isIE, false);
+  showhideIfIE('DEPENDENCY_VML', isIE, false);
+  showhideIfIE('MODEL_VML', isIE, false);
+  
+  var node = document.getElementById('copy_url_div');
+  if (node != null)
+  {
+    var inChm = document.URL.indexOf('mk:@MSITStore') != -1;
+    node.style.display = inChm || !isIE ? 'none' : 'block';
+  }
+}   
+
+function showhideIfIE(elementName, isIE, hide)
+{
+  node = document.getElementById(elementName);
+  if (node != null) 
+  {
+    if (hide) 
+      node.style.display = isIE ? 'none' : 'block';
+    else
+      node.style.display = isIE ? 'block' : 'none';
+  }
+}
+
+function copyToClipboard(s)
+{
+  if(window.clipboardData)
+    if (clipboardData.setData)
+      clipboardData.setData('text', s);
+}
+</script></head><body onload="init()"><div id="nsbanner" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><div id="bannerrow1"><table class="bannerparthead" cellspacing="0" id="Table1"><tr id="hdr"><td class="runninghead">Database reference - MarketplaceCore</td><td class="product" /></tr></table></div><div id="TitleRow"><h1 class="dtH1"><a href="default.htm">MarketplaceCore</a> -         
+                    <a href="allUDFs.htm">functions</a> -         
+                    public.gettechnologydatabyparams</h1></div></div><div id="nstext"><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Description</h2><span class="desc">none</span><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Function properties</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">value</th></tr></thead><tbody><tr valign="top"><td>name</td><td>public.gettechnologydatabyparams</td></tr><tr valign="top"><td>return type</td><td>pg_catalog.json 
+                  </td></tr><tr valign="top"><td>language</td><td>PLPGSQL</td></tr><tr valign="top"><td>deterministic</td><td>NO</td></tr></tbody></table><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Parameters</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">datatype</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">udt</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">in/out</th></tr></thead><tbody><tr valign="top"><td>vcomponents 
+                                            </td><td>ARRAY 
+                                            </td><td>pg_catalog._text 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vtechnologyuuid 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vtechnologydataname 
+                                            </td><td>character varying 
+                                            </td><td>pg_catalog.varchar 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vowneruuid 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vuseruuid 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vroles 
+                                            </td><td>ARRAY 
+                                            </td><td>pg_catalog._text 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>result 
+                                            </td><td>json 
+                                            </td><td>pg_catalog.json 
+                                            </td><td>OUT 
+                                            </td></tr></tbody></table><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Usage</h2><pre class="csharpcode"><span class="kwrd">result</span> = <span class="kwrd">public</span>.gettechnologydatabyparams(
+    my_vcomponents,
+    my_vtechnologyuuid,
+    my_vtechnologydataname,
+    my_vowneruuid,
+    my_vuseruuid,
+    my_vroles,
+    my_result
+);</pre><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Code</h2><pre class="csharpcode"><span class="kwrd">CREATE</span> <span class="kwrd">FUNCTION</span> gettechnologydatabyparams(vcomponents text[], vtechnologyuuid uuid, vtechnologydataname <span class="kwrd">character</span> <span class="kwrd">varying</span>, vowneruuid uuid, vuseruuid uuid, vroles text[]) <span class="kwrd">RETURNS</span> <span class="kwrd">TABLE</span>(<span class="kwrd">result</span> json)
+    <span class="kwrd">LANGUAGE</span> plpgsql
+    <span class="kwrd">AS</span> $$
+
+
+
+    <span class="kwrd">DECLARE</span>
+
+        vFunctionName <span class="kwrd">varchar</span> := <span class="str">'GetTechnologyDataByParams'</span>;
+
+        vIsAllowed <span class="kwrd">boolean</span> := (<span class="kwrd">select</span> <span class="kwrd">public</span>.checkPermissions(vRoles, vFunctionName));
+
+
+
+    <span class="kwrd">BEGIN</span>
+
+
+
+    <span class="kwrd">IF</span>(vIsAllowed) <span class="kwrd">THEN</span>
+
+
+
+     <span class="kwrd">RETURN</span> QUERY (     <span class="kwrd">with</span> tg <span class="kwrd">as</span> (
+
+                <span class="kwrd">select</span> tg.tagid, tg.tagname <span class="kwrd">from</span> tags tg
+
+                <span class="kwrd">join</span> technologydatatags ts
+
+                <span class="kwrd">on</span> tg.tagid = ts.tagid
+
+                <span class="kwrd">join</span> technologydata td
+
+                <span class="kwrd">on</span> ts.technologydataid = td.technologydataid
+
+                <span class="kwrd">join</span> technologies tt
+
+                <span class="kwrd">on</span> td.technologyid = tt.technologyid
+
+                <span class="kwrd">group</span> <span class="kwrd">by</span> tg.tagid, tg.tagname
+
+            ),
+
+             att <span class="kwrd">as</span> (
+
+                <span class="kwrd">select</span> ab.attributeid, attributename <span class="kwrd">from</span> components co
+
+                <span class="kwrd">join</span> componentsattribute ca <span class="kwrd">on</span>
+
+                co.componentid = ca.componentid
+
+                <span class="kwrd">join</span> attributes ab <span class="kwrd">on</span>
+
+                ca.attributeid = ab.attributeid
+
+                <span class="kwrd">join</span> technologydatacomponents tc
+
+                <span class="kwrd">on</span> tc.componentid = co.componentid
+
+                <span class="kwrd">group</span> <span class="kwrd">by</span> ab.attributeid
+
+            ),
+
+            comp <span class="kwrd">as</span> (
+
+            <span class="kwrd">select</span> co.componentuuid, co.componentid, co.componentname,
+
+            <span class="kwrd">case</span> <span class="kwrd">when</span> t.* <span class="kwrd">is</span> <span class="kwrd">null</span> <span class="kwrd">then</span> <span class="str">'[]'</span> <span class="kwrd">else</span> array_to_json(array_agg(t.*)) <span class="kwrd">end</span> <span class="kwrd">as</span> attributes <span class="kwrd">from</span> att t
+
+            <span class="kwrd">join</span> componentsattribute ca <span class="kwrd">on</span> t.attributeid = ca.attributeid
+
+            <span class="kwrd">right</span> <span class="kwrd">outer</span> <span class="kwrd">join</span> components co <span class="kwrd">on</span> co.componentid = ca.componentid
+
+            <span class="kwrd">group</span> <span class="kwrd">by</span> co.componentname, co.componentid, co.componentuuid, t.*
+
+            ),
+
+            techData <span class="kwrd">as</span> (
+
+                <span class="kwrd">select</span> td.technologydatauuid,
+
+                    td.technologydataname,
+
+                    tt.technologyuuid,
+
+                    td.technologydata,
+
+                    td.licensefee,
+
+                    td.productcode,
+
+                    td.technologydatadescription,
+
+                    td.technologydatathumbnail,
+
+                    td.technologydataimgref,
+
+                    td.createdat <span class="kwrd">at</span> <span class="kwrd">time</span> <span class="kwrd">zone</span> <span class="str">'utc'</span>,
+
+                    td.CreatedBy,
+
+                    td.updatedat <span class="kwrd">at</span> <span class="kwrd">time</span> <span class="kwrd">zone</span> <span class="str">'utc'</span>,
+
+                    td.UpdatedBy,
+
+                    array_to_json(array_agg(co.*)) componentlist
+
+                <span class="kwrd">from</span> comp co <span class="kwrd">join</span> technologydatacomponents tc
+
+                <span class="kwrd">on</span> co.componentid = tc.componentid
+
+                <span class="kwrd">join</span> technologydata td <span class="kwrd">on</span>
+
+                td.technologydataid = tc.technologydataid
+
+                <span class="kwrd">join</span> components cm <span class="kwrd">on</span> cm.componentid = co.componentid
+
+                <span class="kwrd">join</span> technologies tt <span class="kwrd">on</span>
+
+                tt.technologyid = td.technologyid
+
+                <span class="kwrd">where</span> (vOwnerUUID <span class="kwrd">is</span> <span class="kwrd">null</span> <span class="kwrd">OR</span> td.createdby = vOwnerUUID)
+
+                <span class="kwrd">and</span> td.deleted <span class="kwrd">is</span> <span class="kwrd">null</span>
+
+                <span class="kwrd">group</span> <span class="kwrd">by</span> td.technologydatauuid,
+
+                    td.technologydataname,
+
+                    tt.technologyuuid,
+
+                    td.technologydata,
+
+                    td.licensefee,
+
+                    td.productcode,
+
+                    td.technologydatadescription,
+
+                    td.technologydatathumbnail,
+
+                    td.technologydataimgref,
+
+                    td.createdat,
+
+                    td.createdby,
+
+                    td.updatedat,
+
+                    td.updatedby
+
+            ),
+
+            compIn <span class="kwrd">as</span> (
+
+                <span class="kwrd">select</span>    td.technologydataname, array_agg(componentuuid <span class="kwrd">order</span> <span class="kwrd">by</span> componentuuid <span class="kwrd">asc</span>) comp
+
+                <span class="kwrd">from</span> components co
+
+                <span class="kwrd">join</span> technologydatacomponents tc
+
+                <span class="kwrd">on</span> co.componentid = tc.componentid
+
+                <span class="kwrd">join</span> technologydata td <span class="kwrd">on</span>
+
+                td.technologydataid = tc.technologydataid
+
+                <span class="kwrd">where</span> td.deleted <span class="kwrd">is</span> <span class="kwrd">null</span>
+
+                <span class="kwrd">group</span> <span class="kwrd">by</span> td.technologydataname
+
+
+
+            )
+
+            <span class="kwrd">select</span> array_to_json(array_agg(td.*)) <span class="kwrd">from</span> techData    td
+
+            <span class="kwrd">join</span> compIn co <span class="kwrd">on</span> co.technologydataname = td.technologydataname
+
+            <span class="kwrd">where</span> (co.comp::text[] &lt;@ vComponents <span class="kwrd">OR</span> vComponents <span class="kwrd">is</span> <span class="kwrd">null</span>)
+
+            <span class="kwrd">and</span> (vTechnologyDataName <span class="kwrd">is</span> <span class="kwrd">null</span> <span class="kwrd">OR</span> td.technologydataname = vTechnologyDataName)
+
+
+
+        );
+
+
+
+    <span class="kwrd">ELSE</span>
+
+         RAISE <span class="kwrd">EXCEPTION</span> <span class="str">'%'</span>, <span class="str">'Insufficiency rigths'</span>;
+
+         <span class="kwrd">RETURN</span>;
+
+    <span class="kwrd">END</span> <span class="kwrd">IF</span>;
+
+
+
+    <span class="kwrd">END</span>;
+
+        $$;
+
+
+</pre></div><p style="page-break-after:always" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><br /><br /><div id="copy_url_div"><center><a href="javascript:void(0)" onclick="copyToClipboard(document.URL)">copy URL to clipboard (IE only)</a></center><br /></div><center>Documentation generated by <a target="_blank" href="http://elsasoft.com">SqlSpec</a></center></p></body></html>

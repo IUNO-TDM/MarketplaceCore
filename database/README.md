@@ -18,12 +18,18 @@
 | iuno_marketplacecore_V0009V_20171113.sql                          | 0009              | Fix Bug in function GetTechnologyDataByParams           |  [#120][i120]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0010V_20171113.sql                          | 0010              | At the moment is not possible to save the imgref on the database          |  [#101][i101]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0011V_20171122.sql                          | 0011              | Fix Bug in function GetTechnologyDataByParams           |  [#131][i131]       | [@gomarcel][igomarcel]      |
-
+| iuno_marketplacecore_V0012V_20171207.sql                          | 0012              | Create new function GetActivatedLicensesCountForUser           |  [#135][i135]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0013V_20171213.sql                          | 0013              | Update SetComponent and GetTechnologyDataByParams           |  [#138][i138]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0014V_20171218.sql                          | 0014              | Remove conversion from satoshi to bitcoin from all functions (getrevenue, getrevenuehistory, getrevenueperdayforuser, gettechnologydatahistory, gettoptechnologydata, gettotalrevenue, gettotaluserrevenue)           |  [#141][i141]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0015V_20180108.sql                          | 0015              | Update DeleteTechnologyData - It has to be proof if the user is allowed to do it.           |  [#127][i127]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0016V_20180110.sql                          | 0016              | Fix Sql Injection Issue in CreateLog Function          |  [#144][i144]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0017V_20180111.sql                          | 0017              | Corrected return value (int -> bigint) for diverse functions          |         | [@gomarcel][igomarcel]      |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
 [i35]: https://github.com/IUNO-TDM/MarketplaceCore/issues/35
 [i36]: https://github.com/IUNO-TDM/MarketplaceCore/issues/36
+[i101]: https://github.com/IUNO-TDM/MarketplaceCore/issues/101
 [i103]: https://github.com/IUNO-TDM/MarketplaceCore/issues/103
 [i110]: https://github.com/IUNO-TDM/MarketplaceCore/issues/110
 [i111]: https://github.com/IUNO-TDM/MarketplaceCore/issues/111
@@ -31,8 +37,12 @@
 [i115]: https://github.com/IUNO-TDM/MarketplaceCore/issues/115
 [i116]: https://github.com/IUNO-TDM/MarketplaceCore/issues/116
 [i120]: https://github.com/IUNO-TDM/MarketplaceCore/issues/120
-[i101]: https://github.com/IUNO-TDM/MarketplaceCore/issues/101
+[i127]: https://github.com/IUNO-TDM/MarketplaceCore/issues/127
 [i131]: https://github.com/IUNO-TDM/MarketplaceCore/issues/131
+[i135]: https://github.com/IUNO-TDM/MarketplaceCore/issues/135
+[i138]: https://github.com/IUNO-TDM/MarketplaceCore/issues/138
+[i141]: https://github.com/IUNO-TDM/MarketplaceCore/issues/141
+[i144]: https://github.com/IUNO-TDM/MarketplaceCore/issues/144
 
 
 [igomarcel]: https://github.com/gomarcel

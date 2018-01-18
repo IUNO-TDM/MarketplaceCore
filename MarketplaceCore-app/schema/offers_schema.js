@@ -33,7 +33,8 @@ self.OfferRequestBody = {
                 },
                 required: ['dataId', 'amount'],
                 additionalProperties: false
-            }
+            },
+            additionalItems: false
         },
         hsmId: {
             type: 'string',

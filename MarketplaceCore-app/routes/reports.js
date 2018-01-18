@@ -9,25 +9,35 @@ const express = require('express');
 const router = express.Router();
 const logger = require('../global/logger');
 const dbReports = require('../database/function/report');
+const dbLicenses = require('../database/function/license');
 const {Validator, ValidationError} = require('express-json-validator-middleware');
 const validator = new Validator({allErrors: true});
 const validate = validator.validate;
 const validation_schema = require('../schema/reports_schema');
+const moment = require('moment');
+const reports_helper = require('./reports_helper');
+
 
 router.get('/revenue/', validate({
     query: validation_schema.Revenue_Query,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
+
+    var from = req.query['from'];
+    var to = req.query['to'];
+    var detail = req.query['detail'];
     dbReports.GetTotalRevenue(
-        req.query['from'],
-        req.query['to'],
-        req.query['detail'],
+        from, to, detail,
         req.token.user.id,
         req.token.user.roles, function (err, data) {
             if (err) {
                 next(err);
             }
             else {
+                if(data.length){
+                    data = reports_helper.fill_gaps_total_revenue(from,to,detail, data);
+                }
+
                 res.json(data);
             }
         });
@@ -51,13 +61,17 @@ router.get('/revenue/user', validate({
         });
 });
 
+
 router.get('/revenue/technologydata/history', validate({
     query: validation_schema.History_User_Query,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
+
+    var from = req.query['from'];
+    var to = req.query['to'];
     dbReports.GetRevenueHistory(
-        req.query['from'],
-        req.query['to'],
+        from,
+        to,
         req.token.user.id,
         req.token.user.roles,
         function (err, data) {
@@ -65,7 +79,12 @@ router.get('/revenue/technologydata/history', validate({
                 next(err);
             }
             else {
+
+                if(data.length){
+                    data = reports_helper.fill_gaps_revenue_history(from,to, data);
+                }
                 res.json(data);
+
             }
         });
 });
@@ -124,6 +143,24 @@ router.get('/components/top', validate({
                 res.json(data);
             }
         });
+});
+
+router.get('/licenses/count', validate({
+    query: validation_schema.License_Count_Query,
+    body: validation_schema.Empty_Body
+}), function (req, res, next) {
+    if (req.query['activated']) {
+        dbLicenses.GetActivatedLicenseCountForUser(
+            req.query['user'],
+            req.token.user, function (err, data) {
+                if (err) {
+                    next(err);
+                }
+                else {
+                    res.json(data);
+                }
+            });
+    }
 });
 
 module.exports = router;

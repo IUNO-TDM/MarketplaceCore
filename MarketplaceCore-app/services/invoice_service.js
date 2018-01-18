@@ -6,26 +6,73 @@ var payment_service = require('./payment_service');
 var self = {};
 var license = require('./../database/function/license');
 var async = require('async');
+var vault_service = require('./bitcoinvault_service');
+var Transfer = require('../model/transfer');
+var TechnologyData = require('../database/model/technologydata')
 
-self.generateInvoice = function (userUUID, request,transaction, roles, callback) {
+var calculateLicenseFeeWithoutProvision = function (userUUID, licenseFee) {
+    return licenseFee * 0.7;
+}
+
+self.generateInvoice = function (userUUID, request, transaction, roles, callback) {
 
     var items = request.result.items;
     var totalAmount = 0;
 
 
-    var iterator = function(item, done){
-        license.GetLicenseFeeByTechnologyData(userUUID,item.technologydatauuid,roles,function (err, licenseFee) {
+    var iterator = function (item, done) {
+        license.GetLicenseFeeByTechnologyData(userUUID, item.technologydatauuid, roles, function (err, licenseFee) {
             if (err) {
-                done(err,null);
-            }else{
-                done(null,[item.amount*licenseFee]);
+                done(err, null);
+            } else {
+                TechnologyData.FindSingle(userUUID, roles, item.technologydatauuid, function (err, techData) {
+                    if (err) {
+                        done(err, null);
+                    } else {
+                        vault_service.getWalletsForUserId(techData.createdby, '4711', function (err, wallets) {
+                            //if err
+                            if (err) {
+                                done(err, null);
+                            } else {
+                                var getAddress = function (walletId) {
+                                    vault_service.getNewAddressForWallet(walletId, '4711', function (err, address) {
+                                        if (err) {
+                                            done(err);
+                                        } else {
+                                            var lf = calculateLicenseFeeWithoutProvision(techData.createdby, licenseFee);
+                                            done(null, [{fee: licenseFee, transfer: new Transfer(address, lf)}]);
+                                        }
+                                    });
+                                };
+
+                                if (!wallets || wallets.length < 1) {
+                                    //create a wallet for this user
+                                    vault_service.createWalletForUserId(techData.createdby, '4711', function (err, wId) {
+                                        if (err) {
+                                            done(err, null);
+                                        }
+                                        else {
+                                            getAddress(wId);
+                                        }
+                                    })
+                                } else {
+                                    getAddress(wallets[0]);
+                                }
+                            }
+
+                        });
+                    }
+
+                });
             }
         })
     };
 
-    async.concatSeries(items, iterator, function(err, item) {
-        for(var fee in item){
-            totalAmount += item[fee];
+    async.concatSeries(items, iterator, function (err, itemlist) {
+        var transfers = [];
+        for (var i in itemlist) {
+            totalAmount += itemlist[i].fee;
+            transfers.push(itemlist[i].transfer);
         }
         // our virtual currency IUNO represents 1 milli bitcoin
         // totalAmount *= 100000;
@@ -33,10 +80,10 @@ self.generateInvoice = function (userUUID, request,transaction, roles, callback)
 
 
         var invoice = {
-            totalAmount: totalAmount ,
+            totalAmount: totalAmount,
             referenceId: transaction.transactionuuid,
             expiration: new Date(new Date().getTime() + (2 * 60 * 60 * 1000)).toISOString(),
-            transfers: []
+            transfers: transfers
         };
 
         payment_service.createLocalInvoice(invoice, function (e, invoice) {

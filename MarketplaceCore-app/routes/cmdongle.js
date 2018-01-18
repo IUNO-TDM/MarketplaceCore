@@ -10,7 +10,7 @@ const helper = require('../services/helper_service');
 const licenseCentral = require('../adapter/license_central_adapter');
 
 router.post('/:hsmId/update', validate({
-    query: require('../schema/cmdongle_schema').LicenseUpdate_Query,
+    query: require('../schema/cmdongle_schema').Empty,
     body: require('../schema/cmdongle_schema').LicenseUpdate_Body
 }), function (req, res, next) {
 
@@ -32,7 +32,7 @@ router.post('/:hsmId/update', validate({
 });
 
 router.post('/:hsmId/update/confirm', validate({
-    query: require('../schema/cmdongle_schema').LicenseUpdate_Query,
+    query: require('../schema/cmdongle_schema').Empty,
     body: require('../schema/cmdongle_schema').LicenseUpdate_Body
 }), function (req, res, next) {
 

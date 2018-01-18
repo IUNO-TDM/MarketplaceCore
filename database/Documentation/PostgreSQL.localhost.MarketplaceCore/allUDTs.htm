@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?><html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><head xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5" /><link rel="stylesheet" href="sqlspec.css" /><title>MarketplaceCore - types</title><script language="JavaScript" src="resort_table.js"></script><script language="javascript">
+//
+// this hides the SVG if you are on IE, 
+// and hides the VML if you are NOT on IE.
+//
+function init()
+{
+  var isIE = navigator.userAgent.indexOf("MSIE") != -1;
+  showhideIfIE('FK_SVG', isIE, true);
+  showhideIfIE('DEPENDENCY_SVG', isIE, true);
+  showhideIfIE('MODEL_SVG', isIE, true); 
+  showhideIfIE('FK_VML', isIE, false);
+  showhideIfIE('DEPENDENCY_VML', isIE, false);
+  showhideIfIE('MODEL_VML', isIE, false);
+  
+  var node = document.getElementById('copy_url_div');
+  if (node != null)
+  {
+    var inChm = document.URL.indexOf('mk:@MSITStore') != -1;
+    node.style.display = inChm || !isIE ? 'none' : 'block';
+  }
+}   
+
+function showhideIfIE(elementName, isIE, hide)
+{
+  node = document.getElementById(elementName);
+  if (node != null) 
+  {
+    if (hide) 
+      node.style.display = isIE ? 'none' : 'block';
+    else
+      node.style.display = isIE ? 'block' : 'none';
+  }
+}
+
+function copyToClipboard(s)
+{
+  if(window.clipboardData)
+    if (clipboardData.setData)
+      clipboardData.setData('text', s);
+}
+</script></head><body onload="init()"><div id="nsbanner" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><div id="bannerrow1"><table class="bannerparthead" cellspacing="0" id="Table1"><tr id="hdr"><td class="runninghead">Database reference - MarketplaceCore</td><td class="product" /></tr></table></div><div id="TitleRow"><h1 class="dtH1"><a href="default.htm">MarketplaceCore</a> -         
+                    types</h1></div></div><div id="nstext"><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">type overview</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)" sortType="number">attributes</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)" sortType="number">length</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">element type</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">nullable</th></tr></thead><tbody><tr valign="top"><td><a href="udt_public_attributes.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_attributes</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.attributes 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_components.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_components</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.components 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_componentsattribute.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_componentsattribute</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.componentsattribute 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_componentstechnologies.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_componentstechnologies</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.componentstechnologies 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_dblink_pkey_results.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_dblink_pkey_results</a></td><td align="right">0</td><td align="right"> 
+                    </td><td><a href="udt_publicdblink_pkey_results.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">dblink_pkey_results</a> 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_functions.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_functions</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.functions 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_licenseorder.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_licenseorder</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.licenseorder 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_logstatus.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_logstatus</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.logstatus 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_logtable.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_logtable</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.logtable 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_offer.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_offer</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.offer 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_offerrequest.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_offerrequest</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.offerrequest 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_offerrequestitems.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_offerrequestitems</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.offerrequestitems 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_patches.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_patches</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.patches 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_payment.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_payment</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.payment 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_paymentinvoice.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_paymentinvoice</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.paymentinvoice 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_roles.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_roles</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.roles 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_rolespermissions.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_rolespermissions</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.rolespermissions 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_tags.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_tags</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.tags 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_technologies.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_technologies</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.technologies 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_technologydata.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_technologydata</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.technologydata 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_technologydatacomponents.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_technologydatacomponents</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.technologydatacomponents 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_technologydatatags.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_technologydatatags</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.technologydatatags 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_public_transactions.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">_transactions</a></td><td align="right">0</td><td align="right"> 
+                    </td><td>public.transactions 
+                    </td><td>yes</td></tr><tr valign="top"><td><a href="udt_publicdblink_pkey_results.htm" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">dblink_pkey_results</a></td><td align="right">2</td><td align="right"> 
+                    </td><td> 
+                    </td><td>yes</td></tr></tbody></table></div><p style="page-break-after:always" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><br /><br /><div id="copy_url_div"><center><a href="javascript:void(0)" onclick="copyToClipboard(document.URL)">copy URL to clipboard (IE only)</a></center><br /></div><center>Documentation generated by <a target="_blank" href="http://elsasoft.com">SqlSpec</a></center></p></body></html>

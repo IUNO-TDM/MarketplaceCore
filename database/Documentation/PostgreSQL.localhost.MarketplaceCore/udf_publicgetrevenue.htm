@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?><html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><head xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5" /><link rel="stylesheet" href="sqlspec.css" /><title>MarketplaceCore - public.getrevenue</title><script language="JavaScript" src="resort_table.js"></script><script language="javascript">
+//
+// this hides the SVG if you are on IE, 
+// and hides the VML if you are NOT on IE.
+//
+function init()
+{
+  var isIE = navigator.userAgent.indexOf("MSIE") != -1;
+  showhideIfIE('FK_SVG', isIE, true);
+  showhideIfIE('DEPENDENCY_SVG', isIE, true);
+  showhideIfIE('MODEL_SVG', isIE, true); 
+  showhideIfIE('FK_VML', isIE, false);
+  showhideIfIE('DEPENDENCY_VML', isIE, false);
+  showhideIfIE('MODEL_VML', isIE, false);
+  
+  var node = document.getElementById('copy_url_div');
+  if (node != null)
+  {
+    var inChm = document.URL.indexOf('mk:@MSITStore') != -1;
+    node.style.display = inChm || !isIE ? 'none' : 'block';
+  }
+}   
+
+function showhideIfIE(elementName, isIE, hide)
+{
+  node = document.getElementById(elementName);
+  if (node != null) 
+  {
+    if (hide) 
+      node.style.display = isIE ? 'none' : 'block';
+    else
+      node.style.display = isIE ? 'block' : 'none';
+  }
+}
+
+function copyToClipboard(s)
+{
+  if(window.clipboardData)
+    if (clipboardData.setData)
+      clipboardData.setData('text', s);
+}
+</script></head><body onload="init()"><div id="nsbanner" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><div id="bannerrow1"><table class="bannerparthead" cellspacing="0" id="Table1"><tr id="hdr"><td class="runninghead">Database reference - MarketplaceCore</td><td class="product" /></tr></table></div><div id="TitleRow"><h1 class="dtH1"><a href="default.htm">MarketplaceCore</a> -         
+                    <a href="allUDFs.htm">functions</a> -         
+                    public.getrevenue</h1></div></div><div id="nstext"><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Description</h2><span class="desc">none</span><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Function properties</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">value</th></tr></thead><tbody><tr valign="top"><td>name</td><td>public.getrevenue</td></tr><tr valign="top"><td>return type</td><td>pg_catalog.record 
+                  </td></tr><tr valign="top"><td>language</td><td>PLPGSQL</td></tr><tr valign="top"><td>deterministic</td><td>NO</td></tr></tbody></table><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Parameters</h2><table class="dtTABLE"><thead><tr valign="top"><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">name</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">datatype</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">udt</th><th style="cursor:pointer;cursor:hand;" onclick="resortColumn(this)">in/out</th></tr></thead><tbody><tr valign="top"><td>vfrom 
+                                            </td><td>timestamp with time zone 
+                                            </td><td>pg_catalog.timestamptz 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vto 
+                                            </td><td>timestamp with time zone 
+                                            </td><td>pg_catalog.timestamptz 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vtechnologydatauuid 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vcreatedby 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>vroles 
+                                            </td><td>ARRAY 
+                                            </td><td>pg_catalog._text 
+                                            </td><td>IN 
+                                            </td></tr><tr valign="top"><td>year 
+                                            </td><td>text 
+                                            </td><td>pg_catalog.text 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>month 
+                                            </td><td>text 
+                                            </td><td>pg_catalog.text 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>day 
+                                            </td><td>text 
+                                            </td><td>pg_catalog.text 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>hour 
+                                            </td><td>text 
+                                            </td><td>pg_catalog.text 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>technologydatauuid 
+                                            </td><td>uuid 
+                                            </td><td>pg_catalog.uuid 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>amount 
+                                            </td><td>integer 
+                                            </td><td>pg_catalog.int4 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>revenue 
+                                            </td><td>bigint 
+                                            </td><td>pg_catalog.int8 
+                                            </td><td>OUT 
+                                            </td></tr><tr valign="top"><td>average 
+                                            </td><td>bigint 
+                                            </td><td>pg_catalog.int8 
+                                            </td><td>OUT 
+                                            </td></tr></tbody></table><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Usage</h2><pre class="csharpcode"><span class="kwrd">result</span> = <span class="kwrd">public</span>.getrevenue(
+    my_vfrom,
+    my_vto,
+    my_vtechnologydatauuid,
+    my_vcreatedby,
+    my_vroles,
+    my_year,
+    my_month,
+    my_day,
+    my_hour,
+    my_technologydatauuid,
+    my_amount,
+    my_revenue,
+    my_average
+);</pre><h2 class="dtH2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red">Evaluation</font></h2><p xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><font color="red"><b>This is an evaluation version of SqlSpec.  If you like SqlSpec, please consider upgrading to the full version.  Upgrade here:  <a target="_blank" href="http://elsasoft.com">Upgrade</a></b></font></p><h2 class="dtH2">Code</h2><pre class="csharpcode"><span class="kwrd">CREATE</span> <span class="kwrd">FUNCTION</span> getrevenue(vfrom <span class="kwrd">timestamp</span> <span class="kwrd">with</span> <span class="kwrd">time</span> <span class="kwrd">zone</span>, vto <span class="kwrd">timestamp</span> <span class="kwrd">with</span> <span class="kwrd">time</span> <span class="kwrd">zone</span>, vtechnologydatauuid uuid, vcreatedby uuid, vroles text[]) <span class="kwrd">RETURNS</span> <span class="kwrd">TABLE</span>(<span class="kwrd">year</span> text, <span class="kwrd">month</span> text, <span class="kwrd">day</span> text, <span class="kwrd">hour</span> text, technologydatauuid uuid, amount <span class="kwrd">integer</span>, revenue bigint, average bigint)
+    <span class="kwrd">LANGUAGE</span> plpgsql
+    <span class="kwrd">AS</span> $$
+
+
+
+            <span class="kwrd">DECLARE</span>
+
+                vFunctionName <span class="kwrd">varchar</span> := <span class="str">'GetRevenue'</span>;
+
+                vIsAllowed <span class="kwrd">boolean</span> := (<span class="kwrd">select</span> <span class="kwrd">public</span>.checkPermissions(vRoles, vFunctionName));                 
+
+                vPublic text := (<span class="kwrd">select</span> t <span class="kwrd">from</span> <span class="kwrd">unnest</span>(vRoles) <span class="kwrd">as</span> t <span class="kwrd">limit</span> 1);
+
+
+
+            <span class="kwrd">BEGIN</span>
+
+
+
+            <span class="kwrd">IF</span>(vIsAllowed) <span class="kwrd">THEN</span>
+
+
+
+            <span class="kwrd">IF</span>(vPublic = <span class="str">'Public'</span>) <span class="kwrd">THEN</span> vCreatedBy := <span class="kwrd">null</span>; <span class="kwrd">END</span> <span class="kwrd">IF</span>;
+
+
+
+            <span class="kwrd">RETURN</span> QUERY ( <span class="kwrd">with</span> revenue <span class="kwrd">as</span> (
+
+                <span class="kwrd">select</span>  <span class="kwrd">case</span> <span class="kwrd">when</span> (to_char(activatedat,<span class="str">'YYYY'</span>) <span class="kwrd">is</span> <span class="kwrd">null</span>) <span class="kwrd">then</span> <span class="str">'0'</span> <span class="kwrd">else</span> to_char(activatedat,<span class="str">'YYYY'</span>) <span class="kwrd">end</span> <span class="kwrd">as</span> <span class="kwrd">Year</span>,
+
+                    <span class="kwrd">case</span> <span class="kwrd">when</span> (to_char(activatedat,<span class="str">'MM'</span>) <span class="kwrd">is</span> <span class="kwrd">null</span>) <span class="kwrd">then</span> <span class="str">'0'</span> <span class="kwrd">else</span> to_char(activatedat,<span class="str">'MM'</span>) <span class="kwrd">end</span> <span class="kwrd">as</span> <span class="kwrd">Month</span>, 
+
+                    <span class="kwrd">case</span> <span class="kwrd">when</span> (to_char(activatedat,<span class="str">'DD'</span>) <span class="kwrd">is</span> <span class="kwrd">null</span>) <span class="kwrd">then</span> <span class="str">'0'</span> <span class="kwrd">else</span> to_char(activatedat,<span class="str">'DD'</span>) <span class="kwrd">end</span> <span class="kwrd">as</span> <span class="kwrd">Day</span>, 
+
+                    <span class="kwrd">case</span> <span class="kwrd">when</span> (to_char(activatedat,<span class="str">'HH24'</span>) <span class="kwrd">is</span> <span class="kwrd">null</span>) <span class="kwrd">then</span> <span class="str">'0'</span> <span class="kwrd">else</span> to_char(activatedat,<span class="str">'HH24'</span>) <span class="kwrd">end</span> <span class="kwrd">as</span> <span class="kwrd">Hour</span>,                     
+
+                    <span class="kwrd">coalesce</span>(td.technologydatauuid,<span class="str">'00000000-0000-0000-0000-000000000000'</span>) <span class="kwrd">as</span> technologydatauuid, 
+
+                    <span class="kwrd">sum</span>(ri.amount) <span class="kwrd">as</span> amount, 
+
+                    (<span class="kwrd">sum</span>(td.licensefee*ri.amount))::bigint <span class="kwrd">as</span> revenue,
+
+                    (<span class="kwrd">AVG</span>(td.licensefee*ri.amount))::bigint <span class="kwrd">as</span> average    
+
+                <span class="kwrd">from</span> transactions ts
+
+                    <span class="kwrd">join</span> licenseorder lo
+
+                    <span class="kwrd">on</span> ts.licenseorderid = lo.licenseorderid
+
+                    <span class="kwrd">join</span> offerrequest oq
+
+                    <span class="kwrd">on</span> oq.offerrequestid = ts.offerrequestid
+
+                    <span class="kwrd">join</span> offerrequestitems ri
+
+                    <span class="kwrd">on</span> ri.offerrequestid = oq.offerrequestid
+
+                    <span class="kwrd">join</span> technologydata td            
+
+                    <span class="kwrd">on</span> ri.technologydataid = td.technologydataid     
+
+                    <span class="kwrd">where</span> (vcreatedby <span class="kwrd">is</span> <span class="kwrd">null</span> <span class="kwrd">or</span> td.createdby = vcreatedby)
+
+                    <span class="kwrd">and</span> (activatedat <span class="kwrd">between</span> vFrom <span class="kwrd">and</span> vTo)            
+
+                    <span class="kwrd">group</span> <span class="kwrd">by</span> <span class="kwrd">CUBE</span> (to_char(activatedat,<span class="str">'YYYY'</span>), 
+
+                            to_char(activatedat,<span class="str">'MM'</span>), 
+
+                            to_char(activatedat,<span class="str">'DD'</span>), 
+
+                            to_char(activatedat,<span class="str">'HH24'</span>), 
+
+                            td.technologydatauuid)
+
+                    <span class="kwrd">order</span> <span class="kwrd">by</span> to_char(activatedat,<span class="str">'YYYY'</span>) <span class="kwrd">asc</span>, 
+
+                            to_char(activatedat,<span class="str">'MM'</span>) <span class="kwrd">asc</span>, 
+
+                            to_char(activatedat,<span class="str">'DD'</span>) <span class="kwrd">asc</span>, 
+
+                            to_char(activatedat,<span class="str">'HH24'</span>) <span class="kwrd">asc</span>, 
+
+                            td.technologydatauuid <span class="kwrd">asc</span>,
+
+                            amount <span class="kwrd">desc</span>
+
+                )
+
+                <span class="kwrd">select</span>    r.<span class="kwrd">year</span>::text, 
+
+                    r.<span class="kwrd">month</span>::text,
+
+                    r.<span class="kwrd">day</span>::text,
+
+                    r.<span class="kwrd">hour</span>::text,
+
+                    r.technologydatauuid,
+
+                    r.Amount::<span class="kwrd">integer</span>,
+
+                    r.Revenue::bigint,
+
+                    r.Average::bigint
+
+                <span class="kwrd">from</span> revenue r  
+
+                <span class="kwrd">where</span> (vTechnologyDataUUID <span class="kwrd">is</span> <span class="kwrd">null</span> <span class="kwrd">or</span> r.technologydatauuid = vTechnologyDataUUID)
+
+                );
+
+            <span class="kwrd">ELSE</span>
+
+                 RAISE <span class="kwrd">EXCEPTION</span> <span class="str">'%'</span>, <span class="str">'Insufficiency rigths'</span>;
+
+                 <span class="kwrd">RETURN</span>;
+
+            <span class="kwrd">END</span> <span class="kwrd">IF</span>;
+
+
+
+            <span class="kwrd">END</span>;
+
+        $$;
+
+
+</pre></div><p style="page-break-after:always" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><br /><br /><div id="copy_url_div"><center><a href="javascript:void(0)" onclick="copyToClipboard(document.URL)">copy URL to clipboard (IE only)</a></center><br /></div><center>Documentation generated by <a target="_blank" href="http://elsasoft.com">SqlSpec</a></center></p></body></html>

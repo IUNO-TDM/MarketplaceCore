@@ -1,0 +1,345 @@
+<HTML><HEAD><!-- Sitemap 1.0 --></HEAD><BODY>
+<OBJECT type="text/site properties"><param name="ImageType" value="Folder"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="localhost.MarketplaceCore (PostgreSQL)"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\default.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Tables"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\allTables.htm"/></OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public"/></OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="attributes"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publicattributes.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="components"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publiccomponents.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="componentsattribute"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publiccomponentsattribute.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="componentstechnologies"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publiccomponentstechnologies.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="functions"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publicfunctions.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="licenseorder"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publiclicenseorder.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="logstatus"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publiclogstatus.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="logtable"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publiclogtable.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="offer"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publicoffer.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="offerrequest"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publicofferrequest.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="offerrequestitems"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publicofferrequestitems.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="patches"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publicpatches.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="payment"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publicpayment.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="paymentinvoice"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publicpaymentinvoice.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="roles"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publicroles.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="rolespermissions"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publicrolespermissions.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="tags"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publictags.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="technologies"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publictechnologies.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="technologydata"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publictechnologydata.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="technologydatacomponents"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publictechnologydatacomponents.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="technologydatatags"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publictechnologydatatags.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="transactions"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\table_publictransactions.htm"></param></OBJECT>
+</LI>
+</UL></LI>
+</UL></LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Functions"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\allUDFs.htm"/></OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public"/></OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="checkpermissions"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccheckpermissions.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createattribute"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreateattribute.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createcomponent"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatecomponent.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createcomponentsattribute"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatecomponentsattribute.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createcomponentstechnologies"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatecomponentstechnologies.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createlicenseorder"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatelicenseorder.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createlog"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatelog.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createoffer"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreateoffer.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createofferrequest"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreateofferrequest.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createpaymentinvoice"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatepaymentinvoice.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createrole"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreaterole.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createtag"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatetag.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createtechnology"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatetechnology.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createtechnologydata"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatetechnologydata.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createtechnologydatacomponents"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatetechnologydatacomponents.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="createtechnologydatatags"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publiccreatetechnologydatatags.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="datediff"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicdatediff.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="deletetechnologydata"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicdeletetechnologydata.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getactivatedlicensescountforuser"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetactivatedlicensescountforuser.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getallattributes"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetallattributes.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getallcomponents"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetallcomponents.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getalloffers"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetalloffers.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getalltags"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetalltags.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getalltechnologies"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetalltechnologies.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getalltechnologydata"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetalltechnologydata.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getattributebyid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetattributebyid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getattributebyname"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetattributebyname.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getcomponentbyid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetcomponentbyid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getcomponentbyname"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetcomponentbyname.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getcomponentsbytechnology"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetcomponentsbytechnology.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getcomponentsfortechnologydataid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetcomponentsfortechnologydataid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getlicensefeebytechnologydata"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetlicensefeebytechnologydata.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getlicensefeebytransaction"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetlicensefeebytransaction.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getnewproductcode"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetnewproductcode.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getofferbyid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetofferbyid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getofferbyrequestid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetofferbyrequestid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getofferforpaymentinvoice"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetofferforpaymentinvoice.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getofferforticket"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetofferforticket.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getofferfortransaction"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetofferfortransaction.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getofferrequestbyid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetofferrequestbyid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getpaymentinvoiceforofferrequest"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetpaymentinvoiceforofferrequest.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getrevenue"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetrevenue.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getrevenuehistory"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetrevenuehistory.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="getrevenueperdayforuser"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgetrevenueperdayforuser.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettagbyid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettagbyid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettagbyname"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettagbyname.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettechnologybyid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettechnologybyid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettechnologybyname"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettechnologybyname.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettechnologydatabyid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettechnologydatabyid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettechnologydatabyname"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettechnologydatabyname.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettechnologydatabyofferrequest"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettechnologydatabyofferrequest.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettechnologydatabyparams"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettechnologydatabyparams.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettechnologydataforuser"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettechnologydataforuser.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettechnologydatahistory"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettechnologydatahistory.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettechnologydataownerbyid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettechnologydataownerbyid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettechnologyforofferrequest"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettechnologyforofferrequest.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettopcomponents"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettopcomponents.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettoptechnologydata"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettoptechnologydata.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettotalrevenue"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettotalrevenue.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettotaluserrevenue"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettotaluserrevenue.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettransactionbyid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettransactionbyid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="gettransactionbyofferrequest"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicgettransactionbyofferrequest.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="setcomponent"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicsetcomponent.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="setpayment"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicsetpayment.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="setpaymentinvoiceoffer"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicsetpaymentinvoiceoffer.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="setpermission"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicsetpermission.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="settechnologydata"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udf_publicsettechnologydata.htm"></param></OBJECT>
+</LI>
+</UL></LI>
+</UL></LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Types"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\allUDTs.htm"/></OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public"/></OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_attributes"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_attributes.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_components"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_components.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_componentsattribute"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_componentsattribute.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_componentstechnologies"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_componentstechnologies.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_dblink_pkey_results"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_dblink_pkey_results.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_functions"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_functions.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_licenseorder"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_licenseorder.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_logstatus"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_logstatus.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_logtable"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_logtable.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_offer"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_offer.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_offerrequest"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_offerrequest.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_offerrequestitems"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_offerrequestitems.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_patches"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_patches.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_payment"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_payment.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_paymentinvoice"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_paymentinvoice.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_roles"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_roles.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_rolespermissions"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_rolespermissions.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_tags"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_tags.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_technologies"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_technologies.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_technologydata"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_technologydata.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_technologydatacomponents"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_technologydatacomponents.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_technologydatatags"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_technologydatatags.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="_transactions"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_public_transactions.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="dblink_pkey_results"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\udt_publicdblink_pkey_results.htm"></param></OBJECT>
+</LI>
+</UL></LI>
+</UL></LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Schemas"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\allSchemas.htm"/></OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="pg_toast_temp_1"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\schema_pg_toast_temp_1.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\schema_public.htm"></param></OBJECT>
+</LI>
+</UL></LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Indexes"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\allIndexes.htm"/></OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.attribubes_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publicattribubes_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.attributes__un"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publicattributes__un.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.components__un"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publiccomponents__un.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.components_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publiccomponents_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.componentsattribute_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publiccomponentsattribute_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.componentstechnologies_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publiccomponentstechnologies_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.functions_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publicfunctions_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.licenseorder_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publiclicenseorder_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.logstatus_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publiclogstatus_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.logtable_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publiclogtable_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.offer_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publicoffer_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.offerrequest_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publicofferrequest_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.offerrequestitems_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publicofferrequestitems_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.payment_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publicpayment_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.paymentinvoice_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publicpaymentinvoice_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.roles_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publicroles_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.rolespermissions_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publicrolespermissions_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.tags_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publictags_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.technologies__un"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publictechnologies__un.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.technologies_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publictechnologies_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.technologydata_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publictechnologydata_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.technologydatacomponents_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publictechnologydatacomponents_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.technologydatatag_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publictechnologydatatag_pk.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.transactions_pk"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\index_publictransactions_pk.htm"></param></OBJECT>
+</LI>
+</UL></LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sequences"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\allSequences.htm"/></OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.attributeid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publicattributeid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.componentid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publiccomponentid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.functionid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publicfunctionid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.licenseorderid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publiclicenseorderid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.logid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publiclogid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.offerid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publicofferid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.offerrequestid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publicofferrequestid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.offerrequestitemid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publicofferrequestitemid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.paymentid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publicpaymentid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.paymentinvoiceid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publicpaymentinvoiceid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.productcode"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publicproductcode.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.roleid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publicroleid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.tagid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publictagid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.technologydataid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publictechnologydataid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.technologyid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publictechnologyid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.transactionid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publictransactionid.htm"></param></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="public.userid"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\sequence_publicuserid.htm"></param></OBJECT>
+</LI>
+</UL></LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="All table columns"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\allTableColumns.htm"/></OBJECT></LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="All procedure parameters"/><param name="Local" value="PostgreSQL.localhost.MarketplaceCore\allProcedureParameters.htm"/></OBJECT></LI>
+</UL></LI></UL></BODY></HTML>
