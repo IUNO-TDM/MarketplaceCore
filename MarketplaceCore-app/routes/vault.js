@@ -1,10 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const logger = require('../global/logger');
-const validate = require('express-jsonschema').validate;
 
+
+
+
+
+
+const {Validator, ValidationError} = require('express-json-validator-middleware');
+const validator = new Validator({allErrors: true});
 const validation_schema = require('../schema/vault_schema');
+const validate = validator.validate;
+
+
 const vault_service = require('../services/bitcoinvault_service');
+
 
 var async = require('async');
 
@@ -89,7 +99,7 @@ router.post('/users/:userId/wallets/:walletId/payouts', validate({
         } else {
             vault_service.payoutCredit(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
                 if (err) {
-                    res.status(500).send(err);
+                    res.status(500).send(payout);
                 } else {
                     res.send(payout);
                 }
