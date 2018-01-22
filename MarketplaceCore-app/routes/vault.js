@@ -99,7 +99,12 @@ router.post('/users/:userId/wallets/:walletId/payouts', validate({
         } else {
             vault_service.payoutCredit(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
                 if (err) {
-                    res.status(500).send(payout);
+                    if(err.statusCode){
+                        res.status(err.statusCode).send(payout);
+                    }else{
+
+                        res.status(500).send(payout);
+                    }
                 } else {
                     res.send(payout);
                 }
