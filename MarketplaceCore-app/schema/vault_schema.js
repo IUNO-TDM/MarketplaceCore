@@ -15,7 +15,7 @@ self.Payout = {
         },
         payoutAddress:{
             type: 'string',
-            pattern: '[a-zA-Z1-9]{27,35}$'
+            pattern: '^[mn2][a-km-zA-HJ-NP-Z1-9]{33}$'
         },
         amount:{
             type: 'integer',
