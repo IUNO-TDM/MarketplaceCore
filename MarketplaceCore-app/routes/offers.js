@@ -40,11 +40,12 @@ router.post('/', validate({
     body: validation_schema.OfferRequestBody
 }), function (req, res, next) {
 
-    var userUUID = req.token.user.id;
-    var requestData = req.body;
-    var roles = req.token.user.roles;
+    const userUUID = req.token.user.id;
+    const clientUUID = req.token.client.id;
+    const requestData = req.body;
+    const roles = req.token.user.roles;
 
-    offerRequest.CreateOfferRequest(userUUID, roles, requestData, function (err, offerRequest) {
+    offerRequest.CreateOfferRequest(userUUID, clientUUID, roles, requestData, function (err, offerRequest) {
         if (err) {
             next(err);
         } else {
