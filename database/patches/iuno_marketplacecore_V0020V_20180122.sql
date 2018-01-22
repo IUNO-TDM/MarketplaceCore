@@ -20,7 +20,7 @@
 -- 	1) Why is this Patch necessary?
 --  At the moment there are function which have to many permissions. This patch correct it.
 -- 	2) Which Git Issue Number is this patch solving?
---  #110
+--  #111
 -- 	3) Which changes are going to be done?
 --  Delete role permissions for diverse functions
 --: Run Patches
@@ -31,9 +31,9 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V0019V_20180122';
-		PatchNumber int 		 	 := 0019;
-		PatchDescription varchar 	 := 'Fixes #110: Delete role permissions for diverse functions';
+		PatchName varchar		 	 := 'iuno_marketplacecore_V0020V_20180122';
+		PatchNumber int 		 	 := 0020;
+		PatchDescription varchar 	 := 'Fixes #111: Drop unused or unnecessary functions';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN
@@ -52,54 +52,15 @@ $$;
 DO
 $$
 		DECLARE
-			vPatchNumber int := 0019;
-			vTechnologyDataOwnerID int := (select roleid from roles where rolename = 'TechnologyDataOwner');
-			vMachineOperatorID int := (select roleid from roles where rolename = 'MachineOperator');
-			vTechnologyAdminID int := (select roleid from roles where rolename = 'TechnologyAdmin');
+			vPatchNumber int := 0020;
 		BEGIN
 	----------------------------------------------------------------------------------------------------------------------------------------
 
-                -- DELETE TechnologyDataOwner Permissions for the functions:
-                -- 1: CreateComponent
-                -- 2: CreateComponentsAttribute
-                -- 3: CreateComponentsTechnologies
-                -- 4: GetAllUsers
-                -- 5: GetComponentsByTechnology
-                -- 6: GetComponentsForTechnologyDataId
-                -- 7: SetComponent
+                DROP FUNCTION public.gettechnologydataownerbyid(uuid, uuid, text[]);
 
-                delete from rolespermissions where roleid = vTechnologyDataOwnerID and
-                functionid in (select functionid from functions where functionname in (
-                'CreateComponent',
-                'CreateComponentsAttribute',
-                'CreateComponentsTechnologies',
-                'GetAllUsers',
-                'GetComponentsByTechnology',
-                'GetComponentsForTechnologyDataId',
-                'SetComponent'
-                ));
+                DROP FUNCTION public.getofferforpaymentinvoice(uuid, uuid, text[]);
 
-                -- DELETE TechnologyAdmin Permissions for the functions:
-                -- 1: DeleteTechnologyData
-
-                delete from rolespermissions where roleid = vTechnologyAdminID and
-                functionid in (select functionid from functions where functionname in (
-                'DeleteTechnologyData'
-                ));
-
-                -- DELETE MachineOperator Permissions for the functions:
-                -- 1: DeleteTechnologyData
-                -- 2: GetAllUsers
-                -- 3: SetPayment
-                -- 4: SetTechnologyData
-
-                delete from rolespermissions where roleid = vMachineOperatorID and
-                functionid in (select functionid from functions where functionname in (
-                'DeleteTechnologyData',
-                'GetAllUsers',
-                'SetPayment',
-                'SetTechnologyData'
-                ));
+                DROP FUNCTION public.getofferbyrequestid(uuid, uuid, text[]);
 
         ----------------------------------------------------------------------------------------------------------------------------------------
         -- UPDATE patch table status value

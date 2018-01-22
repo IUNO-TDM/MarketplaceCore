@@ -25,6 +25,8 @@
 | iuno_marketplacecore_V0016V_20180110.sql                          | 0016              | Fix Sql Injection Issue in CreateLog Function                                                         |  [#144][i144]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0017V_20180111.sql                          | 0017              | Corrected return value (int -> bigint) for diverse functions                                          |                     | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0018V_20180122.sql                          | 0018              | Fixes #149: Distinguish between useruuid and clientuuid in offerrequest                               |  [#149][i149]       | [@mbeuttler][imbeuttler]      |
+| iuno_marketplacecore_V0019V_20180122.sql                          | 0019              | Fixes #110: Delete role permissions for diverse functions                                             |  [#110][i110w]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0020V_20180122.sql                          | 0020              | Fixes #111: Drop unsed or unnecessary functions                                                       |  [#111][i111w]       | [@gomarcel][igomarcel]      |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
@@ -33,6 +35,8 @@
 [i101]: https://github.com/IUNO-TDM/MarketplaceCore/issues/101
 [i103]: https://github.com/IUNO-TDM/MarketplaceCore/issues/103
 [i110]: https://github.com/IUNO-TDM/MarketplaceCore/issues/110
+[i110w]: https://github.com/IUNO-TDM/JuiceMarketplaceWebsite/issues/110
+[i111w]: https://github.com/IUNO-TDM/JuiceMarketplaceWebsite/issues/111
 [i111]: https://github.com/IUNO-TDM/MarketplaceCore/issues/111
 [i112]: https://github.com/IUNO-TDM/MarketplaceCore/issues/112
 [i115]: https://github.com/IUNO-TDM/MarketplaceCore/issues/115
