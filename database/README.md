@@ -27,6 +27,7 @@
 | iuno_marketplacecore_V0018V_20180122.sql                          | 0018              | Fixes #149: Distinguish between useruuid and clientuuid in offerrequest                               |  [#149][i149]       | [@mbeuttler][imbeuttler]      |
 | iuno_marketplacecore_V0019V_20180122.sql                          | 0019              | Fixes #110: Delete role permissions for diverse functions                                             |  [#110][i110w]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0020V_20180122.sql                          | 0020              | Fixes #111: Drop unsed or unnecessary functions                                                       |  [#111][i111w]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0021V_20180124.sql                          | 0021              | Drop function GetOfferForTicket as well as the column TicketId in the Table LicenseOrder. Update CreateLicenseOrder function |  [#148][i148]       | [@gomarcel][igomarcel]      |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
@@ -48,6 +49,7 @@
 [i138]: https://github.com/IUNO-TDM/MarketplaceCore/issues/138
 [i141]: https://github.com/IUNO-TDM/MarketplaceCore/issues/141
 [i144]: https://github.com/IUNO-TDM/MarketplaceCore/issues/144
+[i148]: https://github.com/IUNO-TDM/MarketplaceCore/issues/148
 [i149]: https://github.com/IUNO-TDM/MarketplaceCore/issues/149
 
 
