@@ -100,7 +100,7 @@ router.post('/users/:userId/wallets/:walletId/payouts', validate({
             vault_service.payoutCredit(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
                 if (err) {
                     if(err.statusCode){
-                        res.status(err.statusCode).send(payout);
+                        res.status(err.statusCode).send(err.message);
                     }else{
 
                         res.status(500).send(payout);
