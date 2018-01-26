@@ -110,9 +110,9 @@ update functions set isowner =  true  where functionname = 'GetTotalUserRevenue'
 update functions set isowner =  true  where functionname = 'GetWorkloadSinceForUser'; 
 
 -- 4. Set keys for users
-INSERT INTO userkeys (useruuid, keys) values ('86912144-2cf4-4071-a9c9-be2d42e67d6a','{6,7,8,9,10,11,14,15,16,17,18,20,21,22,23,24,25,29}'); -- Admin
-INSERT INTO userkeys (useruuid, keys) values ('978f5a7e-d5c2-4591-80c6-8f85ea4872ce','{1,13,19,24,27}'); -- MarketplaceCoreUser
-INSERT INTO userkeys (useruuid, keys) values ('5e5d4ebc-7985-45e4-93c2-ca5572b6947e','{2,3,4,7,8,9,10,11,14,15,16,18,20,21,23,25,28}'); -- MixerControl 
+INSERT INTO userkeys (useruuid, keys) values ('adb4c297-45bd-437e-ac90-9179eea41730','{6,7,8,9,10,11,14,15,16,17,18,20,21,22,23,24,25,29}'); -- Admin
+INSERT INTO userkeys (useruuid, keys) values ('adb4c297-45bd-437e-ac90-9179eea41735','{1,13,19,24,27}'); -- MarketplaceCoreUser
+INSERT INTO userkeys (useruuid, keys) values ('adb4c297-45bd-437e-ac90-9179eea41736','{2,3,4,7,8,9,10,11,14,15,16,18,20,21,23,25,28}'); -- MixerControlUser
 -- 5. Improve CheckPermissions Functions
 DROP FUNCTION public.checkpermissions(text[], character varying);
 
