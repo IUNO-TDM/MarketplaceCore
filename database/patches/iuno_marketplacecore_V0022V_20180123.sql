@@ -18,11 +18,11 @@
 --#######################################################################################################
 -- PUT YOUR STATEMENTS HERE:
 -- 	1) Why is this Patch necessary?
---  TicketID is not used
+--  Enhance the database access control
 -- 	2) Which Git Issue Number is this patch solving?
---  #148
+--  #127
 -- 	3) Which changes are going to be done?
---  Drop function GetOfferForTicket as well as the column TicketId in the Table LicenseOrder. Update CreateLicenseOrder function
+--  Update all functions due to the checkpermissions update.
 --: Run Patches
 ------------------------------------------------------------------------------------------------
 --##############################################################################################
@@ -31,9 +31,9 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V0021V_20180124';
-		PatchNumber int 		 	 := 0021;
-		PatchDescription varchar 	 := 'Fixes #148: Drop function GetOfferForTicket as well as the column TicketId in the Table LicenseOrder. Update CreateLicenseOrder function';
+		PatchName varchar		 	 := 'iuno_marketplacecore_V0022V_20180126';
+		PatchNumber int 		 	 := 0022;
+		PatchDescription varchar 	 := 'Update all functions due to the checkpermissions update.';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN
@@ -52,7 +52,7 @@ $$;
 DO
 $$
 		DECLARE
-			vPatchNumber int := 0021;
+			vPatchNumber int := 0022;
 		BEGIN
 -- #########################################################################################################################################
 
