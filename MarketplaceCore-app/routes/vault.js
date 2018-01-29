@@ -99,7 +99,43 @@ router.post('/users/:userId/wallets/:walletId/payouts', validate({
         } else {
             vault_service.payoutCredit(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
                 if (err) {
-                    res.status(500).send(payout);
+                    if(err.statusCode){
+                        res.status(err.statusCode).send(err.message);
+                    }else{
+
+                        res.status(500).send(payout);
+                    }
+                } else {
+                    res.send(payout);
+                }
+            });
+        }
+    });
+
+});
+
+router.post('/users/:userId/wallets/:walletId/payouts/check', validate({
+    query: validation_schema.Empty,
+    body: validation_schema.Payout
+}), function (req, res, next) {
+    var userId = req.param('userId');
+    var walletId = req.param('walletId');
+    var payout = req.body;
+    vault_service.getWalletsForUserId(userId, '4711', function (err, wallets) {
+        if (err) {
+            res.sendStatus(400);
+        }
+        else if (wallets.indexOf(walletId) == 1) {
+            res.status(404).send('The wallet does not exist or does not own this user');
+        } else {
+            vault_service.checkPayout(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
+                if (err) {
+                    if(err.statusCode){
+                        res.status(err.statusCode).send(err.message);
+                    }else{
+
+                        res.status(500).send(payout);
+                    }
                 } else {
                     res.send(payout);
                 }

@@ -112,7 +112,12 @@ logger.logRequestAndResponse = function (err, options, res, data) {
     }
     else if (res && res.statusCode >= 400) {
         logger.warn(loggerOutput);
-        return new Error(res.statusMessage);
+        let e = new Error(res.statusMessage);
+        if(data && data.message){
+            e.message = data.message;
+        }
+        e.statusCode = res.statusCode;
+        return e;
     }
     else {
         logger.debug(loggerOutput);
