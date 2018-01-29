@@ -36,5 +36,4 @@ self.Payout = {
         'amount', 'payoutAddress', 'emptyWallet'
     ]
 };
-
 module.exports = self;
