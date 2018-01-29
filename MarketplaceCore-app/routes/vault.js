@@ -83,6 +83,25 @@ router.get('/users/:userId/wallets', validate({
     })
 });
 
+router.get('/users/:userId/wallets/:walletId', validate({
+    query: validation_schema.Empty,
+    body: validation_schema.Empty
+}), function (req, res, next) {
+
+    walletId = req.param('walletId');
+    vault_service.getCreditForWallet(walletId, '4711', function (err, unconfirmed) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            vault_service.getConfirmedCreditForWallet(walletId, '4711', function (err, confirmed) {
+                res.status(200).send( {walletId: walletId, unconfirmed: unconfirmed, confirmed: confirmed});
+            });
+
+        }
+
+    });
+});
+
 router.post('/users/:userId/wallets/:walletId/payouts', validate({
     query: validation_schema.Empty,
     body: validation_schema.Payout
