@@ -4,7 +4,7 @@ const USER = require('../../config/config_loader').USER;
 let self = {};
 
 self.GetNewProductCode = function (userUUID, callback) {
-    db.func('GetNewProductCode', [userUUID, USER.roles])
+    db.func('GetNewProductCode', [USER.roles])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];
