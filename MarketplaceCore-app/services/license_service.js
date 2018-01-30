@@ -55,7 +55,7 @@ payment_service.on('StateChange', function (data) {
                                             return callback(err);
                                         }
 
-                                        dbLicence.CreateLicenseOrder(null, transaction.offeruuid, config.USER, function (err, data) {
+                                        dbLicence.CreateLicenseOrder(transaction.offeruuid, config.USER, function (err, data) {
                                             if (!err) {
                                                 license_service.emit('updateAvailable', data.offeruuid, offerRequest.hsmid);
                                             }
