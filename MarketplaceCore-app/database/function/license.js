@@ -7,8 +7,8 @@ const db = require('../db_connection');
 let self = {};
 
 
-self.CreateLicenseOrder = function (ticketId, offerUUID, user, callback) {
-    db.func('CreateLicenseOrder', [ticketId, offerUUID, user.uuid, user.roles])
+self.CreateLicenseOrder = function (offerUUID, user, callback) {
+    db.func('CreateLicenseOrder', [null, offerUUID, user.uuid, user.roles])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];

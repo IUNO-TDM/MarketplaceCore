@@ -620,6 +620,71 @@
           },
           "404": {
             "description": "the user is unknown"
+          },
+          "409": {
+            "description": "the wallet balance is to low for this"
+          }
+        }
+      }
+    }
+  },
+    "/vault/users/{userId}/wallets/{walletId}/payouts/check": {
+      "post": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "check a payout at the vault for a user and its wallet",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "the user id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "walletId",
+            "in": "path",
+            "description": "the wallet id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userUUID",
+            "in": "query",
+            "description": "system client userid used for authorization",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "the payout to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Payout"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the created Payout",
+            "schema": {
+              "$ref": "#/definitions/PayoutCheck"
+            }
+          },
+          "404": {
+            "description": "the user is unknown"
+          },
+          "409": {
+            "description": "the Wallet balance is to low",
+            "schema": {
+              "$ref": "#/definitions/PayoutCheck"
+            }
           }
         }
       }
@@ -648,6 +713,20 @@
         "referenceId": {
           "type": "string",
           "description": "a place to put describing information"
+        }
+      }
+    },
+    "PayoutCheck": {
+      "description": "The result object of payout checks",
+      "type": "object",
+      "properties": {
+        "fee": {
+          "type": "integer",
+          "format": "long"
+        },
+        "remaining": {
+          "type": "integer",
+          "format": "long"
         }
       }
     },

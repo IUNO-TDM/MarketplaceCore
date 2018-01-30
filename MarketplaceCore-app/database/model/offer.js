@@ -40,36 +40,5 @@ Offer.prototype.FindSingle = Offer.FindSingle = function (userUUID, roles, id, c
         });
 };
 
-Offer.prototype.FindByRequest = Offer.FindByRequest = function (userUUID, offerRequestUUID, callback) {
-
-    db.func('GetOfferByRequestID', [offerRequestUUID, userUUID])
-        .then(function (data) {
-            if (data && data.length) {
-                data = data[0];
-            }
-            callback(null, new Offer(data));
-        })
-        .catch(function (error) {
-            logger.crit(error);
-            callback(error);
-        });
-};
-
-Offer.prototype.FindByPaymentInvoice = Offer.FindByPaymentInvoice = function (userUUID, paymentInvoiceUUID, callback) {
-
-    db.func('GetOfferForPaymentInvoice', [paymentInvoiceUUID, userUUID])
-        .then(function (data) {
-            if (data && data.length) {
-                data = data[0];
-            }
-            callback(null, new Offer(data));
-        })
-        .catch(function (error) {
-            logger.crit(error);
-            callback(error);
-        });
-};
-
-
 
 module.exports = Offer;
