@@ -218,6 +218,36 @@ bitcoinVaultService.payoutCredit = function(walletId, amount, address, accessTok
     });
 };
 
+bitcoinVaultService.checkPayout = function(walletId, amount, address, accessToken,emptyWallet,referenceId, callback){
+    if (typeof(callback) !== 'function') {
+
+        callback = function () {
+            logger.info('Callback not registered');
+        }
+    }
+
+    var options = buildOptionsForRequest(
+        'POST',
+        config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
+        config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
+        config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
+        '/v1/wallets/'+walletId + '/payouts/check?accessToken='+accessToken
+    );
+
+    options.body = {
+        "payoutId": "",
+        "payoutAddress": address,
+        "amount":amount,
+        "emptyWallet":emptyWallet,
+        "referenceId":referenceId
+    };
+
+    request(options, function (e, r, payout) {
+        var err = logger.logRequestAndResponse(e, options, r, payout);
+        callback(err, payout);
+    });
+};
+
 bitcoinVaultService.getPayout = function(walletId, payoutId, accessToken, callback){
     if (typeof(callback) !== 'function') {
 
