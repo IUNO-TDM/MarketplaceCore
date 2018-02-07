@@ -3126,6 +3126,69 @@ $BODY$
 	  $BODY$
   LANGUAGE plpgsql;
 -- #########################################################################################################################################
+    CREATE OR REPLACE FUNCTION public.createpaymentinvoice(
+        IN vinvoice character varying,
+        IN vofferrequestuuid uuid,
+        IN vuseruuid uuid,
+        IN vroles text[])
+      RETURNS TABLE(paymentinvoiceuuid uuid, offerrequestuuid uuid, invoice character varying, createdat timestamp with time zone, createdby uuid) AS
+    $BODY$
+        #variable_conflict use_column
+        DECLARE vPaymentInvoiceID integer := (select nextval('PaymentInvoiceID'));
+            vPaymentInvoiceUUID uuid := (select uuid_generate_v4());
+            vOfferReqID integer := (select offerrequestid from offerrequest where offerrequestuuid = vOfferRequestUUID);
+            vTransactionID integer := (select transactionid from transactions where offerrequestid = vOfferReqID);
+            vFunctionName varchar := 'CreatePaymentInvoice';
+            vIsAllowed boolean := (select public.checkPermissions(vuseruuid, vRoles, vFunctionName));
+
+        BEGIN
+
+        IF(vIsAllowed) THEN
+            INSERT INTO PaymentInvoice(PaymentInvoiceID, PaymentInvoiceUUID, OfferRequestID, Invoice, CreatedBy, CreatedAt)
+            VALUES(vPaymentInvoiceID, vPaymentInvoiceUUID, vOfferReqID, vInvoice, vUserUUID, now());
+
+            -- Update Transactions table
+            UPDATE Transactions SET PaymentInvoiceID = vPaymentInvoiceID, UpdatedAt = now(), UpdatedBy = vUserUUID
+            WHERE TransactionID = vTransactionID;
+
+        ELSE
+             RAISE EXCEPTION '%', 'Insufficiency rigths';
+             RETURN;
+        END IF;
+            -- Begin Log if success
+            perform public.createlog(0,'Created PaymentInvoice sucessfully', 'CreatePaymentInvoice',
+                                    'PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar)
+                    || ', OfferRequestID: ' || cast(vOfferReqID as varchar)
+                    || ', Invoice: ' || coalesce(vInvoice, 'Empty')
+                    || ', CreatedBy: ' || cast(vuseruuid as varchar));
+
+            -- End Log if success
+            -- Return
+            RETURN QUERY (
+            select	pi.PaymentInvoiceUUID,
+                oq.OfferRequestUUID,
+                pi.Invoice,
+                pi.CreatedAt at time zone 'utc',
+                pi.CreatedBy
+            from paymentinvoice pi
+            join offerrequest oq
+            on pi.offerrequestid = oq.offerrequestid
+            where pi.paymentinvoiceuuid = vPaymentInvoiceUUID
+            );
+
+            exception when others then
+            -- Begin Log if error
+            perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'CreatePaymentInvoice',
+                                    'PaymentInvoiceID: ' || cast(vPaymentInvoiceID as varchar)
+                    || ', OfferRequestID: ' || cast(vOfferReqID as varchar)
+                    || ', Invoice: ' || coalesce(vInvoice, 'Empty')
+                    || ', CreatedBy: ' || cast(vuseruuid as varchar));
+            -- End Log if error
+            RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreatePaymentInvoice';
+            RETURN;
+          END;
+      $BODY$
+      LANGUAGE plpgsql;
  ----------------------------------------------------------------------------------------------------------------------------------------
         -- UPDATE patch table status value
         UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;
