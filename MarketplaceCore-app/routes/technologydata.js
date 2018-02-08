@@ -81,7 +81,7 @@ router.post('/', validate({
             return res.send('Technologydata with given name already exists.');
         }
 
-        dbProductCode.GetNewProductCode(req.token.user.id, function (err, productCode) {
+        dbProductCode.GetNewProductCode(CONFIG.USER.uuid, function (err, productCode) {
             if (err) {
                 return next(err);
             }
