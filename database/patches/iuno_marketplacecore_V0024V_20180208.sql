@@ -121,7 +121,7 @@ AS $BODY$
 
 			-- Create new TechnologyData
 				IF(vAlreadExists is null) THEN
-					perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, 					vTechnologyUUID, vtechnologydataimgref, vCreatedBy, vRoles);
+					perform public.createtechnologydata(vTechnologyDataName, vTechnologyData, vTechnologyDataDescription, vLicenseFee, vProductCode, vTechnologyUUID, vtechnologydataimgref, vBackgroundColor, vCreatedBy, vRoles);
 					vTechnologyDataID := (select currval('TechnologyDataID'));
 					vTechnologyDataUUID := (select technologydatauuid from technologydata where technologydataid = vTechnologyDataID);
 
