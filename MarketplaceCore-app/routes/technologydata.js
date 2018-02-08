@@ -102,6 +102,7 @@ router.post('/', validate({
                 techData.componentlist = data['componentList'];
                 techData.productcode = productCode;
                 techData.technologydataimgref = imageService.getRandomImagePath();
+                techData.backgroundcolor = data['backgroundColor'];
 
                 techData.Create(req.token.user.id, req.token.user.roles, function (err, data) {
                     if (err) {

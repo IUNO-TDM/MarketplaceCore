@@ -30,6 +30,7 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.componentlist = data.componentlist ? data.componentlist : this.componentlist;
         this.taglist = data.taglist ? data.taglist : this.taglist;
         this.revenue = data.revenue ? data.revenue : this.revenue;
+        this.backgroundcolor = data.backgroundcolor ? data.backgroundcolor : this.backgroundcolor;
     }
 };
 
@@ -128,6 +129,7 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             this.taglist ? this.taglist : [''],
             this.componentlist,
             this.technologydataimgref,
+            this.backgroundcolor,
             userUUID,
             roles
         ])
