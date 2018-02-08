@@ -137,13 +137,6 @@ AS $BODY$
 					RETURN;
 
 			END IF;
-			-- Begin Log if success
-			perform public.createlog(0,'Set TechnologyData sucessfully', 'SetTechnologyData',
-						'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
-						|| replace(vTechnologyDataName, '''', '''''') || ', TechnologyData: ' || vTechnologyData
-						|| ', TechnologyDataDescription: ' || replace(vTechnologyDataDescription, '''', '''''')
-						|| ', CreatedBy: ' || cast(vRoles as varchar));
-
 		ELSE
 			 RAISE EXCEPTION '%', 'Insufficiency rigths';
 			 RETURN;
@@ -178,18 +171,7 @@ AS $BODY$
 				 licensefee, productcode, technologydatadescription, technologydatathumbnail,
 				 TechnologyDataImgRef, BackgroundColor, td.createdat, td.createdby
 		);
-
-		exception when others then
-		-- Begin Log if error
-		perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE,  'SetTechnologyData',
-					'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
-					|| replace(vTechnologyDataName, '''', '''''') || ', TechnologyData: ' || vTechnologyData
-					|| ', TechnologyDataDescription: ' || replace(vTechnologyDataDescription, '''', '''''')
-					|| ', CreatedBy: ' || cast(vCreatedby as varchar));
-		-- End Log if error
-		RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at SetTechnologyData';
-		RETURN;
-	      END;
+	    END;
 
 $BODY$;
 ----------------------------------------------------------------------------------------------------------------------------------------
@@ -216,7 +198,7 @@ AS $BODY$
 		vTechnologyDataUUID uuid := (select uuid_generate_v4());
 		vTechnologyID integer := (select technologyid from technologies where technologyuuid = vTechnologyUUID);
 		vFunctionName varchar := 'CreateTechnologyData';
-		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+		vIsAllowed boolean := (select public.checkPermissions(vcreatedby, vRoles, vFunctionName));
 
       BEGIN
 	IF(vIsAllowed) then
@@ -227,19 +209,6 @@ AS $BODY$
 		 RETURN;
 	end if;
 
-        -- Begin Log if success
-        perform public.createlog(0,'Created TechnologyData sucessfully', 'CreateTechnologyData',
-                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
-                                || replace(vTechnologyDataName, '''', '''''') || ', TechnologyData: ' || vTechnologyData
-                                || ', TechnologyDataDescription: ' || replace(vTechnologyDataDescription, '''', '''''')
-				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
-                                || ', TechnologyID: ' || cast(vTechnologyID as varchar)
-                                || ', LicenseFee: ' || cast(vLicenseFee as varchar)
-                                || ', ProductCode: ' || cast(vProductCode as varchar)
-                                || ', CreatedBy: ' || vCreatedBy);
-
-        -- End Log if success
-        -- Return
         RETURN QUERY (
 		select 	td.TechnologyDataUUID,
 			td.TechnologyDataName,
@@ -258,21 +227,6 @@ AS $BODY$
 		td.technologyid = tc.technologyid
 		where td.technologydatauuid = vTechnologyDataUUID
         );
-
-        exception when others then
-        -- Begin Log if error
-        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateTechnologyData',
-                                'TechnologyDataID: ' || cast(vTechnologyDataID as varchar) || ', TechnologyDataName: '
-                                || replace(vTechnologyDataName, '''', '''''') || ', TechnologyData: ' || vTechnologyData
-                                || ', TechnologyDataDescription: ' || replace(vTechnologyDataDescription, '''', '''''')
-				-- || ', vTechnologyDataAuthor: ' || cast(vTechAuthor as varchar)
-                                || ', TechnologyID: ' || cast(vTechnologyID as varchar)
-                                || ', LicenseFee: ' || cast(vLicenseFee as varchar)
-                                || ', ProductCode: ' || cast(vProductCode as varchar)
-                                || ', CreatedBy: ' || vCreatedBy);
-        -- End Log if error
-        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateTechnologyData';
-        RETURN;
       END;
 
 $BODY$;
@@ -292,7 +246,7 @@ AS $BODY$
 
 	DECLARE
 		vFunctionName varchar := 'GetTechnologyDataById';
-		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+		vIsAllowed boolean := (select public.checkPermissions(vuseruuid, vRoles, vFunctionName));
 
 	BEGIN
 
@@ -343,7 +297,7 @@ AS $BODY$
 
 	DECLARE
 		vFunctionName varchar := 'GetTechnologyDataByName';
-		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+		vIsAllowed boolean := (select public.checkPermissions(vuseruuid, vRoles, vFunctionName));
 
 	BEGIN
 
@@ -394,7 +348,7 @@ AS $BODY$
 
 	DECLARE
 		vFunctionName varchar := 'GetTechnologyDataByOfferRequest';
-		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+		vIsAllowed boolean := (select public.checkPermissions(vuseruuid, vRoles, vFunctionName));
 
 	BEGIN
 
@@ -448,7 +402,7 @@ AS $BODY$
 
 	DECLARE
 		vFunctionName varchar := 'GetTechnologyDataByParams';
-		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+		vIsAllowed boolean := (select public.checkPermissions(vuseruuid, vRoles, vFunctionName));
 
 	BEGIN
 
@@ -547,6 +501,7 @@ AS $BODY$
 	END;
 
 $BODY$;
+
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
