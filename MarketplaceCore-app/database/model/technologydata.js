@@ -31,6 +31,7 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.taglist = data.taglist ? data.taglist : this.taglist;
         this.revenue = data.revenue ? data.revenue : this.revenue;
         this.backgroundcolor = data.backgroundcolor ? data.backgroundcolor : this.backgroundcolor;
+        this.technologydataimgref = data.technologydataimgref ? data.technologydataimgref : this.technologydataimgref;
     }
 };
 
