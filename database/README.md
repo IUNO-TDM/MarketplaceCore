@@ -31,6 +31,7 @@
 | iuno_marketplacecore_V0022V_20180123.sql                          | 0022              | Update all functions due to the checkpermissions update.                                              |                     | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0023V_20180123.sql                          | 0023              | Create UserKey table, insert key value for functions, add key and isowner columns to the function table  |                     | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0024V_20180208.sql                          | 0024              | Added new column in technologydata table and updated functions to hold background color information  |                     | [@mbeuttler][imbeuttler]      |
+| iuno_marketplacecore_V0024V_20180208.sql                          | 0025              | Proof if procedure caller is also data owner or has permissions to do it                              |  [#127][i127]                   | [@gomarcel][igomarcel] |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
