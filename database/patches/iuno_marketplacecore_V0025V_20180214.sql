@@ -68,6 +68,7 @@ $BODY$
 		vFunctionName varchar := 'DeleteTechnologyData';
 		vIsAllowed boolean := (select public.checkPermissions(vuseruuid, vRoles, vFunctionName));
 		vOwnerUUID uuid := (select createdby from technologydata where technologydatauuid = vTechnologyDataUUID);
+		--TODO: update this. Do not use only Admin but other Roles => Create a table for that.
 		vAdmin text := 'Admin';
 
 	BEGIN
@@ -82,7 +83,7 @@ $BODY$
 
 		 ELSE
 
-			 RAISE EXCEPTION '%', 'You are not allowed to delete this technologydata.';
+			 RAISE EXCEPTION '%', 'You are not allowed to run this procedure: ' || vFunctionName || '.';
 			 RETURN false;
 
 		 END IF;
@@ -122,6 +123,7 @@ $BODY$
 		vFunctionName varchar := 'GetTechnologyDataById';
 		vIsAllowed boolean := (select public.checkPermissions(vuseruuid, vRoles, vFunctionName));
 		vOwnerUUID uuid := (select t.createdby from technologydata t where t.technologydatauuid = vTechnologyDataUUID);
+		--TODO: update this. Do not use only Admin but other Roles => Create a table for that.
 		vAdmin text := 'Admin';
 
 	BEGIN
@@ -153,7 +155,7 @@ $BODY$
 
 		ELSE
 
-			 RAISE EXCEPTION '%', 'You are not allowed to run this procedure.';
+			 RAISE EXCEPTION '%', 'You are not allowed to run this procedure: ' || vFunctionName || '.';
 			 RETURN;
 
 		 END IF;
@@ -180,12 +182,13 @@ $BODY$
 		vFunctionName varchar := 'GetTechnologyDataByName';
 		vIsAllowed boolean := (select public.checkPermissions(vuseruuid, vRoles, vFunctionName));
 		vOwnerUUID uuid := (select t.createdby from technologydata t where t.technologydataname = vTechnologyDataName);
+		--TODO: update this. Do not use only Admin but other Roles => Create a table for that.
 		vAdmin text := 'Admin';
 
 	BEGIN
 
 	IF(vIsAllowed) THEN
-		IF (vUserUUID = vOwnerUUID or vAdmin = ANY(vRoles)) THEN
+		IF (vUserUUID = vOwnerUUID or vAdmin = ANY(vRoles) or vOwnerUUID is null) THEN
 
     	RETURN QUERY (SELECT 	td.technologydatauuid,
 				tc.technologyuuid,
@@ -210,7 +213,7 @@ $BODY$
 
 		ELSE
 
-			 RAISE EXCEPTION '%', 'You are not allowed to run this procedure.';
+			 RAISE EXCEPTION '%', 'You are not allowed to run this procedure: ' || vFunctionName || '.';
 			 RETURN;
 
 		 END IF;
@@ -222,6 +225,84 @@ $BODY$
 
 	END;
 	$BODY$
+  LANGUAGE plpgsql;
+
+--######################################################################################################################
+DROP FUNCTION public.gettechnologydataforuser(uuid, text[]);
+
+CREATE OR REPLACE FUNCTION public.gettechnologydataforuser(
+    IN vuseruuid uuid,
+    IN vInquirerID uuid,
+    IN vroles text[])
+  RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, revenue bigint, licensefee bigint, componentlist text[], technologydatadescription character varying) AS
+$BODY$
+				DECLARE
+					vFunctionName varchar := 'GetTechnologyDataForUser';
+					vIsAllowed boolean := (select public.checkPermissions(vInquirerID, vRoles, vFunctionName));
+					--TODO: update this. Do not use only Admin but other Roles => Create a table for that.
+					vAdmin text := 'Admin';
+
+				BEGIN
+
+				IF(vIsAllowed) THEN
+					IF (vUserUUID = vInquirerID or vAdmin = ANY(vRoles)) THEN
+
+
+				RETURN QUERY (	with revenue as (select td.technologydataname, (sum(td.licensefee*ri.amount))::bigint as revenue from transactions ts
+						join licenseorder lo
+						on ts.licenseorderid = lo.licenseorderid
+						join offerrequest oq
+						on oq.offerrequestid = ts.offerrequestid
+						join offerrequestitems ri
+						on oq.offerrequestid = ri.offerrequestid
+						join technologydata td
+						on ri.technologydataid = td.technologydataid
+						where td.createdby = vUserUUID
+						group by td.technologydataname
+					), result as (
+					select 	td.technologydatauuid,
+						td.technologydataname,
+						coalesce(rv.revenue,0)::bigint as revenue,
+						td.licensefee,
+						array_agg(co.componentname)::text[] as componentlist,
+						td.technologydatadescription
+					from technologydata td
+					left outer join revenue rv on td.technologydataname = rv.technologydataname
+					join technologydatacomponents tc
+					on tc.technologydataid = td.technologydataid
+					join components co
+					on tc.componentid = co.componentid
+					where td.createdby = vUserUUID
+					and td.deleted is null
+					group by td.technologydatauuid, td.technologydataname, td.licensefee, rv.revenue, td.technologydatadescription)
+					select  r.technologydatauuid,
+						r.technologydataname,
+						sum(r.revenue)::bigint as revenue,
+						r.licensefee::bigint,
+						r.componentlist,
+						r.technologydatadescription
+					from result r
+					group by r.technologydatauuid,
+						r.technologydataname,
+						r.licensefee,
+						r.componentlist,
+						r.technologydatadescription
+					);
+
+				ELSE
+
+					RAISE EXCEPTION '%', 'You are not allowed to run this procedure: ' || vFunctionName ||'.';
+					RETURN;
+
+				END IF;
+
+				ELSE
+					 RAISE EXCEPTION '%', 'Insufficiency rigths';
+					 RETURN;
+				END IF;
+
+				END;
+			$BODY$
   LANGUAGE plpgsql;
 
 

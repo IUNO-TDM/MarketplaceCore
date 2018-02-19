@@ -36,7 +36,7 @@ TechnologyData.prototype.SetProperties = function (data) {
 };
 
 TechnologyData.prototype.FindForUser = TechnologyData.FindForUser = function (user, inquirerId, inquireRoles, callback) {
-    db.func('GetTechnologyDataForUser', [user, inquireRoles])
+    db.func('GetTechnologyDataForUser', [user, inquirerId, inquireRoles])
         .then(function (data) {
             const resultList = [];
             for (let key in data) {
