@@ -28,6 +28,9 @@
 | iuno_marketplacecore_V0019V_20180122.sql                          | 0019              | Fixes #110: Delete role permissions for diverse functions                                             |  [#110][i110w]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0020V_20180122.sql                          | 0020              | Fixes #111: Drop unsed or unnecessary functions                                                       |  [#111][i111w]       | [@gomarcel][igomarcel]      |
 | iuno_marketplacecore_V0021V_20180124.sql                          | 0021              | Drop function GetOfferForTicket as well as the column TicketId in the Table LicenseOrder. Update CreateLicenseOrder function |  [#148][i148]       | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0022V_20180123.sql                          | 0022              | Update all functions due to the checkpermissions update.                                              |                     | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0023V_20180123.sql                          | 0023              | Create UserKey table, insert key value for functions, add key and isowner columns to the function table  |                     | [@gomarcel][igomarcel]      |
+| iuno_marketplacecore_V0024V_20180208.sql                          | 0024              | Added new column in technologydata table and updated functions to hold background color information  |                     | [@mbeuttler][imbeuttler]      |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91

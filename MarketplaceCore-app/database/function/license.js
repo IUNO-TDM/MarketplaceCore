@@ -8,7 +8,7 @@ let self = {};
 
 
 self.CreateLicenseOrder = function (offerUUID, user, callback) {
-    db.func('CreateLicenseOrder', [null, offerUUID, user.uuid, user.roles])
+    db.func('CreateLicenseOrder', [offerUUID, user.uuid, user.roles])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];

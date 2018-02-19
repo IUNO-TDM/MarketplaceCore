@@ -41,7 +41,6 @@ jspm_packages
 private_*
 
 # Don't store live images in github
-#images/technologydata/*
-#images/users/*
+images/recipes/*
 
 .DS_Store

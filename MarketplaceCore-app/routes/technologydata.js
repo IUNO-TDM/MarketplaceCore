@@ -81,7 +81,7 @@ router.post('/', validate({
             return res.send('Technologydata with given name already exists.');
         }
 
-        dbProductCode.GetNewProductCode(req.token.user.id, function (err, productCode) {
+        dbProductCode.GetNewProductCode(CONFIG.USER.uuid, function (err, productCode) {
             if (err) {
                 return next(err);
             }
@@ -101,7 +101,17 @@ router.post('/', validate({
                 techData.taglist = data['tagList'];
                 techData.componentlist = data['componentList'];
                 techData.productcode = productCode;
-                techData.technologydataimgref = imageService.getRandomImagePath();
+
+
+                if (data['image']) {
+                    techData.technologydataimgref = imageService.saveImage(req.token.user.id, data['technologyDataName'], data['image']);
+                }
+                else {
+                    techData.technologydataimgref = imageService.getRandomImagePath();
+                }
+
+
+                techData.backgroundcolor = data['backgroundColor'];
 
                 techData.Create(req.token.user.id, req.token.user.roles, function (err, data) {
                     if (err) {

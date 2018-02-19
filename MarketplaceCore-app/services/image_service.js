@@ -3,7 +3,7 @@ const path = require('path');
 const config = require('../config/config_loader');
 const logger = require('../global/logger');
 const seedRandom = require('seedrandom');
-
+const crypto = require('crypto');
 
 const IMAGE_DIR = 'images/recipes/';
 const DEFAULT_IMAGE = 'images/recipes/default.svg';
@@ -48,6 +48,16 @@ self.getDefaultImagePathForUUID = function(uuid) {
 
         return DEFAULT_IMAGE;
     }
+};
+
+self.saveImage = function(user, tdName, image) {
+    const imageName = crypto.createHash('md5').update(user+tdName).digest('hex') + '.svg';
+
+    const filePath = path.join(IMAGE_DIR, imageName);
+
+    fs.writeFile(filePath, image);
+
+    return IMAGE_DIR + imageName;
 };
 
 
