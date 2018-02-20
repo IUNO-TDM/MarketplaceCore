@@ -57,25 +57,27 @@ $$
 -- #########################################################################################################################################
 
  CREATE OR REPLACE FUNCTION public.gettechnologydatabyparams(
-    IN vcomponents text[],
-    IN vtechnologyuuid uuid,
-    IN vtechnologydataname character varying,
-    IN vowneruuid uuid,
-    IN vuseruuid uuid,
-    IN vroles text[])
-  RETURNS TABLE(result json) AS
-$BODY$
+	vcomponents text[],
+	vtechnologyuuid uuid,
+	vtechnologydataname character varying,
+	vowneruuid uuid,
+	vuseruuid uuid,
+	vroles text[])
+    RETURNS TABLE(result json) 
+    
+AS $BODY$
 
 	DECLARE
 		vFunctionName varchar := 'GetTechnologyDataByParams';
 		vIsAllowed boolean := (select public.checkPermissions(vuseruuid, vRoles, vFunctionName));
 		--TODO: update this. Do not use only Admin but other Roles => Create a table for that.
 		vAdmin text := 'Admin';
+		vMachineOperator text := 'MachineOperator';
 
 	BEGIN
 
 	IF(vIsAllowed) THEN
-		IF (vUserUUID = vOwnerUUID or vAdmin = ANY(vRoles)) THEN
+		IF (vUserUUID = vOwnerUUID or vAdmin = ANY(vRoles) or vMachineOperator = ANY(vRoles)) THEN
 
 	 RETURN QUERY (	 with tg as (
 				select tg.tagid, tg.tagname from tags tg
@@ -177,6 +179,7 @@ $BODY$
 	END;
 
 $BODY$
+
   LANGUAGE plpgsql;
 
 ----------------------------------------------------------------------------------------------------------------------------------------

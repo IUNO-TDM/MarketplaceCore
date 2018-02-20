@@ -114,23 +114,26 @@ $BODY$
 DROP FUNCTION gettechnologydatabyid(uuid,uuid,text[]);
 
 CREATE OR REPLACE FUNCTION public.gettechnologydatabyid(
-    IN vtechnologydatauuid uuid,
-    IN vuseruuid uuid,
-    IN vroles text[])
-  RETURNS TABLE(technologydatauuid uuid, technologyuuid uuid, technologydataname character varying, technologydata character varying, technologydatadescription character varying, productcode integer, licensefee bigint, technologydatathumbnail bytea, technologydataimgref character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedyby uuid) AS
-$BODY$
+	vtechnologydatauuid uuid,
+	vuseruuid uuid,
+	vroles text[])
+    RETURNS TABLE(technologydatauuid uuid, technologyuuid uuid, technologydataname character varying, technologydata character varying, technologydatadescription character varying, productcode integer, licensefee bigint, technologydatathumbnail bytea, technologydataimgref character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedyby uuid) 
+    
+AS $BODY$
+
 	DECLARE
 		vFunctionName varchar := 'GetTechnologyDataById';
 		vIsAllowed boolean := (select public.checkPermissions(vuseruuid, vRoles, vFunctionName));
 		vOwnerUUID uuid := (select t.createdby from technologydata t where t.technologydatauuid = vTechnologyDataUUID);
 		--TODO: update this. Do not use only Admin but other Roles => Create a table for that.
 		vAdmin text := 'Admin';
+		vMachineOperator text := 'MachineOperator';
 
 	BEGIN
 
 	IF(vIsAllowed) THEN
 
-		IF (vUserUUID = vOwnerUUID or vAdmin = ANY(vRoles)) THEN
+		IF (vUserUUID = vOwnerUUID or vAdmin = ANY(vRoles) or vMachineOperator = ANY(vRoles)) THEN
 
 	RETURN QUERY (	SELECT 	td.technologydatauuid,
 				tc.technologyuuid,
@@ -150,7 +153,7 @@ $BODY$
 				on td.technologyid = tc.technologyid
 				where td.technologydatauuid = vtechnologydatauuid
 				and td.deleted is null
-				and (td.createdby = vuseruuid or vAdmin = ANY(vRoles))
+				and (td.createdby = vuseruuid or vAdmin = ANY(vRoles) or vMachineOperator = ANY(vRoles))
 		);
 
 		ELSE
@@ -166,6 +169,7 @@ $BODY$
 	END IF;
 
 	END;
+
 $BODY$
   LANGUAGE plpgsql;
 
