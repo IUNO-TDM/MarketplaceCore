@@ -1,4 +1,4 @@
-update userkeys set keys = '{2,3,4,7,8,9,10,11,14,15,16,18,20,21,23,25,26,28}' where useruuid = '5e5d4ebc-7985-45e4-93c2-ca5572b6947e';
+update userkeys set keys = '{2,3,4,7,8,9,10,11,14,15,16,18,20,21,23,25,26,28}' where useruuid = 'adb4c297-45bd-437e-ac90-9179eea41736';
 
 DO 
 $$
@@ -120,7 +120,7 @@ create table myComp (component text, attribute text[]);
 			    vComp, 		-- <componentdescription character varying>,
 			    vAttr,			-- <attributelist text[]>,
 			    '{Juice Mixer}', 				-- <technologylist text[]>,
-			    '5e5d4ebc-7985-45e4-93c2-ca5572b6947e',
+			    'adb4c297-45bd-437e-ac90-9179eea41736',
 			    '{Admin}'  			-- <createdby integer>
          );
 		 END LOOP;
