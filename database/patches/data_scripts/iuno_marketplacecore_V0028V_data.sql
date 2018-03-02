@@ -127,7 +127,7 @@ create table myComp (component text, attribute text);
 		 END LOOP;
 		 drop table myComp;
 
-	update components set displaycolor = '#ffffff' where componentname = 'Mineralwasser';
+	update components set displaycolor = '#00BFFF' where componentname = 'Mineralwasser';
 	update components set displaycolor = '#fff7e6' where componentname = 'Apfelsaft';
 	update components set displaycolor = '#ff9900' where componentname = 'Orangensaft';
 	update components set displaycolor = '#ffcc00' where componentname = 'Mangosaft';
