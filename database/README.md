@@ -34,6 +34,8 @@
 | iuno_marketplacecore_V0025V_20180214.sql                          | 0025              | Proof if procedure caller is also data owner or has permissions to do it                               |  [#127][i127]                   | [@gomarcel][igomarcel] |
 | iuno_marketplacecore_V0026V_20180219.sql                          | 0026              | Allow Admin users to call any function.                                                                |  [#127][i127]                   | [@gomarcel][igomarcel] |
 | iuno_marketplacecore_V0027V_20180219.sql                          | 0027              | Update GetTechnologyDataByParams function.                                                             |  [#127][i127]                   | [@gomarcel][igomarcel] |
+| iuno_marketplacecore_V0028V_20180219.sql                          | 0028              | Correct Bug by SetComponent.                                                             |  [#159][i159]                   | [@gomarcel][igomarcel] |
+| iuno_marketplacecore_V0029V_20180219.sql                          | 0029              | Update Get Components function.                                                             |  [#159][i159]                   | [@gomarcel][igomarcel] |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
@@ -57,6 +59,7 @@
 [i144]: https://github.com/IUNO-TDM/MarketplaceCore/issues/144
 [i148]: https://github.com/IUNO-TDM/MarketplaceCore/issues/148
 [i149]: https://github.com/IUNO-TDM/MarketplaceCore/issues/149
+[i159]: https://github.com/IUNO-TDM/MarketplaceCore/issues/159
 
 [igomarcel]: https://github.com/gomarcel
 [imbeuttler]: https://github.com/MBeuttler

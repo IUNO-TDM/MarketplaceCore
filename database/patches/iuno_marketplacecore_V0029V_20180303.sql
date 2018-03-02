@@ -179,7 +179,7 @@ CREATE OR REPLACE FUNCTION public.getcomponentsbytechnology(
     IN vtechnologyuuid uuid,
     IN vuseruuid uuid,
     IN vroles text[])
-  RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid uuid, componentparentname character varying, displaycolor text, componentdescription character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, useruuid uuid) AS
+  RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid uuid, componentparentname character varying, componentdescription character varying, displaycolor text, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, useruuid uuid) AS
 $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetComponentsByTechnology';
@@ -224,7 +224,7 @@ CREATE OR REPLACE FUNCTION public.getcomponentsfortechnologydataid(
     IN vtechnologydatauuid uuid,
     IN vuseruuid uuid,
     IN vroles text[])
-  RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid uuid, componentparentname character varying, displaycolor text, componentdescription character varying, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, useruuid uuid) AS
+  RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentuuid uuid, componentparentname character varying, componentdescription character varying, displaycolor text, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, useruuid uuid) AS
 $BODY$
 	DECLARE
 		vFunctionName varchar := 'GetComponentsForTechnologyDataId';
