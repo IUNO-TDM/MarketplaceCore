@@ -169,6 +169,82 @@ $$
   $BODY$
   LANGUAGE plpgsql;
 
+
+  ALTER TABLE components ADD COLUMN DisplayColor text;
+
+  DROP FUNCTION public.createcomponent(uuid, character varying, character varying, uuid, text[]);
+
+	CREATE OR REPLACE FUNCTION public.createcomponent(
+    IN vcomponentparentuuid uuid,
+    IN vcomponentname character varying,
+    IN vcomponentdescription character varying,
+    IN vDisplayColor text,
+    IN vcreatedby uuid,
+    IN vroles text[])
+  RETURNS TABLE(componentuuid uuid, componentname character varying, componentparentname character varying, componentparentuuid uuid, componentdecription character varying, createdat timestamp with time zone, createdby uuid) AS
+$BODY$
+	#variable_conflict use_column
+      DECLARE 	vComponentID integer := (select nextval('ComponentID'));
+		vComponentUUID uuid := (select uuid_generate_v4());
+		vComponentParentID integer := (select componentid from components where componentuuid = vComponentParentUUID);
+		vFunctionName varchar := 'CreateComponent';
+		vIsAllowed boolean := (select public.checkPermissions(vcreatedby, vRoles, vFunctionName));
+      BEGIN
+
+	IF(vIsAllowed) THEN
+
+        INSERT INTO components(ComponentID, ComponentUUID, ComponentParentID, ComponentName, ComponentDescription, DisplayColor, CreatedBy, CreatedAt)
+        VALUES(vComponentID, vComponentUUID, vComponentParentID, vComponentName, vComponentDescription, vDisplayColor, vCreatedBy, now());
+
+	ELSE
+		 RAISE EXCEPTION '%', 'Insufficiency rigths';
+		 RETURN;
+	END IF;
+        -- Begin Log if success
+        perform public.createlog(0,'Created Component sucessfully', 'CreateComponent',
+                                'ComponentID: ' || cast(vComponentID as varchar) || ', '
+                                || 'ComponentParentID: ' || cast(vComponentParentID as varchar)
+                                || ', ComponentName: '
+                                || vComponentName
+                                || ', ComponentDescription: '
+                                || vComponentDescription
+                                || ', CreatedBy: '
+                                || cast(vCreatedBy as varchar));
+
+        -- End Log if success
+        -- Return
+        RETURN QUERY (
+		select 	co.ComponentUUID,
+			co.ComponentName,
+			cs.ComponentName as componentParentName,
+			cs.ComponentUUID as componentParentUUID,
+			co.ComponentDescription,
+			co.CreatedAt at time zone 'utc',
+			vCreatedBy
+		from components co
+		left outer join components cs
+		on co.componentparentid = cs.componentid
+		where co.componentuuid = vComponentUUID
+        );
+
+        exception when others then
+        -- Begin Log if error
+        perform public.createlog(1,'ERROR: ' || SQLERRM || ' ' || SQLSTATE, 'CreateComponent',
+                                'ComponentID: ' || cast(vComponentID as varchar) || ', '
+                                || 'ComponentParentID: ' || cast(vComponentParentID as varchar)
+                                || ', ComponentName: '
+                                || vComponentName
+                                || ', ComponentDescription: '
+                                || vComponentDescription
+                                || ', CreatedBy: '
+                                || cast(vCreatedBy as varchar));
+        -- End Log if error
+        RAISE EXCEPTION '%', 'ERROR: ' || SQLERRM || ' ' || SQLSTATE || ' at CreateComponent';
+        RETURN;
+      END;
+  $BODY$
+  LANGUAGE plpgsql;
+
 ----------------------------------------------------------------------------------------------------------------------------------------
     -- UPDATE patch table status value
     UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;
