@@ -31,7 +31,7 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V0029V_20180303';
+		PatchName varchar		 	 := 'iuno_marketplacecore_V0030V_20180313';
 		PatchNumber int 		 	 := 0030;
 		PatchDescription varchar 	 := 'Update Get Components function';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
