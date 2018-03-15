@@ -86,10 +86,10 @@ ALTER TABLE Functions DROP COLUMN Key;
 update rolespermissions set CheckOwnership = false;
 
 -- Now restrictive
-update rolespermissions set CheckOwnership = true where functionid = 'DeleteTechnologyData' and roleid <> 1;
-update rolespermissions set CheckOwnership = true where functionid = 'GetRevenue' and roleid <> 1;
-update rolespermissions set CheckOwnership = true where functionid = 'GetTechnologyDataForUser' and roleid <> 1;
-update rolespermissions set CheckOwnership = true where functionid = 'GetTopTechnologyData' and roleid <> 1;
+update rolespermissions set CheckOwnership = true where functionid = (select functionid from functions where functionname = 'DeleteTechnologyData') and roleid <> 1;
+update rolespermissions set CheckOwnership = true where functionid = (select functionid from functions where functionname = 'GetRevenue') and roleid <> 1;
+update rolespermissions set CheckOwnership = true where functionid = (select functionid from functions where functionname = 'GetTechnologyDataForUser') and roleid <> 1;
+update rolespermissions set CheckOwnership = true where functionid = (select functionid from functions where functionname = 'GetTopTechnologyData') and roleid <> 1;
 
 -- 8. Update CheckPermission - Set to original form
 DROP FUNCTION public.checkpermissions(uuid, text[], character varying);
