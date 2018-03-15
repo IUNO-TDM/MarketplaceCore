@@ -105,7 +105,7 @@ select public.setpermission(
     '{Admin}',
     'CreateProtocols',
     null,
-    '{Admin}');
+    '{MarketplaceComponent}');
 --5. Add Ownership to the rolespermissions table
 update rolespermissions set CheckOwnership = true where functionid = (select functionid from functions where functionname = 'CreateProtocols') and roleid <> 1;
 ----------------------------------------------------------------------------------------------------------------------------------------
