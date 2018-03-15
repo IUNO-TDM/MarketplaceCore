@@ -15,6 +15,8 @@ router.post('/:clientId', validate({
     let protocol = req.body;
     console.log("Protocol of type \""+ protocol.eventType+ "\" received from " +clientId);
     //TODO: Save protocol to db
+
+    res.sendStatus(201);
 });
 
 module.exports = router;
