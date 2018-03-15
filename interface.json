@@ -733,7 +733,10 @@
           "format": "datetime"
         },
         "payload": {
-          "type": "string"
+          "type": "object",
+          "properties": {
+
+          }
         }
       }
     },
