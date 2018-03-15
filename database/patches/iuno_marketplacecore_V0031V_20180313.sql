@@ -2026,7 +2026,6 @@ $BODY$
 				on td.technologyid = tc.technologyid
 				where td.technologydatauuid = vtechnologydatauuid
 				and td.deleted is null
-				and (td.createdby = vuseruuid or vAdmin = ANY(vRoles) or vMachineOperator = ANY(vRoles))
 		);
 
 	ELSE
@@ -2071,7 +2070,6 @@ $BODY$
 			on td.technologyid = tc.technologyid
 			where lower(td.technologydataname) = lower(vTechnologyDataName)
 			and td.deleted is null
-			and (td.createdby = vuseruuid or vAdmin = ANY(vRoles))
 		);
 
 	ELSE

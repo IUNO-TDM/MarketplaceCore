@@ -55,13 +55,11 @@ $$
 			vPatchNumber int := 0032;
 		BEGIN
 -- #########################################################################################################################################
- --0. Fix Permissions bug on rolespermissions. Nobody can call SetPermissions at the moment
-insert into rolespermissions (roleid, functionid) values (0,1);
 --0. Create Sequence for ProtocolID
 CREATE SEQUENCE protocolid START WITH 1;
 --1. CREATE Protocols TABLE
 CREATE TABLE protocols (protocolid integer, data jsonb, createdby uuid, createdat timestamp);
-ALTER TABLE protocols ADD PRIMARY KEY (protocolid)
+ALTER TABLE protocols ADD PRIMARY KEY (protocolid);
 --2. CREATE FUNCTION to insert Protocols
 CREATE OR REPLACE FUNCTION public.CreateProtocols(
     IN vData jsonb,
