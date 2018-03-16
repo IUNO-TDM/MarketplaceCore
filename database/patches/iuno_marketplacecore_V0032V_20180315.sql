@@ -101,7 +101,7 @@ CREATE OR REPLACE FUNCTION public.CreateProtocols(
 --3. Insert CreateProtocols FUNCTION into functions table
 insert into functions (functionid, functionname) values ((select nextval('functionid')),'CreateProtocols');
 --4. Create Permissions to new Function CreateProtocols
-select public.setpermission(
+perform public.setpermission(
     '{Admin}',
     'CreateProtocols',
     null,
