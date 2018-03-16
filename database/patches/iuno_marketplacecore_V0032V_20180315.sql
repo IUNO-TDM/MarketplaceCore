@@ -61,25 +61,20 @@ CREATE SEQUENCE protocolid START WITH 1;
 CREATE TABLE protocols (protocolid integer, data jsonb, createdby uuid, createdat timestamp);
 ALTER TABLE protocols ADD PRIMARY KEY (protocolid);
 --2. CREATE FUNCTION to insert Protocols
-CREATE OR REPLACE FUNCTION public.CreateProtocols(
-    IN vData jsonb,
+CREATE OR REPLACE FUNCTION public.createprotocols(
+    IN vdata jsonb,
     IN vcreatedby uuid,
     IN vroles text[])
- RETURNS TABLE (eventType text, "timestamp" timestamp with time zone, payload json) AS
- $BODY$
+  RETURNS TABLE(eventtype text, "timestamp" timestamp with time zone, payload json) AS
+$BODY$
 	DECLARE
 		vFunctionName varchar := 'CreateProtocols';
 		vProtocolID int := (select nextval('protocolid'));
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
-		--Get CheckOwnership Flag
-		vFunctionID int := (select functionid from functions where functionname = vFunctionName);
-		vOwnerUUID uuid := null;
-		vCheckOwnership boolean := (select public.checkOwnership(vFunctionName, vcreatedby, vOwnerUUID, vRoles));
 
 
 	BEGIN
 		IF(vIsAllowed) THEN
-			IF (vCheckOwnership = false) THEN vCreatedBy = null; END IF;
 				INSERT INTO protocols (ProtocolID, data, createdby, createdat) values (vProtocolID, vData, vCreatedBy, now());
 
 				RETURN QUERY ( 	select 	(data->>'eventType')::text as eventType,
@@ -96,18 +91,13 @@ CREATE OR REPLACE FUNCTION public.CreateProtocols(
 	END;
 
  $BODY$
- Language plpgsql;
+  LANGUAGE plpgsql;
 
 --3. Insert CreateProtocols FUNCTION into functions table
 insert into functions (functionid, functionname) values ((select nextval('functionid')),'CreateProtocols');
 --4. Create Permissions to new Function CreateProtocols
-perform public.setpermission(
-    '{Admin}',
-    'CreateProtocols',
-    null,
-    '{MarketplaceComponent}');
---5. Add Ownership to the rolespermissions table
-update rolespermissions set CheckOwnership = true where functionid = (select functionid from functions where functionname = 'CreateProtocols') and roleid <> 1;
+perform public.setpermission('{MachineOperator}','CreateProtocols',null,'{Admin}');
+perform public.setpermission('{MarketplaceComponent','CreateProtocols',null,'{Admin}');
 ----------------------------------------------------------------------------------------------------------------------------------------
     -- UPDATE patch table status value
     UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;
