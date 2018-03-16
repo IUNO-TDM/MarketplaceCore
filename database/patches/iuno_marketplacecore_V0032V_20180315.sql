@@ -97,7 +97,7 @@ $BODY$
 insert into functions (functionid, functionname) values ((select nextval('functionid')),'CreateProtocols');
 --4. Create Permissions to new Function CreateProtocols
 perform public.setpermission('{MachineOperator}','CreateProtocols',null,'{Admin}');
-perform public.setpermission('{MarketplaceComponent','CreateProtocols',null,'{Admin}');
+perform public.setpermission('{MarketplaceComponent}','CreateProtocols',null,'{Admin}');
 ----------------------------------------------------------------------------------------------------------------------------------------
     -- UPDATE patch table status value
     UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;
