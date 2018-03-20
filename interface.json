@@ -626,8 +626,7 @@
           }
         }
       }
-    }
-  },
+    },
     "/vault/users/{userId}/wallets/{walletId}/payouts/check": {
       "post": {
         "security": [
@@ -688,9 +687,59 @@
           }
         }
       }
+    },
+    "/protocols/{clientId}": {
+      "post": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "A machine can post information on its usage",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "clientId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "protocol",
+            "schema": {
+              "$ref": "#/definitions/Protocol"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Logging accepted"
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "Protocol": {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+
+          }
+        }
+      }
+    },
     "Payout": {
       "description": "object describing a payout job",
       "type": "object",

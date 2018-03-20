@@ -31,9 +31,9 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V0029V_20180303';
+		PatchName varchar		 	 := 'iuno_marketplacecore_V0030V_20180313';
 		PatchNumber int 		 	 := 0030;
-		PatchDescription varchar 	 := 'Update Get Components function';
+		PatchDescription varchar 	 := 'Delete old role and permission concept, Create CheckOwnership function, Update CheckPermission function and others.';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN
@@ -57,7 +57,7 @@ $$
 -- #########################################################################################################################################
 
 -- 1. Delete Admin Permissions
-DELETE FROM rolespermissions where roleid = 0;
+DELETE FROM rolespermissions where roleid = 0 and functionid <> 1;
 -- 2. Drop Column isOwner from functions
 ALTER TABLE functions DROP COLUMN isOwner;
 -- 3. Add Column CheckOwnership to RolesPermissions
@@ -84,32 +84,21 @@ ALTER TABLE Functions DROP COLUMN Key;
 -- 7. update values to CheckOwnership column
 -- At first false for all
 update rolespermissions set CheckOwnership = false;
+
 -- Now restrictive
-DO
-$$
-DECLARE vFunctionID int;
-BEGIN
-FOR vFunctionID IN
-select functionid from functions where functionname in (
-	'DeleteTechnologyData',
-	'GetRevenue',
-	'GetTechnologyDataForUser',
-	'GetTopTechnologyData'
-	)
-LOOP
-	update rolespermissions set CheckOwnership = true where functionid = vFunctionID
-	and roleid <> 1;
-END LOOP;
-END
-$$;
+update rolespermissions set CheckOwnership = true where functionid = (select functionid from functions where functionname = 'DeleteTechnologyData') and roleid <> 1;
+update rolespermissions set CheckOwnership = true where functionid = (select functionid from functions where functionname = 'GetRevenue') and roleid <> 1;
+update rolespermissions set CheckOwnership = true where functionid = (select functionid from functions where functionname = 'GetTechnologyDataForUser') and roleid <> 1;
+update rolespermissions set CheckOwnership = true where functionid = (select functionid from functions where functionname = 'GetTopTechnologyData') and roleid <> 1;
+
 -- 8. Update CheckPermission - Set to original form
 DROP FUNCTION public.checkpermissions(uuid, text[], character varying);
 
-CREATE FUNCTION public.checkpermissions(
+CREATE OR REPLACE FUNCTION public.checkpermissions(
     vroles text[],
     vfunctionname character varying)
   RETURNS boolean AS
-$$
+$BODY$
 	#variable_conflict use_column
 	DECLARE	vIsAllowed boolean;
 		vFunctionId integer := (select functionId from functions where functionname = vFunctionName);
@@ -124,7 +113,7 @@ $$
 			return false;
 		end if;
 	END;
-$$
+$BODY$
 LANGUAGE PLPGSQL;
 -- 9. Create CheckOwnership function
 CREATE OR REPLACE FUNCTION public.checkownership(
