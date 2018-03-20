@@ -20,8 +20,9 @@ self.Protocol = {
         payload:{
             type: 'object',
             properties:{
-                additionalProperties: true
-            }
+
+            },
+            additionalProperties: true
         }
     },
     additionalProperties: false,
