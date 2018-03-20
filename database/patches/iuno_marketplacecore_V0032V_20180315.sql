@@ -58,29 +58,36 @@ $$
 --0. Create Sequence for ProtocolID
 CREATE SEQUENCE protocolid START WITH 1;
 --1. CREATE Protocols TABLE
-CREATE TABLE protocols (protocolid integer, data jsonb, createdby uuid, createdat timestamp);
+CREATE TABLE protocols (protocolid integer, eventtype text, payload json, sourcetimestamp timestamptz, createdby uuid, createdat timestamptz);
 ALTER TABLE protocols ADD PRIMARY KEY (protocolid);
 --2. CREATE FUNCTION to insert Protocols
 CREATE OR REPLACE FUNCTION public.createprotocols(
     IN vdata jsonb,
     IN vcreatedby uuid,
     IN vroles text[])
-  RETURNS TABLE(eventtype text, "timestamp" timestamp with time zone, payload json) AS
+  RETURNS TABLE(eventtype text, payload json, "timestamp" timestamptz, createdby uuid, createdat timestamptz) AS
 $BODY$
 	DECLARE
 		vFunctionName varchar := 'CreateProtocols';
 		vProtocolID int := (select nextval('protocolid'));
 		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
 
-
 	BEGIN
 		IF(vIsAllowed) THEN
-				INSERT INTO protocols (ProtocolID, data, createdby, createdat) values (vProtocolID, vData, vCreatedBy, now());
+				INSERT INTO protocols (ProtocolID, eventtype, payload, sourcetimestamp, createdby, createdat)
+				SELECT 	vProtocolID,
+                        (vData->>'eventType')::text,
+                        (vData->>'payload')::json,
+                        (vData->>'timestamp')::timestamptz,
+                        vCreatedBy,
+                        now()::timestamptz;
 
-				RETURN QUERY ( 	select 	(data->>'eventType')::text as eventType,
-							(data->>'timestamp')::timestamp at time zone 'utc' as timestamp,
-							(data->>'payload')::json as payload
-						from protocols where protocolid = vProtocolID
+				RETURN QUERY ( 	select 	p.eventType,
+                                        p.payload,
+                                        p.sourceTimestamp,
+                                        p.createdby,
+                                        p.createdat
+                                 from protocols p where protocolid = vProtocolID
 
 				);
 		ELSE
