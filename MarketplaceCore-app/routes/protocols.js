@@ -13,8 +13,8 @@ router.post('/:clientId', validate({
 }), function (req, res, next) {
     let clientId = req.params['clientId'];
     let protocol = req.body;
-    console.log("Protocol of type \""+ protocol.eventType+ "\" received from " +clientId);
-    //TODO: Save protocol to db
+    console.log("Protocol of type \"" + protocol.eventType + "\" received from " + clientId);
+
     dbProtocols.CreateProtocols(protocol, clientId, req.token.user.roles, function (err, data) {
         if (err) {
             next(err);
