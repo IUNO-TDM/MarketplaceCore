@@ -2,7 +2,7 @@
 --TRUMPF Werkzeugmaschinen GmbH & Co KG
 --TEMPLATE FOR DATABASE PATCHES, HOT FIXES and SCHEMA CHANGES
 --Author: Marcel Ely Gomes
---CreateAt: 2018-03-15
+--CreateAt: 2018-03-20
 --Version: 00.00.01 (Initial)
 --#######################################################################################################
 -- READ THE INSTRUCTIONS BEFORE CONTINUE - USE ONLY PatchDBTool to deploy patches to existing Databases
@@ -18,11 +18,11 @@
 --#######################################################################################################
 -- PUT YOUR STATEMENTS HERE:
 -- 	1) Why is this Patch necessary?
---  To create charts that show machine status and other machine data
+--  CheckPermissions has a bug on join
 -- 	2) Which Git Issue Number is this patch solving?
---  # 165
+--  # 167
 -- 	3) Which changes are going to be done?
---  Create Function CreateProtocols.
+--  Correct bug on checkpermissions function
 --: Run Patches
 ------------------------------------------------------------------------------------------------
 --##############################################################################################
@@ -31,9 +31,9 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V0032V_20180315';
-		PatchNumber int 		 	 := 0032;
-		PatchDescription varchar 	 := 'Create Function CreateProtocols';
+		PatchName varchar		 	 := 'iuno_marketplacecore_V0034V_20180320';
+		PatchNumber int 		 	 := 0034;
+		PatchDescription varchar 	 := 'Correct bug on checkpermissions function';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN
@@ -52,59 +52,30 @@ $$;
 DO
 $$
 		DECLARE
-			vPatchNumber int := 0032;
+			vPatchNumber int := 0034;
 		BEGIN
 -- #########################################################################################################################################
---0. Create Sequence for ProtocolID
-CREATE SEQUENCE protocolid START WITH 1;
---1. CREATE Protocols TABLE
-CREATE TABLE protocols (protocolid integer, eventtype text, payload json, sourcetimestamp timestamptz, createdby uuid, createdat timestamptz);
-ALTER TABLE protocols ADD PRIMARY KEY (protocolid);
---2. CREATE FUNCTION to insert Protocols
-CREATE OR REPLACE FUNCTION public.createprotocols(
-    IN vdata jsonb,
-    IN vcreatedby uuid,
-    IN vroles text[])
-  RETURNS TABLE(eventtype text, payload json, "timestamp" timestamptz, createdby uuid, createdat timestamptz) AS
+CREATE OR REPLACE FUNCTION public.checkpermissions(
+    vroles text[],
+    vfunctionname character varying)
+  RETURNS boolean AS
 $BODY$
-	DECLARE
-		vFunctionName varchar := 'CreateProtocols';
-		vProtocolID int := (select nextval('protocolid'));
-		vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
-
+	#variable_conflict use_column
+	DECLARE	vIsAllowed boolean;
+		vFunctionId integer := (select functionId from functions where functionname = vFunctionName);
 	BEGIN
-		IF(vIsAllowed) THEN
-				INSERT INTO protocols (ProtocolID, eventtype, payload, sourcetimestamp, createdby, createdat)
-				SELECT 	vProtocolID,
-                        (vData->>'eventType')::text,
-                        (vData->>'payload')::json,
-                        (vData->>'timestamp')::timestamptz,
-                        vCreatedBy,
-                        now()::timestamptz;
-
-				RETURN QUERY ( 	select 	p.eventType,
-                                        p.payload,
-                                        p.sourceTimestamp,
-                                        p.createdby,
-                                        p.createdat
-                                 from protocols p where protocolid = vProtocolID
-
-				);
-		ELSE
-			 RAISE EXCEPTION '%', 'Insufficiency rigths';
-			 RETURN;
-		END IF;
-
+		vIsAllowed := (select exists(select 1 from rolespermissions rp
+									 join roles ro on rp.roleid = ro.roleid
+									 where ro.rolename = ANY(vRoles)
+									 and functionId = vFunctionId));
+		if(vIsAllowed) then
+			return true;
+		else
+			return false;
+		end if;
 	END;
-
- $BODY$
+$BODY$
   LANGUAGE plpgsql;
-
---3. Insert CreateProtocols FUNCTION into functions table
-insert into functions (functionid, functionname) values ((select nextval('functionid')),'CreateProtocols');
---4. Create Permissions to new Function CreateProtocols
-perform public.setpermission('{MachineOperator}','CreateProtocols',null,'{Admin}');
-perform public.setpermission('{MarketplaceComponent}','CreateProtocols',null,'{Admin}');
 ----------------------------------------------------------------------------------------------------------------------------------------
     -- UPDATE patch table status value
     UPDATE patches SET status = 'OK', endat = now() WHERE patchnumber = vPatchNumber;

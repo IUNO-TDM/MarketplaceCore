@@ -163,4 +163,26 @@ router.get('/licenses/count', validate({
     }
 });
 
+router.get('/protocols/', validate({
+    query: validation_schema.Protocol,
+    body: validation_schema.Empty_Body
+}), function (req, res, next) {
+    let eventType = req.query['eventType'];
+    let fromDate  = req.query['from'];
+    let toDate    = req.query['to'];
+        dbReports.GetProtocols(
+            eventType,
+            fromDate,
+            toDate,
+            req.token.user.id,
+            req.token.user.roles, function (err, data) {
+                if (err) {
+                    next(err);
+                }
+                else {
+                    res.json(data);
+                }
+            });
+});
+
 module.exports = router;

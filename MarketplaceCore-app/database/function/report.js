@@ -79,4 +79,16 @@ self.GetTechnologyDataHistory = function(from, to, userUUID, roles, callback){
         });
 };
 
+self.GetProtocols = function(eventType, from, to, userUUID, roles, callback){
+    db.func('GetProtocols', [eventType, from, to, userUUID , roles])
+        .then(function (data) {
+            logger.debug(data);
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
 module.exports = self;

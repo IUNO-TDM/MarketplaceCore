@@ -38,6 +38,9 @@
 | iuno_marketplacecore_V0029V_20180219.sql                          | 0029              | Update Get Components function.                                                                        |  [#159][i159]                   | [@gomarcel][igomarcel] |
 | iuno_marketplacecore_V0030V_20180313.sql                          | 0030              | Delete old role and permission concept, Create CheckOwnership function, Update CheckPermission function and others. |  [#165][i65]       | [@gomarcel][igomarcel] |
 | iuno_marketplacecore_V0031V_20180313.sql                          | 0031              | Update CheckPermissions call in all functions.                                                         |  [#165][i165]                   | [@gomarcel][igomarcel] |
+| iuno_marketplacecore_V0032V_20180315.sql                          | 0032              | Create Function CreateProtocols                                                                        |  [#165][i165]                   | [@gomarcel][igomarcel] |
+| iuno_marketplacecore_V0033V_20180320.sql                          | 0033              | Create Function GetProtocols                                                                           |  [#162][i162]                   | [@gomarcel][igomarcel] |
+| iuno_marketplacecore_V0034V_20180320.sql                          | 0034              | Correct bug on checkpermissions function                                                               |  [#167][i167]                   | [@gomarcel][igomarcel] |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
@@ -62,7 +65,9 @@
 [i148]: https://github.com/IUNO-TDM/MarketplaceCore/issues/148
 [i149]: https://github.com/IUNO-TDM/MarketplaceCore/issues/149
 [i159]: https://github.com/IUNO-TDM/MarketplaceCore/issues/159
+[i162]: https://github.com/IUNO-TDM/MarketplaceCore/issues/162
 [i165]: https://github.com/IUNO-TDM/MarketplaceCore/issues/165
+[i167]: https://github.com/IUNO-TDM/MarketplaceCore/issues/167
 
 
 [igomarcel]: https://github.com/gomarcel
