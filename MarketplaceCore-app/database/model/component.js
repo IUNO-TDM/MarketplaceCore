@@ -25,6 +25,7 @@ function Component(data) {
         this.useruuid = data.useruuid;
         this.attributelist = data.attributelist;
         this.technologylist = data.technologylist;
+        this.displaycolor = data.displaycolor;
 
         console.log(data);
     }

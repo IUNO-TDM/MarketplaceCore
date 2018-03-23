@@ -171,4 +171,26 @@ self.Empty_Body = {
     additionalProperties: false
 };
 
+self.Protocol = {
+    type: 'object',
+    properties: {
+        eventType:{
+            type: 'string',
+            maxLength: 50
+        },
+        from:{
+            type: 'string',
+            format: 'date-time'
+        },
+        to:{
+            type: 'string',
+            format: 'date-time'
+        }
+    },
+    additionalProperties: false,
+    required: [
+        'eventType', 'from', 'to'
+    ]
+};
+
 module.exports = self;

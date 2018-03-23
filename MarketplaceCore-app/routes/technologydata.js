@@ -86,7 +86,7 @@ router.post('/', validate({
                 return next(err);
             }
 
-            licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, data['technologyDataName'], productCode, data['technologyData'], function (err, encryptedData) {
+            licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, 'DEPRECATED_NOT_USED', productCode, data['technologyData'], function (err, encryptedData) {
                 if (err) {
                     return next(err);
                 }

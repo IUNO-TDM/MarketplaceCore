@@ -30,6 +30,7 @@ app.use('/offers', require('./routes/offers'));
 app.use('/reports', require('./routes/reports'));
 app.use('/cmdongle', require('./routes/cmdongle'));
 app.use('/vault', require('./routes/vault'));
+app.use('/protocols', require('./routes/protocols'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
