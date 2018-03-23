@@ -16,7 +16,9 @@ app.use(logger('dev'));
 // Accept JSON only
 app.use('/', contentTypeValidation);
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+    limit: '50mb'
+}));
 app.use(queryParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());

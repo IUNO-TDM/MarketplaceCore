@@ -92,7 +92,7 @@ create table myComp (component text, attribute text);
         insert into myComp (component, attribute) values ('Galliano', '#ffff00');
         insert into myComp (component, attribute) values ('Creme de Banane', '#ffcc00');
         insert into myComp (component, attribute) values ('Cream of Coconut', '#ffffff');
-        insert into myComp (component, attribute) values ('weißer Rum', '#ffffff');
+        insert into myComp (component, attribute) values ('Weißer Rum', '#ffffff');
         insert into myComp (component, attribute) values ('Wodka', '#ffffff');
         insert into myComp (component, attribute) values ('Bols Grüne Banane', '#99ff66');
         insert into myComp (component, attribute) values ('Apricot Brandy', '#ffa64d');
