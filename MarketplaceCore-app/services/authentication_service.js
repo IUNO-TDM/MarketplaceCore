@@ -84,6 +84,8 @@ self.isUserWithRole = function (role, req, res, next) {
         return next();
     }
 
+    logger.warn('[authentication_service] unauthorized api request for role: ' + role);
+    logger.warn('[authentication_service] requesting user: ' + JSON.stringify(req.token.user));
     res.sendStatus(401);
 };
 
