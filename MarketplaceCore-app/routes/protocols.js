@@ -6,10 +6,11 @@ const validator = new Validator({allErrors: true});
 const validation_schema = require('../schema/protocol_schema');
 const validate = validator.validate;
 const dbProtocols = require('../database/function/protocol');
+const authenticationService = require('../services/authentication_service');
 
 router.post('/:clientId', validate({
     query: validation_schema.Empty,
-    body: validation_schema.Protocol
+    body: validation_schema.Protocol_Body
 }), function (req, res, next) {
     let clientId = req.params['clientId'];
     let protocol = req.body;
@@ -25,5 +26,23 @@ router.post('/:clientId', validate({
         }
     });
 });
+
+router.get('/',
+    authenticationService.isAdmin,
+    validate({
+        query: validation_schema.Protocol_Query,
+        body: validation_schema.Empty
+    }), function (req, res, next) {
+        dbProtocols.GetProtocols(req.query['eventType'], req.query['from'], req.query['to'], req.token.user.id,
+            req.token.user.roles, function (err, data) {
+
+                if (err) {
+                    return next(err);
+                }
+
+                res.json(data);
+
+            });
+    });
 
 module.exports = router;

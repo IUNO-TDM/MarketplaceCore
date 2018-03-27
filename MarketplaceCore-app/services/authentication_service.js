@@ -79,4 +79,16 @@ self.ws_oAuth = function (socket, next) {
     }
 };
 
+self.isUserWithRole = function (role, req, res, next) {
+    if (req.token.user.roles.indexOf(role) > -1) {
+        return next();
+    }
+
+    res.sendStatus(401);
+};
+
+self.isAdmin = function (req, res, next) {
+    self.isUserWithRole('Admin', req, res, next)
+};
+
 module.exports = self;
