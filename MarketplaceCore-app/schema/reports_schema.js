@@ -171,7 +171,7 @@ self.Empty_Body = {
     additionalProperties: false
 };
 
-self.Protocol = {
+self.Protocol_Body = {
     type: 'object',
     properties: {
         eventType:{
