@@ -9,19 +9,17 @@ self.Empty = {
 self.Protocol = {
     type: 'object',
     properties: {
-        eventType:{
+        eventType: {
             type: 'string',
             maxLength: 50
         },
-        timestamp:{
+        timestamp: {
             type: 'string',
             format: 'date-time'
         },
-        payload:{
+        payload: {
             type: 'object',
-            properties:{
-
-            },
+            properties: {},
             additionalProperties: true
         }
     },
@@ -30,4 +28,6 @@ self.Protocol = {
         'eventType', 'timestamp', 'payload'
     ]
 };
+
+
 module.exports = self;
