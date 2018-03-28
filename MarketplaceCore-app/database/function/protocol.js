@@ -19,4 +19,16 @@ self.CreateProtocols = function (protocol, clientid, roles, callback) {
         });
 };
 
+self.GetProtocols = function (eventType, from, to, user, roles, callback) {
+    db.func('GetProtocols', [eventType, from, to, user, roles])
+        .then(function (data) {
+            logger.debug('GetProtocols result: ' + JSON.stringify(data));
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
 module.exports = self;
