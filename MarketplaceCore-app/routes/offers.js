@@ -17,9 +17,11 @@ const validation_schema = require('../schema/offers_schema');
 const invoiceService = require('../services/invoice_service');
 const helper = require('../services/helper_service');
 const Offer = require('../database/model/offer');
-const offerRequest = require('../database/function/offer_request');
+const dbOfferRequest = require('../database/function/offer_request');
 const payment = require('../database/function/payment');
-const transaction = require('../database/function/transaction');
+const dbTransaction = require('../database/function/transaction');
+const dbLicense = require('../database/function/license');
+const licenseService = require('../services/license_service');
 
 router.get('/:id', validate({
     query: validation_schema.Empty,
@@ -45,14 +47,14 @@ router.post('/', validate({
     const requestData = req.body;
     const roles = req.token.user.roles;
 
-    offerRequest.CreateOfferRequest(userUUID, clientUUID, roles, requestData, function (err, offerRequest) {
+    dbOfferRequest.CreateOfferRequest(userUUID, clientUUID, roles, requestData, function (err, offerRequest) {
         if (err) {
             next(err);
         } else {
             if (!offerRequest || offerRequest.length <= 0) {
                 next(new Error('Error when creating offer request in marketplace'));
             } else {
-                transaction.GetTransactionByOfferRequest(userUUID, roles, offerRequest.result.offerrequestuuid, function (err, transaction) {
+                dbTransaction.GetTransactionByOfferRequest(userUUID, roles, offerRequest.result.offerrequestuuid, function (err, transaction) {
                     if (err) {
                         next(err);
                     } else {
@@ -84,6 +86,32 @@ router.post('/', validate({
     });
 
 
+});
+
+router.post('/:offer_id/request_license_update', validate({
+    query: validation_schema.Empty,
+    body: validation_schema.RequestLicenseUpdateBody
+}), function (req, res, next) {
+
+
+    const offerUUID = req.params['offer_id'];
+    const hsmId = req.body['hsmId'];
+    const userUUID = req.token.user.id;
+    const roles = req.token.user.roles;
+
+    dbTransaction.GetTransactionByOffer(userUUID, roles, offerUUID, (err, transaction) => {
+        if (err) {
+            return next(err);
+        }
+
+        if (!transaction || !transaction['licenseorderuuid'] || transaction['licenseorderuuid'].length <= 0) {
+            return res.sendStatus(404);
+        }
+
+        licenseService.emit('updateAvailable', offerUUID, hsmId);
+
+        res.sendStatus(200);
+    });
 });
 
 module.exports = router;
