@@ -51,7 +51,7 @@ router.post('/', validate({
         } else {
             if (!offerRequest || offerRequest.length <= 0) {
                 next(new Error('Error when creating offer request in marketplace'));
-            }else{
+            } else {
                 transaction.GetTransactionByOfferRequest(userUUID, roles, offerRequest.result.offerrequestuuid, function (err, transaction) {
                     if (err) {
                         next(err);
@@ -67,7 +67,7 @@ router.post('/', validate({
                                         var fullUrl = helper.buildFullUrlFromRequest(req);
                                         res.set('Location', fullUrl + offer[0].offeruuid);
                                         res.status(201);
-                                        var invoiceIn  = JSON.parse(offer[0].invoice);
+                                        var invoiceIn = JSON.parse(offer[0].invoice);
                                         var invoiceOut = {
                                             expiration: invoiceIn.expiration,
                                             transfers: invoiceIn.transfers
