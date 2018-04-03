@@ -5,21 +5,21 @@
  -- Description: Routing offers requests
  -- ##########################################################################*/
 
-var express = require('express');
-var router = express.Router();
-var logger = require('../global/logger');
+const express = require('express');
+const router = express.Router();
+const logger = require('../global/logger');
 
 const {Validator, ValidationError} = require('express-json-validator-middleware');
 const validator = new Validator({allErrors: true});
 const validate = validator.validate;
 const validation_schema = require('../schema/offers_schema');
 
-var invoiceService = require('../services/invoice_service');
-var helper = require('../services/helper_service');
-var Offer = require('../database/model/offer');
-var offerRequest = require('../database/function/offer_request');
-var payment = require('../database/function/payment');
-var transaction = require('../database/function/transaction');
+const invoiceService = require('../services/invoice_service');
+const helper = require('../services/helper_service');
+const Offer = require('../database/model/offer');
+const offerRequest = require('../database/function/offer_request');
+const payment = require('../database/function/payment');
+const transaction = require('../database/function/transaction');
 
 router.get('/:id', validate({
     query: validation_schema.Empty,
@@ -64,11 +64,11 @@ router.post('/', validate({
                                     if (err) {
                                         next(err);
                                     } else {
-                                        var fullUrl = helper.buildFullUrlFromRequest(req);
+                                        const fullUrl = helper.buildFullUrlFromRequest(req);
                                         res.set('Location', fullUrl + offer[0].offeruuid);
                                         res.status(201);
-                                        var invoiceIn = JSON.parse(offer[0].invoice);
-                                        var invoiceOut = {
+                                        const invoiceIn = JSON.parse(offer[0].invoice);
+                                        const invoiceOut = {
                                             expiration: invoiceIn.expiration,
                                             transfers: invoiceIn.transfers
                                         };
