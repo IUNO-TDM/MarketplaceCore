@@ -41,6 +41,7 @@
 | iuno_marketplacecore_V0032V_20180315.sql                          | 0032              | Create Function CreateProtocols                                                                        |  [#165][i165]                   | [@gomarcel][igomarcel] |
 | iuno_marketplacecore_V0033V_20180320.sql                          | 0033              | Create Function GetProtocols                                                                           |  [#162][i162]                   | [@gomarcel][igomarcel] |
 | iuno_marketplacecore_V0034V_20180320.sql                          | 0034              | Correct bug on checkpermissions function                                                               |  [#167][i167]                   | [@gomarcel][igomarcel] |
+| iuno_marketplacecore_V0035V_20180403.sql                          | 0035              | Added Function GetTransactionByOffer                                                                   |                                 | [@mbeuttler][imbeuttler] |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
