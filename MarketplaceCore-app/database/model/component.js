@@ -2,8 +2,8 @@
  * Created by beuttlerma on 31.05.17.
  */
 
-var logger = require('../../global/logger');
-var db = require('../db_connection');
+const logger = require('../../global/logger');
+const db = require('../db_connection');
 
 /**
  *
@@ -26,8 +26,6 @@ function Component(data) {
         this.attributelist = data.attributelist;
         this.technologylist = data.technologylist;
         this.displaycolor = data.displaycolor;
-
-        console.log(data);
     }
 
 }
