@@ -5,21 +5,23 @@
  -- Description: Routing offers requests
  -- ##########################################################################*/
 
-var express = require('express');
-var router = express.Router();
-var logger = require('../global/logger');
+const express = require('express');
+const router = express.Router();
+const logger = require('../global/logger');
 
 const {Validator, ValidationError} = require('express-json-validator-middleware');
 const validator = new Validator({allErrors: true});
 const validate = validator.validate;
 const validation_schema = require('../schema/offers_schema');
 
-var invoiceService = require('../services/invoice_service');
-var helper = require('../services/helper_service');
-var Offer = require('../database/model/offer');
-var offerRequest = require('../database/function/offer_request');
-var payment = require('../database/function/payment');
-var transaction = require('../database/function/transaction');
+const invoiceService = require('../services/invoice_service');
+const helper = require('../services/helper_service');
+const Offer = require('../database/model/offer');
+const dbOfferRequest = require('../database/function/offer_request');
+const payment = require('../database/function/payment');
+const dbTransaction = require('../database/function/transaction');
+const dbLicense = require('../database/function/license');
+const licenseService = require('../services/license_service');
 
 router.get('/:id', validate({
     query: validation_schema.Empty,
@@ -45,14 +47,14 @@ router.post('/', validate({
     const requestData = req.body;
     const roles = req.token.user.roles;
 
-    offerRequest.CreateOfferRequest(userUUID, clientUUID, roles, requestData, function (err, offerRequest) {
+    dbOfferRequest.CreateOfferRequest(userUUID, clientUUID, roles, requestData, function (err, offerRequest) {
         if (err) {
             next(err);
         } else {
             if (!offerRequest || offerRequest.length <= 0) {
                 next(new Error('Error when creating offer request in marketplace'));
-            }else{
-                transaction.GetTransactionByOfferRequest(userUUID, roles, offerRequest.result.offerrequestuuid, function (err, transaction) {
+            } else {
+                dbTransaction.GetTransactionByOfferRequest(userUUID, roles, offerRequest.result.offerrequestuuid, function (err, transaction) {
                     if (err) {
                         next(err);
                     } else {
@@ -64,11 +66,11 @@ router.post('/', validate({
                                     if (err) {
                                         next(err);
                                     } else {
-                                        var fullUrl = helper.buildFullUrlFromRequest(req);
+                                        const fullUrl = helper.buildFullUrlFromRequest(req);
                                         res.set('Location', fullUrl + offer[0].offeruuid);
                                         res.status(201);
-                                        var invoiceIn  = JSON.parse(offer[0].invoice);
-                                        var invoiceOut = {
+                                        const invoiceIn = JSON.parse(offer[0].invoice);
+                                        const invoiceOut = {
                                             expiration: invoiceIn.expiration,
                                             transfers: invoiceIn.transfers
                                         };
@@ -84,6 +86,32 @@ router.post('/', validate({
     });
 
 
+});
+
+router.post('/:offer_id/request_license_update', validate({
+    query: validation_schema.Empty,
+    body: validation_schema.RequestLicenseUpdateBody
+}), function (req, res, next) {
+
+
+    const offerUUID = req.params['offer_id'];
+    const hsmId = req.body['hsmId'];
+    const userUUID = req.token.user.id;
+    const roles = req.token.user.roles;
+
+    dbTransaction.GetTransactionByOffer(userUUID, roles, offerUUID, (err, transaction) => {
+        if (err) {
+            return next(err);
+        }
+
+        if (!transaction || !transaction['licenseorderuuid'] || transaction['licenseorderuuid'].length <= 0) {
+            return res.sendStatus(404);
+        }
+
+        licenseService.emit('updateAvailable', offerUUID, hsmId);
+
+        res.sendStatus(200);
+    });
 });
 
 module.exports = router;

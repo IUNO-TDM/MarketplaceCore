@@ -45,4 +45,17 @@ self.OfferRequestBody = {
     additionalProperties: false
 };
 
+
+self.RequestLicenseUpdateBody = {
+    type: 'object',
+    properties: {
+        hsmId: {
+            type: 'string',
+            pattern: '[3-9]-[0-9]{7}$'
+        }
+    },
+    required: ['hsmId'],
+    additionalProperties: false
+};
+
 module.exports = self;

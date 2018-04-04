@@ -2,10 +2,10 @@
  * Created by beuttlerma on 31.05.17.
  */
 
-var logger = require('../../global/logger');
-var db = require('../db_connection');
+const logger = require('../../global/logger');
+const db = require('../db_connection');
 
-var self = {};
+const self = {};
 
 self.GetTransactionByOfferRequest = function (userUUID, roles, offerRequestUUID, callback) {
     db.func('GetTransactionByOfferRequest', [offerRequestUUID, userUUID, roles])
@@ -30,6 +30,22 @@ self.GetTransactionByID = function (user, transactionUUID, callback) {
             if (data && data.length) {
                 data = data[0];
                 return callback(null, data);
+            }
+            else {
+                return callback(null, null);
+            }
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
+self.GetTransactionByOffer = function (userUUID, roles, offerUUID, callback) {
+    db.func('GetTransactionByOffer', [offerUUID, userUUID, roles])
+        .then(function (data) {
+            if (data && data.length) {
+                return callback(null, data[0]);
             }
             else {
                 return callback(null, null);
