@@ -4,7 +4,6 @@ var reports_helper = {};
 
 
 reports_helper.fill_gaps_revenue_history = function (from, to, data) {
-    console.log(moment().format());
     const startDate = moment.utc(from);
     const endDate = moment.utc(to);
 

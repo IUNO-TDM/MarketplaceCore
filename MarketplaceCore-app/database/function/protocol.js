@@ -3,8 +3,8 @@ const db = require('../db_connection');
 
 let self = {};
 
-self.CreateProtocols = function (protocol, clientid, roles, callback) {
-    db.func('CreateProtocols', [protocol, clientid, roles])
+self.CreateProtocols = function (protocol, clientid, createdby, roles, callback) {
+    db.func('CreateProtocols', [protocol, clientid, createdby, roles])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];
