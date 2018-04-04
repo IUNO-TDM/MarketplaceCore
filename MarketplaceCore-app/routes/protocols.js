@@ -17,7 +17,7 @@ router.post('/:clientId', validate({
 
     logger.info("Protocol of type \"" + protocol.eventType + "\" received from " + clientId);
 
-    dbProtocols.CreateProtocols(protocol, clientId, req.token.user.roles, function (err, data) {
+    dbProtocols.CreateProtocols(protocol, clientId, req.token.user.id, req.token.user.roles, function (err, data) {
         if (err) {
             next(err);
         }
