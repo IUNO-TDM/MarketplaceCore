@@ -69,7 +69,7 @@ self.SaveData_Body = {
             oneOf: [
                 {
                     type: 'string',
-                    pattern: '^[A-Za-z0-9+/]*={0,2}$',
+                    pattern: '[A-Za-z0-9+/]*={0,2}$',
                     minLength: 1,
                     maxLength: 100000
                 },
