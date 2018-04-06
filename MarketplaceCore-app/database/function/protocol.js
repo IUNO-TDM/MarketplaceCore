@@ -26,11 +26,11 @@ self.GetProtocols = function (eventType, clientid, from, to, limit, user, roles,
     }
 
     db.func('GetProtocols', [eventType, clientid, from, to, limit, user, roles])
-        .then(function (data) {
+        .then((data) => {
             logger.debug('GetProtocols result: ' + JSON.stringify(data));
             callback(null, data);
         })
-        .catch(function (error) {
+        .catch((error) => {
             logger.crit(error);
             callback(error);
         });
@@ -38,11 +38,11 @@ self.GetProtocols = function (eventType, clientid, from, to, limit, user, roles,
 
 self.GetLastProtocolForEachClient = function (eventType, from, to, user, roles, callback) {
     db.func('GetLastProtocolForEachClient', [eventType, from, to, user, roles])
-        .then(function (data) {
+        .then((data) => {
             logger.debug('GetLastProtocolForEachClient result: ' + JSON.stringify(data));
             callback(null, data);
         })
-        .catch(function (error) {
+        .catch((error) => {
             logger.crit(error);
             callback(error);
         });
