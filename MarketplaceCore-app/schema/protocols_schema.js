@@ -43,6 +43,35 @@ self.Protocol_Query = {
         to: {
             type: 'string',
             format: 'date-time'
+        },
+        clientId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        limit: {
+            type: 'integer'
+        }
+    },
+    additionalProperties: false,
+    required: [
+        'eventType', 'from', 'to'
+    ]
+};
+
+self.Protocol_Last_Query = {
+    type: 'object',
+    properties: {
+        eventType: {
+            type: 'string',
+            maxLength: 50
+        },
+        from: {
+            type: 'string',
+            format: 'date-time'
+        },
+        to: {
+            type: 'string',
+            format: 'date-time'
         }
     },
     additionalProperties: false,
