@@ -5,7 +5,7 @@ let self = {};
 
 self.CreateProtocols = function (protocol, clientid, createdby, roles, callback) {
     db.func('CreateProtocols', [protocol, clientid, createdby, roles])
-        .then(function (data) {
+        .then((data) => {
             if (data && data.length) {
                 data = data[0];
             }
@@ -13,7 +13,7 @@ self.CreateProtocols = function (protocol, clientid, createdby, roles, callback)
             logger.debug('CreateProtocols result: ' + JSON.stringify(data));
             callback(null, data);
         })
-        .catch(function (error) {
+        .catch((error) => {
             logger.crit(error);
             callback(error);
         });
