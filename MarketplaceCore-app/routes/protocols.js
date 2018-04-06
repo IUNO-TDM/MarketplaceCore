@@ -11,13 +11,13 @@ const authenticationService = require('../services/authentication_service');
 router.post('/:clientId', validate({
     query: validation_schema.Empty,
     body: validation_schema.Protocol_Body
-}), function (req, res, next) {
+}), (req, res, next) => {
     let clientId = req.params['clientId'];
     let protocol = req.body;
 
     logger.info("Protocol of type \"" + protocol.eventType + "\" received from " + clientId);
 
-    dbProtocols.CreateProtocols(protocol, clientId, req.token.user.id, req.token.user.roles, function (err, data) {
+    dbProtocols.CreateProtocols(protocol, clientId, req.token.user.id, req.token.user.roles, (err, data) => {
         if (err) {
             next(err);
         }
@@ -32,9 +32,44 @@ router.get('/',
     validate({
         query: validation_schema.Protocol_Query,
         body: validation_schema.Empty
-    }), function (req, res, next) {
-        dbProtocols.GetProtocols(req.query['eventType'], req.query['from'], req.query['to'], req.token.user.id,
-            req.token.user.roles, function (err, data) {
+    }), (req, res, next) => {
+
+        const clientId = req.query['clientId'] ? req.query['clientId'] : null;
+        const limit = req.query['limit'] ? req.query['limit'] : null;
+
+        dbProtocols.GetProtocols(
+            req.query['eventType'],
+            clientId,
+            req.query['from'],
+            req.query['to'],
+            limit,
+            req.token.user.id,
+            req.token.user.roles,
+            (err, data) => {
+
+                if (err) {
+                    return next(err);
+                }
+
+                res.json(data);
+
+            });
+    });
+
+router.get('/last',
+    authenticationService.isAdmin,
+    validate({
+        query: validation_schema.Protocol_Last_Query,
+        body: validation_schema.Empty
+    }), (req, res, next) => {
+
+        dbProtocols.GetLastProtocolForEachClient(
+            req.query['eventType'],
+            req.query['from'],
+            req.query['to'],
+            req.token.user.id,
+            req.token.user.roles,
+            (err, data) => {
 
                 if (err) {
                     return next(err);

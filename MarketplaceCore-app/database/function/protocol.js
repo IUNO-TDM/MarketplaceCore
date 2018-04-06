@@ -19,10 +19,27 @@ self.CreateProtocols = function (protocol, clientid, createdby, roles, callback)
         });
 };
 
-self.GetProtocols = function (eventType, from, to, user, roles, callback) {
-    db.func('GetProtocols', [eventType, from, to, user, roles])
+self.GetProtocols = function (eventType, clientid, from, to, limit, user, roles, callback) {
+
+    if (!limit || limit <= 0) {
+        limit = 100;
+    }
+
+    db.func('GetProtocols', [eventType, clientid, from, to, limit, user, roles])
         .then(function (data) {
             logger.debug('GetProtocols result: ' + JSON.stringify(data));
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
+self.GetLastProtocolForEachClient = function (eventType, from, to, user, roles, callback) {
+    db.func('GetLastProtocolForEachClient', [eventType, from, to, user, roles])
+        .then(function (data) {
+            logger.debug('GetLastProtocolForEachClient result: ' + JSON.stringify(data));
             callback(null, data);
         })
         .catch(function (error) {
