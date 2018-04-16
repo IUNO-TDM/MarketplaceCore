@@ -12,7 +12,7 @@ self.LicenseUpdate_Body = {
     properties: {
         RAC: {
             type: 'string',
-            pattern: '^[A-Za-z0-9+/]*$'
+            pattern: '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$'
         }
     },
     required: ['RAC'],
