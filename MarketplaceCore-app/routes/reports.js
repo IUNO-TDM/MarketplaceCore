@@ -34,8 +34,8 @@ router.get('/revenue/', validate({
                 next(err);
             }
             else {
-                if(data.length){
-                    data = reports_helper.fill_gaps_total_revenue(from,to,detail, data);
+                if (data.length) {
+                    data = reports_helper.fill_gaps_total_revenue(from, to, detail, data);
                 }
 
                 res.json(data);
@@ -80,8 +80,8 @@ router.get('/revenue/technologydata/history', validate({
             }
             else {
 
-                if(data.length){
-                    data = reports_helper.fill_gaps_revenue_history(from,to, data);
+                if (data.length) {
+                    data = reports_helper.fill_gaps_revenue_history(from, to, data);
                 }
                 res.json(data);
 

@@ -2,7 +2,7 @@
  * Created by beuttlerma on 11.07.17.
  */
 
-var authService= require('../adapter/auth_service_adapter');
+var authService = require('../adapter/auth_service_adapter');
 var logger = require('../global/logger');
 var self = {};
 
@@ -35,12 +35,12 @@ function unauthorized(res) {
 }
 
 
-self.oAuth = function(req, res, next) {
+self.oAuth = function (req, res, next) {
 
     try {
         const accessToken = getBearerTokenFromHeader(req);
 
-        authService.validateToken(accessToken, function(err, isValid, token){
+        authService.validateToken(accessToken, function (err, isValid, token) {
             if (isValid) {
                 req.token = token;
                 next();

@@ -174,15 +174,15 @@ self.Empty_Body = {
 self.Protocol_Body = {
     type: 'object',
     properties: {
-        eventType:{
+        eventType: {
             type: 'string',
             maxLength: 50
         },
-        from:{
+        from: {
             type: 'string',
             format: 'date-time'
         },
-        to:{
+        to: {
             type: 'string',
             format: 'date-time'
         }

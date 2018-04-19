@@ -10,7 +10,7 @@ const DEFAULT_IMAGE = 'images/recipes/default.svg';
 
 const self = {};
 
-function randomInt (low, high, seed) {
+function randomInt(low, high, seed) {
     if (seed) {
         return Math.floor(seedRandom(seed)() * (high - low) + low);
     }
@@ -35,7 +35,7 @@ self.getRandomImagePath = function () {
     }
 };
 
-self.getDefaultImagePathForUUID = function(uuid) {
+self.getDefaultImagePathForUUID = function (uuid) {
     try {
         const files = fs.readdirSync(IMAGE_DIR);
 
@@ -50,8 +50,8 @@ self.getDefaultImagePathForUUID = function(uuid) {
     }
 };
 
-self.saveImage = function(user, tdName, image) {
-    const imageName = crypto.createHash('md5').update(user+tdName).digest('hex') + '.svg';
+self.saveImage = function (user, tdName, image) {
+    const imageName = crypto.createHash('md5').update(user + tdName).digest('hex') + '.svg';
 
     const filePath = path.join(IMAGE_DIR, imageName);
 

@@ -32,7 +32,7 @@ self.formatString = function (string) {
     return string.format(...args);
 };
 
-self.convertUUIDtoBase64 = function(uuid) {
+self.convertUUIDtoBase64 = function (uuid) {
 
     uuid = uuid.replace(new RegExp('-', 'g'), '');
     let base64 = new Buffer(uuid, 'hex').toString('base64');
@@ -42,7 +42,7 @@ self.convertUUIDtoBase64 = function(uuid) {
     return base64;
 };
 
-self.convertUUIDtoBase85 = function(uuid) {
+self.convertUUIDtoBase85 = function (uuid) {
 
     uuid = uuid.replace(new RegExp('-', 'g'), '');
     const base85String = ascii85.encode(new Buffer(uuid, 'hex')).toString();

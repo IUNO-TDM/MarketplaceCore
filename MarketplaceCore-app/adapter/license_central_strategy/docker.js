@@ -1,4 +1,3 @@
-
 const logger = require('../../global/logger');
 
 let self = require('./default');

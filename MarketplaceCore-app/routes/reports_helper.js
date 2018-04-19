@@ -59,20 +59,19 @@ reports_helper.fill_gaps_total_revenue = function (from, to, detail, data) {
 
 
     var dates = [];
-    if(hourly){
+    if (hourly) {
         var date = startDate.startOf('hour');
         do {
             dates.push(date.toDate());
             date.add(1, 'hour');
         } while (date.isBefore(endDate));
-    }else{
+    } else {
         var date = startDate.startOf('day');
         do {
             dates.push(date.toDate());
             date.add(1, 'day');
         } while (date.isBefore(endDate));
     }
-
 
 
     var no_gap_data = {};
@@ -88,14 +87,15 @@ reports_helper.fill_gaps_total_revenue = function (from, to, detail, data) {
                     hour: "0",
                     amount: 0
                 };
-                if(hourly){
+                if (hourly) {
                     emptyDataset.hour = dates[j].getUTCHours().toString();
                 }
                 no_gap_data[data[i].technologydataname].push(emptyDataset);
             }
         }
         var date = data[i].date;
-        var d2 = moment.utc([date.getFullYear(), date.getMonth(), date.getDate(),data[i].hour]).toDate();
+        var d2 = moment.utc([date.getFullYear(), date.getMonth(), date.getDate(), data[i].hour]).toDate();
+
         function indexOfDate(element) {
             return (element.getTime() == d2.getTime());
         }

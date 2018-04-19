@@ -30,7 +30,10 @@ router.get('/', validate({query: validation_schema.Empty, body: validation_schem
     });
 });
 
-router.get('/:id', validate({query: validation_schema.Empty, body: validation_schema.Empty}), function (req, res, next) {
+router.get('/:id', validate({
+    query: validation_schema.Empty,
+    body: validation_schema.Empty
+}), function (req, res, next) {
     Component.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
@@ -45,7 +48,7 @@ router.post('/', validate({
     body: validation_schema.SaveData_Body,
     query: validation_schema.Empty
 }), function (req, res, next) {
-const comp = new Component();
+    const comp = new Component();
 
     const data = req.body;
 
