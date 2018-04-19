@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const logger = require('../global/logger');
 
-const { Validator, ValidationError } = require('express-json-validator-middleware');
+const {Validator, ValidationError} = require('express-json-validator-middleware');
 const validator = new Validator({allErrors: true});
 const validate = validator.validate;
 

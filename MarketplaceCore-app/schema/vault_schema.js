@@ -9,23 +9,23 @@ self.Empty = {
 self.Payout = {
     type: 'object',
     properties: {
-        payoutId:{
+        payoutId: {
             type: 'string',
             format: 'uuid'
         },
-        payoutAddress:{
+        payoutAddress: {
             type: 'string',
             pattern: '^[mn2][a-km-zA-HJ-NP-Z1-9]{33}$'
         },
-        amount:{
+        amount: {
             type: 'integer',
             minimum: 1,
             maximum: 100000000
         },
-        emptyWallet:{
+        emptyWallet: {
             type: 'boolean'
         },
-        referenceId:{
+        referenceId: {
             type: 'string',
             maxLength: 50
 

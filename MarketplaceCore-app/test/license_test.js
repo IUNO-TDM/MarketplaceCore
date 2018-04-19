@@ -5,7 +5,7 @@ const cmSerial = '3-4019156';
 const customerId = require('../services/helper_service').convertUUIDtoBase85('da17a8fc-a5b3-40a4-b6a5-276667db027a');
 const productCode = 1;
 const itemId = 'pc' + productCode;
-const itemName = 'Test ' + getRandomInt(1,999999999999999);
+const itemName = 'Test ' + getRandomInt(1, 999999999999999);
 const quantity = 1;
 
 function getRandomInt(min, max) {

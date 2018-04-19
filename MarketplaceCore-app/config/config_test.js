@@ -1,4 +1,3 @@
-
 String.prototype.format = function () {
     var args = [].slice.call(arguments);
     return this.replace(/(\{\d+\})/g, function (a) {

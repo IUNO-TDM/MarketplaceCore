@@ -3,10 +3,6 @@ const router = express.Router();
 const logger = require('../global/logger');
 
 
-
-
-
-
 const {Validator, ValidationError} = require('express-json-validator-middleware');
 const validator = new Validator({allErrors: true});
 const validation_schema = require('../schema/vault_schema');
@@ -94,7 +90,7 @@ router.get('/users/:userId/wallets/:walletId', validate({
             res.status(500).send(err);
         } else {
             vault_service.getConfirmedCreditForWallet(walletId, '4711', function (err, confirmed) {
-                res.status(200).send( {walletId: walletId, unconfirmed: unconfirmed, confirmed: confirmed});
+                res.status(200).send({walletId: walletId, unconfirmed: unconfirmed, confirmed: confirmed});
             });
 
         }
@@ -118,9 +114,9 @@ router.post('/users/:userId/wallets/:walletId/payouts', validate({
         } else {
             vault_service.payoutCredit(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
                 if (err) {
-                    if(err.statusCode){
+                    if (err.statusCode) {
                         res.status(err.statusCode).send(err.message);
-                    }else{
+                    } else {
 
                         res.status(500).send(payout);
                     }
@@ -149,9 +145,9 @@ router.post('/users/:userId/wallets/:walletId/payouts/check', validate({
         } else {
             vault_service.checkPayout(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
                 if (err) {
-                    if(err.statusCode){
+                    if (err.statusCode) {
                         res.status(err.statusCode).send(err.message);
-                    }else{
+                    } else {
 
                         res.status(500).send(payout);
                     }
