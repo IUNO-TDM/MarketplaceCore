@@ -14,8 +14,7 @@ const {Validator, ValidationError} = require('express-json-validator-middleware'
 const validator = new Validator({allErrors: true});
 const validate = validator.validate;
 const validation_schema = require('../schema/reports_schema');
-const moment = require('moment');
-const reports_helper = require('./reports_helper');
+const reports_helper = require('../services/reports_service');
 
 
 router.get('/revenue/', validate({
@@ -23,9 +22,9 @@ router.get('/revenue/', validate({
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
 
-    var from = req.query['from'];
-    var to = req.query['to'];
-    var detail = req.query['detail'];
+    const from = req.query['from'];
+    const to = req.query['to'];
+    const detail = req.query['detail'];
     dbReports.GetTotalRevenue(
         from, to, detail,
         req.token.user.id,
@@ -67,8 +66,8 @@ router.get('/revenue/technologydata/history', validate({
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
 
-    var from = req.query['from'];
-    var to = req.query['to'];
+    const from = req.query['from'];
+    const to = req.query['to'];
     dbReports.GetRevenueHistory(
         from,
         to,
