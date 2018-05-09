@@ -18,12 +18,11 @@
 --#######################################################################################################
 -- PUT YOUR STATEMENTS HERE:
 -- 	1) Why is this Patch necessary?
---  Missing limits in db query
+--  Missing where clause in get GetLastProtocolForEachClient
 -- 	2) Which Git Issue Number is this patch solving?
---  #176
+--
 -- 	3) Which changes are going to be done?
---  Updated GetProtocols function to include ClientId filter.
---  Introduced new function GetLastProtocolForEachClient: Returning only the last protocol for each client.
+--  Fixed where clause in GetLastProtocolForEachClient function
 --: Run Patches
 ------------------------------------------------------------------------------------------------
 --##############################################################################################
