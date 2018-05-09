@@ -66,7 +66,7 @@ self.LICENSE_CENTRAL = {
     },
     FIRM_CODE: 6000274,
     CMACTID: 1000,
-    LCACTION:'autoupdate'
+    LCACTION: 'autoupdate'
 };
 
 self.USER = {

@@ -7,7 +7,7 @@ var db = require('../db_connection');
 
 var self = {};
 
-self.SetPayment = function(user, payment, callback) {
+self.SetPayment = function (user, payment, callback) {
     db.func('SetPayment', [payment.transactionUUID, payment.bitcoinTransaction, payment.confidenceState, payment.depth, payment.extInvoiceId, user.uuid, user.roles])
         .then(function (data) {
             if (data && data.length) {
@@ -29,7 +29,7 @@ self.SetPayment = function(user, payment, callback) {
 //<editor-fold desc="Offer and Invoice">
 self.SetPaymentInvoiceOffer = function (userUUID, roles, invoice, offerRequestUUID, callback) {
     db.func('SetPaymentInvoiceOffer',
-        [   offerRequestUUID,
+        [offerRequestUUID,
             invoice,
             userUUID,
             roles
@@ -44,7 +44,7 @@ self.SetPaymentInvoiceOffer = function (userUUID, roles, invoice, offerRequestUU
         });
 };
 
-self.GetPaymentInvoiceForOfferRequest = function(user, offerRequestUUID, callback){
+self.GetPaymentInvoiceForOfferRequest = function (user, offerRequestUUID, callback) {
     db.func('GetPaymentInvoiceForOfferRequest', [offerRequestUUID, user.uuid, user.roles])
         .then(function (data) {
             if (data && data.length) {

@@ -14,7 +14,6 @@ const MethodToContentTypeMapping = {
 };
 
 
-
 module.exports = function (req, res, next) {
     const allowedTypes = MethodToContentTypeMapping[req.method];
     for (var i in allowedTypes) {
@@ -22,7 +21,7 @@ module.exports = function (req, res, next) {
             return next();
         }
 
-        if(req.is(allowedTypes[i])) {
+        if (req.is(allowedTypes[i])) {
             return next();
         }
     }

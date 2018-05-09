@@ -9,12 +9,12 @@ const authentication = require('../services/authentication_service');
 function onIOLicenseConnect(socket) {
     logger.debug('Client for Licenses connected.' + socket.id);
 
-    socket.on('room', function(hsmid) {
+    socket.on('room', function (hsmid) {
         logger.debug('Client joining room: ' + hsmid);
 
         socket.join(hsmid);
     });
-    socket.on('leave', function(hsmid) {
+    socket.on('leave', function (hsmid) {
         logger.debug('Client leaves room: ' + hsmid);
 
         socket.leave(hsmid);
@@ -36,8 +36,8 @@ module.exports = function (io) {
 
 };
 
-function registerLicenseEvents(namespace){
-    license_service.on('updateAvailable', function(offerId,hsmId){
-        namespace.to(hsmId).emit('updateAvailable',{hsmId: hsmId, offerId: offerId});
+function registerLicenseEvents(namespace) {
+    license_service.on('updateAvailable', function (offerId, hsmId) {
+        namespace.to(hsmId).emit('updateAvailable', {hsmId: hsmId, offerId: offerId});
     })
 }

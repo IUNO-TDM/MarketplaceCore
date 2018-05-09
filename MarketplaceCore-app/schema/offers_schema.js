@@ -27,7 +27,7 @@ self.OfferRequestBody = {
                     },
                     amount: {
                         type: 'integer',
-                        minimum : 1,
+                        minimum: 1,
                         maximum: 100
                     }
                 },

@@ -14,8 +14,7 @@ const {Validator, ValidationError} = require('express-json-validator-middleware'
 const validator = new Validator({allErrors: true});
 const validate = validator.validate;
 const validation_schema = require('../schema/reports_schema');
-const moment = require('moment');
-const reports_helper = require('./reports_helper');
+const reports_helper = require('../services/reports_service');
 
 
 router.get('/revenue/', validate({
@@ -23,9 +22,9 @@ router.get('/revenue/', validate({
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
 
-    var from = req.query['from'];
-    var to = req.query['to'];
-    var detail = req.query['detail'];
+    const from = req.query['from'];
+    const to = req.query['to'];
+    const detail = req.query['detail'];
     dbReports.GetTotalRevenue(
         from, to, detail,
         req.token.user.id,
@@ -34,8 +33,8 @@ router.get('/revenue/', validate({
                 next(err);
             }
             else {
-                if(data.length){
-                    data = reports_helper.fill_gaps_total_revenue(from,to,detail, data);
+                if (data.length) {
+                    data = reports_helper.fill_gaps_total_revenue(from, to, detail, data);
                 }
 
                 res.json(data);
@@ -67,8 +66,8 @@ router.get('/revenue/technologydata/history', validate({
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
 
-    var from = req.query['from'];
-    var to = req.query['to'];
+    const from = req.query['from'];
+    const to = req.query['to'];
     dbReports.GetRevenueHistory(
         from,
         to,
@@ -80,8 +79,8 @@ router.get('/revenue/technologydata/history', validate({
             }
             else {
 
-                if(data.length){
-                    data = reports_helper.fill_gaps_revenue_history(from,to, data);
+                if (data.length) {
+                    data = reports_helper.fill_gaps_revenue_history(from, to, data);
                 }
                 res.json(data);
 

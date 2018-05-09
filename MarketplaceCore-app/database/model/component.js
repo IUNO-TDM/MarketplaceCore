@@ -51,7 +51,7 @@ Component.prototype.FindAll = Component.FindAll = function (userUUID, roles, par
 };
 
 Component.prototype.FindSingle = Component.FindSingle = function (userUUID, roles, id, callback) {
-    db.func('GetComponentByID', [ id, userUUID, roles])
+    db.func('GetComponentByID', [id, userUUID, roles])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];
@@ -64,7 +64,7 @@ Component.prototype.FindSingle = Component.FindSingle = function (userUUID, role
         });
 };
 
-Component.prototype.FindByTechnologyDataId =  Component.FindByTechnologyDataId = function (userUUID, roles, technologyDataId, callback) {
+Component.prototype.FindByTechnologyDataId = Component.FindByTechnologyDataId = function (userUUID, roles, technologyDataId, callback) {
     db.func('GetComponentsForTechnologyDataId', [technologyDataId, userUUID, roles])
         .then(function (data) {
             var resultList = [];
@@ -81,7 +81,7 @@ Component.prototype.FindByTechnologyDataId =  Component.FindByTechnologyDataId =
 
 Component.prototype.Create = function (userUUID, roles, callback) {
     db.func('SetComponent',
-        [   this.componentname,
+        [this.componentname,
             this.componentparentname,
             this.componentdescription,
             this.attributelist,

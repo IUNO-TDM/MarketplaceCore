@@ -27,7 +27,7 @@ function buildOptionsForRequest(method, protocol, host, port, path, qs) {
     }
 }
 
-bitcoinVaultService.getWalletsForUserId = function(userId,accessToken, callback){
+bitcoinVaultService.getWalletsForUserId = function (userId, accessToken, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -50,7 +50,7 @@ bitcoinVaultService.getWalletsForUserId = function(userId,accessToken, callback)
 };
 
 
-bitcoinVaultService.createWalletForUserId = function(userId,accessToken, callback){
+bitcoinVaultService.createWalletForUserId = function (userId, accessToken, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -76,7 +76,7 @@ bitcoinVaultService.createWalletForUserId = function(userId,accessToken, callbac
     });
 };
 
-bitcoinVaultService.deleteWallet = function(walletId, accessToken, callback){
+bitcoinVaultService.deleteWallet = function (walletId, accessToken, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -89,7 +89,7 @@ bitcoinVaultService.deleteWallet = function(walletId, accessToken, callback){
         config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
         config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
         config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
-        '/v1/wallets/'+walletId + '?accessToken='+accessToken
+        '/v1/wallets/' + walletId + '?accessToken=' + accessToken
     );
 
     request(options, function (e, r, body) {
@@ -99,7 +99,7 @@ bitcoinVaultService.deleteWallet = function(walletId, accessToken, callback){
 };
 
 
-bitcoinVaultService.getCreditForWallet = function(walletId, accessToken, callback){
+bitcoinVaultService.getCreditForWallet = function (walletId, accessToken, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -112,7 +112,7 @@ bitcoinVaultService.getCreditForWallet = function(walletId, accessToken, callbac
         config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
         config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
         config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
-        '/v1/wallets/'+walletId + '/credit?accessToken='+accessToken
+        '/v1/wallets/' + walletId + '/credit?accessToken=' + accessToken
     );
 
     request(options, function (e, r, credit) {
@@ -121,7 +121,7 @@ bitcoinVaultService.getCreditForWallet = function(walletId, accessToken, callbac
     });
 };
 
-bitcoinVaultService.getConfirmedCreditForWallet = function(walletId, accessToken, callback){
+bitcoinVaultService.getConfirmedCreditForWallet = function (walletId, accessToken, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -134,7 +134,7 @@ bitcoinVaultService.getConfirmedCreditForWallet = function(walletId, accessToken
         config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
         config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
         config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
-        '/v1/wallets/'+walletId + '/confirmedcredit?accessToken='+accessToken
+        '/v1/wallets/' + walletId + '/confirmedcredit?accessToken=' + accessToken
     );
 
     request(options, function (e, r, credit) {
@@ -143,7 +143,7 @@ bitcoinVaultService.getConfirmedCreditForWallet = function(walletId, accessToken
     });
 };
 
-bitcoinVaultService.getTransactionsForWallet = function(walletId, accessToken, callback){
+bitcoinVaultService.getTransactionsForWallet = function (walletId, accessToken, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -156,7 +156,7 @@ bitcoinVaultService.getTransactionsForWallet = function(walletId, accessToken, c
         config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
         config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
         config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
-        '/v1/wallets/'+walletId + '/transactions?accessToken='+accessToken
+        '/v1/wallets/' + walletId + '/transactions?accessToken=' + accessToken
     );
 
     request(options, function (e, r, credit) {
@@ -165,7 +165,7 @@ bitcoinVaultService.getTransactionsForWallet = function(walletId, accessToken, c
     });
 };
 
-bitcoinVaultService.getNewAddressForWallet = function(walletId, accessToken, callback){
+bitcoinVaultService.getNewAddressForWallet = function (walletId, accessToken, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -178,7 +178,7 @@ bitcoinVaultService.getNewAddressForWallet = function(walletId, accessToken, cal
         config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
         config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
         config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
-        '/v1/wallets/'+walletId + '/newaddress?accessToken='+accessToken
+        '/v1/wallets/' + walletId + '/newaddress?accessToken=' + accessToken
     );
 
     request(options, function (e, r, address) {
@@ -188,7 +188,7 @@ bitcoinVaultService.getNewAddressForWallet = function(walletId, accessToken, cal
 };
 
 
-bitcoinVaultService.payoutCredit = function(walletId, amount, address, accessToken,emptyWallet,referenceId, callback){
+bitcoinVaultService.payoutCredit = function (walletId, amount, address, accessToken, emptyWallet, referenceId, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -201,15 +201,15 @@ bitcoinVaultService.payoutCredit = function(walletId, amount, address, accessTok
         config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
         config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
         config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
-        '/v1/wallets/'+walletId + '/payouts?accessToken='+accessToken
+        '/v1/wallets/' + walletId + '/payouts?accessToken=' + accessToken
     );
 
     options.body = {
         "payoutId": "",
         "payoutAddress": address,
-        "amount":amount,
-        "emptyWallet":emptyWallet,
-        "referenceId":referenceId
+        "amount": amount,
+        "emptyWallet": emptyWallet,
+        "referenceId": referenceId
     };
 
     request(options, function (e, r, payout) {
@@ -218,7 +218,7 @@ bitcoinVaultService.payoutCredit = function(walletId, amount, address, accessTok
     });
 };
 
-bitcoinVaultService.checkPayout = function(walletId, amount, address, accessToken,emptyWallet,referenceId, callback){
+bitcoinVaultService.checkPayout = function (walletId, amount, address, accessToken, emptyWallet, referenceId, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -231,15 +231,15 @@ bitcoinVaultService.checkPayout = function(walletId, amount, address, accessToke
         config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
         config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
         config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
-        '/v1/wallets/'+walletId + '/payouts/check?accessToken='+accessToken
+        '/v1/wallets/' + walletId + '/payouts/check?accessToken=' + accessToken
     );
 
     options.body = {
         "payoutId": "",
         "payoutAddress": address,
-        "amount":amount,
-        "emptyWallet":emptyWallet,
-        "referenceId":referenceId
+        "amount": amount,
+        "emptyWallet": emptyWallet,
+        "referenceId": referenceId
     };
 
     request(options, function (e, r, payout) {
@@ -248,7 +248,7 @@ bitcoinVaultService.checkPayout = function(walletId, amount, address, accessToke
     });
 };
 
-bitcoinVaultService.getPayout = function(walletId, payoutId, accessToken, callback){
+bitcoinVaultService.getPayout = function (walletId, payoutId, accessToken, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -261,7 +261,7 @@ bitcoinVaultService.getPayout = function(walletId, payoutId, accessToken, callba
         config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
         config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
         config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
-        '/v1/wallets/'+walletId + '/payouts/'+payoutId+'?accessToken='+accessToken
+        '/v1/wallets/' + walletId + '/payouts/' + payoutId + '?accessToken=' + accessToken
     );
 
     request(options, function (e, r, payout) {
@@ -270,7 +270,7 @@ bitcoinVaultService.getPayout = function(walletId, payoutId, accessToken, callba
     });
 };
 
-bitcoinVaultService.getPayoutIds = function(walletId, accessToken, callback){
+bitcoinVaultService.getPayoutIds = function (walletId, accessToken, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -283,7 +283,7 @@ bitcoinVaultService.getPayoutIds = function(walletId, accessToken, callback){
         config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
         config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
         config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
-        '/v1/wallets/'+walletId + '/payouts?accessToken='+accessToken
+        '/v1/wallets/' + walletId + '/payouts?accessToken=' + accessToken
     );
 
     request(options, function (e, r, payoutIds) {
@@ -293,8 +293,7 @@ bitcoinVaultService.getPayoutIds = function(walletId, accessToken, callback){
 };
 
 
-
-bitcoinVaultService.getPayoutTransactions = function(walletId,payoutId, accessToken, callback){
+bitcoinVaultService.getPayoutTransactions = function (walletId, payoutId, accessToken, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
@@ -307,7 +306,7 @@ bitcoinVaultService.getPayoutTransactions = function(walletId,payoutId, accessTo
         config.HOST_SETTINGS.BIT_COIN_VAULT.PROTOCOL || 'http',
         config.HOST_SETTINGS.BIT_COIN_VAULT.HOST || 'localhost',
         config.HOST_SETTINGS.BIT_COIN_VAULT.PORT || 8081,
-        '/v1/wallets/'+walletId + '/payouts/'+payoutId+'/transactions?accessToken='+accessToken
+        '/v1/wallets/' + walletId + '/payouts/' + payoutId + '/transactions?accessToken=' + accessToken
     );
 
     request(options, function (e, r, payoutTransactions) {

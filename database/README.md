@@ -44,6 +44,7 @@
 | iuno_marketplacecore_V0035V_20180403.sql                          | 0035              | Added Function GetTransactionByOffer                                                                   |                                 | [@mbeuttler][imbeuttler] |
 | iuno_marketplacecore_V0036V_20180404.sql                          | 0036              | Added clientId column to protocols table                                                               |  [#174][i174]                   | [@mbeuttler][imbeuttler] |
 | iuno_marketplacecore_V0037V_20180405.sql                          | 0037              | Updated GetProtocols function to include ClientId filter. Introduced new function GetLastProtocolForEachClient: Returning only the last protocol for each client.   |  [#176][i176]                   | [@mbeuttler][imbeuttler] |
+| iuno_marketplacecore_V0038V_20180508.sql                          | 0038              | Fixed where clause in GetLastProtocolForEachClient function                                            |                                 s| [@mbeuttler][imbeuttler] |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
