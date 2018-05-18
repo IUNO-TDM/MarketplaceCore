@@ -55,7 +55,7 @@ router.get('/',
 
 router.get('/:id', validate({query: validationSchema.Empty, body: validationSchema.Empty}), function (req, res, next) {
 
-    new TechnologyData().FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, data) {
+    TechnologyData.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, data) {
         if (err) {
             next(err);
         }
@@ -134,7 +134,7 @@ router.get('/:id/image', validate({
 }), function (req, res, next) {
 
 
-    new TechnologyData().FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, technologyData) {
+    TechnologyData.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, technologyData) {
         if (err) {
             next(err);
         }
@@ -165,7 +165,7 @@ router.get('/:id/components', validate({
     body: validationSchema.Empty
 }), function (req, res, next) {
 
-    new Component().FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.params['id'], function (err, components) {
+    Component.FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.params['id'], function (err, components) {
         if (err) {
             next(err);
         }
@@ -180,7 +180,7 @@ router.delete('/:id/delete', validate({
     body: validationSchema.Empty
 }), function (req, res, next) {
 
-    new TechnologyData().Delete(req.params['id'], req.token.user.id, req.token.user.roles, function (err, data) {
+    TechnologyData.Delete(req.params['id'], req.token.user.id, req.token.user.roles, function (err, data) {
         if (err) {
             next(err);
         }
@@ -188,6 +188,26 @@ router.delete('/:id/delete', validate({
             res.json(data);
         }
     });
+});
+
+router.get('/:id/content', validate({
+    query: validationSchema.GetContent_Query,
+    body: validationSchema.Empty
+}), function (req, res, next) {
+
+    TechnologyData.FindWithContent(req.params['id'], req.query['offerId'], req.token.client.id, req.token.user.id, req.token.user.roles,
+        (err, data) => {
+            if (err) {
+                return next(err);
+            }
+
+            if (!data) {
+                return res.sendStatus(402)
+            }
+
+            res.json(data.technologydata);
+        }
+    );
 });
 
 module.exports = router;
