@@ -76,6 +76,7 @@
 [i167]: https://github.com/IUNO-TDM/MarketplaceCore/issues/167
 [i174]: https://github.com/IUNO-TDM/MarketplaceCore/issues/174
 [i176]: https://github.com/IUNO-TDM/MarketplaceCore/issues/176
+[i179]: https://github.com/IUNO-TDM/MarketplaceCore/issues/179
 
 
 [igomarcel]: https://github.com/gomarcel
