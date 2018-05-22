@@ -10,9 +10,9 @@ const validate = validator.validate;
 
 
 const vault_service = require('../services/bitcoinvault_service');
+const bruteForceProtection = require('../services/brute_force_protection');
 
-
-var async = require('async');
+const async = require('async');
 
 router.get('/users/:userId/balance', validate({
     query: validation_schema.Empty,
@@ -53,7 +53,7 @@ router.get('/users/:userId/wallets', validate({
         if (err) {
             res.status(404).send(err);
         } else {
-            var iterateForBalance = function (wallet, done) {
+            const iterateForBalance = function (wallet, done) {
                 vault_service.getCreditForWallet(wallet, '4711', function (err, unconfirmed) {
                     if (err) {
                         done(err, null);
@@ -84,7 +84,7 @@ router.get('/users/:userId/wallets/:walletId', validate({
     body: validation_schema.Empty
 }), function (req, res, next) {
 
-    walletId = req.param('walletId');
+    const walletId = req.param('walletId');
     vault_service.getCreditForWallet(walletId, '4711', function (err, unconfirmed) {
         if (err) {
             res.status(500).send(err);
@@ -98,66 +98,69 @@ router.get('/users/:userId/wallets/:walletId', validate({
     });
 });
 
-router.post('/users/:userId/wallets/:walletId/payouts', validate({
-    query: validation_schema.Empty,
-    body: validation_schema.Payout
-}), function (req, res, next) {
-    var userId = req.param('userId');
-    var walletId = req.param('walletId');
-    var payout = req.body;
-    vault_service.getWalletsForUserId(userId, '4711', function (err, wallets) {
-        if (err) {
-            res.sendStatus(400);
-        }
-        else if (wallets.indexOf(walletId) == 1) {
-            res.status(404).send('The wallet does not exist or does not own this user');
-        } else {
-            vault_service.payoutCredit(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
-                if (err) {
-                    if (err.statusCode) {
-                        res.status(err.statusCode).send(err.message);
-                    } else {
+router.post('/users/:userId/wallets/:walletId/payouts', bruteForceProtection.global,
+    validate({
+        query: validation_schema.Empty,
+        body: validation_schema.Payout
+    }), function (req, res, next) {
+        const userId = req.param('userId');
+        const walletId = req.param('walletId');
+        const payout = req.body;
+        vault_service.getWalletsForUserId(userId, '4711', function (err, wallets) {
+            if (err) {
+                res.sendStatus(400);
+            }
+            else if (wallets.indexOf(walletId) === 1) {
+                res.status(404).send('The wallet does not exist or does not own this user');
+            } else {
+                vault_service.payoutCredit(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
+                    if (err) {
+                        if (err.statusCode) {
+                            res.status(err.statusCode).send(err.message);
+                        } else {
 
-                        res.status(500).send(payout);
+                            res.status(500).send(payout);
+                        }
+                    } else {
+                        res.send(payout);
                     }
-                } else {
-                    res.send(payout);
-                }
-            });
-        }
+                });
+            }
+        });
+
     });
 
-});
+router.post('/users/:userId/wallets/:walletId/payouts/check',
+    bruteForceProtection.global,
+    validate({
+        query: validation_schema.Empty,
+        body: validation_schema.Payout
+    }), function (req, res, next) {
+        const userId = req.param('userId');
+        const walletId = req.param('walletId');
+        const payout = req.body;
+        vault_service.getWalletsForUserId(userId, '4711', function (err, wallets) {
+            if (err) {
+                res.sendStatus(400);
+            }
+            else if (wallets.indexOf(walletId) === 1) {
+                res.status(404).send('The wallet does not exist or does not own this user');
+            } else {
+                vault_service.checkPayout(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
+                    if (err) {
+                        if (err.statusCode) {
+                            res.status(err.statusCode).send(err.message);
+                        } else {
 
-router.post('/users/:userId/wallets/:walletId/payouts/check', validate({
-    query: validation_schema.Empty,
-    body: validation_schema.Payout
-}), function (req, res, next) {
-    var userId = req.param('userId');
-    var walletId = req.param('walletId');
-    var payout = req.body;
-    vault_service.getWalletsForUserId(userId, '4711', function (err, wallets) {
-        if (err) {
-            res.sendStatus(400);
-        }
-        else if (wallets.indexOf(walletId) == 1) {
-            res.status(404).send('The wallet does not exist or does not own this user');
-        } else {
-            vault_service.checkPayout(walletId, payout.amount, payout.payoutAddress, '4711', payout.emptyWallet, payout.referenceId, function (err, payout) {
-                if (err) {
-                    if (err.statusCode) {
-                        res.status(err.statusCode).send(err.message);
+                            res.status(500).send(payout);
+                        }
                     } else {
-
-                        res.status(500).send(payout);
+                        res.send(payout);
                     }
-                } else {
-                    res.send(payout);
-                }
-            });
-        }
-    });
+                });
+            }
+        });
 
-});
+    });
 
 module.exports = router;

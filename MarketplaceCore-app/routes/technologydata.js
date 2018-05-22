@@ -22,6 +22,7 @@ const dbProductCode = require('../database/function/productCode');
 const imageService = require('../services/image_service');
 const CONFIG = require('../config/config_loader');
 const path = require('path');
+const bruteForceProtection = require('../services/brute_force_protection');
 
 router.get('/',
     validate({
@@ -65,67 +66,68 @@ router.get('/:id', validate({query: validationSchema.Empty, body: validationSche
     });
 });
 
-router.post('/', validate({
-    body: validationSchema.SaveData_Body,
-    query: validationSchema.Empty
-}), function (req, res, next) {
-    const data = req.body;
+router.post('/', bruteForceProtection.global,
+    validate({
+        body: validationSchema.SaveData_Body,
+        query: validationSchema.Empty
+    }), function (req, res, next) {
+        const data = req.body;
 
-    TechnologyData.FindByName(req.token.user.id, req.token.user.roles, data['technologyDataName'], function (err, tData) {
-        if (err) {
-            return next(err);
-        }
-
-        if (tData) {
-            res.status(409);
-            return res.send('Technologydata with given name already exists.');
-        }
-
-        dbProductCode.GetNewProductCode(CONFIG.USER.uuid, function (err, productCode) {
+        TechnologyData.FindByName(req.token.user.id, req.token.user.roles, data['technologyDataName'], function (err, tData) {
             if (err) {
                 return next(err);
             }
 
-            licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, 'DEPRECATED_NOT_USED', productCode, data['technologyData'], function (err, encryptedData) {
+            if (tData) {
+                res.status(409);
+                return res.send('Technologydata with given name already exists.');
+            }
+
+            dbProductCode.GetNewProductCode(CONFIG.USER.uuid, function (err, productCode) {
                 if (err) {
                     return next(err);
                 }
 
-                const techData = new TechnologyData();
-
-                techData.technologydataname = data['technologyDataName'];
-                techData.technologydata = encryptedData;
-                techData.technologydatadescription = data['technologyDataDescription'];
-                techData.technologyuuid = data['technologyUUID'];
-                techData.licensefee = data['licenseFee'];
-                techData.taglist = data['tagList'];
-                techData.componentlist = data['componentList'];
-                techData.productcode = productCode;
-
-
-                if (data['image']) {
-                    techData.technologydataimgref = imageService.saveImage(req.token.user.id, data['technologyDataName'], data['image']);
-                }
-                else {
-                    techData.technologydataimgref = imageService.getRandomImagePath();
-                }
-
-
-                techData.backgroundcolor = data['backgroundColor'];
-
-                techData.Create(req.token.user.id, req.token.user.roles, function (err, data) {
+                licenseCentral.createAndEncrypt(CONFIG.PRODUCT_CODE_PREFIX + productCode, 'DEPRECATED_NOT_USED', productCode, data['technologyData'], function (err, encryptedData) {
                     if (err) {
                         return next(err);
                     }
 
-                    const fullUrl = helper.buildFullUrlFromRequest(req);
-                    res.set('Location', fullUrl + data['technologydatauuid']);
-                    res.sendStatus(201);
+                    const techData = new TechnologyData();
+
+                    techData.technologydataname = data['technologyDataName'];
+                    techData.technologydata = encryptedData;
+                    techData.technologydatadescription = data['technologyDataDescription'];
+                    techData.technologyuuid = data['technologyUUID'];
+                    techData.licensefee = data['licenseFee'];
+                    techData.taglist = data['tagList'];
+                    techData.componentlist = data['componentList'];
+                    techData.productcode = productCode;
+
+
+                    if (data['image']) {
+                        techData.technologydataimgref = imageService.saveImage(req.token.user.id, data['technologyDataName'], data['image']);
+                    }
+                    else {
+                        techData.technologydataimgref = imageService.getRandomImagePath();
+                    }
+
+
+                    techData.backgroundcolor = data['backgroundColor'];
+
+                    techData.Create(req.token.user.id, req.token.user.roles, function (err, data) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        const fullUrl = helper.buildFullUrlFromRequest(req);
+                        res.set('Location', fullUrl + data['technologydatauuid']);
+                        res.sendStatus(201);
+                    });
                 });
             });
         });
     });
-});
 
 
 router.get('/:id/image', validate({

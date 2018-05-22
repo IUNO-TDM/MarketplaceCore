@@ -1,6 +1,4 @@
 const express = require('express');
-const path = require('path');
-const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -19,11 +17,13 @@ app.use('/', contentTypeValidation);
 app.use(bodyParser.json({
     limit: '50mb'
 }));
+
 app.use(queryParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 
 app.use('/', authentication.oAuth);
+
 // Load all routes
 app.use('/technologydata', require('./routes/technologydata'));
 app.use('/components', require('./routes/components'));
@@ -36,7 +36,7 @@ app.use('/protocols', require('./routes/protocols'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    var err = new Error('Not Found');
+    const err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
@@ -46,7 +46,7 @@ app.use(function (req, res, next) {
 // Custom validation error
 app.use(function (err, req, res, next) {
 
-    var responseData;
+    let responseData;
 
     if (err.name === 'JsonSchemaValidation') {
         // Log the error however you please

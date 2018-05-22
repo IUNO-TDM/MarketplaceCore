@@ -5,12 +5,12 @@
  *  var logger = require('../global/logger');
  *  logger.debug('Foo');
  */
-var winston = require('winston');
-var _ = require('lodash');
-var config = require('../config/config_loader');
+const winston = require('winston');
+const _ = require('lodash');
+const config = require('../config/config_loader');
 
 // Set up logger
-var customColors = {
+const customColors = {
     trace: 'white',
     debug: 'green',
     info: 'green',
@@ -19,7 +19,7 @@ var customColors = {
     fatal: 'red'
 };
 
-var logger = new (winston.Logger)({
+const logger = new (winston.Logger)({
     colors: customColors,
     levels: {
         fatal: 1,
@@ -42,7 +42,7 @@ var logger = new (winston.Logger)({
 winston.addColors(customColors);
 
 //Logging wrapper, to remove "unknown function" warnings
-var origLog = logger.log;
+const origLog = logger.log;
 logger.log = function (level, msg) {
     if (!msg) {
         msg = level;
@@ -51,35 +51,35 @@ logger.log = function (level, msg) {
     origLog.call(logger, level, msg);
 };
 
-var origFatal = logger.fatal;
+const origFatal = logger.fatal;
 logger.fatal = function (msg) {
     origFatal.call(logger, msg);
 };
 
-var origCrit = logger.crit;
+const origCrit = logger.crit;
 logger.crit = function (msg) {
     origCrit.call(logger, msg);
 };
 
-var origWarn = logger.warn;
+const origWarn = logger.warn;
 logger.warn = function (msg) {
     origWarn.call(logger, msg);
 };
 
-var origInfo = logger.info;
+const origInfo = logger.info;
 logger.info = function (msg) {
     origInfo.call(logger, msg);
 };
 
-var origDebug = logger.debug;
+const origDebug = logger.debug;
 logger.debug = function (msg) {
     origDebug.call(logger, msg);
 };
 
 // Always log the error trace when tracing
-var origTrace = logger.trace;
+const origTrace = logger.trace;
 logger.trace = function (msg) {
-    var objType = Object.prototype.toString.call(msg);
+    const objType = Object.prototype.toString.call(msg);
     if (objType === '[object Error]') {
         origTrace.call(logger, msg);
     } else {
@@ -90,7 +90,7 @@ logger.trace = function (msg) {
 
 logger.logRequestAndResponse = function (err, options, res, data) {
 
-    var loggerOutput = {};
+    const loggerOutput = {};
 
     if (options) {
         loggerOutput.options = options;
@@ -116,7 +116,7 @@ logger.logRequestAndResponse = function (err, options, res, data) {
         if (data && data.message) {
             e.message = data.message;
         }
-        e.statusCode = res.statusCode;
+        e.status = res.statusCode;
         return e;
     }
     else {
