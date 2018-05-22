@@ -128,4 +128,15 @@ self.SaveData_Body = {
     additionalProperties: false
 };
 
+self.GetContent_Query = {
+    type: 'object',
+    properties: {
+        offerId: {
+            type: 'string',
+            format: 'uuid'
+        }
+    },
+    required: ['offerId'],
+    additionalProperties: false
+};
 module.exports = self;
