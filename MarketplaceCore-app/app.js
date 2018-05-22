@@ -14,8 +14,12 @@ app.use(logger('dev'));
 // Accept JSON only
 app.use('/', contentTypeValidation);
 
-app.use(bodyParser.json({
+app.use('/cmdongle', bodyParser.json({
     limit: '50mb'
+}));
+
+app.use('/', bodyParser.json({
+    limit: '10kb'
 }));
 
 app.use(queryParser());
