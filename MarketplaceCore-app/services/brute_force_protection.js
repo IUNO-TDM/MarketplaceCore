@@ -1,26 +1,46 @@
 const ExpressBrute = require('express-brute');
 const BruteStore = require('../database/brute_pg/store');
 const store = new BruteStore({db: require('../database/db_connection')});
+const _ = require('lodash');
 
-// limit the amount of api calls per user
+const logger = require('../global/logger');
+const email = require('../services/email_service');
+
 const global = new ExpressBrute(store, {
     freeRetries: 1000,
     attachResetToRequest: false,
     refreshTimeoutOnRequest: false,
-    minWait: 2*60*60*1000, // 2 hour
-    maxWait: 2*60*60*1000, // 2 hour
-    lifetime: 60*60, // 1 hour (seconds not milliseconds)
+    minWait: 61*60*1000,
+    maxWait: 61*60*1000,
+    lifetime: 60*60, //(seconds not milliseconds)
+    failCallback: failCallback
 });
 
 const protocols = new ExpressBrute(store, {
-    freeRetries: 100,
+    freeRetries: 150,
     attachResetToRequest: false,
     refreshTimeoutOnRequest: false,
-    minWait: 2*60*60*1000, // 2 hour
-    maxWait: 2*60*60*1000, // 2 hour
-    lifetime: 60*60, // 1 hour (seconds not milliseconds)
+    minWait: 61*60*1000,
+    maxWait: 61*60*1000,
+    lifetime: 60*60, //(seconds not milliseconds)
+    failCallback: failCallback
 });
 
+
+
+function failCallback (req, res, next, nextValidRequestDate) {
+
+    logger.warn(`[brute_force_protection] Request blocked because of to many attempts`);
+    logger.warn(`[brute_force_protection] Path: ${req.baseUrl} - User: ${req.token.user.id} - Client: ${req.token.client.id}`);
+    logger.debug(`[brute_force_protection] NextValidRequestDate: ${nextValidRequestDate}`);
+
+
+    const message = _.pick(req,['baseUrl', 'body', 'method', 'originalUrl','params', 'query', 'token', 'url']);
+
+    email.sendReportToAdmins('Request blocked because of to many attempts', JSON.stringify(message, null, "\t"));
+
+    return ExpressBrute.FailTooManyRequests(req, res, next, nextValidRequestDate);
+}
 
 module.exports.global = global.getMiddleware({
     key: function(req, res, next) {
