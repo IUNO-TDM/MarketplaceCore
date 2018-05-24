@@ -1,14 +1,14 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "title": "MarketplaceCore Database Rest API",
     "contact": {
       "name": "TRUMPF Werkzeugmaschinen GmbH & Co KG"
     },
     "description": ""
   },
-  "host": "localhost:3001",
+  "host": "tdm-core.axoom.cloud",
   "schemes": [
     "http",
     "https"
@@ -23,19 +23,10 @@
     "Core_Auth": {
       "type": "oauth2",
       "flow": "accessCode",
-      "authorizationUrl": "http://localhost:3005/oauth/authorise",
-      "tokenUrl": "http://localhost:3006/oauth/token",
+      "authorizationUrl": "https://tdm-jmw.axoom.cloud/oauth/authorise",
+      "tokenUrl": "https://tdm-jmw.axoom.cloud/oauth/token",
       "scopes": {
-        "default": "Undefined",
-        "dashboard": "view dashboard",
-        "createRecipe": "create a recipe",
-        "viewRecipe": "view a recipe",
-        "viewSecureRecipe": "view a secure recipe",
-        "editRecipe": "edit a recipe",
-        "editSecureRecipe": "edit a secure recipe",
-        "viewUserProfile": "view the user profile",
-        "editUserProfile": "edit user profile",
-        "admin": "admin ui"
+        "default": "Undefined"
       }
     }
   },
@@ -58,12 +49,6 @@
             "schema": {
               "$ref": "#/definitions/TechnologyDataSaveDataBody"
             }
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": {
@@ -91,24 +76,9 @@
         "description": "Gets a list of technologydata",
         "parameters": [
           {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client useruuid used for authorization",
-            "required": true,
-            "type": "integer"
-          },
-          {
-            "name": "name",
+            "name": "user",
             "in": "query",
             "type": "string"
-          },
-          {
-            "name": "tags",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
           },
           {
             "name": "components",
@@ -119,20 +89,19 @@
             }
           },
           {
-            "name": "technologies",
+            "name": "technology",
             "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "type": "string"
           },
           {
-            "name": "attributes",
+            "name": "technologydataname",
             "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "type": "string"
+          },
+          {
+            "name": "ownerUUID",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -167,13 +136,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid for authorization",
-            "required": true,
-            "type": "integer"
           }
         ],
         "responses": {
@@ -184,6 +146,43 @@
               "items": {
                 "$ref": "#/definitions/TechnologyData"
               }
+            }
+          },
+          "400": {
+            "description": "bad request"
+          },
+          "401": {
+            "description": "Authorization required"
+          },
+          "404": {
+            "description": "technologydata not found"
+          }
+        }
+      }
+    },
+    "/technologydata/{technologyDataId}/content": {
+      "get": {
+        "security": [
+          {
+            "Core_Auth": [
+              "default"
+            ]
+          }
+        ],
+        "description": "Gets the encrypted technology data for a specific identifier",
+        "parameters": [
+          {
+            "name": "technologyDataId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/TechnologyDataContent"
             }
           },
           "400": {
@@ -214,13 +213,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userUUID for authorization",
-            "required": true,
-            "type": "integer"
           }
         ],
         "responses": {
@@ -253,13 +245,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userUUID for authorization",
-            "required": true,
-            "type": "integer"
           }
         ],
         "responses": {
@@ -337,13 +322,6 @@
             "description": "offerid to search for",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userUUID for authorization",
-            "required": true,
-            "type": "integer"
           }
         ],
         "responses": {
@@ -383,13 +361,6 @@
             "schema": {
               "$ref": "#/definitions/Components"
             }
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid used for authorization",
-            "required": true,
-            "type": "integer"
           }
         ],
         "responses": {
@@ -425,13 +396,6 @@
             "in": "query",
             "required": false,
             "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid used for authorization",
-            "required": true,
-            "type": "integer"
           }
         ],
         "responses": {
@@ -463,13 +427,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid used for authorization",
-            "required": true,
-            "type": "integer"
           }
         ],
         "responses": {
@@ -505,13 +462,6 @@
             "description": "the user id for which the balance is displayed",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid used for authorization",
-            "required": true,
-            "type": "integer"
           }
         ],
         "responses": {
@@ -544,13 +494,6 @@
             "description": "the user id",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid used for authorization",
-            "required": true,
-            "type": "integer"
           }
         ],
         "responses": {
@@ -593,13 +536,6 @@
             "description": "the wallet id",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid used for authorization",
-            "required": true,
-            "type": "integer"
           },
           {
             "name": "body",
@@ -651,13 +587,6 @@
             "description": "the wallet id",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "description": "system client userid used for authorization",
-            "required": true,
-            "type": "integer"
           },
           {
             "name": "body",
@@ -752,6 +681,62 @@
           "description": "to date to filter query",
           "required": true,
           "type": "datetime"
+        },
+        {
+          "name": "clientId",
+          "in": "query",
+          "description": "cleintid for filter query",
+          "type": "string"
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "description": "limits the result amount",
+          "default": 100,
+          "type": "integer"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "the created Payout",
+          "schema": {
+            "$ref": "#/definitions/Protocol"
+          }
+        }
+      }
+    }
+  },
+  "/protocols/last": {
+    "get": {
+      "security": [
+        {
+          "Core_Auth": [
+            "admin"
+          ]
+        }
+      ],
+      "description": "Route to retrieve last protocol data for each client. For admins only.",
+      "parameters": [
+        {
+          "name": "eventType",
+          "in": "query",
+          "description": "protocol event type",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "from",
+          "in": "query",
+          "description": "from date to filter query",
+          "required": true,
+          "type": "datetime"
+        },
+        {
+          "name": "to",
+          "in": "query",
+          "description": "to date to filter query",
+          "required": true,
+          "type": "datetime"
         }
       ],
       "responses": {
@@ -777,8 +762,7 @@
         },
         "payload": {
           "type": "object",
-          "properties": {
-          }
+          "properties": {}
         }
       }
     },
@@ -860,7 +844,10 @@
           "type": "string"
         },
         "technologyData": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+          "minLength": 1,
+          "maxLength": 100000
         },
         "technologyDataDescription": {
           "type": "string"
@@ -869,9 +856,6 @@
           "type": "string"
         },
         "licenseFee": {
-          "type": "number"
-        },
-        "retailPrice": {
           "type": "number"
         },
         "tagList": {
@@ -895,6 +879,15 @@
               }
             }
           }
+        },
+        "backgroundColor": {
+          "type": "string",
+          "maxLength": 9,
+          "pattern": "^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$"
+        },
+        "image": {
+          "type": "string",
+          "maxLength": 10000
         }
       }
     },
@@ -912,20 +905,11 @@
         },
         "licensefee": {
           "type": "number"
-        },
-        "createdat": {
-          "type": "string"
-        },
-        "createdby": {
-          "type": "string"
-        },
-        "updatedat": {
-          "type": "string"
-        },
-        "updatedby": {
-          "type": "string"
         }
       }
+    },
+    "TechnologyDataContent": {
+      "type": "string"
     },
     "OfferRequestBody": {
       "type": "object",
