@@ -1,8 +1,8 @@
 /**
  * Created by beuttlerma on 14.03.17.
  */
-var logger = require('../../global/logger');
-var db = require('../db_connection');
+const logger = require('../../global/logger');
+const db = require('../db_connection');
 
 /**
  * Creates an technologydata object from a database query result.
@@ -18,20 +18,13 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.technologydataid = data.technologydataid ? data.technologydataid : this.technologydataid;
         this.technologydatauuid = data.technologydatauuid ? data.technologydatauuid : this.technologydatauuid;
         this.technologydataname = data.technologydataname ? data.technologydataname : this.technologydataname;
-        this.technologyuuid = data.technologyuuid ? data.technologyuuid : this.technologyuuid;
         this.technologydata = data.technologydata ? data.technologydata : this.technologydata;
         this.licensefee = data.licensefee ? data.licensefee : this.licensefee;
         this.productcode = data.productcode ? data.productcode : this.productcode;
         this.technologydatadescription = data.technologydatadescription ? data.technologydatadescription : this.technologydatadescription;
-        this.createdat = data.createdat ? data.createdat : this.createdat;
         this.createdby = data.createdby ? data.createdby : this.createdby;
-        this.updatedat = data.updatedat ? data.updatedat : this.updatedat;
-        this.updatedby = data.updatedby ? data.updatedby : this.updatedby;
         this.componentlist = data.componentlist ? data.componentlist : this.componentlist;
-        this.taglist = data.taglist ? data.taglist : this.taglist;
-        this.revenue = data.revenue ? data.revenue : this.revenue;
         this.backgroundcolor = data.backgroundcolor ? data.backgroundcolor : this.backgroundcolor;
-        this.technologydataimgref = data.technologydataimgref ? data.technologydataimgref : this.technologydataimgref;
     }
 };
 
@@ -52,10 +45,10 @@ TechnologyData.prototype.FindForUser = TechnologyData.FindForUser = function (us
 
 
 TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, roles, params, callback) {
-    var technologyUUID = params['technology'];
-    var components = params['components'];
-    var technologydataname = params['technologydataname'];
-    var ownerUUID = params['ownerUUID'];
+    const technologyUUID = params['technology'];
+    const components = params['components'];
+    const technologydataname = params['technologydataname'];
+    const ownerUUID = params['ownerUUID'];
 
 
     db.func('GetTechnologyDataByParams',
@@ -69,8 +62,8 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
         ], 1 //TODO: Document this parameter
     )
         .then(function (data) {
-            var resultList = [];
-            for (var key in data.result) {
+            const resultList = [];
+            for (let key in data.result) {
                 resultList.push(new TechnologyData(data.result[key]));
             }
             callback(null, resultList);
@@ -152,7 +145,7 @@ TechnologyData.prototype.Update = function () {
     throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
 };
 
-TechnologyData.prototype.Delete = function (technologydatauuid, userUUID, roles, callback) {
+TechnologyData.prototype.Delete = TechnologyData.Delete = function (technologydatauuid, userUUID, roles, callback) {
     db.func('deletetechnologydata',
         [technologydatauuid,
             userUUID,
@@ -161,6 +154,29 @@ TechnologyData.prototype.Delete = function (technologydatauuid, userUUID, roles,
         .then(function (data) {
             logger.debug(data);
             callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
+TechnologyData.prototype.FindWithContent = TechnologyData.FindWithContent = function (technologydataUUID, offerUUID, clientUUID, userUUID, roles, callback) {
+    db.func('GetTechnologyDataWithContent',
+        [technologydataUUID,
+            offerUUID,
+            clientUUID,
+            userUUID,
+            roles
+        ])
+        .then(function (data) {
+            if (data && data.length) {
+                data = data[0];
+            }
+            else {
+                return callback(null, null);
+            }
+            callback(null, new TechnologyData(data));
         })
         .catch(function (error) {
             logger.crit(error);

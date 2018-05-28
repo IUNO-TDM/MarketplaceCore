@@ -9,45 +9,51 @@ const validate = validator.validate;
 const helper = require('../services/helper_service');
 const licenseCentral = require('../adapter/license_central_adapter');
 
-router.post('/:hsmId/update', validate({
-    query: require('../schema/cmdongle_schema').Empty,
-    body: require('../schema/cmdongle_schema').LicenseUpdate_Body
-}), function (req, res, next) {
+const bruteForceProtection = require('../services/brute_force_protection');
+
+router.post('/:hsmId/update',
+    bruteForceProtection.global,
+    validate({
+        query: require('../schema/cmdongle_schema').Empty,
+        body: require('../schema/cmdongle_schema').LicenseUpdate_Body
+    }), function (req, res, next) {
 
 
-    const hsmId = req.params['hsmId'];
-    const racBuffer = req.body.RAC;
+        const hsmId = req.params['hsmId'];
+        const racBuffer = req.body.RAC;
 
-    licenseCentral.doLicenseUpdate(hsmId, racBuffer, function (err, rauBuffer, isOutOfDate) {
-        if (err) {
-            return next(err);
-        }
+        licenseCentral.doLicenseUpdate(hsmId, racBuffer, function (err, rauBuffer, isOutOfDate) {
+            if (err) {
+                return next(err);
+            }
 
-        res.json({
-            RAU: rauBuffer,
-            isOutOfDate: isOutOfDate
+            res.json({
+                RAU: rauBuffer,
+                isOutOfDate: isOutOfDate
+            });
         });
+
     });
 
-});
+router.post('/:hsmId/update/confirm',
+    bruteForceProtection.global,
+    validate({
+        query: require('../schema/cmdongle_schema').Empty,
+        body: require('../schema/cmdongle_schema').LicenseUpdate_Body
+    }), function (req, res, next) {
 
-router.post('/:hsmId/update/confirm', validate({
-    query: require('../schema/cmdongle_schema').Empty,
-    body: require('../schema/cmdongle_schema').LicenseUpdate_Body
-}), function (req, res, next) {
 
+        const hsmId = req.params['hsmId'];
+        const racBuffer = req.body.RAC;
 
-    const hsmId = req.params['hsmId'];
-    const racBuffer = req.body.RAC;
+        licenseCentral.doConfirmUpdate(racBuffer, function (err) {
+            if (err) {
+                return next(err);
+            }
 
-    licenseCentral.doConfirmUpdate(racBuffer, function (err) {
-        if (err) {
-            return next(err);
-        }
+            res.sendStatus(200);
+        });
 
-        res.sendStatus(200);
     });
-
-});
 
 module.exports = router;

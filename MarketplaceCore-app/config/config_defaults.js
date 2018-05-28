@@ -78,4 +78,19 @@ self.PRODUCT_CODE_PREFIX = 'test-pc';
 
 self.TRUSTED_CA_FILE_PATH = 'resources/ca_trusted/chain.pem';
 
+self.SMTP_CONFIG = {
+    email: 'a@b.c',
+    host: 'smtp.1und1.de',
+    port: 587,
+    secure: true,
+    auth: {
+        user: 'username',
+        pass: 'password'
+    }
+};
+
+self.REPORT_EMAIL_ADRESSES = [
+
+];
+
 module.exports = self;
