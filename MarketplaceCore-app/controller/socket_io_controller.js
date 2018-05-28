@@ -84,4 +84,7 @@ function registerVisualizationEvents(namespace) {
     protocol_service.on('licenseupdateconfirm', function (protocol, clientId) {
         namespace.emit('licenseupdateconfirm',{clientId: clientId, hsmId: protocol.payload.hsmId})
     });
+    protocol_service.on('newtechnologydata', function (protocol, clientId) {
+        namespace.emit('newtechnologydata',{clientId: clientId, technologydataid: protocol.payload.technologydataid})
+    });
 }

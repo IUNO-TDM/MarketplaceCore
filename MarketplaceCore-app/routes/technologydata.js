@@ -120,6 +120,21 @@ router.post('/', bruteForceProtection.global,
                             return next(err);
                         }
 
+                        const protocol = {
+                            eventType: 'newtechnologydata',
+                            timestamp: new Date().toISOString(),
+                            payload: {
+                                technologydataid: data['technologydatauuid']
+                            }
+                        };
+
+                        protocol_service.newProtocol(protocol, req.token.client.id, req.token.user.id, req.token.user.roles, (err, data) => {
+                            if (err) {
+                                logger.warn("Could not create Protocol for New Technologydata: ", err)
+                            }
+                        });
+
+
                         const fullUrl = helper.buildFullUrlFromRequest(req);
                         res.set('Location', fullUrl + data['technologydatauuid']);
                         res.sendStatus(201);
