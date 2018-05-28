@@ -23,6 +23,10 @@ const dbTransaction = require('../database/function/transaction');
 const dbLicense = require('../database/function/license');
 const licenseService = require('../services/license_service');
 const bruteForceProtection = require('../services/brute_force_protection');
+const protocol_service = require('../services/protocol_service');
+
+const config = require('../config/config_loader');
+
 
 router.get('/:id', validate({
     query: validation_schema.Empty,
@@ -48,6 +52,20 @@ router.post('/', bruteForceProtection.global,
         const clientUUID = req.token.client.id;
         const requestData = req.body;
         const roles = req.token.user.roles;
+
+        const protocol = {
+            eventType: 'offerrequest',
+            timestamp: new Date().toISOString(),
+            payload: {
+                requestData: requestData
+            }
+        };
+
+        protocol_service.newProtocol(protocol, clientUUID, config.USER.uuid, config.USER.roles, (err, data) => {
+            if (err) {
+                logger.warn("Could not create Protocol for OfferRequest: ", err)
+            }
+        });
 
         dbOfferRequest.CreateOfferRequest(userUUID, clientUUID, roles, requestData, function (err, offerRequest) {
             if (err) {
@@ -112,8 +130,7 @@ router.post('/:offer_id/request_license_update',
                 return res.sendStatus(404);
             }
 
-            licenseService.emit('updateAvailable', offerUUID, hsmId);
-
+            licenseService.emit('updateAvailable', offerUUID, hsmId, transaction['buyer']);
             res.sendStatus(200);
         });
     });

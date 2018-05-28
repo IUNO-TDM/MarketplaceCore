@@ -13,6 +13,8 @@ var Transfer = require('../model/transfer');
 var logger = require('../global/logger');
 var io = require('socket.io-client');
 var dbPayment = require('../database/function/payment');
+const protocol_service = require('../services/protocol_service');
+const dbTrans = require('../database/function/transaction');
 
 var PaymentService = function () {
     logger.log('a new instance of PaymentService');
@@ -67,7 +69,54 @@ payment_service.socket.on('StateChange', function (invoice) {
                 });
             }
         });
+
+
+        dbTrans.GetTransactionByID(config.USER, invoice.referenceId, function (err, transaction) {
+            if(err){
+                logger.warn("Could not get Transaction for creating protocol: ", err);
+            }
+            const protocol = {
+                eventType: 'payment',
+                timestamp: new Date().toISOString(),
+                payload: {
+                    payment: paymentData
+                }
+            };
+
+            protocol_service.newProtocol(protocol,transaction['buyer'],config.USER.uuid, config.USER.roles, (err, data) => {
+                if (err) {
+                    logger.warn("Could not create Protocol for Payment StateChange: ", err)
+                }
+            });
+        });
+
+        if(invoice.state === 'building' && invoice.depth >= 7){
+            payment_service.unregisterStateChangeUpdates(invoice.invoiceId);
+        }
     }
+});
+
+payment_service.socket.on('PayingTransactionsChange', function (invoice) {
+    invoice = JSON.parse(invoice);
+    dbTrans.GetTransactionByID(config.USER, invoice.referenceId, function (err, transaction) {
+        if(err){
+            logger.warn("Could not get Transaction for creating protocol: ", err);
+        }
+        const protocol = {
+            eventType: 'payingtransactions',
+            timestamp: new Date().toISOString(),
+            payload: {
+                transactions: invoice.transactions
+            }
+        };
+
+        protocol_service.newProtocol(protocol,transaction['buyer'],config.USER.uuid, config.USER.roles, (err, data) => {
+            if (err) {
+                logger.warn("Could not create Protocol for Paying Transactions Changed: ", err)
+            }
+        });
+    });
+
 });
 
 

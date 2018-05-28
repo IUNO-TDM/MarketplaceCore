@@ -5,7 +5,6 @@ const config = require('../config/config_loader');
 const dbTrans = require('../database/function/transaction');
 const dbLicence = require('../database/function/license');
 const licenseCentral = require('../adapter/license_central_adapter');
-const dbPayment = require('../database/function/payment');
 const dbOfferRequest = require('../database/function/offer_request');
 const logger = require('../global/logger');
 const async = require('async');
@@ -57,7 +56,7 @@ payment_service.on('StateChange', function (data) {
 
                                         dbLicence.CreateLicenseOrder(transaction.offeruuid, config.USER, function (err, data) {
                                             if (!err) {
-                                                license_service.emit('updateAvailable', data.offeruuid, offerRequest.hsmid);
+                                                license_service.emit('updateAvailable', data.offeruuid, offerRequest.hsmid, transaction['buyer']);
                                             }
 
                                             callback(err);

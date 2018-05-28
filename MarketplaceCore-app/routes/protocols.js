@@ -9,6 +9,8 @@ const dbProtocols = require('../database/function/protocol');
 const authenticationService = require('../services/authentication_service');
 const bruteForceProtection = require('../services/brute_force_protection');
 
+const protocol_service = require('../services/protocol_service');
+
 router.post('/:clientId',
     bruteForceProtection.global,
     bruteForceProtection.protocols,
@@ -21,7 +23,7 @@ router.post('/:clientId',
 
         logger.info("Protocol of type \"" + protocol.eventType + "\" received from " + clientId);
 
-        dbProtocols.CreateProtocols(protocol, clientId, req.token.user.id, req.token.user.roles, (err, data) => {
+        protocol_service.newProtocol(protocol, clientId, req.token.user.id, req.token.user.roles, (err, data) => {
             if (err) {
                 next(err);
             }
