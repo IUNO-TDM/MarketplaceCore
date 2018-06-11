@@ -1,4 +1,4 @@
-var self = {};
+const self = {};
 
 self.Empty = {
     type: 'object',

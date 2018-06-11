@@ -517,29 +517,11 @@ CREATE FUNCTION public.createlog(
     vlogmessage character varying,
     vlogobjectname character varying,
     vparameters character varying)
-  RETURNS void AS
-$BODY$
-      DECLARE vLogID integer:= (select nextval('LogID'));
-	      vSqlCmd varchar := 'INSERT INTO LogTable(LogID, LogStatusID, LogMessage, LogObjectName, Parameters,CreatedAt)'
-				 || 'VALUES( '
-				 || cast(vLogID as varchar)
-				 || ', ' || cast(vLogStatusID as varchar)
-				 || ', ''' || vLogMessage
-				 || ''', ''' || vLogObjectName
-				 || ''', ''' || vParameters
-				 || ''', ' || 'now())';
-		 vConnName text := 'conn';
-		 vConnString text := 'dbname=MarketplaceCore port=5432 host=localhost user=core_loguser password=PASSWORD';
-	      vConnExist bool := (select ('{' || vConnName || '}')::text[] <@ (select dblink_get_connections()));
-      BEGIN
+  RETURNS void
+  AS $BODY$
+    BEGIN
 
-		if(not vConnExist or vConnExist is null) then
-				perform dblink_connect(vConnName,vConnString);
-		end if;
-				perform dblink(vConnName,vSqlCmd);
-				perform dblink_disconnect(vConnName);
-				set role postgres;
-      END;
+    END;
   $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;

@@ -7,25 +7,29 @@ const validation_schema = require('../schema/protocols_schema');
 const validate = validator.validate;
 const dbProtocols = require('../database/function/protocol');
 const authenticationService = require('../services/authentication_service');
+const bruteForceProtection = require('../services/brute_force_protection');
 
-router.post('/:clientId', validate({
-    query: validation_schema.Empty,
-    body: validation_schema.Protocol_Body
-}), (req, res, next) => {
-    let clientId = req.params['clientId'];
-    let protocol = req.body;
+router.post('/:clientId',
+    bruteForceProtection.global,
+    bruteForceProtection.protocols,
+    validate({
+        query: validation_schema.Empty,
+        body: validation_schema.Protocol_Body
+    }), (req, res, next) => {
+        let clientId = req.params['clientId'];
+        let protocol = req.body;
 
-    logger.info("Protocol of type \"" + protocol.eventType + "\" received from " + clientId);
+        logger.info("Protocol of type \"" + protocol.eventType + "\" received from " + clientId);
 
-    dbProtocols.CreateProtocols(protocol, clientId, req.token.user.id, req.token.user.roles, (err, data) => {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
+        dbProtocols.CreateProtocols(protocol, clientId, req.token.user.id, req.token.user.roles, (err, data) => {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.json(data);
+            }
+        });
     });
-});
 
 router.get('/',
     authenticationService.isAdmin,

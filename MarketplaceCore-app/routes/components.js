@@ -17,6 +17,8 @@ const validation_schema = require('../schema/components_schema');
 const Component = require('../database/model/component');
 const helper = require('../services/helper_service');
 
+const bruteForceProtection = require('../services/brute_force_protection');
+
 
 router.get('/', validate({query: validation_schema.Empty, body: validation_schema.Empty}), function (req, res, next) {
 
@@ -44,30 +46,31 @@ router.get('/:id', validate({
     });
 });
 
-router.post('/', validate({
-    body: validation_schema.SaveData_Body,
-    query: validation_schema.Empty
-}), function (req, res, next) {
-    const comp = new Component();
+router.post('/', bruteForceProtection.global,
+    validate({
+        body: validation_schema.SaveData_Body,
+        query: validation_schema.Empty
+    }), function (req, res, next) {
+        const comp = new Component();
 
-    const data = req.body;
+        const data = req.body;
 
-    comp.componentname = data['componentName'];
-    comp.componentparentname = data['componentParentName'];
-    comp.componentdescription = data['componentDescription'];
-    comp.attributelist = data['attributeList'];
-    comp.technologylist = data['technologyList'];
+        comp.componentname = data['componentName'];
+        comp.componentparentname = data['componentParentName'];
+        comp.componentdescription = data['componentDescription'];
+        comp.attributelist = data['attributeList'];
+        comp.technologylist = data['technologyList'];
 
-    comp.Create(req.token.user.id, req.token.user.roles, function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            var fullUrl = helper.buildFullUrlFromRequest(req);
-            res.set('Location', fullUrl + data[0]['componentuuid']);
-            res.sendStatus(201);
-        }
+        comp.Create(req.token.user.id, req.token.user.roles, function (err, data) {
+            if (err) {
+                next(err);
+            }
+            else {
+                var fullUrl = helper.buildFullUrlFromRequest(req);
+                res.set('Location', fullUrl + data[0]['componentuuid']);
+                res.sendStatus(201);
+            }
+        });
     });
-});
 
 module.exports = router;
