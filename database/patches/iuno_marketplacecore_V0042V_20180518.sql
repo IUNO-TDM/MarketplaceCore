@@ -31,8 +31,8 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V0040V_20180518';
-		PatchNumber int 		 	 := 0040;
+		PatchName varchar		 	 := 'iuno_marketplacecore_V0042V_20180518';
+		PatchNumber int 		 	 := 0042;
 		PatchDescription varchar 	 := 'Update components functions to provide localization functionality';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
@@ -52,7 +52,7 @@ $$;
 DO
 $$
 		DECLARE
-			vPatchNumber int := 0040;
+			vPatchNumber int := 0042;
 		BEGIN
 -- #########################################################################################################################################
 
