@@ -167,7 +167,7 @@ router.get('/:id/components', validate({
     body: validationSchema.Empty
 }), function (req, res, next) {
 
-    Component.FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.params['lang'], req.params['id'], function (err, components) {
+    Component.FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.query['lang'], req.params['id'], function (err, components) {
         if (err) {
             next(err);
         }

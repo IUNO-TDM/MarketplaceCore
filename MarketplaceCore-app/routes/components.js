@@ -36,7 +36,7 @@ router.get('/:id', validate({
     query: validation_schema.Language,
     body: validation_schema.Empty
 }), function (req, res, next) {
-    Component.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], req.params['lang'], function (err, data) {
+    Component.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], req.query['lang'], function (err, data) {
         if (err) {
             next(err);
         }
