@@ -69,7 +69,7 @@ $$
    --Step 2: create new getallcomponents
    CREATE OR REPLACE FUNCTION public.getallcomponents(
    	vuseruuid uuid,
-   	vlcid text DEFAULT 'en-EN'::text,
+   	vlanguagecode text DEFAULT 'en'::text,
    	vroles text[] DEFAULT NULL::text[])
        RETURNS TABLE(componentuuid uuid, componentname text, componentparentuuid integer, componentdescription character varying, displaycolor text, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedby uuid)
        LANGUAGE 'plpgsql'
@@ -103,7 +103,7 @@ $$
    						cp.textid = tl.textid
    						JOIN languages la ON
    						tl.languageid = la.languageid
-   						AND la.lcid = vlcid
+   						AND la.languagecode = vlanguagecode
    						WHERE  tl.value != vRoot
    		);
 
@@ -121,7 +121,7 @@ $$
    CREATE OR REPLACE FUNCTION public.getcomponentbyid(
    	vcompuuid uuid,
    	vuseruuid uuid,
-   	vlcid text DEFAULT 'en-EN'::text,
+   	vlanguagecode text DEFAULT 'en'::text,
    	vroles text[] DEFAULT NULL::text[])
        RETURNS TABLE(componentuuid uuid, componentname text, componentparentuuid uuid, componentdescription character varying, displaycolor text, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, updatedby uuid)
        LANGUAGE 'plpgsql'
@@ -153,7 +153,7 @@ $$
    				cp.textid = tl.textid
    				JOIN languages la ON
    				tl.languageid = la.languageid
-   				AND la.lcid = vlcid
+   				AND la.languagecode = vlanguagecode
    				LEFT OUTER JOIN components cs on
    				cp.componentparentid = cs.componentid
    				WHERE cp.componentuuid = vCompUUID
@@ -172,7 +172,7 @@ $$
    CREATE OR REPLACE FUNCTION public.getcomponentsfortechnologydataid(
    	vtechnologydatauuid uuid,
    	vuseruuid uuid,
-   	vlcid text DEFAULT 'en-EN'::text,
+   	vlanguagecode text DEFAULT 'en'::text,
    	vroles text[] DEFAULT NULL::text[])
        RETURNS TABLE(componentuuid uuid, componentname text, componentparentuuid uuid, componentparentname text, componentdescription character varying, displaycolor text, createdat timestamp with time zone, createdby uuid, updatedat timestamp with time zone, useruuid uuid)
        LANGUAGE 'plpgsql'
@@ -199,7 +199,7 @@ $$
    ), texts as (
    	select tl.textid, tl.value from translations tl
    	join languages la on tl.languageid = la.languageid
-   	and la.lcid = 'de-DE'
+   	and la.languagecode = vlanguagecode
    )
    select	co.componentuuid,
    				tx.value::text as componentname,
@@ -239,7 +239,7 @@ $$
    	vtechnologydataname character varying,
    	vowneruuid uuid,
    	vuseruuid uuid,
-   	vlcid text DEFAULT 'en-EN'::text,
+   	vlanguagecode text DEFAULT 'en'::text,
    	vroles text[] DEFAULT NULL::text[])
        RETURNS TABLE(result json)
        LANGUAGE 'plpgsql'
@@ -286,7 +286,7 @@ $$
    			co.textid = tl.textid
    			join languages la on
    			tl.languageid = la.languageid
-   			and la.lcid = vlcid
+   			and la.languagecode = vlanguagecode
    			group by tl.value, co.componentid, co.componentuuid, t.*
    			),
    			techData as (
@@ -360,7 +360,7 @@ $$
    CREATE OR REPLACE FUNCTION public.gettechnologydataforuser(
    	vuseruuid uuid,
    	vinquirerid uuid,
-   	vlcid text DEFAULT 'en-EN'::text,
+   	vlanguagecode text DEFAULT 'en'::text,
    	vroles text[] DEFAULT NULL::text[])
        RETURNS TABLE(technologydatauuid uuid, technologydataname character varying, revenue bigint, licensefee bigint, componentlist text[], technologydatadescription character varying)
        LANGUAGE 'plpgsql'
@@ -406,7 +406,7 @@ $$
    					cp.textid = tl.textid
    					JOIN languages la ON
    					tl.languageid = la.languageid
-   					AND la.lcid = vlcid
+   					AND la.llanguagecode = vlanguagecode
    					where (vuseruuid is null or td.createdby = vuseruuid)
    					and td.deleted is null
    					group by td.technologydatauuid, td.technologydataname, td.licensefee, rv.revenue, td.technologydatadescription)
@@ -439,7 +439,7 @@ $$
    	vto timestamp with time zone,
    	vlimit integer,
    	vuseruuid uuid,
-   	vlcid text DEFAULT 'en-EN'::text,
+   	vlanguagecode text DEFAULT 'en'::text,
    	vroles text[] DEFAULT NULL::text[])
        RETURNS TABLE(componentname character varying, amount integer)
        LANGUAGE 'plpgsql'
@@ -476,7 +476,7 @@ $$
    						cp.textid = tl.textid
    						JOIN languages la ON
    						tl.languageid = la.languageid
-   						AND la.lcid = vlcid
+   						AND la.languagecode = vlanguagecode
    			),
    		rankTable as (
    		select a.componentname, count(a.componentname) as rank from activatedLincenses a

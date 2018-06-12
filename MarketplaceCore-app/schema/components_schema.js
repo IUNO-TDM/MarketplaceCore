@@ -13,6 +13,17 @@ self.Empty = {
     additionalProperties: false
 };
 
+self.Language = {
+    type: 'object',
+    properties: {
+        lang: {
+            type: 'string',
+            enum: ['de','en','fr']
+        }
+    },
+    additionalProperties: false
+};
+
 self.SaveData_Body = {
     type: 'object',
     properties: {

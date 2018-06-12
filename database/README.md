@@ -44,9 +44,11 @@
 | iuno_marketplacecore_V0035V_20180403.sql                          | 0035              | Added Function GetTransactionByOffer                                                                   |                                 | [@mbeuttler][imbeuttler] |
 | iuno_marketplacecore_V0036V_20180404.sql                          | 0036              | Added clientId column to protocols table                                                               |  [#174][i174]                   | [@mbeuttler][imbeuttler] |
 | iuno_marketplacecore_V0037V_20180405.sql                          | 0037              | Updated GetProtocols function to include ClientId filter. Introduced new function GetLastProtocolForEachClient: Returning only the last protocol for each client.   |  [#176][i176]                   | [@mbeuttler][imbeuttler] |
-| iuno_marketplacecore_V0038V_20180508.sql                          | 0038              | Fixed where clause in GetLastProtocolForEachClient function                                            |                                s| [@mbeuttler][imbeuttler] |
+| iuno_marketplacecore_V0038V_20180508.sql                          | 0038              | Fixed where clause in GetLastProtocolForEachClient function                                            |                                | [@mbeuttler][imbeuttler] |
 | iuno_marketplacecore_V0041V_20180518.sql                          | 0041              | Add localization functionality to components - Update Database Schema                                  |  [#179][i179]                 | [@gomarcel][igomarcel]  |
 | iuno_marketplacecore_V0042V_20180518.sql                          | 0042              | Update components functions to provide localization functionality                                      |  [#179][i179]                 | [@gomarcel][igomarcel]  |
+| iuno_marketplacecore_V0043V_20180612.sql                          | 0043              | Insert values for component translations into translations table                                       |  [#179][i179]                 | [@gomarcel][igomarcel]  |
+
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91

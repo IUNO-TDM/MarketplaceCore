@@ -72,7 +72,8 @@ $$
     		value text,
     		context text
     );
-    alter table translations add constraint translations_pk PRIMARY KEY (translationid, languageid, textid);
+    alter table translations add constraint translations_pk PRIMARY KEY (languageid, textid);
+
     alter table translations add constraint translations_fk FOREIGN KEY (languageid) REFERENCES languages (languageid);
     create index translations_idx on translations (translationid, languageid, textid, value);
 
@@ -84,17 +85,16 @@ $$
     select 2, 'de', 'de-DE' union all
     select 3, 'fr', 'fr-FR';
     --Step 5: Create sequence for translations
-    create sequence translationid start with 1;
+    create sequence translationid start with 120;
     --Step 6: Migration components to translations
     insert into translations (translationid, languageid, textid, value, context)
-    select row_number() over(order by componentid),
+    select componentid,
     		2, -- Language de-DE
-    		row_number() over(order by componentid),
+    		componentid,
     		componentname,
     		'components' from components order by componentid;
     --Step 7: Add new column textid and constraints to components table
     alter table components add column textid int;
-    alter table components add constraint components_textid_fk FOREIGN KEY (textid) REFERENCES translations (textid);
     --Step 8: insert textid into components
     update components set textid = componentid;
     --Step 9: Drop componentname column from components table
