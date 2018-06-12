@@ -55,8 +55,8 @@ self.GetTopTechnologyData = function (from, to, limit, user, roles, callback) {
         });
 };
 
-self.GetTopComponents = function (from, to, limit, userUUID, roles, callback) {
-    db.func('GetTopComponents', [from, to, limit, userUUID, roles])
+self.GetTopComponents = function (from, to, limit, userUUID, lang, roles, callback) {
+    db.func('GetTopComponents', [from, to, limit, userUUID, lang, roles])
         .then(function (data) {
             logger.debug(data);
             callback(null, data);

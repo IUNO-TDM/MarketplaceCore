@@ -193,4 +193,15 @@ self.Protocol_Body = {
     ]
 };
 
+self.Language = {
+    type: 'object',
+    properties: {
+        lang: {
+            type: 'string',
+            enum: ['de','en','fr']
+        }
+    },
+    additionalProperties: false
+};
+
 module.exports = self;

@@ -33,7 +33,7 @@ router.get('/',
 
 
         if (req.query['user']) {
-            TechnologyData.FindForUser(req.query['user'], req.token.user.id, req.token.user.roles, function (err, data) {
+            TechnologyData.FindForUser(req.query['user'], req.token.user.id, req.token.user.roles, req.query['lang'], function (err, data) {
                 if (err) {
                     next(err);
                 }
@@ -163,11 +163,11 @@ router.get('/:id/image', validate({
 });
 
 router.get('/:id/components', validate({
-    query: validationSchema.Empty,
+    query: validationSchema.Language,
     body: validationSchema.Empty
 }), function (req, res, next) {
 
-    Component.FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.params['id'], function (err, components) {
+    Component.FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.params['lang'], req.params['id'], function (err, components) {
         if (err) {
             next(err);
         }

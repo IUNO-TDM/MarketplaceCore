@@ -127,6 +127,7 @@ router.get('/technologydata/history', validate({
 
 router.get('/components/top', validate({
     query: validation_schema.Top_Components_Query,
+    query: validation_schema.Language,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
     dbReports.GetTopComponents(
@@ -134,6 +135,7 @@ router.get('/components/top', validate({
         req.query['to'],
         req.query['limit'],
         req.token.user.id,
+        req.query['lang'],
         req.token.user.roles, function (err, data) {
             if (err) {
                 next(err);
