@@ -473,7 +473,7 @@ $$
    				join components co on
    				co.componentid = tc.componentid
    				JOIN translations tl ON
-   						cp.textid = tl.textid
+   						co.textid = tl.textid
    						JOIN languages la ON
    						tl.languageid = la.languageid
    						AND la.languagecode = vlanguagecode
