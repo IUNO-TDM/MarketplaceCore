@@ -403,10 +403,10 @@ $$
    					join components co
    					on tc.componentid = co.componentid
    					JOIN translations tl ON
-   					cp.textid = tl.textid
+   					co.textid = tl.textid
    					JOIN languages la ON
    					tl.languageid = la.languageid
-   					AND la.llanguagecode = vlanguagecode
+   					AND la.languagecode = vlanguagecode
    					where (vuseruuid is null or td.createdby = vuseruuid)
    					and td.deleted is null
    					group by td.technologydatauuid, td.technologydataname, td.licensefee, rv.revenue, td.technologydatadescription)
