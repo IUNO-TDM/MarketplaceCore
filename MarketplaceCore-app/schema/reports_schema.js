@@ -7,6 +7,11 @@
 
 const self = {};
 
+var languageProperty = {
+    type: 'string',
+    enum: ['de', 'en']
+};
+
 self.Revenue_Query = {
     type: 'object',
     properties: {
@@ -136,7 +141,8 @@ self.Top_Components_Query = {
             type: 'integer',
             minimum: 1,
             maximum: 10
-        }
+        },
+        lang: languageProperty
     },
     required: [
         'from',
@@ -196,10 +202,7 @@ self.Protocol_Body = {
 self.Language = {
     type: 'object',
     properties: {
-        lang: {
-            type: 'string',
-            enum: ['de','en','fr']
-        }
+        lang: languageProperty
     },
     additionalProperties: false
 };

@@ -7,6 +7,11 @@
 
 var self = {};
 
+var languageProperty = {
+    type: 'string',
+    enum: ['de', 'en']
+};
+
 self.Get_Query = {
     anyOf: [
         {
@@ -15,7 +20,8 @@ self.Get_Query = {
                 user: {
                     type: 'string',
                     format: 'uuid'
-                }
+                },
+                lang: languageProperty
             },
             additionalProperties: false
         },
@@ -42,17 +48,15 @@ self.Get_Query = {
                 ownerUUID: {
                     type: 'string',
                     format: 'uuid'
-                }
+                },
+                lang: languageProperty
             },
             additionalProperties: false
         },
         {
             type: 'object',
             properties: {
-                lang: {
-                    type: 'string',
-                    enum: ['de','en','fr']
-                }
+                lang: languageProperty
             },
             additionalProperties: false
         }
@@ -68,10 +72,7 @@ self.Empty = {
 self.Language = {
     type: 'object',
     properties: {
-        lang: {
-            type: 'string',
-            enum: ['de','en','fr']
-        }
+        lang: languageProperty
     },
     additionalProperties: false
 };
