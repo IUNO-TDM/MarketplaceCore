@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const logger = require('../global/logger');
+const authenticationService = require('../services/authentication_service');
 
 
 const {Validator, ValidationError} = require('express-json-validator-middleware');
@@ -13,6 +14,8 @@ const vault_service = require('../services/bitcoinvault_service');
 const bruteForceProtection = require('../services/brute_force_protection');
 
 const async = require('async');
+
+router.use('/users/:userId/', authenticationService.paramIsEqualToSessionUser('userId'));
 
 router.get('/users/:userId/balance', validate({
     query: validation_schema.Empty,
