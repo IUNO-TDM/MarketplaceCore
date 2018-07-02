@@ -24,6 +24,8 @@ const CONFIG = require('../config/config_loader');
 const path = require('path');
 const bruteForceProtection = require('../services/brute_force_protection');
 
+const protocol_service = require('../services/protocol_service');
+
 router.get('/',
     validate({
         query: validationSchema.Get_Query,
