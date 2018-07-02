@@ -134,6 +134,7 @@ router.get('/components/top', validate({
         req.query['to'],
         req.query['limit'],
         req.token.user.id,
+        req.query['lang'],
         req.token.user.roles, function (err, data) {
             if (err) {
                 next(err);

@@ -12,6 +12,7 @@ const logger = require('../global/logger');
 const {Validator, ValidationError} = require('express-json-validator-middleware');
 const validator = new Validator({allErrors: true});
 const validationSchema = require('../schema/technologydata_schema');
+const validationSchema_components = require('../schema/components_schema');
 const validate = validator.validate;
 
 const TechnologyData = require('../database/model/technologydata');
@@ -33,7 +34,7 @@ router.get('/',
 
 
         if (req.query['user']) {
-            TechnologyData.FindForUser(req.query['user'], req.token.user.id, req.token.user.roles, function (err, data) {
+            TechnologyData.FindForUser(req.query['user'], req.token.user.id, req.token.user.roles, req.query['lang'], function (err, data) {
                 if (err) {
                     next(err);
                 }
@@ -163,11 +164,11 @@ router.get('/:id/image', validate({
 });
 
 router.get('/:id/components', validate({
-    query: validationSchema.Empty,
-    body: validationSchema.Empty
+    query: validationSchema_components.Components_Query,
+    body: validationSchema_components.Empty
 }), function (req, res, next) {
 
-    Component.FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.params['id'], function (err, components) {
+    Component.FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.query['lang'], req.params['id'], function (err, components) {
         if (err) {
             next(err);
         }
