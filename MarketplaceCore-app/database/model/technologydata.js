@@ -28,8 +28,8 @@ TechnologyData.prototype.SetProperties = function (data) {
     }
 };
 
-TechnologyData.prototype.FindForUser = TechnologyData.FindForUser = function (user, inquirerId, inquireRoles, callback) {
-    db.func('GetTechnologyDataForUser', [user, inquirerId, inquireRoles])
+TechnologyData.prototype.FindForUser = TechnologyData.FindForUser = function (user, inquirerId, inquireRoles, lang, callback) {
+    db.func('GetTechnologyDataForUser', [user, inquirerId, lang, inquireRoles])
         .then(function (data) {
             const resultList = [];
             for (let key in data) {
@@ -49,6 +49,7 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
     const components = params['components'];
     const technologydataname = params['technologydataname'];
     const ownerUUID = params['ownerUUID'];
+    const language = params['lang'];
 
 
     db.func('GetTechnologyDataByParams',
@@ -58,6 +59,7 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
             technologydataname,
             ownerUUID,
             userUUID,
+            language,
             roles
         ], 1 //TODO: Document this parameter
     )

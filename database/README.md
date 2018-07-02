@@ -48,6 +48,9 @@
 | iuno_marketplacecore_V0039V_20180518.sql                          | 0039              | Created new function to get the encrypted technologydata for paid orders                               |  [#186][i186]                   | [@mbeuttler][imbeuttler] |
 | iuno_marketplacecore_V0040V_20180522.sql                          | 0040              | Adding a new table to log request information and allow brute-force protection in the backend          |  [#184][i184]                   | [@mbeuttler][imbeuttler] |
 | iuno_marketplacecore_V0041V_20180702.sql                          | 0041              | Adding permission to use createprotocols function for Admin, TechnologyAdmin and MarketplaceCore       |  [#194][i194]                   | [@mbeuttler][imbeuttler] |
+| iuno_marketplacecore_V0042V_20180518.sql                          | 0042              | Add localization functionality to components - Update Database Schema                                  |  [#179][i179]                 | [@gomarcel][igomarcel]  |
+| iuno_marketplacecore_V0043V_20180518.sql                          | 0043              | Update components functions to provide localization functionality                                      |  [#179][i179]                 | [@gomarcel][igomarcel]  |
+| iuno_marketplacecore_V0044V_20180612.sql                          | 0044              | Insert values for component translations into translations table                                       |  [#179][i179]                 | [@gomarcel][igomarcel]  |
 
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
@@ -81,6 +84,7 @@
 [i186]: https://github.com/IUNO-TDM/MarketplaceCore/issues/186
 [i184]: https://github.com/IUNO-TDM/MarketplaceCore/issues/184
 [i194]: https://github.com/IUNO-TDM/MarketplaceCore/issues/194
+[i179]: https://github.com/IUNO-TDM/MarketplaceCore/issues/179
 
 
 [igomarcel]: https://github.com/gomarcel

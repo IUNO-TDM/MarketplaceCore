@@ -5,7 +5,12 @@
  -- Description: Schema for TechnologyData
  -- ##########################################################################*/
 
-var self = {};
+const self = {};
+
+const languageProperty = {
+    type: 'string',
+    enum: ['de', 'en']
+};
 
 self.Get_Query = {
     anyOf: [
@@ -15,7 +20,8 @@ self.Get_Query = {
                 user: {
                     type: 'string',
                     format: 'uuid'
-                }
+                },
+                lang: languageProperty
             },
             additionalProperties: false
         },
@@ -42,7 +48,15 @@ self.Get_Query = {
                 ownerUUID: {
                     type: 'string',
                     format: 'uuid'
-                }
+                },
+                lang: languageProperty
+            },
+            additionalProperties: false
+        },
+        {
+            type: 'object',
+            properties: {
+                lang: languageProperty
             },
             additionalProperties: false
         }
@@ -55,6 +69,13 @@ self.Empty = {
     additionalProperties: false
 };
 
+self.Components_Query = {
+    type: 'object',
+    properties: {
+        lang: languageProperty
+    },
+    additionalProperties: false
+};
 
 self.SaveData_Body = {
     type: 'object',

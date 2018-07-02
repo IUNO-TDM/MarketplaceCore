@@ -5,11 +5,22 @@
  -- Description: Schema for TechnologyData
  -- ##########################################################################*/
 
-var self = {};
+const self = {};
 
 self.Empty = {
     type: 'object',
     properties: {},
+    additionalProperties: false
+};
+
+self.Components_Query = {
+    type: 'object',
+    properties: {
+        lang: {
+            type: 'string',
+            enum: ['de','en','fr']
+        }
+    },
     additionalProperties: false
 };
 
