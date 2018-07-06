@@ -19,7 +19,7 @@ app.use('/cmdongle', bodyParser.json({
 }));
 
 app.use('/', bodyParser.json({
-    limit: '10kb'
+    limit: '200kb'
 }));
 
 app.use(queryParser());
