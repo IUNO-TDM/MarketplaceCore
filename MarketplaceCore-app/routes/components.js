@@ -20,7 +20,10 @@ const helper = require('../services/helper_service');
 const bruteForceProtection = require('../services/brute_force_protection');
 
 
-router.get('/', validate({query: validation_schema.Components_Query, body: validation_schema.Empty}), function (req, res, next) {
+router.get('/', validate({
+    query: validation_schema.Components_Query,
+    body: validation_schema.Empty
+}), function (req, res, next) {
 
     Component.FindAll(req.token.user.id, req.token.user.roles, req.query, function (err, data) {
         if (err) {
@@ -33,7 +36,7 @@ router.get('/', validate({query: validation_schema.Components_Query, body: valid
 });
 
 router.get('/:id', validate({
-    query: validation_schema.Components_Query,
+    query: validation_schema.Single_Component_Query,
     body: validation_schema.Empty
 }), function (req, res, next) {
     Component.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], req.query['lang'], function (err, data) {

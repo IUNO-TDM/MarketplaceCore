@@ -16,11 +16,46 @@ self.Empty = {
 self.Components_Query = {
     type: 'object',
     properties: {
+        technologies: {
+            type: 'array',
+            minItems: 1,
+            maxItems: 10,
+            uniqueItems: true,
+            items: {
+                type: 'string',
+                format: 'uuid'
+            },
+            additionalItems: false
+        },
+        attributes: {
+            type: 'array',
+            minItems: 1,
+            maxItems: 10,
+            uniqueItems: true,
+            items: {
+                type: 'string',
+                format: 'uuid'
+            },
+            additionalItems: false
+        },
         lang: {
             type: 'string',
             enum: ['de','en','fr']
         }
     },
+    required: ['technologies'],
+    additionalProperties: false
+};
+
+self.Single_Component_Query = {
+    type: 'object',
+    properties: {
+        lang: {
+            type: 'string',
+            enum: ['de','en','fr']
+        }
+    },
+    required: [],
     additionalProperties: false
 };
 
