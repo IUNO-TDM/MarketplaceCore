@@ -66,7 +66,7 @@ $$
    DELETE FROM attributes WHERE attributename != 'Root';
 
    --Insert new attributes
-   select public.createattribute('juice','6df69b13-2d96-4a69-a297-aedba667e710','{TechnologyAdmin}');
+   perform public.createattribute('juice','6df69b13-2d96-4a69-a297-aedba667e710','{TechnologyAdmin}');
 
    --Insert new technology and attribute relations
    DECLARE
@@ -76,7 +76,7 @@ $$
        FOREACH vComponentUUID in array vComponentUUIDs
        LOOP
            perform public.createcomponentstechnologies(vComponentUUID, '{Juice Mixer}', null, '{TechnologyAdmin}');
-           perform public.createcomponentattribute(vComponentUUID, '{juice}', null, '{TechnologyAdmin}');
+           perform public.createcomponentsattribute(vComponentUUID, '{juice}', null, '{TechnologyAdmin}');
        END LOOP;
    END;
 
@@ -226,7 +226,7 @@ $$
 
     CREATE SEQUENCE TextID start with 150;
 
-    select public.createtechnology(
+    perform public.createtechnology(
         'ultimaker',
         null,
         '67e6ceb8-c633-47a9-8c69-f55228cb9676',
