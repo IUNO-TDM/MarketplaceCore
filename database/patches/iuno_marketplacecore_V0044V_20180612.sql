@@ -56,6 +56,8 @@ $$
 		BEGIN
 -- #########################################################################################################################################
 
+    alter table translations add constraint uniquetext unique (languageid, value);
+
     -- English
    insert into translations (translationid, languageid, textid, value, context)
    values ((select nextval('translationid')),1,1,'Root Component', 'components');
@@ -72,227 +74,218 @@ $$
    insert into translations (translationid, languageid, textid, value, context)
    values ((select nextval('translationid')),1,7,'Banana Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,8,'Passion Fruit Juice', 'components');
+   values ((select nextval('translationid')),1,8,'Maracuja Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
    values ((select nextval('translationid')),1,9,'Pineapple Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,10,'Advent Fruit', 'components');
+   values ((select nextval('translationid')),1,10,'Coconut Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,11,'Havana Club Rum', 'components');
+   values ((select nextval('translationid')),1,11,'Mulberry Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,12,'Cachaça from Brazil', 'components');
+   values ((select nextval('translationid')),1,12,'Passion Fruit Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,13,'Mulled wine', 'components');
+   values ((select nextval('translationid')),1,13,'Horned Cucumber Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,15,'Coconut Water', 'components');
+   values ((select nextval('translationid')),1,15,'Cumquat Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,16,'Mulberry Juice', 'components');
+   values ((select nextval('translationid')),1,16,'Raspberry Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,17,'Passion Fruit Juice', 'components');
+   values ((select nextval('translationid')),1,17,'Lemon Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,18,'Horn Pickle Juice', 'components');
+   values ((select nextval('translationid')),1,18,'Blackberry Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,19,'Currant Juice', 'components');
+   values ((select nextval('translationid')),1,19,'Avocado Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,20,'Kumquat Juice', 'components');
+   values ((select nextval('translationid')),1,20,'Prickly Annon Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,21,'Raspberry Juice', 'components');
+   values ((select nextval('translationid')),1,21,'Breadfruit Tree Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,22,'Lemon Juice', 'components');
+   values ((select nextval('translationid')),1,22,'Strawberry Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,23,'Blackberry Juice', 'components');
+   values ((select nextval('translationid')),1,23,'Apricot Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,24,'Avocado Juice', 'components');
+   values ((select nextval('translationid')),1,24,'Kiwi Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,25,'Soursop Juice', 'components');
+   values ((select nextval('translationid')),1,25,'Peach Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,26,'BreadFruit Tree Sap', 'components');
+   values ((select nextval('translationid')),1,26,'Papaya Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,27,'Strawberry Juice', 'components');
+   values ((select nextval('translationid')),1,27,'Lychee Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,28,'Apricot Juice', 'components');
+   values ((select nextval('translationid')),1,28,'Wine Grape Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,29,'Kiwi Juice', 'components');
+   values ((select nextval('translationid')),1,29,'Pomegranate Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,30,'Peach Juice', 'components');
+   values ((select nextval('translationid')),1,30,'Sugar Melon Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,31,'Papaya Juice', 'components');
+   values ((select nextval('translationid')),1,31,'Honeydew Melon Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,32,'Lychee', 'components');
+   values ((select nextval('translationid')),1,32,'Plum Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,33,'Grape Juice', 'components');
+   values ((select nextval('translationid')),1,33,'Watermelon Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,34,'Pomegranate Juice', 'components');
+   values ((select nextval('translationid')),1,34,'Pear Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,35,'Melon Juice', 'components');
+   values ((select nextval('translationid')),1,35,'Longan Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,36,'Honeydew Melon Juice', 'components');
+   values ((select nextval('translationid')),1,36,'Clementine Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,37,'Prune Juice', 'components');
+   values ((select nextval('translationid')),1,37,'Mandarin Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,38,'Watermelon Juice', 'components');
+   values ((select nextval('translationid')),1,38,'Elderberry Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,39,'Pear Juice', 'components');
+   values ((select nextval('translationid')),1,39,'Absinthe', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,40,'Longan Juice', 'components');
+   values ((select nextval('translationid')),1,40,'Aquavit', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,41,'Clementine Juice', 'components');
+   values ((select nextval('translationid')),1,41,'Brandy', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,42,'Mandarin Juice', 'components');
+   values ((select nextval('translationid')),1,42,'Calvados', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,43,'Elderberry Juice', 'components');
+   values ((select nextval('translationid')),1,43,'Cidre', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,44,'Absinthe', 'components');
+   values ((select nextval('translationid')),1,44,'Cognac', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,45,'Aquavit', 'components');
+   values ((select nextval('translationid')),1,45,'Gin', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,46,'Brandy', 'components');
+   values ((select nextval('translationid')),1,46,'Grappa', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,47,'Calvados', 'components');
+   values ((select nextval('translationid')),1,47,'Grain', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,48,'Cidre', 'components');
+   values ((select nextval('translationid')),1,48,'Liqueur', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,49,'Cognac', 'components');
+   values ((select nextval('translationid')),1,49,'Mead', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,50,'Gin', 'components');
+   values ((select nextval('translationid')),1,50,'Mescal', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,51,'Grappa', 'components');
+   values ((select nextval('translationid')),1,51,'Pisco', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,52,'Grain', 'components');
+   values ((select nextval('translationid')),1,52,'Port Wine', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,53,'Liqueur', 'components');
+   values ((select nextval('translationid')),1,53,'Rum', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,54,'Mead', 'components');
+   values ((select nextval('translationid')),1,54,'Sherry', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,55,'Mescal', 'components');
+   values ((select nextval('translationid')),1,55,'Vodka', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,56,'Pisco', 'components');
+   values ((select nextval('translationid')),1,56,'White Wine', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,57,'Port Wine', 'components');
+   values ((select nextval('translationid')),1,57,'Red Wine', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,58,'Rum', 'components');
+   values ((select nextval('translationid')),1,58,'Wormwood', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,59,'Sherry', 'components');
+   values ((select nextval('translationid')),1,59,'Whiskey', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,60,'Vodka', 'components');
+   values ((select nextval('translationid')),1,60,'Campari', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,61,'White wine', 'components');
+   values ((select nextval('translationid')),1,61,'Vermouth Rosso', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,62,'Red Wine', 'components');
+   values ((select nextval('translationid')),1,62,'Roses Lime Juice', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,63,'Wormwood', 'components');
+   values ((select nextval('translationid')),1,63,'Grenadine', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,64,'Whiskey', 'components');
+   values ((select nextval('translationid')),1,64,'Peach Liqueur', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,65,'Campari', 'components');
+   values ((select nextval('translationid')),1,65,'Sparkling Wine', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,66,'Vermouth Rosso', 'components');
+   values ((select nextval('translationid')),1,66,'Champagne', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,67,'Roses Lime Juice', 'components');
+   values ((select nextval('translationid')),1,67,'Contreau', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,68,'Grenadine', 'components');
+   values ((select nextval('translationid')),1,68,'Frais des Bois', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,69,'Peach Liqueur', 'components');
+   values ((select nextval('translationid')),1,69,'Creme de Cassis', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,70,'Sparkling Wine', 'components');
+   values ((select nextval('translationid')),1,70,'Creme de Framboise', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,71,'Champagne', 'components');
+   values ((select nextval('translationid')),1,71,'Remy Martin', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,72,'Contreau', 'components');
+   values ((select nextval('translationid')),1,72,'Creme de Cacao Brown', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,73,'Frais des Bois', 'components');
+   values ((select nextval('translationid')),1,73,'Brown rum', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,74,'Creme de Cassis', 'components');
+   values ((select nextval('translationid')),1,74,'Strawberry Syrup', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,75,'Creme de Framboise', 'components');
+   values ((select nextval('translationid')),1,75,'Pomegranate Syrup', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,76,'Remy Martin', 'components');
+   values ((select nextval('translationid')),1,76,'Coconut Syrup', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,77,'Creme de Cacao Brown', 'components');
+   values ((select nextval('translationid')),1,77,'Passion Fruit Syrup', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,78,'Brown rum', 'components');
+   values ((select nextval('translationid')),1,78,'Blue Curacao Syrup', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,79,'Strawberry Syrup', 'components');
+   values ((select nextval('translationid')),1,79,'Almond Syrup', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,80,'Pomegranate Syrup', 'components');
+   values ((select nextval('translationid')),1,80,'Mango Syrup', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,81,'Coconut Syrup', 'components');
+   values ((select nextval('translationid')),1,81,'Passion Fruit Nectar', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,82,'Passion Fruit Syrup', 'components');
+   values ((select nextval('translationid')),1,82,'Mango Nectar', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,83,'Blue Curacao Syrup', 'components');
+   values ((select nextval('translationid')),1,83,'Tonic Water', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,84,'Almond Syrup', 'components');
+   values ((select nextval('translationid')),1,84,'Curacao Triple Sec', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,85,'Mango Syrup', 'components');
+   values ((select nextval('translationid')),1,85,'Cherry Brand', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,86,'Passion Fruit Nectar', 'components');
+   values ((select nextval('translationid')),1,86,'Splash Angostura', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,87,'Mango Nectar', 'components');
+   values ((select nextval('translationid')),1,87,'Melon Liqueur', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,88,'Tonic Water', 'components');
+   values ((select nextval('translationid')),1,88,'Southern Comfort', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,89,'Curacao Triple Sec', 'components');
+   values ((select nextval('translationid')),1,89,'Cranberry Nectar', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,90,'Cherry Brand', 'components');
+   values ((select nextval('translationid')),1,90,'Benedictine', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,91,'Splash Angostura', 'components');
+   values ((select nextval('translationid')),1,91,'Galliano', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,92,'Melon liqueur', 'components');
+   values ((select nextval('translationid')),1,92,'Creme de Banana', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,93,'Southern Comfort', 'components');
+   values ((select nextval('translationid')),1,93,'Cream of Coconut', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,94,'Cranberry Nectar', 'components');
+   values ((select nextval('translationid')),1,94,'White Rum', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,95,'Benedictine', 'components');
+   values ((select nextval('translationid')),1,95,'Vodka', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,96,'Galliano', 'components');
+   values ((select nextval('translationid')),1,96,'Bol\'s Green Banana', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,97,'Creme de Banana', 'components');
+   values ((select nextval('translationid')),1,97,'Apricot Brandy', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,98,'Cream of Coconut', 'components');
+   values ((select nextval('translationid')),1,98,'Creme de Menthe', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,99,'White Rum', 'components');
+   values ((select nextval('translationid')),1,99,'Grand Marnier', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,100,'Vodka', 'components');
+   values ((select nextval('translationid')),1,100,'Bols Kontiki Red Orange', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,101,'Bol''s Green Banana', 'components');
+   values ((select nextval('translationid')),1,101,'Amaretto', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,102,'Apricot Brandy', 'components');
+   values ((select nextval('translationid')),1,102,'Batita de Coco', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,103,'Creme de Menthe', 'components');
+   values ((select nextval('translationid')),1,103,'Cherry Liqueur', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,104,'Grand Marnier', 'components');
+   values ((select nextval('translationid')),1,104,'Amarula', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,105,'Bols Kontiki Red Orange', 'components');
+   values ((select nextval('translationid')),1,105,'Tequila', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,106,'Amaretto', 'components');
+   values ((select nextval('translationid')),1,106,'Tia Maria', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,107,'Batita de Coco', 'components');
+   values ((select nextval('translationid')),1,107,'Kahlua', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,108,'Cherry Liqueur', 'components');
+   values ((select nextval('translationid')),1,108,'Red Bull', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,109,'Amarula', 'components');
+   values ((select nextval('translationid')),1,109,'Drambuie', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,110,'Tequila', 'components');
+   values ((select nextval('translationid')),1,110,'Xuxu Strawberry Limes', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,111,'Tia Maria', 'components');
+   values ((select nextval('translationid')),1,111,'Pecher Mignon', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,112,'Kahlua', 'components');
+   values ((select nextval('translationid')),1,112,'Blended Scotch', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,113,'Red Bull', 'components');
+   values ((select nextval('translationid')),1,113,'Ginger Ale', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,114,'Drambuie', 'components');
+   values ((select nextval('translationid')),1,114,'Prosecco', 'components');
    insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,115,'Xuxu Strawberry Limes', 'components');
-   insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,116,'Pecher Mignon', 'components');
-   insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,117,'Blended Scotch', 'components');
-   insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,118,'Ginger Ale', 'components');
-   insert into translations (translationid, languageid, textid, value, context)
-   values ((select nextval('translationid')),1,119,'Prosecco', 'components');
 
 
 

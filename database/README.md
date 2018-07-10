@@ -51,7 +51,7 @@
 | iuno_marketplacecore_V0042V_20180518.sql                          | 0042              | Add localization functionality to components - Update Database Schema                                  |  [#179][i179]                 | [@gomarcel][igomarcel]  |
 | iuno_marketplacecore_V0043V_20180518.sql                          | 0043              | Update components functions to provide localization functionality                                      |  [#179][i179]                 | [@gomarcel][igomarcel]  |
 | iuno_marketplacecore_V0044V_20180612.sql                          | 0044              | Insert values for component translations into translations table                                       |  [#179][i179]                 | [@gomarcel][igomarcel]  |
-| iuno_marketplacecore_V0045V_20180709.sql                          | 0045              | Updated components function to include technologies and attributes                                     |  [#198][i198]                 | [@mbeuttler][imbeuttler]  |
+| iuno_marketplacecore_V0045V_20180709.sql                          | 0045              | Updated components function to include technologies and attributes                                     |  [#198][i198][#199][i199]     | [@mbeuttler][imbeuttler]  |
 
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
@@ -87,6 +87,7 @@
 [i194]: https://github.com/IUNO-TDM/MarketplaceCore/issues/194
 [i179]: https://github.com/IUNO-TDM/MarketplaceCore/issues/179
 [i198]: https://github.com/IUNO-TDM/MarketplaceCore/issues/198
+[i199]: https://github.com/IUNO-TDM/MarketplaceCore/issues/199
 
 
 [igomarcel]: https://github.com/gomarcel
