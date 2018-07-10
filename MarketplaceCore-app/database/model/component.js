@@ -31,7 +31,7 @@ function Component(data) {
 }
 
 Component.prototype.FindAll = Component.FindAll = function (userUUID, roles, params, callback) {
-    db.func('GetAllComponents', [userUUID, params.lang || 'en', params.technologies, undefined, roles])
+    db.func('GetAllComponents', [userUUID, params.lang || 'en', params.technologies, params.attributes, roles])
         .then(function (data) {
             const resultList = [];
 
