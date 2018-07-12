@@ -50,6 +50,7 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
     const technologydataname = params['technologydataname'];
     const ownerUUID = params['ownerUUID'];
     const language = params['lang'];
+    const productCodes = params['productCodes'];
 
 
     db.func('GetTechnologyDataByParams',
@@ -58,6 +59,7 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
             technologyUUID,
             technologydataname,
             ownerUUID,
+            productCodes,
             userUUID,
             language,
             roles

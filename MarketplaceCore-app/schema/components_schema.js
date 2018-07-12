@@ -43,7 +43,7 @@ self.Components_Query = {
             enum: ['de','en','fr']
         }
     },
-    required: ['technologies'],
+    required: ['technologies', 'lang'],
     additionalProperties: false
 };
 
@@ -55,7 +55,7 @@ self.Single_Component_Query = {
             enum: ['de','en','fr']
         }
     },
-    required: [],
+    required: ['lang'],
     additionalProperties: false
 };
 
