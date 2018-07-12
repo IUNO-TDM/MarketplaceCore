@@ -1,5 +1,3 @@
-require('express-query-int')
-
 function parseObject(query) {
     const result = {};
 
