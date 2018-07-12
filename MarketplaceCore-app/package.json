@@ -15,7 +15,6 @@
     "express-brute": "^1.0.1",
     "express-json-validator-middleware": "^1.1.1",
     "express-jsonschema": "^1.1.6",
-    "express-query-int": "^2.0.0",
     "humps": "^2.0.1",
     "lodash": "^4.17.4",
     "moment": "^2.20.1",
