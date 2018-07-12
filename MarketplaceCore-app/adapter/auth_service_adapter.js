@@ -50,13 +50,16 @@ self.validateToken = function (accessToken, callback) {
             return callback(err);
         }
 
-        if (token && new Date(token.accessTokenExpiresAt) > new Date()) {
+        let isValid = false;
 
-            return callback(null, true, token)
+        if (token && new Date(token.accessTokenExpiresAt) > new Date()) {
+            isValid = true;
+        }
+        else {
+            logger.warn('[auth_service_adapter] access token expired');
         }
 
-        logger.warn('[auth_service_adapter] access token expired');
-        return callback(null, false, token)
+        return callback(null, isValid, token);
 
     });
 
