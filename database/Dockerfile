@@ -5,7 +5,7 @@ ENV POSTGRES_PASSWORD docker
 ENV POSTGRES_DB MarketplaceCore
 
 ADD patches /docker-entrypoint-initdb.d/
-ADD patches/data_scripts /docker-entrypoint-initdb.d/
+ADD patches /data_scripts /docker-entrypoint-initdb.d/
 
 VOLUME /etc/postgresql/data
 VOLUME /var/log/postgresql
