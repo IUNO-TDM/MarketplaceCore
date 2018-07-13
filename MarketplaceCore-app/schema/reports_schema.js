@@ -26,12 +26,17 @@ self.Revenue_Query = {
         detail: {
             type: 'string',
             enum: ['day', 'hour']
+        },
+        technologyuuid: {
+            type: 'string',
+            format: 'uuid'
         }
     },
     required: [
         'from',
         'to',
-        'detail'
+        'detail',
+        'technologyuuid'
     ],
     additionalProperties: false
 };
@@ -50,12 +55,17 @@ self.Revenue_User_Query = {
         to: {
             type: 'string',
             format: 'date-time'
+        },
+        technologyuuid: {
+            type: 'string',
+            format: 'uuid'
         }
     },
     additionalProperties: false,
     required: [
         'from',
-        'to'
+        'to',
+        'technologyuuid'
     ]
 };
 
@@ -69,11 +79,16 @@ self.History_Query = {
         to: {
             type: 'string',
             format: 'date-time'
+        },
+        technologyuuid: {
+            type: 'string',
+            format: 'uuid'
         }
     },
     required: [
         'from',
-        'to'
+        'to',
+        'technologyuuid'
     ],
     additionalProperties: false
 };
@@ -88,11 +103,16 @@ self.History_User_Query = {
         to: {
             type: 'string',
             format: 'date-time'
+        },
+        technologyuuid: {
+            type: 'string',
+            format: 'uuid'
         }
     },
     required: [
         'from',
-        'to'
+        'to',
+        'technologyuuid'
     ],
     additionalProperties: false
 };
@@ -116,12 +136,17 @@ self.Top_TD_Query = {
         user: {
             type: 'string',
             format: 'uuid'
+        },
+        technologyuuid: {
+            type: 'string',
+            format: 'uuid'
         }
     },
     required: [
         'from',
         'to',
-        'limit'
+        'limit',
+        'technologyuuid'
     ],
     additionalProperties: false
 };
@@ -142,12 +167,17 @@ self.Top_Components_Query = {
             minimum: 1,
             maximum: 10
         },
+        technologyuuid: {
+            type: 'string',
+            format: 'uuid'
+        },
         lang: languageProperty
     },
     required: [
         'from',
         'to',
-        'limit'
+        'limit',
+        'technologyuuid'
     ],
     additionalProperties: false
 };
@@ -162,11 +192,16 @@ self.License_Count_Query = {
         user: {
             type: 'string',
             format: 'uuid'
+        },
+        technologyuuid: {
+            type: 'string',
+            format: 'uuid'
         }
     },
     required: [
         'activated',
-        'user'
+        'user',
+        'technologyuuid'
     ],
     additionalProperties: false
 };
