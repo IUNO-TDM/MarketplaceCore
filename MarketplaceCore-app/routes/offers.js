@@ -23,6 +23,7 @@ const dbTransaction = require('../database/function/transaction');
 const dbLicense = require('../database/function/license');
 const licenseService = require('../services/license_service');
 const bruteForceProtection = require('../services/brute_force_protection');
+const paymentService = require('../services/payment_service');
 
 router.get('/:id', validate({
     query: validation_schema.Empty,
@@ -76,7 +77,17 @@ router.post('/', bruteForceProtection.global,
                                                 expiration: invoiceIn.expiration,
                                                 transfers: invoiceIn.transfers
                                             };
-                                            res.json({'id': offer[0].offeruuid, 'invoice': invoiceOut});
+                                            paymentService.getInvoiceBip21(invoiceIn, (err, bip21) => {
+                                                if (err) {
+                                                    logger.crit(err);
+                                                }
+
+                                                res.json({
+                                                    id: offer[0].offeruuid,
+                                                    invoice: invoiceOut,
+                                                    bip21: bip21
+                                                });
+                                            });
                                         }
                                     });
                                 }

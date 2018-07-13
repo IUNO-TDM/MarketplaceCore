@@ -140,6 +140,35 @@ payment_service.getInvoiceTransfers = function (invoice, callback) {
 
 };
 
+payment_service.getInvoiceBip21 = function(invoice, callback) {
+    if (typeof(callback) !== 'function') {
+
+        callback = function () {
+            logger.info('Callback not registered');
+        }
+    }
+    try {
+        const options = buildOptionsForRequest(
+            'GET',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.PROTOCOL || 'http',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.HOST || 'localhost',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.PORT || 8080,
+            `/v1/invoices/${invoice.invoiceId}/bip21`
+        );
+
+
+        request(options, function (e, r, jsonData) {
+            const err = logger.logRequestAndResponse(e, options, r, jsonData);
+
+            callback(err, jsonData);
+        });
+    }
+    catch (err) {
+        logger.crit(err);
+        callback(err);
+    }
+};
+
 
 payment_service.registerStateChangeUpdates = function (invoiceId) {
     payment_service.socket.emit('room', invoiceId);

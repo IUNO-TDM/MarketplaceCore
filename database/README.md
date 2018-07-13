@@ -52,7 +52,7 @@
 | iuno_marketplacecore_V0043V_20180518.sql                          | 0043              | Update components functions to provide localization functionality                                      |  [#179][i179]                 | [@gomarcel][igomarcel]  |
 | iuno_marketplacecore_V0044V_20180612.sql                          | 0044              | Insert values for component translations into translations table                                       |  [#179][i179]                 | [@gomarcel][igomarcel]  |
 | iuno_marketplacecore_V0045V_20180709.sql                          | 0045              | Updated components function to include technologies and attributes                                     |  [#198][i198][#199][i199]     | [@mbeuttler][imbeuttler]  |
-| iuno_marketplacecore_V0046V_20180709.sql                          | 0046              | Update reports functions to handle different technologies                                     |        | [@gomarcel][igomarcel]  |
+| iuno_marketplacecore_V0046V_20180712.sql                          | 0046              | Updated GetTechnologydataByParams                                                                      |                               | [@mbeuttler][imbeuttler]  |
 
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
