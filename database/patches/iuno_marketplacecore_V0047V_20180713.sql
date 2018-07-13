@@ -30,8 +30,8 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V0046V_20180713';
-		PatchNumber int 		 	 := 0046;
+		PatchName varchar		 	 := 'iuno_marketplacecore_V0047V_20180713';
+		PatchNumber int 		 	 := 0047;
 		PatchDescription varchar 	 := 'Update reports functions to handle different technologies';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
@@ -51,7 +51,7 @@ $$;
 DO
 $$
 		DECLARE
-			vPatchNumber int := 0046;
+			vPatchNumber int := 0047;
 		BEGIN
 -- #########################################################################################################################################
 
@@ -364,7 +364,7 @@ $$
    					    vRoles) r
    					    left outer join technologydata td
    					    on td.technologydatauuid = r.technologydatauuid
-   					    left outer join technologyuuid tg
+   					    left outer join technologies tg
    					    on td.technologyid = tg.technologyid
    					    where r.year = '0'
    					    and r.month = '0'
