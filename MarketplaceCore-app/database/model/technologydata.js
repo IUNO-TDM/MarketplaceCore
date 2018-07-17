@@ -79,6 +79,11 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
         });
 };
 
+/**
+ *
+ * @type {TechnologyData.FindSingle}
+ * @return {TechnologyData}
+ */
 TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, roles, id, callback) {
     db.func('GetTechnologyDataByID', [id, userUUID, roles])
         .then(function (data) {
@@ -146,8 +151,20 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             callback(error);
         });
 };
-TechnologyData.prototype.Update = function () {
-    throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
+TechnologyData.prototype.Update = function (userUUID, roles, callback) {
+    db.func('updatetechnologydata',
+        [this.technologydatauuid,
+            this.technologydata,
+            userUUID,
+            roles
+        ])
+        .then(function () {
+            callback(null);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
 };
 
 TechnologyData.prototype.Delete = TechnologyData.Delete = function (technologydatauuid, userUUID, roles, callback) {
