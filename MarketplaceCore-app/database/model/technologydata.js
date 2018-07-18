@@ -25,6 +25,7 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.createdby = data.createdby ? data.createdby : this.createdby;
         this.componentlist = data.componentlist ? data.componentlist : this.componentlist;
         this.backgroundcolor = data.backgroundcolor ? data.backgroundcolor : this.backgroundcolor;
+        this.technologydataimgref = data.technologydataimgref ? data.technologydataimgref : this.technologydataimgref;
     }
 };
 
