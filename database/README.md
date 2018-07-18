@@ -44,7 +44,15 @@
 | iuno_marketplacecore_V0035V_20180403.sql                          | 0035              | Added Function GetTransactionByOffer                                                                   |                                 | [@mbeuttler][imbeuttler] |
 | iuno_marketplacecore_V0036V_20180404.sql                          | 0036              | Added clientId column to protocols table                                                               |  [#174][i174]                   | [@mbeuttler][imbeuttler] |
 | iuno_marketplacecore_V0037V_20180405.sql                          | 0037              | Updated GetProtocols function to include ClientId filter. Introduced new function GetLastProtocolForEachClient: Returning only the last protocol for each client.   |  [#176][i176]                   | [@mbeuttler][imbeuttler] |
-| iuno_marketplacecore_V0038V_20180508.sql                          | 0038              | Fixed where clause in GetLastProtocolForEachClient function                                            |                                 s| [@mbeuttler][imbeuttler] |
+| iuno_marketplacecore_V0038V_20180508.sql                          | 0038              | Fixed where clause in GetLastProtocolForEachClient function                                            |                                 | [@mbeuttler][imbeuttler] |
+| iuno_marketplacecore_V0039V_20180518.sql                          | 0039              | Created new function to get the encrypted technologydata for paid orders                               |  [#186][i186]                   | [@mbeuttler][imbeuttler] |
+| iuno_marketplacecore_V0040V_20180522.sql                          | 0040              | Adding a new table to log request information and allow brute-force protection in the backend          |  [#184][i184]                   | [@mbeuttler][imbeuttler] |
+| iuno_marketplacecore_V0041V_20180702.sql                          | 0041              | Adding permission to use createprotocols function for Admin, TechnologyAdmin and MarketplaceCore       |  [#194][i194]                   | [@mbeuttler][imbeuttler] |
+| iuno_marketplacecore_V0042V_20180518.sql                          | 0042              | Add localization functionality to components - Update Database Schema                                  |  [#179][i179]                 | [@gomarcel][igomarcel]  |
+| iuno_marketplacecore_V0043V_20180518.sql                          | 0043              | Update components functions to provide localization functionality                                      |  [#179][i179]                 | [@gomarcel][igomarcel]  |
+| iuno_marketplacecore_V0044V_20180612.sql                          | 0044              | Insert values for component translations into translations table                                       |  [#179][i179]                 | [@gomarcel][igomarcel]  |
+| iuno_marketplacecore_V0045V_20180709.sql                          | 0045              | Updated components function to include technologies and attributes                                     |  [#198][i198][#199][i199]     | [@mbeuttler][imbeuttler]  |
+
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
@@ -74,6 +82,12 @@
 [i167]: https://github.com/IUNO-TDM/MarketplaceCore/issues/167
 [i174]: https://github.com/IUNO-TDM/MarketplaceCore/issues/174
 [i176]: https://github.com/IUNO-TDM/MarketplaceCore/issues/176
+[i186]: https://github.com/IUNO-TDM/MarketplaceCore/issues/186
+[i184]: https://github.com/IUNO-TDM/MarketplaceCore/issues/184
+[i194]: https://github.com/IUNO-TDM/MarketplaceCore/issues/194
+[i179]: https://github.com/IUNO-TDM/MarketplaceCore/issues/179
+[i198]: https://github.com/IUNO-TDM/MarketplaceCore/issues/198
+[i199]: https://github.com/IUNO-TDM/MarketplaceCore/issues/199
 
 
 [igomarcel]: https://github.com/gomarcel

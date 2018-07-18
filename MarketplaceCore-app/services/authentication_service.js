@@ -93,4 +93,15 @@ self.isAdmin = function (req, res, next) {
     self.isUserWithRole('Admin', req, res, next)
 };
 
+self.paramIsEqualToSessionUser = function (param) {
+    return function (req, res, next) {
+        if (req.token.user.id !== req.params[param]) {
+            logger.warn(`[authentication_service] unauthorized api request from user ${req.token.user.id} for user ${req.params[param]}`);
+            return res.sendStatus(401);
+        }
+
+        next();
+    }
+};
+
 module.exports = self;

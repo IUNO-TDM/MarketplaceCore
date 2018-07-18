@@ -7,6 +7,11 @@
 
 const self = {};
 
+const languageProperty = {
+    type: 'string',
+    enum: ['de', 'en']
+};
+
 self.Revenue_Query = {
     type: 'object',
     properties: {
@@ -136,7 +141,8 @@ self.Top_Components_Query = {
             type: 'integer',
             minimum: 1,
             maximum: 10
-        }
+        },
+        lang: languageProperty
     },
     required: [
         'from',
@@ -191,6 +197,14 @@ self.Protocol_Body = {
     required: [
         'eventType', 'from', 'to'
     ]
+};
+
+self.Components_Query = {
+    type: 'object',
+    properties: {
+        lang: languageProperty
+    },
+    additionalProperties: false
 };
 
 module.exports = self;
