@@ -249,7 +249,7 @@ router.post('/:id/content', require('../services/file_upload_handler'), function
             return res.sendStatus(404);
         }
 
-        if (data.technologydata !== req.file.originalname) {
+        if (`${data.technologydata}.gz` !== req.file.originalname) {
             deleteFile(req.file.path);
             return res.sendStatus(403);
         }
