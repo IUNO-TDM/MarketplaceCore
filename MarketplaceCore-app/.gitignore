@@ -45,6 +45,6 @@ images/recipes/*
 
 .DS_Store
 
-.tmp
+tmp
 
-.files
+files
