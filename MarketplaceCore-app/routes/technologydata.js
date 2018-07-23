@@ -228,7 +228,10 @@ function deleteFile(path) {
     });
 }
 
-router.post('/:id/content', require('../services/file_upload_handler'), function (req, res, next) {
+router.post('/:id/content',
+    bruteForceProtection.fileupload,
+    require('../services/file_upload_handler'),
+    function (req, res, next) {
 
     const data = req.data;
 

@@ -20,7 +20,7 @@ self.sendReportToAdmins = function (title, message) {
     if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'docker') {
         logger.info('[email_service] Development Environment - Emails are disabled during development');
 
-        // return;
+        return;
     }
 
     const transporter = nodemailer.createTransport(CONFIG.SMTP_CONFIG);
