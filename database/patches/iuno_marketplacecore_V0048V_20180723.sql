@@ -19,7 +19,7 @@
 -- 	1) Why is this Patch necessary?
 --  Missing function to update technology data table
 -- 	2) Which Git Issue Number is this patch solving?
---  #06
+--  #206
 -- 	3) Which changes are going to be done?
 -- Create Function UpdateTechnologyData
 --: Run Patches
