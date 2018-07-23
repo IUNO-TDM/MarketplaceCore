@@ -44,3 +44,7 @@ private_*
 images/recipes/*
 
 .DS_Store
+
+.tmp
+
+.files

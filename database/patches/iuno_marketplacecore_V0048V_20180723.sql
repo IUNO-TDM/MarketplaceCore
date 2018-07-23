@@ -62,7 +62,7 @@ BEGIN
         vtechnologydata character varying,
         vuseruuid uuid,
         vroles text[] DEFAULT NULL::text[])
-        RETURNS boolean
+        RETURNS VOID
         LANGUAGE 'plpgsql'
 
         AS $BODY$
@@ -85,8 +85,6 @@ BEGIN
                 ELSE
                     RAISE EXCEPTION '%', 'Insufficiency rigths';
                 END IF;
-
-
 
             END;
 
