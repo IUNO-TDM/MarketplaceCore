@@ -230,56 +230,49 @@ function deleteFile(path) {
 
 router.post('/:id/content', require('../services/file_upload_handler'), function (req, res, next) {
 
-    if (!req.file.path) {
-        return res.sendStatus(500);
+    const data = req.data;
+
+    if (!req.file || !req.file.path) {
+        return res.sendStatus(400);
     }
+
     logger.debug(`File stored to: ${req.file.path}`);
 
+    if (!data) {
+        deleteFile(req.file.path);
 
-    TechnologyData.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], (err, data) => {
+        return res.sendStatus(404);
+    }
+
+    if (`${data.technologydata}.gz` !== req.file.originalname) {
+        deleteFile(req.file.path);
+        return res.sendStatus(403);
+    }
+
+    const targetPath = `${CONFIG.FILE_DIR}/${req.file.filename}`;
+    data.technologydata = 'file://' + targetPath;
+
+    data.Update(req.token.user.id, req.token.user.roles, (err) => {
         if (err) {
             deleteFile(req.file.path);
-
             return next(err);
         }
 
-        if (!data) {
+        if (fs.existsSync(targetPath)) {
+            logger.crit('[routes/technologydata] Technology data content file already exists.');
             deleteFile(req.file.path);
-
-            return res.sendStatus(404);
+            return res.sendStatus(500);
         }
 
-        if (`${data.technologydata}.gz` !== req.file.originalname) {
-            deleteFile(req.file.path);
-            return res.sendStatus(403);
-        }
-
-        const targetPath = `${CONFIG.FILE_DIR}/${req.file.filename}`;
-        data.technologydata = 'file://' + targetPath;
-
-        data.Update(req.token.user.id, req.token.user.roles, (err) => {
+        fs.rename(req.file.path, targetPath, (err) => {
             if (err) {
-                deleteFile(req.file.path);
-                return next(err);
-            }
+                logger.crit('[routes/technologydata] Error while moving uploaded file from tmp dir to upload dir');
 
-            if (fs.existsSync(targetPath)) {
-                logger.crit('[routes/technologydata] Technology data content file already exists.');
-                deleteFile(req.file.path);
                 return res.sendStatus(500);
             }
 
-            fs.rename(req.file.path, targetPath, (err) => {
-                if (err) {
-                    logger.crit('[routes/technologydata] Error while moving uploaded file from tmp dir to upload dir');
-
-                    return res.sendStatus(500);
-                }
-
-                return res.sendStatus(200);
-            });
+            return res.sendStatus(200);
         });
-
     });
 });
 
