@@ -114,10 +114,6 @@ self.SaveData_Body = {
                     pattern: '\\{.*\\:\\{.*\\:.*\\}\\}',
                     minLength: 1,
                     maxLength: 100000
-                },
-                {
-                    type: 'string',
-                    format: 'uuid'
                 }]
         },
         technologyDataDescription: {

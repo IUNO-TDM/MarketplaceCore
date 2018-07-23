@@ -233,50 +233,44 @@ router.post('/:id/content',
     require('../services/file_upload_handler'),
     function (req, res, next) {
 
-    const data = req.data;
+        const data = req.data;
 
-    if (!req.file || !req.file.path) {
-        return res.sendStatus(400);
-    }
-
-    logger.debug(`File stored to: ${req.file.path}`);
-
-    if (!data) {
-        deleteFile(req.file.path);
-
-        return res.sendStatus(404);
-    }
-
-    if (`${data.technologydata}.gz` !== req.file.originalname) {
-        deleteFile(req.file.path);
-        return res.sendStatus(403);
-    }
-
-    const targetPath = `${CONFIG.FILE_DIR}/${req.file.filename}`;
-    data.technologydata = 'file://' + targetPath;
-
-    data.Update(req.token.user.id, req.token.user.roles, (err) => {
-        if (err) {
-            deleteFile(req.file.path);
-            return next(err);
+        if (!req.file || !req.file.path) {
+            return res.sendStatus(400);
         }
 
-        if (fs.existsSync(targetPath)) {
-            logger.crit('[routes/technologydata] Technology data content file already exists.');
+        logger.debug(`File stored to: ${req.file.path}`);
+
+        if (!data) {
             deleteFile(req.file.path);
-            return res.sendStatus(500);
+
+            return res.sendStatus(404);
         }
 
-        fs.rename(req.file.path, targetPath, (err) => {
+        const targetPath = `${CONFIG.FILE_DIR}/${req.file.filename}`;
+        data.technologydata = 'file://' + targetPath;
+        data.Update(req.token.user.id, req.token.user.roles, (err) => {
             if (err) {
-                logger.crit('[routes/technologydata] Error while moving uploaded file from tmp dir to upload dir');
+                deleteFile(req.file.path);
+                return next(err);
+            }
 
+            if (fs.existsSync(targetPath)) {
+                logger.crit('[routes/technologydata] Technology data content file already exists.');
+                deleteFile(req.file.path);
                 return res.sendStatus(500);
             }
 
-            return res.sendStatus(200);
+            fs.rename(req.file.path, targetPath, (err) => {
+                if (err) {
+                    logger.crit('[routes/technologydata] Error while moving uploaded file from tmp dir to upload dir');
+
+                    return res.sendStatus(500);
+                }
+
+                return res.sendStatus(200);
+            });
         });
     });
-});
 
 module.exports = router;
