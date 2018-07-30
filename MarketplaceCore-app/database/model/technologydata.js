@@ -27,7 +27,7 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.backgroundcolor = data.backgroundcolor ? data.backgroundcolor : this.backgroundcolor;
         this.technologydataimgref = data.technologydataimgref ? data.technologydataimgref : this.technologydataimgref;
         this.isfile = data.isfile ? data.isfile : this.isfile;
-        this.filepath = data.filepath ? data.isfile : this.filepath;
+        this.filepath = data.filepath ? data.filepath : this.filepath;
     }
 };
 

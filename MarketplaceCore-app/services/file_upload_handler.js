@@ -37,7 +37,7 @@ const filter = function (req, file, cb) {
             return cb(null, false)
         }
 
-        if(!data.isFile) {
+        if(!data.isfile) {
             logger.warn('[file_upload_handler] trying to upload content file for a none-file entry');
             return cb(null, false)
         }
@@ -54,7 +54,7 @@ const filter = function (req, file, cb) {
             return cb(new Error('Wrong field name for technology data upload'), false);
         }
         // Check if original is an uuid
-        if (!(/^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}.gz$/i.test(file.originalname))) {
+        if (file.originalname !== data.technologydatauuid + '.gz') {
             logger.warn('[file_upload_handler] upload attempt with wrong original name');
             return cb(new Error('Wrong file name for technology data upload'), false);
         }

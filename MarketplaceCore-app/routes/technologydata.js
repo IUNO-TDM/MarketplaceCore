@@ -216,7 +216,7 @@ router.get('/:id/content', validate({
                     return res.sendStatus(402);
                 }
                 res.header('key', data.technologydata);
-                res.sendFile(path.resolve(data.filepath));
+                res.sendFile(path.resolve(`${CONFIG.FILE_DIR}/${data.filepath}`));
             }
             else {
                 res.json(data.technologydata);
@@ -253,7 +253,7 @@ router.post('/:id/content',
         }
 
         const targetPath = `${CONFIG.FILE_DIR}/${req.file.filename}`;
-        data.filePath = targetPath;
+        data.filepath = req.file.filename;
 
         if (fs.existsSync(targetPath)) {
             logger.crit('[routes/technologydata] Technology data content file already exists.');
