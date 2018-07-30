@@ -28,15 +28,20 @@ const filter = function (req, file, cb) {
     TechnologyData.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], (err, data) => {
 
         if (err || !data) {
-            logger.warn('[content_filter] attempted upload of content for unknown technology data');
+            logger.warn('[file_upload_handler] attempted upload of content for unknown technology data');
             return cb(err, false)
         }
 
         if (data.createdby !== req.token.user.id) {
-            logger.warn('[content_filter] attempted upload of content for wrong user');
+            logger.warn('[file_upload_handler] attempted upload of content for wrong user');
             return cb(null, false)
         }
 
+        if(!data.isFile) {
+            logger.warn('[file_upload_handler] trying to upload content file for a none-file entry');
+            return cb(null, false)
+        }
+        
         req.data = data;
 
         logger.debug(file);
@@ -45,20 +50,20 @@ const filter = function (req, file, cb) {
             return cb(null, false);
         }
         if (file.fieldname !== 'file') {
-            logger.warn('[content_filter] upload attempt with wrong field name');
+            logger.warn('[file_upload_handler] upload attempt with wrong field name');
             return cb(new Error('Wrong field name for technology data upload'), false);
         }
         // Check if original is an uuid
         if (!(/^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}.gz$/i.test(file.originalname))) {
-            logger.warn('[content_filter] upload attempt with wrong original name');
+            logger.warn('[file_upload_handler] upload attempt with wrong original name');
             return cb(new Error('Wrong file name for technology data upload'), false);
         }
         // if (file.encoding !== 'base64') {
-        //     logger.warn('[content_filter] upload attempt with wrong encoding');
+        //     logger.warn('[file_upload_handler] upload attempt with wrong encoding');
         //     return cb(new Error('Wrong transport encoding for technology data upload'), false);
         // }
         // if (file.mimetype !== 'application/gzip') {
-        //     logger.warn('[content_filter] upload attempt with wrong mime type');
+        //     logger.warn('[file_upload_handler] upload attempt with wrong mime type');
         //     return cb(new Error('Wrong mime-type for technology data upload'), false);
         // }
 

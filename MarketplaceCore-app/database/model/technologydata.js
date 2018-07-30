@@ -26,6 +26,8 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.componentlist = data.componentlist ? data.componentlist : this.componentlist;
         this.backgroundcolor = data.backgroundcolor ? data.backgroundcolor : this.backgroundcolor;
         this.technologydataimgref = data.technologydataimgref ? data.technologydataimgref : this.technologydataimgref;
+        this.isfile = data.isfile ? data.isfile : this.isfile;
+        this.filepath = data.filepath ? data.isfile : this.filepath;
     }
 };
 
@@ -134,6 +136,8 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             this.componentlist,
             this.technologydataimgref,
             this.backgroundcolor,
+            this.isfile,
+            this.filepath,
             userUUID,
             roles
         ])
@@ -155,6 +159,8 @@ TechnologyData.prototype.Update = function (userUUID, roles, callback) {
     db.func('updatetechnologydata',
         [this.technologydatauuid,
             this.technologydata,
+            this.isfile,
+            this.filepath,
             userUUID,
             roles
         ])

@@ -106,6 +106,7 @@ router.post('/', bruteForceProtection.global,
                     techData.taglist = data['tagList'];
                     techData.componentlist = data['componentList'];
                     techData.productcode = productCode;
+                    techData.isfile = data['isFile'];
 
 
                     if (data['image']) {
@@ -210,8 +211,12 @@ router.get('/:id/content', validate({
                 return res.sendStatus(402)
             }
 
-            if (data.technologydata.startsWith('file://')) {
-                res.sendFile(path.resolve(data.technologydata.replace('file://')));
+            if (data.isfile) {
+                if (!data.filepath || data.filepath.length <= 0) {
+                    return res.sendStatus(402);
+                }
+                res.header('key', data.technologydata);
+                res.sendFile(path.resolve(data.filepath));
             }
             else {
                 res.json(data.technologydata);
@@ -248,17 +253,18 @@ router.post('/:id/content',
         }
 
         const targetPath = `${CONFIG.FILE_DIR}/${req.file.filename}`;
-        data.technologydata = 'file://' + targetPath;
+        data.filePath = targetPath;
+
+        if (fs.existsSync(targetPath)) {
+            logger.crit('[routes/technologydata] Technology data content file already exists.');
+            deleteFile(req.file.path);
+            return res.sendStatus(500);
+        }
+
         data.Update(req.token.user.id, req.token.user.roles, (err) => {
             if (err) {
                 deleteFile(req.file.path);
                 return next(err);
-            }
-
-            if (fs.existsSync(targetPath)) {
-                logger.crit('[routes/technologydata] Technology data content file already exists.');
-                deleteFile(req.file.path);
-                return res.sendStatus(500);
             }
 
             fs.rename(req.file.path, targetPath, (err) => {

@@ -96,6 +96,9 @@ self.SaveData_Body = {
     type: 'object',
     required: ['technologyDataName', 'technologyData', 'technologyDataDescription', 'technologyUUID', 'componentList'],
     properties: {
+        isFile: {
+            type: 'boolean'
+        },
         technologyDataName: {
             type: 'string',
             minLength: 1,
