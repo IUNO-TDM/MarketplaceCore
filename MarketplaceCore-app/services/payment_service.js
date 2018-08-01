@@ -46,7 +46,7 @@ payment_service.socket.on('connect', function () {
     logger.debug("connected to paymentservice");
 });
 
-payment_service.socket.on('StateChange', function (invoice) {
+payment_service.socket.on('StateChange', function (invoice) { // FIXME the paramter is the state of the payment, not the invoice
     logger.debug("PaymentService StateChange: " + invoice);
     invoice = JSON.parse(invoice);
 
@@ -55,7 +55,7 @@ payment_service.socket.on('StateChange', function (invoice) {
         var paymentData = {
             transactionUUID: invoice.referenceId,
             extInvoiceId: invoice.invoiceId,
-            depth: invoice.depth,
+            depth: invoice.depthInBlocks,
             confidenceState: invoice.state,
             bitcoinTransaction: null
         };
