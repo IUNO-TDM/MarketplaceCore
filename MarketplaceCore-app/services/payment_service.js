@@ -46,11 +46,11 @@ payment_service.socket.on('connect', function () {
     logger.debug("connected to paymentservice");
 });
 
-payment_service.socket.on('StateChange', function (invoice) { // FIXME the paramter is the state of the payment, not the invoice
+payment_service.socket.on('PaymentStateChange', function (invoice) { // FIXME the paramter is the state of the payment, not the invoice
     logger.debug("PaymentService StateChange: " + invoice);
     invoice = JSON.parse(invoice);
 
-    if (invoice.state && invoice.state !== 'unknown') {
+    if (invoice.state && invoice.state !== 'unknown') { // FIXME WTF Dead transactions are accepted as payment?
         // Store state change in database
         var paymentData = {
             transactionUUID: invoice.referenceId,
