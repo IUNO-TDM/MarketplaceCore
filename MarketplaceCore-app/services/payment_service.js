@@ -46,23 +46,23 @@ payment_service.socket.on('connect', function () {
     logger.debug("connected to paymentservice");
 });
 
-payment_service.socket.on('PaymentStateChange', function (invoice) { // FIXME the paramter is the state of the payment, not the invoice
-    logger.debug("PaymentService StateChange: " + invoice);
-    invoice = JSON.parse(invoice);
+payment_service.socket.on('PaymentStateChange', function (data) { // FIXME the paramter is the state of the payment, not the invoice
+    logger.debug("PaymentService StateChange: " + data);
+    paymentStateChange = JSON.parse(data);
 
-    if (invoice.state === 'pending' || invoice.state === 'building')
+    if (paymentStateChange.state === 'pending' || paymentStateChange.state === 'building')
         // Store state change in database
         var paymentData = {
-            transactionUUID: invoice.referenceId,
-            extInvoiceId: invoice.invoiceId,
-            depth: invoice.depthInBlocks,
-            confidenceState: invoice.state,
+            transactionUUID: paymentStateChange.referenceId,
+            extInvoiceId: paymentStateChange.invoiceId,
+            depth: paymentStateChange.depthInBlocks,
+            confidenceState: paymentStateChange.state,
             bitcoinTransaction: null
         };
         dbPayment.SetPayment(config.USER, paymentData, function (err, payment) {
             if (!err) {
                 payment_service.emit('StateChange', {
-                    invoice: invoice,
+                    invoice: paymentStateChange,
                     payment: payment
                 });
             }
