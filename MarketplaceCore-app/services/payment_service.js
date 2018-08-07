@@ -50,7 +50,7 @@ payment_service.socket.on('PaymentStateChange', function (invoice) { // FIXME th
     logger.debug("PaymentService StateChange: " + invoice);
     invoice = JSON.parse(invoice);
 
-    if (invoice.state && invoice.state !== 'unknown') { // FIXME WTF Dead transactions are accepted as payment?
+    if (invoice.state === 'pending' || invoice.state === 'building')
         // Store state change in database
         var paymentData = {
             transactionUUID: invoice.referenceId,
