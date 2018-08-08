@@ -46,13 +46,13 @@ payment_service.socket.on('connect', function () {
     logger.debug("connected to paymentservice");
 });
 
-payment_service.socket.on('PaymentStateChange', function (data) { // FIXME the paramter is the state of the payment, not the invoice
+payment_service.socket.on('PaymentStateChange', function (data) {
     logger.debug("PaymentService StateChange: " + data);
-    paymentStateChange = JSON.parse(data);
+    const paymentStateChange = JSON.parse(data);
 
-    if (paymentStateChange.state === 'pending' || paymentStateChange.state === 'building')
+    if (paymentStateChange.state === 'pending' || paymentStateChange.state === 'building') {
         // Store state change in database
-        var paymentData = {
+        const paymentData = {
             transactionUUID: paymentStateChange.referenceId,
             extInvoiceId: paymentStateChange.invoiceId,
             depth: paymentStateChange.depthInBlocks,
@@ -140,7 +140,7 @@ payment_service.getInvoiceTransfers = function (invoice, callback) {
 
 };
 
-payment_service.getInvoiceBip21 = function(invoice, callback) {
+payment_service.getInvoiceBip21 = function (invoice, callback) {
     if (typeof(callback) !== 'function') {
 
         callback = function () {
