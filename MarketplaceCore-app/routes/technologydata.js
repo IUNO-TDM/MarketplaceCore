@@ -225,6 +225,7 @@ router.get('/:id/content', validate({
 function deleteFile(path) {
     fs.unlink(path, (err) => {
         if (err) {
+            logger.crit(err);
             logger.warn('[routes/technologydata] could not delete file after update failed');
         }
     });
@@ -266,6 +267,7 @@ router.post('/:id/content',
 
             fs.rename(req.file.path, targetPath, (err) => {
                 if (err) {
+                    logger.crit(err);
                     logger.crit('[routes/technologydata] Error while moving uploaded file from tmp dir to upload dir');
 
                     return res.sendStatus(500);
