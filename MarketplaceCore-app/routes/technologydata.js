@@ -265,14 +265,15 @@ router.post('/:id/content',
                 return next(err);
             }
 
-            fs.rename(req.file.path, targetPath, (err) => {
+            fs.copyFile(req.file.path, targetPath, (err) => {
                 if (err) {
                     logger.crit(err);
-                    logger.crit('[routes/technologydata] Error while moving uploaded file from tmp dir to upload dir');
+                    logger.crit(`[routes/technologydata] Error while moving file from ${req.file.path} to ${targetPath}`);
 
                     return res.sendStatus(500);
                 }
 
+                deleteFile(req.file.path);
                 return res.sendStatus(200);
             });
         });
