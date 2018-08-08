@@ -25,6 +25,7 @@ self.generateInvoice = function (userUUID, request, transaction, roles, callback
             if (err) {
                 done(err, null);
             } else {
+                licenseFee = licenseFee * item.amount;
                 TechnologyData.FindSingle(userUUID, roles, item.technologydatauuid, function (err, techData) {
                     if (err) {
                         done(err, null);
@@ -71,7 +72,7 @@ self.generateInvoice = function (userUUID, request, transaction, roles, callback
     async.concatSeries(items, iterator, function (err, itemlist) {
         var transfers = [];
         for (var i in itemlist) {
-            totalAmount += itemlist[i].fee;
+            totalAmount += +itemlist[i].fee;
             transfers.push(itemlist[i].transfer);
         }
         // our virtual currency IUNO represents 1 milli bitcoin
