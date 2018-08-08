@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:carbon
 RUN npm install pm2 -g
 
 # Configure log rotate
