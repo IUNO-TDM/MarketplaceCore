@@ -26,6 +26,8 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.componentlist = data.componentlist ? data.componentlist : this.componentlist;
         this.backgroundcolor = data.backgroundcolor ? data.backgroundcolor : this.backgroundcolor;
         this.technologydataimgref = data.technologydataimgref ? data.technologydataimgref : this.technologydataimgref;
+        this.isfile = data.isfile ? data.isfile : this.isfile;
+        this.filepath = data.filepath ? data.filepath : this.filepath;
     }
 };
 
@@ -51,6 +53,7 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
     const technologydataname = params['technologydataname'];
     const ownerUUID = params['ownerUUID'];
     const language = params['lang'];
+    const productCodes = params['productCodes'];
 
 
     db.func('GetTechnologyDataByParams',
@@ -59,6 +62,7 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
             technologyUUID,
             technologydataname,
             ownerUUID,
+            productCodes,
             userUUID,
             language,
             roles
@@ -77,6 +81,11 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
         });
 };
 
+/**
+ *
+ * @type {TechnologyData.FindSingle}
+ * @return {TechnologyData}
+ */
 TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, roles, id, callback) {
     db.func('GetTechnologyDataByID', [id, userUUID, roles])
         .then(function (data) {
@@ -127,6 +136,8 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             this.componentlist,
             this.technologydataimgref,
             this.backgroundcolor,
+            this.isfile,
+            this.filepath,
             userUUID,
             roles
         ])
@@ -144,8 +155,22 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             callback(error);
         });
 };
-TechnologyData.prototype.Update = function () {
-    throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
+TechnologyData.prototype.Update = function (userUUID, roles, callback) {
+    db.func('updatetechnologydata',
+        [this.technologydatauuid,
+            this.technologydata,
+            this.isfile,
+            this.filepath,
+            userUUID,
+            roles
+        ])
+        .then(function () {
+            callback(null);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
 };
 
 TechnologyData.prototype.Delete = TechnologyData.Delete = function (technologydatauuid, userUUID, roles, callback) {

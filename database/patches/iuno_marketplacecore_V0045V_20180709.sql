@@ -226,12 +226,6 @@ $$
 
     CREATE SEQUENCE TextID start with 150;
 
-    perform public.createtechnology(
-        'ultimaker',
-        null,
-        '67e6ceb8-c633-47a9-8c69-f55228cb9676',
-        '{TechnologyAdmin}');
-
     CREATE OR REPLACE FUNCTION public.createtext(
         vlanguageid int,
         vText text,

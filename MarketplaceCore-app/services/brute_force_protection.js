@@ -6,6 +6,7 @@ const _ = require('lodash');
 const logger = require('../global/logger');
 const email = require('../services/email_service');
 
+// 1000 Requests per 61 minutes
 const global = new ExpressBrute(store, {
     freeRetries: 1000,
     attachResetToRequest: false,
@@ -16,6 +17,7 @@ const global = new ExpressBrute(store, {
     failCallback: failCallback
 });
 
+// 150 Requests per 61 minutes
 const protocols = new ExpressBrute(store, {
     freeRetries: 150,
     attachResetToRequest: false,
@@ -23,6 +25,17 @@ const protocols = new ExpressBrute(store, {
     minWait: 61*60*1000,
     maxWait: 61*60*1000,
     lifetime: 60*60, //(seconds not milliseconds)
+    failCallback: failCallback
+});
+
+// 2 Request per minute
+const fileUpload = new ExpressBrute(store, {
+    freeRetries: 1,
+    attachResetToRequest: false,
+    refreshTimeoutOnRequest: false,
+    minWait: 61*1000,
+    maxWait: 61*1000,
+    lifetime: 60, //(seconds not milliseconds)
     failCallback: failCallback
 });
 
@@ -50,6 +63,13 @@ module.exports.global = global.getMiddleware({
 });
 
 module.exports.protocols = protocols.getMiddleware({
+    key: function(req, res, next) {
+        // prevent too many attempts for the same user
+        next(req.token.user.id);
+    }
+});
+
+module.exports.fileupload = fileUpload.getMiddleware({
     key: function(req, res, next) {
         // prevent too many attempts for the same user
         next(req.token.user.id);

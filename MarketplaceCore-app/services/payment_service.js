@@ -46,23 +46,23 @@ payment_service.socket.on('connect', function () {
     logger.debug("connected to paymentservice");
 });
 
-payment_service.socket.on('StateChange', function (invoice) {
-    logger.debug("PaymentService StateChange: " + invoice);
-    invoice = JSON.parse(invoice);
+payment_service.socket.on('PaymentStateChange', function (data) { // FIXME the paramter is the state of the payment, not the invoice
+    logger.debug("PaymentService StateChange: " + data);
+    paymentStateChange = JSON.parse(data);
 
-    if (invoice.state && invoice.state !== 'unknown') {
+    if (paymentStateChange.state === 'pending' || paymentStateChange.state === 'building')
         // Store state change in database
         var paymentData = {
-            transactionUUID: invoice.referenceId,
-            extInvoiceId: invoice.invoiceId,
-            depth: invoice.depth,
-            confidenceState: invoice.state,
+            transactionUUID: paymentStateChange.referenceId,
+            extInvoiceId: paymentStateChange.invoiceId,
+            depth: paymentStateChange.depthInBlocks,
+            confidenceState: paymentStateChange.state,
             bitcoinTransaction: null
         };
         dbPayment.SetPayment(config.USER, paymentData, function (err, payment) {
             if (!err) {
                 payment_service.emit('StateChange', {
-                    invoice: invoice,
+                    invoice: paymentStateChange,
                     payment: payment
                 });
             }
@@ -138,6 +138,35 @@ payment_service.getInvoiceTransfers = function (invoice, callback) {
         callback(err);
     }
 
+};
+
+payment_service.getInvoiceBip21 = function(invoice, callback) {
+    if (typeof(callback) !== 'function') {
+
+        callback = function () {
+            logger.info('Callback not registered');
+        }
+    }
+    try {
+        const options = buildOptionsForRequest(
+            'GET',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.PROTOCOL || 'http',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.HOST || 'localhost',
+            config.HOST_SETTINGS.PAYMENT_SERVICE.PORT || 8080,
+            `/v1/invoices/${invoice.invoiceId}/bip21`
+        );
+
+
+        request(options, function (e, r, jsonData) {
+            const err = logger.logRequestAndResponse(e, options, r, jsonData);
+
+            callback(err, jsonData);
+        });
+    }
+    catch (err) {
+        logger.crit(err);
+        callback(err);
+    }
 };
 
 

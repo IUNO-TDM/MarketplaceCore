@@ -2,7 +2,7 @@ const express = require('express');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const queryParser = require('express-query-int');
+const queryParser = require('./services/query_parser');
 const authentication = require('./services/authentication_service');
 const contentTypeValidation = require('./services/content_type_validation');
 
@@ -22,7 +22,7 @@ app.use('/', bodyParser.json({
     limit: '200kb'
 }));
 
-app.use(queryParser());
+app.use(queryParser);
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 

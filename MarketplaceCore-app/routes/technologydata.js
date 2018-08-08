@@ -7,7 +7,6 @@
 
 const express = require('express');
 const router = express.Router();
-const logger = require('../global/logger');
 
 const {Validator, ValidationError} = require('express-json-validator-middleware');
 const validator = new Validator({allErrors: true});
@@ -15,6 +14,7 @@ const validationSchema = require('../schema/technologydata_schema');
 const validationSchema_components = require('../schema/components_schema');
 const validate = validator.validate;
 
+const logger = require('../global/logger');
 const TechnologyData = require('../database/model/technologydata');
 const Component = require('../database/model/component');
 const helper = require('../services/helper_service');
@@ -24,6 +24,8 @@ const imageService = require('../services/image_service');
 const CONFIG = require('../config/config_loader');
 const path = require('path');
 const bruteForceProtection = require('../services/brute_force_protection');
+const fs = require('fs');
+
 
 router.get('/',
     validate({
@@ -104,6 +106,7 @@ router.post('/', bruteForceProtection.global,
                     techData.taglist = data['tagList'];
                     techData.componentlist = data['componentList'];
                     techData.productcode = productCode;
+                    techData.isfile = data['isFile'];
 
 
                     if (data['image']) {
@@ -208,9 +211,72 @@ router.get('/:id/content', validate({
                 return res.sendStatus(402)
             }
 
-            res.json(data.technologydata);
+            if (data.isfile) {
+                if (!data.filepath || data.filepath.length <= 0) {
+                    return res.sendStatus(402);
+                }
+                res.header('key', data.technologydata);
+                res.sendFile(path.resolve(`${CONFIG.FILE_DIR}/${data.filepath}`));
+            }
+            else {
+                res.json(data.technologydata);
+            }
         }
     );
 });
+
+function deleteFile(path) {
+    fs.unlink(path, (err) => {
+        if (err) {
+            logger.warn('[routes/technologydata] could not delete file after update failed');
+        }
+    });
+}
+
+router.post('/:id/content',
+    bruteForceProtection.fileupload,
+    require('../services/file_upload_handler'),
+    function (req, res, next) {
+
+        const data = req.data;
+
+        if (!req.file || !req.file.path) {
+            return res.sendStatus(400);
+        }
+
+        logger.debug(`File stored to: ${req.file.path}`);
+
+        if (!data) {
+            deleteFile(req.file.path);
+
+            return res.sendStatus(404);
+        }
+
+        const targetPath = `${CONFIG.FILE_DIR}/${req.file.filename}`;
+        data.filepath = req.file.filename;
+
+        if (fs.existsSync(targetPath)) {
+            logger.crit('[routes/technologydata] Technology data content file already exists.');
+            deleteFile(req.file.path);
+            return res.sendStatus(500);
+        }
+
+        data.Update(req.token.user.id, req.token.user.roles, (err) => {
+            if (err) {
+                deleteFile(req.file.path);
+                return next(err);
+            }
+
+            fs.rename(req.file.path, targetPath, (err) => {
+                if (err) {
+                    logger.crit('[routes/technologydata] Error while moving uploaded file from tmp dir to upload dir');
+
+                    return res.sendStatus(500);
+                }
+
+                return res.sendStatus(200);
+            });
+        });
+    });
 
 module.exports = router;
