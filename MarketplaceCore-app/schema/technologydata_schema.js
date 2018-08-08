@@ -65,7 +65,7 @@ self.Get_Query = {
                 lang: languageProperty
             },
             additionalProperties: false,
-            required:['lang']
+            required:['lang', 'technology']
         },
         {
             type: 'object',
