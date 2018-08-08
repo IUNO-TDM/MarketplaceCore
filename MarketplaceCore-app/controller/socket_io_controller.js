@@ -38,7 +38,7 @@ module.exports = function (io) {
 
 function registerLicenseEvents(namespace) {
     license_service.on('updateAvailable', function (offerId, hsmId) {
-        logger.debug(`[socket_io_controller] emitting update available for hsmid: ${hsmId} and ofer ${offerId}`);
+        logger.debug(`[socket_io_controller] emitting update available for hsmid: ${hsmId} and offer ${offerId}`);
         namespace.to(hsmId).emit('updateAvailable', {hsmId: hsmId, offerId: offerId});
     })
 }
