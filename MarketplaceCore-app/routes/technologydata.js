@@ -112,9 +112,6 @@ router.post('/', bruteForceProtection.global,
                     if (data['image']) {
                         techData.technologydataimgref = imageService.saveImage(req.token.user.id, data['technologyDataName'], data['image']);
                     }
-                    else {
-                        techData.technologydataimgref = imageService.getRandomImagePath();
-                    }
 
 
                     techData.backgroundcolor = data['backgroundColor'];
