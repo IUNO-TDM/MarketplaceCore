@@ -57,17 +57,38 @@ router.get('/',
         }
     });
 
-router.get('/:id', validate({query: validationSchema.Empty, body: validationSchema.Empty}), function (req, res, next) {
+router.get('/:id',
+    validate({
+        query: validationSchema.GetSingle_Query,
+        body: validationSchema.Empty
+    }), function (req, res, next) {
 
-    TechnologyData.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, data) {
-        if (err) {
-            next(err);
-        }
-        else {
-            res.json(data);
-        }
+        TechnologyData.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, technologyData) {
+            if (err) {
+                next(err);
+            }
+            else {
+                if (req.query['lang']) {
+                    Component.FindByTechnologyDataId(
+                        req.token.user.id,
+                        req.token.user.roles,
+                        req.params['id'],
+                        req.query['lang'],
+                        function (err, components) {
+                            if (err) {
+                                next(err);
+                            }
+                            else {
+                                technologyData.componentlist = components;
+                                return res.json(technologyData);
+                            }
+                        });
+                } else {
+                    return res.json(technologyData);
+                }
+            }
+        });
     });
-});
 
 router.post('/', bruteForceProtection.global,
     validate({
@@ -168,7 +189,7 @@ router.get('/:id/components', validate({
     body: validationSchema_components.Empty
 }), function (req, res, next) {
 
-    Component.FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.query['lang'], req.params['id'], function (err, components) {
+    Component.FindByTechnologyDataId(req.token.user.id, req.token.user.roles, req.params['id'], req.query['lang'], function (err, components) {
         if (err) {
             next(err);
         }

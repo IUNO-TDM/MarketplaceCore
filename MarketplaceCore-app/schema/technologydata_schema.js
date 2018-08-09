@@ -12,6 +12,15 @@ const languageProperty = {
     enum: ['de', 'en']
 };
 
+self.GetSingle_Query = {
+    type: 'object',
+    properties: {
+        lang: languageProperty
+    },
+    additionalProperties: false,
+    required:[]
+};
+
 self.Get_Query = {
     anyOf: [
         {
