@@ -28,6 +28,7 @@ function convertWordArrayToUint8Array(wordArray) {
 
 self.encryptGCode = function (gcode) {
 
+    // split header from g-code
     const splitAt = ';END_OF_HEADER\n';
     gcode = gcode.split(splitAt);
 
@@ -40,12 +41,17 @@ self.encryptGCode = function (gcode) {
     const header = gcode[0] + splitAt;
     const content = gcode[1];
 
+    // write header into buffer
     const headerBuffer = new Buffer(header);
+
+    // convert header length into little endian buffer
     const headerLengthBuffer = Buffer.alloc(4);
     headerLengthBuffer.writeUInt32LE(headerBuffer.length, 0);
 
+    // encrypt the g-code content only
     const encryptedData = self.encryptData(content);
 
+    // bundle header length, header and encrypted g-code content together
     encryptedData['fileBundle'] = Buffer.concat([
         headerLengthBuffer,
         headerBuffer,
