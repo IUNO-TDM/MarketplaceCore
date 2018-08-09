@@ -54,7 +54,7 @@ const filter = function (req, file, cb) {
             return cb(new Error('Wrong field name for technology data upload'), false);
         }
         // Check if original is an uuid
-        if (file.originalname !== data.technologydatauuid + '.gz') {
+        if (file.originalname !== data.technologydatauuid + '.file') {
             logger.warn('[file_upload_handler] upload attempt with wrong original name');
             return cb(new Error('Wrong file name for technology data upload'), false);
         }

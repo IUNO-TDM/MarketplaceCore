@@ -231,7 +231,7 @@ function deleteFile(path) {
     });
 }
 
-router.post('/:id/content',
+router.post('/:id/file',
     bruteForceProtection.fileupload,
     require('../services/file_upload_handler'),
     function (req, res, next) {
@@ -239,6 +239,7 @@ router.post('/:id/content',
         const data = req.data;
 
         if (!req.file || !req.file.path) {
+            logger.warn('Missing file in request');
             return res.sendStatus(400);
         }
 
