@@ -45,6 +45,7 @@ self.encryptGCode = function (gcode) {
     headerLengthBuffer.writeUInt32LE(headerBuffer.length, 0);
 
     const encryptedData = self.encryptData(content);
+
     encryptedData['fileBundle'] = Buffer.concat([
         headerLengthBuffer,
         headerBuffer,
@@ -121,8 +122,8 @@ self.createDecryptionBundle = function (encryptedKeysB64, productCode, fileBundl
 };
 
 const productCode = 1077;
-const encryptedData= self.encryptGCode(fs.readFileSync(path.resolve('test/model.gcode'), 'utf8'));
+const encryptedData = self.encryptGCode(fs.readFileSync(path.resolve('test/model.gcode'), 'utf8'));
 lcc.encryptData(productCode, encryptedData.keyBundleB64, (err, encryptedKeysB64) => {
-    const decryptionBundle = self.createDecryptionBundle(encryptedKeysB64, productCode, encryptedData.fileBundle)
-    fs.writeFileSync(path.resolve(`test/pc_${productCode}.bundle`), decryptionBundle);
+    const decryptionBundle = self.createDecryptionBundle(encryptedKeysB64, productCode, encryptedData.fileBundle);
+    fs.writeFileSync(path.resolve(`test/pc_${productCode}.iunoum3`), decryptionBundle);
 });
