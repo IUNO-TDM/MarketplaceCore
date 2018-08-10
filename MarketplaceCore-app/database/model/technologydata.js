@@ -212,4 +212,16 @@ TechnologyData.prototype.FindWithContent = TechnologyData.FindWithContent = func
         });
 };
 
+TechnologyData.GetComponentAttributes = function (uuid, roles, callback) {
+    db.func('GetComponentAttributesForTechnologyData',
+        [uuid, roles])
+        .then(function (data) {
+            callback(null, data);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
 module.exports = TechnologyData;

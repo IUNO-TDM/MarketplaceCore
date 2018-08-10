@@ -25,6 +25,7 @@ const CONFIG = require('../config/config_loader');
 const path = require('path');
 const bruteForceProtection = require('../services/brute_force_protection');
 const fs = require('fs');
+const Promise = require('promise');
 
 
 router.get('/',
@@ -63,30 +64,65 @@ router.get('/:id',
         body: validationSchema.Empty
     }), function (req, res, next) {
 
-        TechnologyData.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, technologyData) {
-            if (err) {
-                next(err);
-            }
-            else {
-                if (req.query['lang']) {
-                    Component.FindByTechnologyDataId(
-                        req.token.user.id,
-                        req.token.user.roles,
-                        req.params['id'],
-                        req.query['lang'],
-                        function (err, components) {
+
+        Promise.all([
+            new Promise(function (fulfill, reject) {
+                TechnologyData.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, technologyData) {
+                    if (err) {
+                        return reject(err)
+                    }
+
+                    fulfill(technologyData);
+                });
+            }),
+            new Promise(function (fulfill, reject) {
+                Component.FindByTechnologyDataId(
+                    req.token.user.id,
+                    req.token.user.roles,
+                    req.params['id'],
+                    req.query['lang'] || 'en',
+                    function (err, components) {
+                        if (err) {
+                            return reject(err);
+                        }
+
+                        fulfill(components);
+                    }
+                );
+            }),
+            new Promise(function (fulfill, reject) {
+                TechnologyData.GetComponentAttributes(
+                    req.params['id'],
+                    req.token.user.roles, (
+                        function (err, componentAttributes) {
                             if (err) {
-                                next(err);
+                                return reject(err);
                             }
-                            else {
-                                technologyData.componentlist = components;
-                                return res.json(technologyData);
-                            }
-                        });
-                } else {
-                    return res.json(technologyData);
-                }
+
+                            fulfill(componentAttributes);
+                        })
+                );
+            })
+        ]).then(values => {
+            const technologyData = values[0];
+            const components = values[1];
+            const attributes = values[2];
+
+            if (components && components.length) {
+                technologyData.componentlist = components.map(component => {
+                    component.attributes = attributes.filter(attribute => {
+                        return component.componentuuid === attribute.componentuuid;
+                    });
+
+                    return component;
+                });
             }
+
+            res.json(technologyData);
+        }).catch(err => {
+            logger.warn(err);
+
+            next(err);
         });
     });
 
