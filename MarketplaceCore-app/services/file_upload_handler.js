@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
         callback(null, CONFIG.TMP_DIR)
     },
     filename: function (req, file, callback) {
-        callback(null, uuid() + '.gz');
+        callback(null, uuid() + '.iunoum3');
     }
 });
 
@@ -54,12 +54,12 @@ const filter = function (req, file, cb) {
             return cb(new Error('Wrong field name for technology data upload'), false);
         }
         // Check if original is an uuid
-        if (file.originalname !== data.technologydatauuid + '.file') {
+        if (file.originalname !== data.technologydatauuid + '.iunoum3') {
             logger.warn('[file_upload_handler] upload attempt with wrong original name');
             return cb(new Error('Wrong file name for technology data upload'), false);
         }
         // if (file.encoding !== 'base64') {
-        //     logger.warn('[file_upload_handler] upload attempt with wrong encoding');
+        //     logger.warn('[file_upload_handler] upload attempt with wrong enc     oding');
         //     return cb(new Error('Wrong transport encoding for technology data upload'), false);
         // }
         // if (file.mimetype !== 'application/gzip') {
