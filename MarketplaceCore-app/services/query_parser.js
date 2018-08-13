@@ -9,6 +9,12 @@ function parseObject(query) {
                 if (!isNaN(value)) {
                     result[key] = parseFloat(query[key]);
                 }
+                else if(value.toLowerCase() === 'true') {
+                    result[key] = true
+                }
+                else if(value.toLowerCase() === 'false') {
+                    result[key] = false
+                }
                 else {
                     result[key] = value;
                 }

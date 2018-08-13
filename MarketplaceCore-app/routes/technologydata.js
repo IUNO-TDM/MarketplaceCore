@@ -35,8 +35,18 @@ router.get('/',
     }),
     function (req, res, next) {
 
+        if (req.query['purchased']) {
+            TechnologyData.FindAllPurchased(req.token.user.id, req.token.client.id, req.token.user.roles, req.query, function (err, data) {
+                if (err) {
+                    next(err);
+                }
+                else {
+                    res.json(data);
+                }
+            });
 
-        if (req.query['user']) {
+        }
+        else if (req.query['user']) {
             TechnologyData.FindForUser(req.query['user'], req.token.user.id, req.token.user.roles, req.query['lang'], function (err, data) {
                 if (err) {
                     next(err);
@@ -255,7 +265,7 @@ router.get('/:id/content', validate({
     body: validationSchema.Empty
 }), function (req, res, next) {
 
-    TechnologyData.FindWithContent(req.params['id'], req.query['offerId'], req.token.client.id, req.token.user.id, req.token.user.roles,
+    TechnologyData.FindWithContent(req.params['id'], req.token.client.id, req.token.user.id, req.token.user.roles,
         (err, data) => {
             if (err) {
                 return next(err);

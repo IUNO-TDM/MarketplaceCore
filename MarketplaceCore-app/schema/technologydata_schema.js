@@ -71,6 +71,9 @@ self.Get_Query = {
                     },
                     additionalItems: false
                 },
+                purchased: {
+                  type: 'boolean'
+                },
                 lang: languageProperty
             },
             additionalProperties: false,
@@ -184,7 +187,7 @@ self.GetContent_Query = {
             format: 'uuid'
         }
     },
-    required: ['offerId'],
+    required: [],
     additionalProperties: false
 };
 module.exports = self;

@@ -81,6 +81,41 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
         });
 };
 
+TechnologyData.prototype.FindAllPurchased = TechnologyData.FindAllPurchased = function (userUUID, clientUUID, roles, params, callback) {
+    const technologyUUID = params['technology'];
+    const components = params['components'];
+    const technologydataname = params['technologydataname'];
+    const ownerUUID = params['ownerUUID'];
+    const language = params['lang'];
+    const productCodes = params['productCodes'];
+
+
+    db.func('GetPurchasedTechnologyDataForUser',
+        [
+            components,
+            technologyUUID,
+            technologydataname,
+            ownerUUID,
+            productCodes,
+            userUUID,
+            clientUUID,
+            language,
+            roles
+        ], 1 //TODO: Document this parameter
+    )
+        .then(function (data) {
+            const resultList = [];
+            for (let key in data.result) {
+                resultList.push(new TechnologyData(data.result[key]));
+            }
+            callback(null, resultList);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
 /**
  *
  * @type {TechnologyData.FindSingle}
@@ -189,10 +224,9 @@ TechnologyData.prototype.Delete = TechnologyData.Delete = function (technologyda
         });
 };
 
-TechnologyData.prototype.FindWithContent = TechnologyData.FindWithContent = function (technologydataUUID, offerUUID, clientUUID, userUUID, roles, callback) {
+TechnologyData.prototype.FindWithContent = TechnologyData.FindWithContent = function (technologydataUUID, clientUUID, userUUID, roles, callback) {
     db.func('GetTechnologyDataWithContent',
         [technologydataUUID,
-            offerUUID,
             clientUUID,
             userUUID,
             roles
