@@ -55,6 +55,8 @@
 | iuno_marketplacecore_V0046V_20180712.sql                          | 0046              | Updated GetTechnologydataByParams                                                                      |                               | [@mbeuttler][imbeuttler]  |
 | iuno_marketplacecore_V0047V_20180713.sql                          | 0047              | Update reports functions to handle different technologies                                              |                               | [@gomarcel][igomarcel]  |
 | iuno_marketplacecore_V0048V_20180723.sql                          | 0048              | Create Function UpdateTechnologyData and update create and get technologydata functions                |  [#206][i206] [#207][i207]    | [@mbeuttler][imbeuttler]  |
+| iuno_marketplacecore_V0049V_20180810.sql                          | 0049              | Create Function GetComponentAttributesForTechnologyData                                                |                               | [@mbeuttler][imbeuttler]  |
+| iuno_marketplacecore_V0050V_20180813.sql                          | 0050              | Updating gettechnologydatawithcontent - Adding new function getPurchasedTechnologyDataForUser          |                               | [@mbeuttler][imbeuttler]  |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
