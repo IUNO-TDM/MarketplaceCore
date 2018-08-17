@@ -173,7 +173,7 @@ self.SaveData_Body = {
         },
         image: {
             type: 'string',
-            maxLength: 20000
+            maxLength: 100000
         }
     },
     additionalProperties: false
