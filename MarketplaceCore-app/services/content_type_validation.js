@@ -5,7 +5,7 @@ const MethodToContentTypeMapping = {
     GET: [''],
     HEAD: [''],
     POST: ['application/json', 'multipart/form-data'],
-    PUT: ['application/json'],
+    PUT: ['application/json', 'image/png', 'image/jpeg', 'image/svg+xml'],
     DELETE: ['application/json'],
     CONNECT: [],
     OPTIONS: [],

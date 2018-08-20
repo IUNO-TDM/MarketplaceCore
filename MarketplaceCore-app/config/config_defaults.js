@@ -97,5 +97,7 @@ self.REPORT_EMAIL_ADRESSES = [
 
 self.TMP_DIR = path.resolve(__dirname, '../tmp');
 self.FILE_DIR = path.resolve(__dirname, '../files');
+self.IMAGE_DIR = 'images/recipes/';
+self.DEFAULT_IMAGE = 'images/recipes/default.svg';
 
 module.exports = self;

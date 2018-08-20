@@ -18,8 +18,15 @@ app.use('/cmdongle', bodyParser.json({
     limit: '50mb'
 }));
 
+app.use('/technologydata/*/image', bodyParser.raw(
+    {
+        type: ['image/png', 'image/jpeg', 'image/svg+xml'],
+        limit: '1mb'
+    }
+));
+
 app.use('/', bodyParser.json({
-    limit: '400kb'
+    limit: '200kb'
 }));
 
 app.use(queryParser);
