@@ -196,6 +196,7 @@ TechnologyData.prototype.Update = function (userUUID, roles, callback) {
             this.technologydata,
             this.isfile,
             this.filepath,
+            this.technologydataimgref,
             userUUID,
             roles
         ])

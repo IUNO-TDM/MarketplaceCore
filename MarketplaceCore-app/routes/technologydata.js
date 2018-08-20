@@ -177,7 +177,7 @@ router.post('/', bruteForceProtection.global,
 
 
                     if (data['image']) {
-                        techData.technologydataimgref = imageService.saveImage(req.token.user.id, data['technologyDataName'], data['image']);
+                        techData.technologydataimgref = imageService.saveImage(req.token.user.id, data['technologyDataName'], data['image'], 'image/svg+xml');
                     }
 
 
@@ -225,6 +225,46 @@ router.get('/:id/image', validate({
                 res.sendFile(path.resolve(imageService.getDefaultImagePathForUUID(req.params['id'])));
             }
 
+        }
+    });
+
+});
+
+router.put('/:id/image', validate({
+    query: validationSchema.Empty
+}), function (req, res, next) {
+
+    logger.debug(req.body);
+    if (!req.body || req.body.length <= 0) {
+        logger.warn('[routes/technologydata] cannot save empty image');
+        return res.sendStatus(400);
+    }
+
+    TechnologyData.FindSingle(req.token.user.id, req.token.user.roles, req.params['id'], function (err, technologyData) {
+        if (err) {
+            next(err);
+        }
+        else {
+            if (!technologyData || !Object.keys(technologyData).length) {
+                logger.info('No technologyData found for id: ' + req.params['id']);
+                res.sendStatus(404);
+
+                return;
+            }
+
+            if (technologyData.createdby !== req.token.user.id) {
+                logger.warn('[routes/technologydata] user not allowed to update image for other user');
+                return  res.sendStatus(403);
+            }
+
+            technologyData.technologydataimgref = imageService.saveImage(req.token.user.id, technologyData['technologyDataName'], req.body, req.headers['content-type']);
+
+            technologyData.Update(req.token.user.id, req.token.user.roles, (err) => {
+                if (err) {
+                    return next(err);
+                }
+                res.sendStatus(200);
+            })
         }
     });
 

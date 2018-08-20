@@ -186,8 +186,7 @@ self.License_Count_Query = {
     type: 'object',
     properties: {
         activated: {
-            type: 'string',
-            enum: ['true']
+            type: 'boolean'
         },
         user: {
             type: 'string',
