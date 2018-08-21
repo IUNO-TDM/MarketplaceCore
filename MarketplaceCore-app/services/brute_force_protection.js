@@ -50,7 +50,7 @@ function failCallback (req, res, next, nextValidRequestDate) {
 
     const message = _.pick(req,['baseUrl', 'body', 'method', 'originalUrl','params', 'query', 'token', 'url']);
 
-    email.sendReportToAdmins('Request blocked because of to many attempts', JSON.stringify(message, null, "\t"));
+    email.sendReportToAdmins('Request blocked because of too many attempts', JSON.stringify(message, null, "\t"));
 
     return ExpressBrute.FailTooManyRequests(req, res, next, nextValidRequestDate);
 }
