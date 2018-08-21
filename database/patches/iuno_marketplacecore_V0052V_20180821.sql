@@ -2,7 +2,7 @@
 --TRUMPF Werkzeugmaschinen GmbH & Co KG
 --TEMPLATE FOR DATABASE PATCHES, HOT FIXES and SCHEMA CHANGES
 --Author: Manuel Beuttler
---CreateAt: 2018-08-20
+--CreateAt: 2018-08-21
 --#######################################################################################################
 -- READ THE INSTRUCTIONS BEFORE CONTINUE - USE ONLY PatchDBTool to deploy patches to existing Databases
 -- Describe your patch here
@@ -17,11 +17,11 @@
 --#######################################################################################################
 -- PUT YOUR STATEMENTS HERE:
 -- 	1) Why is this Patch necessary?
---  Need to update technologydataimageref on technologydata
+--  components function does return parent ids instead of uuids
 -- 	2) Which Git Issue Number is this patch solving?
 --
 -- 	3) Which changes are going to be done?
---  Added imageref parameter to update technologydata function
+--  Update GetAllComponents
 --: Run Patches
 ------------------------------------------------------------------------------------------------
 --##############################################################################################
@@ -30,9 +30,9 @@
 DO
 $$
 	DECLARE
-		PatchName varchar		 	 := 'iuno_marketplacecore_V0051V_20180820';
-		PatchNumber int 		 	 := 0051;
-		PatchDescription varchar 	 := 'Added imageref parameter to update technologydata function';
+		PatchName varchar		 	 := 'iuno_marketplacecore_V0052V_20180821';
+		PatchNumber int 		 	 := 0052;
+		PatchDescription varchar 	 := 'Update GetAllComponents';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN
@@ -51,12 +51,12 @@ $$;
 DO
 $$
 DECLARE
-    vPatchNumber int := 0051;
+    vPatchNumber int := 0052;
 BEGIN
 -- #########################################################################################################################################
 
     --Drop deprecated functions
-       DROP FUNCTION public.getallcomponents(uuid, text, text[]);
+       DROP FUNCTION public.getallcomponents(uuid, text, text[], text[], text[]);
        --Create new getallcomponents
        CREATE OR REPLACE FUNCTION public.getallcomponents(
             vuseruuid uuid,
@@ -67,7 +67,7 @@ BEGIN
             RETURNS TABLE   (
                             componentuuid uuid,
                             componentname text,
-                            componentparentuuid integer,
+                            componentparentuuid uuid,
                             componentdescription character varying,
                             displaycolor text,
                             createdat timestamp with time zone,
@@ -88,7 +88,7 @@ BEGIN
 
        	RETURN QUERY (SELECT  cp.componentuuid,
                       		tl.value::text as componentname,
-                      		cp.componentparentid,
+                      		parent.componentuuid,
                       		cp.componentdescription,
                       		cp.displaycolor,
                       		cp.createdat  at time zone 'utc',
@@ -101,6 +101,8 @@ BEGIN
                       		JOIN languages la ON
                       		tl.languageid = la.languageid
                       		AND la.languagecode = vlanguagecode
+                      		JOIN components parent ON
+                      		parent.componentid = cp.componentparentid
                       		LEFT OUTER JOIN componentstechnologies cote ON
                       		cote.componentid = cp.componentid
                       		LEFT OUTER JOIN technologies te ON
@@ -109,7 +111,7 @@ BEGIN
                       		coat.componentid = cp.componentid
                       		LEFT OUTER JOIN attributes atr ON
                       		atr.attributeid = coat.attributeid
-                      		WHERE componentparentid IS NOT NULL
+                      		WHERE cp.componentparentid IS NOT NULL
                             AND (te.technologyuuid = ANY (vtechnologies::uuid[]) OR vtechnologies IS NULL)
                             AND (atr.attributeuuid = ANY (vattributes::uuid[]) OR vattributes IS NULL)
        		);

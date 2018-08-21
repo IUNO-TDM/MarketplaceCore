@@ -16,7 +16,7 @@ function Component(data) {
     if (data) {
         this.componentuuid = data.componentuuid;
         this.componentname = data.componentname;
-        this.componentparentid = data.componentparentid;
+        this.componentparentuuid = data.componentparentuuid;
         this.componentparentname = data.componentparentname;
         this.componentdescription = data.componentdescription;
         this.createdat = data.createdat;
