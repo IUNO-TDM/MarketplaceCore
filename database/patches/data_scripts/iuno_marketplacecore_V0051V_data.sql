@@ -7,36 +7,36 @@ UPDATE components SET componentdescription = 'the root filament' WHERE component
 UPDATE translations SET value = 'Root Filament' WHERE textid = (SELECT textid FROM components WHERE componentdescription ='the root filament');
 
 --create root pla
-perform public.setcomponent('Root PLA', 'Root Filament', 'the root PLA', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
-UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root PLA' AND textid IN (SELECT textid FROM translations WHERE value = 'Root PLA');
+perform public.setcomponent('PLA', 'Root Filament', 'the root PLA', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
+UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root PLA' AND textid IN (SELECT textid FROM translations WHERE value = 'PLA');
 
 --create root Breakaway
-perform public.setcomponent('Root Breakaway', 'Root Filament', 'the root Breakaway', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
-UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root Breakaway' AND textid IN (SELECT textid FROM translations WHERE value = 'Root Breakaway');
+perform public.setcomponent('Breakaway', 'Root Filament', 'the root Breakaway', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
+UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root Breakaway' AND textid IN (SELECT textid FROM translations WHERE value = 'Breakaway');
 
 --create root abs
-perform public.setcomponent('Root ABS', 'Root Filament', 'the root ABS', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
-UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root ABS' AND textid IN (SELECT textid FROM translations WHERE value = 'Root ABS');
+perform public.setcomponent('ABS', 'Root Filament', 'the root ABS', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
+UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root ABS' AND textid IN (SELECT textid FROM translations WHERE value = 'ABS');
 
 --create root CPE
-perform public.setcomponent('Root CPE', 'Root Filament', 'the root CPE', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
-UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root CPE' AND textid IN (SELECT textid FROM translations WHERE value = 'Root CPE');
+perform public.setcomponent('CPE', 'Root Filament', 'the root CPE', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
+UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root CPE' AND textid IN (SELECT textid FROM translations WHERE value = 'CPE');
 
 --create root TPU
-perform public.setcomponent('Root TPU', 'Root Filament', 'the root TPU', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
-UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root TPU' AND textid IN (SELECT textid FROM translations WHERE value = 'Root TPU');
+perform public.setcomponent('TPU', 'Root Filament', 'the root TPU', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
+UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root TPU' AND textid IN (SELECT textid FROM translations WHERE value = 'TPU');
 
 --create root PC
-perform public.setcomponent('Root PC', 'Root Filament', 'the root PC', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');   
-UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root PC' AND textid IN (SELECT textid FROM translations WHERE value = 'Root PC');
+perform public.setcomponent('PC', 'Root Filament', 'the root PC', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');   
+UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root PC' AND textid IN (SELECT textid FROM translations WHERE value = 'PC');
 
 --create root PP
-perform public.setcomponent('Root PP', 'Root Filament', 'the root PP', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');   
-UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root PP' AND textid IN (SELECT textid FROM translations WHERE value = 'Root PP');
+perform public.setcomponent('PP', 'Root Filament', 'the root PP', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');   
+UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root PP' AND textid IN (SELECT textid FROM translations WHERE value = 'PP');
 
 --create root Nylon
-perform public.setcomponent('Root Nylon', 'Root Filament', 'the root Nylon', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');   
-UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root Nylon' AND textid IN (SELECT textid FROM translations WHERE value = 'Root Nylon');
+perform public.setcomponent('Nylon', 'Root Filament', 'the root Nylon', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');   
+UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root Nylon' AND textid IN (SELECT textid FROM translations WHERE value = 'Nylon');
 
 --set PLA parent IDs
 UPDATE components SET componentparentid = (SELECT componentid FROM components WHERE componentdescription='the root PLA') 
