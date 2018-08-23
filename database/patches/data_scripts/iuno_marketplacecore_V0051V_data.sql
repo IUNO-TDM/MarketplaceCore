@@ -2,7 +2,7 @@ DO
 $$
 
 BEGIN
-/*
+
 UPDATE components SET componentdescription = 'the root filament' WHERE componentdescription='Pure PLA according to the purity law';
 UPDATE translations SET value = 'Root Filament' WHERE textid = (SELECT textid FROM components WHERE componentdescription ='the root filament');
 
@@ -38,7 +38,6 @@ UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the
 perform public.setcomponent('Root Nylon', 'Root Filament', 'the root Nylon', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');   
 UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root Nylon' AND textid IN (SELECT textid FROM translations WHERE value = 'Root Nylon');
 
-*/
 --set PLA parent IDs
 UPDATE components SET componentparentid = (SELECT componentid FROM components WHERE componentdescription='the root PLA') 
     WHERE components.componentuuid = '9cfe5bf1-bdc5-4beb-871a-52c70777842d'
@@ -125,5 +124,5 @@ UPDATE components SET componentparentid = (SELECT componentid FROM components WH
     OR components.componentuuid = '7e6207c4-22ff-441a-b261-ff89f166d5f9'    
     OR components.componentuuid = '86a89ceb-4159-47f6-ab97-e9953803d70f'
     OR components.componentuuid = 'fe15ed8a-33c3-4f57-a2a7-b4b78a38c3cb';
-END
+END;
 $$;
