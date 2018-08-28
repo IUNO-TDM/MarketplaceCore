@@ -257,7 +257,7 @@ router.put('/:id/image', validate({
                 return  res.sendStatus(403);
             }
 
-            technologyData.technologydataimgref = imageService.saveImage(req.token.user.id, technologyData['technologyDataName'], req.body, req.headers['content-type']);
+            technologyData.technologydataimgref = imageService.saveImage(req.token.user.id, technologyData['technologydataname'], req.body, req.headers['content-type']);
 
             technologyData.Update(req.token.user.id, req.token.user.roles, (err) => {
                 if (err) {
