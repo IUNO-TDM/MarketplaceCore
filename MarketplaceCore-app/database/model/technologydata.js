@@ -15,6 +15,7 @@ function TechnologyData(data) {
 
 TechnologyData.prototype.SetProperties = function (data) {
     if (data) {
+        this.technologyuuid = data.technologyuuid ? data.technologyuuid : this.technologyuuid;
         this.technologydataid = data.technologydataid ? data.technologydataid : this.technologydataid;
         this.technologydatauuid = data.technologydatauuid ? data.technologydatauuid : this.technologydatauuid;
         this.technologydataname = data.technologydataname ? data.technologydataname : this.technologydataname;
