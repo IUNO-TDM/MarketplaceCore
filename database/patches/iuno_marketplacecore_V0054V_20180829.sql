@@ -55,11 +55,12 @@ DECLARE
 BEGIN
 -- #########################################################################################################################################
 
-DROP FUNCTION public.gettopcomponents(timestamp with time zone, timestamp with time zone, integer, uuid, text[]);
+DROP FUNCTION public.gettopcomponents(timestamp with time zone, timestamp with time zone, integer, uuid, text, text[]);
 
 CREATE OR REPLACE FUNCTION public.gettopcomponents(
    	vfrom timestamp with time zone,
    	vto timestamp with time zone,
+   	vtechnologyuuid uuid,
    	vlimit integer,
    	vuseruuid uuid,
    	vlanguagecode text DEFAULT 'en'::text,
@@ -67,9 +68,6 @@ CREATE OR REPLACE FUNCTION public.gettopcomponents(
        RETURNS TABLE(componentname character varying, amount integer)
        LANGUAGE 'plpgsql'
 
-       COST 100
-       VOLATILE
-       ROWS 1000
    AS $BODY$
 
    	DECLARE
@@ -95,11 +93,15 @@ CREATE OR REPLACE FUNCTION public.gettopcomponents(
    				tc.technologydataid = td.technologydataid
    				join components co on
    				co.componentid = tc.componentid
+   				JOIN technologies tg ON
+   				td.technologyid = tg.technologyid
    				JOIN translations tl ON
-   						co.textid = tl.textid
-   						JOIN languages la ON
-   						tl.languageid = la.languageid
-   						AND la.languagecode = vlanguagecode
+                co.textid = tl.textid
+                JOIN languages la ON
+                tl.languageid = la.languageid
+                AND la.languagecode = vlanguagecode
+                WHERE tg.technologyuuid = vTechnologyUUID
+
    			),
    		rankTable as (
    		select a.componentname, count(a.componentname) as rank from activatedLincenses a
@@ -115,6 +117,7 @@ CREATE OR REPLACE FUNCTION public.gettopcomponents(
 
    	END;
    $BODY$;
+
 
 ----------------------------------------------------------------------------------------------------------------------------------------
     -- UPDATE patch table status value
