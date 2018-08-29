@@ -32,7 +32,7 @@ $$
 	DECLARE
 		PatchName varchar		 	 := 'iuno_marketplacecore_V0053V_20180828';
 		PatchNumber int 		 	 := 0053;
-		PatchDescription varchar 	 := 'Updated GetTechnologyByParams function';
+		PatchDescription varchar 	 := 'Updated GetTechnologyByParams function and allowed public role to access it';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN
@@ -179,6 +179,8 @@ BEGIN
 
 
         $BODY$;
+
+    perform public.setpermission('{Public}','GetTechnologyDataByParams',null,'{Admin}');
 
 ----------------------------------------------------------------------------------------------------------------------------------------
     -- UPDATE patch table status value

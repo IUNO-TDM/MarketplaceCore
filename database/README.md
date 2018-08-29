@@ -59,7 +59,7 @@
 | iuno_marketplacecore_V0050V_20180813.sql                          | 0050              | Updating gettechnologydatawithcontent - Adding new function getPurchasedTechnologyDataForUser          |                               | [@mbeuttler][imbeuttler]  |
 | iuno_marketplacecore_V0051V_20180820.sql                          | 0051              | Updated update technologydata function to also set imageref                                            |                               | [@mbeuttler][imbeuttler]  |
 | iuno_marketplacecore_V0052V_20180821.sql                          | 0052              | Updated GetAllComponents                                                                               |                               | [@mbeuttler][imbeuttler]  |
-| iuno_marketplacecore_V0053V_20180828.sql                          | 0053              | Updated GetTechnologyDataByParams                                                                      |                               | [@mbeuttler][imbeuttler]  |
+| iuno_marketplacecore_V0053V_20180828.sql                          | 0053              | Updated GetTechnologyByParams function and allowed public role to access it                            |                               | [@mbeuttler][imbeuttler]  |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
