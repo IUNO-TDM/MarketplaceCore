@@ -9,34 +9,50 @@ UPDATE translations SET value = 'Root Filament' WHERE textid = (SELECT textid FR
 --create root pla
 perform public.setcomponent('PLA', 'Root Filament', 'the root PLA', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
 UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root PLA' AND textid IN (SELECT textid FROM translations WHERE value = 'PLA');
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de' ),(SELECT textid FROM translations WHERE value = 'PLA'),'PLA', 'components');
 
 --create root Breakaway
 perform public.setcomponent('Breakaway', 'Root Filament', 'the root Breakaway', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
 UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root Breakaway' AND textid IN (SELECT textid FROM translations WHERE value = 'Breakaway');
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de' ),(SELECT textid FROM translations WHERE value = 'Breakaway'),'Stützmaterial', 'components');
 
 --create root abs
 perform public.setcomponent('ABS', 'Root Filament', 'the root ABS', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
 UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root ABS' AND textid IN (SELECT textid FROM translations WHERE value = 'ABS');
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de' ),(SELECT textid FROM translations WHERE value = 'ABS'),'ABS', 'components');
 
 --create root CPE
 perform public.setcomponent('CPE', 'Root Filament', 'the root CPE', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
 UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root CPE' AND textid IN (SELECT textid FROM translations WHERE value = 'CPE');
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de' ),(SELECT textid FROM translations WHERE value = 'CPE'),'CPE', 'components');
 
 --create root TPU
 perform public.setcomponent('TPU', 'Root Filament', 'the root TPU', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
 UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root TPU' AND textid IN (SELECT textid FROM translations WHERE value = 'TPU');
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de' ),(SELECT textid FROM translations WHERE value = 'TPU'),'TPU', 'components');
 
 --create root PC
 perform public.setcomponent('PC', 'Root Filament', 'the root PC', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');   
 UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root PC' AND textid IN (SELECT textid FROM translations WHERE value = 'PC');
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de' ),(SELECT textid FROM translations WHERE value = 'PC'),'PC', 'components');
 
 --create root PP
 perform public.setcomponent('PP', 'Root Filament', 'the root PP', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');   
 UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root PP' AND textid IN (SELECT textid FROM translations WHERE value = 'PP');
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de' ),(SELECT textid FROM translations WHERE value = 'PP'),'PP', 'components');
 
 --create root Nylon
 perform public.setcomponent('Nylon', 'Root Filament', 'the root Nylon', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');   
 UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root Nylon' AND textid IN (SELECT textid FROM translations WHERE value = 'Nylon');
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de' ),(SELECT textid FROM translations WHERE value = 'Nylon'),'Nylon', 'components');
 
 --set PLA parent IDs
 UPDATE components SET componentparentid = (SELECT componentid FROM components WHERE componentdescription='the root PLA') 
