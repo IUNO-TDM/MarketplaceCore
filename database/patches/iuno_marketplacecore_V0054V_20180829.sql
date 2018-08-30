@@ -19,7 +19,7 @@
 -- 	1) Why is this Patch necessary?
 --  Marketplace reports not working properly
 -- 	2) Which Git Issue Number is this patch solving?
---
+--  #219
 -- 	3) Which changes are going to be done?
 --  Fixed report functions like topcomponents
 --: Run Patches
@@ -32,7 +32,7 @@ $$
 	DECLARE
 		PatchName varchar		 	 := 'iuno_marketplacecore_V0054V_20180829';
 		PatchNumber int 		 	 := 0054;
-		PatchDescription varchar 	 := 'Fixed report functions';
+		PatchDescription varchar 	 := 'Fixed report functions top components and total revenue';
 		CurrentPatch int 			 := (select max(p.patchnumber) from patches p);
 
 	BEGIN
@@ -118,6 +118,58 @@ CREATE OR REPLACE FUNCTION public.gettopcomponents(
    	END;
    $BODY$;
 
+
+---
+---
+---
+
+CREATE OR REPLACE FUNCTION public.gettotalrevenue(
+	vfrom timestamp with time zone,
+	vto timestamp with time zone,
+	vtechnologyuuid uuid,
+	vdetail text,
+	vcreatedby uuid,
+	vroles text[])
+    RETURNS TABLE(date date, hour text, technologydataname text, amount integer, revenue bigint)
+    LANGUAGE 'plpgsql'
+
+AS $BODY$
+
+   			DECLARE
+   				vFunctionName varchar := 'GetTotalRevenue';
+   				vIsAllowed boolean := (select public.checkPermissions(vRoles, vFunctionName));
+   				vTechnologyDataUUID uuid := (select uuid_nil())::uuid;
+
+   			BEGIN
+
+   			IF(vIsAllowed) THEN
+
+   			RETURN QUERY (select  to_date(r.year || '-' || r.month || '-' || r.day, 'YYYY-MM-DD') as date, r.hour::text, coalesce(td.technologydataname,'Total')::text as technologydataname, r.amount, r.revenue from public.getrevenue(
+   					    vFrom,
+   					    vTo,
+   					    vTechnologyDataUUID,
+   						vTechnologyUUID,
+   					    vCreatedBy,
+   					    vRoles) r
+   					    left outer join technologydata td on
+   					    td.technologydatauuid = r.technologydatauuid
+   						left outer join technologies tg
+   						on td.technologyid = tg.technologyid
+   					    where r.year <> '0'
+   					    and r.month <> '0'
+   					    and r.day <> '0'
+   					    and case when (vDetail = 'hour') then r.hour <> '0' else r.hour = '0' end
+   					    order by r.year asc, r.month asc, r.day asc
+   				);
+   			ELSE
+   				 RAISE EXCEPTION '%', 'Insufficiency rigths';
+   				 RETURN;
+   			END IF;
+
+   			END;
+
+
+$BODY$;
 
 ----------------------------------------------------------------------------------------------------------------------------------------
     -- UPDATE patch table status value

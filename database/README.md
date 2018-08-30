@@ -60,7 +60,7 @@
 | iuno_marketplacecore_V0051V_20180820.sql                          | 0051              | Updated update technologydata function to also set imageref                                            |                               | [@mbeuttler][imbeuttler]  |
 | iuno_marketplacecore_V0052V_20180821.sql                          | 0052              | Updated GetAllComponents                                                                               |                               | [@mbeuttler][imbeuttler]  |
 | iuno_marketplacecore_V0053V_20180828.sql                          | 0053              | Updated GetTechnologyByParams function and allowed public role to access it                            |                               | [@mbeuttler][imbeuttler]  |
-| iuno_marketplacecore_V0054V_20180829.sql                          | 0054              | Fixed report functions                                                                                 |                               | [@mbeuttler][imbeuttler]  |
+| iuno_marketplacecore_V0054V_20180829.sql                          | 0054              | Fixed report topComponents and totalRevenue                                                            |  [#219][i219]                 | [@mbeuttler][imbeuttler]  |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
@@ -98,6 +98,7 @@
 [i199]: https://github.com/IUNO-TDM/MarketplaceCore/issues/199
 [i206]: https://github.com/IUNO-TDM/MarketplaceCore/issues/206
 [i207]: https://github.com/IUNO-TDM/MarketplaceCore/issues/207
+[i219]: https://github.com/IUNO-TDM/MarketplaceCore/issues/219
 
 
 [igomarcel]: https://github.com/gomarcel
