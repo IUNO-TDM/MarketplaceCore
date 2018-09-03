@@ -181,7 +181,7 @@ BEGIN
         $BODY$;
 
     perform public.setpermission('{Public}','GetTechnologyDataByParams',null,'{Admin}');
-    perform public.setpermission('{Public}','GetTechnologyById',null,'{Admin}');
+    perform public.setpermission('{Public}','GetTechnologyDataById',null,'{Admin}');
 
 ----------------------------------------------------------------------------------------------------------------------------------------
     -- UPDATE patch table status value
