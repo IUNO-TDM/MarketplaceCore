@@ -6,6 +6,10 @@ BEGIN
 UPDATE components SET componentdescription = 'the root filament' WHERE componentdescription='Pure PLA according to the purity law';
 UPDATE translations SET value = 'Root Filament' WHERE textid = (SELECT textid FROM components WHERE componentdescription ='the root filament');
 
+-- add en translation for root component
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='en' ),(SELECT textid FROM translations WHERE value = 'Root'),'Root', 'components');
+
 --create root pla
 perform public.setcomponent('PLA', 'Root Filament', 'the root PLA', 'components', 'en', '{material}', '{ultimaker}', '05d11003-1155-47f1-9cd6-818abac9d47c', '{TechnologyAdmin}');
 UPDATE components SET displaycolor = '#ffffff' WHERE componentdescription = 'the root PLA' AND textid IN (SELECT textid FROM translations WHERE value = 'PLA');

@@ -64,8 +64,8 @@ Component.prototype.FindSingle = Component.FindSingle = function (userUUID, role
 Component.prototype.FindByTechnologyDataId = Component.FindByTechnologyDataId = function (userUUID, roles, technologyDataId, lang, callback) {
     db.func('GetComponentsForTechnologyDataId', [technologyDataId, userUUID, lang || 'en', roles])
         .then(function (data) {
-            var resultList = [];
-            for (var key in data) {
+            let resultList = [];
+            for (let key in data) {
                 resultList.push(new Component(data[key]));
             }
             callback(null, resultList);
