@@ -50,7 +50,9 @@ payment_service.socket.on('PaymentStateChange', function (data) {
     logger.debug("PaymentService StateChange: " + data);
     const paymentStateChange = JSON.parse(data);
 
-    if (paymentStateChange.state === 'pending' || paymentStateChange.state === 'building') {
+    // clients and the database will be updated for any events other than unknown
+    // the database decides based on the state if a payment is valid and then sets the payment.paydate
+    if (paymentStateChange.state && paymentStateChange.state !== 'unknown'){
         // Store state change in database
         const paymentData = {
             transactionUUID: paymentStateChange.referenceId,
