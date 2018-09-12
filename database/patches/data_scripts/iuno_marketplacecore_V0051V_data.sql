@@ -144,5 +144,199 @@ UPDATE components SET componentparentid = (SELECT componentid FROM components WH
     OR components.componentuuid = '7e6207c4-22ff-441a-b261-ff89f166d5f9'    
     OR components.componentuuid = '86a89ceb-4159-47f6-ab97-e9953803d70f'
     OR components.componentuuid = 'fe15ed8a-33c3-4f57-a2a7-b4b78a38c3cb';
+
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='en'),(SELECT textid FROM translations WHERE value = 'Johannisbeerensaft'),'currant juice', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA White'),'Ultimaker PLA White', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic PP Generic'),'Generic PP Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA Magenta'),'Ultimaker PLA Magenta', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic ABS Generic'),'Generic ABS Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PC Transparent'),'Ultimaker PC Transparent', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE+ White'),'Ultimaker CPE+ White', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker TPU 95A Blue'),'Ultimaker TPU 95A Blue', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA Red'),'Ultimaker PLA Red', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Root Filament'),'Root Filament', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic Breakaway Generic'),'Generic Breakaway Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE Blue'),'Ultimaker CPE Blue', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PC White'),'Ultimaker PC White', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic PLA Generic'),'Generic PLA Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE Black'),'Ultimaker CPE Black', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE Dark Grey'),'Ultimaker CPE Dark Grey', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic CPE+ Generic'),'Generic CPE+ Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker Tough PLA Green'),'Ultimaker Tough PLA Green', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PC Black'),'Ultimaker PC Black', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA Silver Metallic'),'Ultimaker PLA Silver Metallic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA Orange'),'Ultimaker PLA Orange', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker ABS Green'),'Ultimaker ABS Green', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker TPU 95A Red'),'Ultimaker TPU 95A Red', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic Nylon Generic'),'Generic Nylon Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE+ Black'),'Ultimaker CPE+ Black', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker ABS Blue'),'Ultimaker ABS Blue', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE Yellow'),'Ultimaker CPE Yellow', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic PVA Generic'),'Generic PVA Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE White'),'Ultimaker CPE White', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker ABS Black'),'Ultimaker ABS Black', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker Nylon Black'),'Ultimaker Nylon Black', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker ABS White'),'Ultimaker ABS White', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA Black'),'Ultimaker PLA Black', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker ABS Yellow'),'Ultimaker ABS Yellow', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker Tough PLA Black'),'Ultimaker Tough PLA Black', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic Tough PLA Generic'),'Generic Tough PLA Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic TPU 95A Generic'),'Generic TPU 95A Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic CPE Generic'),'Generic CPE Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE Red'),'Ultimaker CPE Red', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker Tough PLA Red'),'Ultimaker Tough PLA Red', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA Blue'),'Ultimaker PLA Blue', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker TPU 95A Black'),'Ultimaker TPU 95A Black', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker Tough PLA White'),'Ultimaker Tough PLA White', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker TPU 95A White'),'Ultimaker TPU 95A White', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA Green'),'Ultimaker PLA Green', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker ABS Orange'),'Ultimaker ABS Orange', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker Breakaway White'),'Ultimaker Breakaway White', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE Light Grey'),'Ultimaker CPE Light Grey', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE Green'),'Ultimaker CPE Green', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Generic PC Generic'),'Generic PC Generic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA Yellow'),'Ultimaker PLA Yellow', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker ABS Silver Metallic'),'Ultimaker ABS Silver Metallic', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker ABS Pearl Gold'),'Ultimaker ABS Pearl Gold', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker ABS Grey'),'Ultimaker ABS Grey', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PP Transparent'),'Ultimaker PP Transparent', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE+ Transparent'),'Ultimaker CPE+ Transparent', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker Nylon Transparent'),'Ultimaker Nylon Transparent', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA Pearl-White'),'Ultimaker PLA Pearl-White', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker CPE Transparent'),'Ultimaker CPE Transparent', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker 3 Extended'),'Ultimaker 3 Extended', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker 3'),'Ultimaker 3', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker ABS Red'),'Ultimaker ABS Red', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PVA Natural'),'Ultimaker PVA Natural', 'components');
+
+INSERT INTO translations (translationid, languageid, textid, value, context)
+VALUES ((SELECT nextval('translationid')),(SELECT languageid FROM languages WHERE languagecode='de'),(SELECT textid FROM translations WHERE value = 'Ultimaker PLA Transparent'),'Ultimaker PLA Transparent', 'components');
+
 END;
 $$;
