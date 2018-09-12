@@ -65,10 +65,10 @@ perform public.setpermission('{Public}','GetComponentsForTechnologyDataId',null,
 perform public.setpermission('{Public}','GetComponentAttributesForTechnologyData',null,'{Admin}');
 
 --
--- UPDATE PAYMENT TABLE
+-- DELETE orphan payments as they are duplicates and add unique constraint
 --
 
-DELETE FROM payment where paymentid NOT IN (SELECT MIN(paymentid) FROM payment GROUP BY extinvoiceid);
+DELETE FROM payment WHERE paymentid NOT IN (SELECT paymentid FROM transactions WHERE paymentid IS NOT NULL);
 ALTER TABLE payment ADD CONSTRAINT uniqueExtInvoiceId UNIQUE (extinvoiceid);
 ALTER TABLE payment ADD CONSTRAINT uniquePaymentInvoiceId UNIQUE (paymentinvoiceid);
 
