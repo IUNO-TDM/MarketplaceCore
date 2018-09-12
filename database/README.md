@@ -62,6 +62,7 @@
 | iuno_marketplacecore_V0053V_20180828.sql                          | 0053              | Updated GetTechnologyByParams function and allowed public role to access it                            |                               | [@mbeuttler][imbeuttler]  |
 | iuno_marketplacecore_V0054V_20180829.sql                          | 0054              | Fixed report topComponents and totalRevenue                                                            |  [#219][i219]                 | [@mbeuttler][imbeuttler]  |
 | iuno_marketplacecore_V0055V_20180912.sql                          | 0055              | Updated permissions for public role, removed duplicates in payment table, added unique constraints to payment table |  [#220][i220]                 | [@mbeuttler][imbeuttler]  |
+| iuno_marketplacecore_V0056V_20180912.sql                          | 0056              | Fixed bug in getTotalUserRevenue function always returning 0                                           |  [#219][i219]                 | [@mbeuttler][imbeuttler]  |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
