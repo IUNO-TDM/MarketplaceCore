@@ -4,8 +4,8 @@ const logger = require('../global/logger');
 const MethodToContentTypeMapping = {
     GET: [''],
     HEAD: [''],
-    POST: ['application/json'],
-    PUT: ['application/json'],
+    POST: ['application/json', 'multipart/form-data'],
+    PUT: ['application/json', 'image/png', 'image/jpeg', 'image/svg+xml'],
     DELETE: ['application/json'],
     CONNECT: [],
     OPTIONS: [],

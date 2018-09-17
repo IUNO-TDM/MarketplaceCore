@@ -2,6 +2,8 @@
  * Created by beuttlerma on 18.04.17.
  */
 
+const path =  require('path');
+
 String.prototype.format = function () {
     var args = [].slice.call(arguments);
     return this.replace(/(\{\d+\})/g, function (a) {
@@ -92,5 +94,10 @@ self.SMTP_CONFIG = {
 self.REPORT_EMAIL_ADRESSES = [
 
 ];
+
+self.TMP_DIR = path.resolve(__dirname, '../tmp');
+self.FILE_DIR = path.resolve(__dirname, '../files');
+self.IMAGE_DIR = 'images/recipes/';
+self.DEFAULT_IMAGE = 'images/recipes/default.svg';
 
 module.exports = self;

@@ -12,6 +12,15 @@ const languageProperty = {
     enum: ['de', 'en']
 };
 
+self.GetSingle_Query = {
+    type: 'object',
+    properties: {
+        lang: languageProperty
+    },
+    additionalProperties: false,
+    required:[]
+};
+
 self.Get_Query = {
     anyOf: [
         {
@@ -23,7 +32,8 @@ self.Get_Query = {
                 },
                 lang: languageProperty
             },
-            additionalProperties: false
+            additionalProperties: false,
+            required:['lang']
         },
         {
             type: 'object',
@@ -49,16 +59,33 @@ self.Get_Query = {
                     type: 'string',
                     format: 'uuid'
                 },
+                productCodes: {
+                    type: 'array',
+                    minItems: 1,
+                    maxItems: 100,
+                    uniqueItems: true,
+                    items: {
+                        type: 'integer',
+                        minimum: 1000,
+                        maximum: 1000000
+                    },
+                    additionalItems: false
+                },
+                purchased: {
+                  type: 'boolean'
+                },
                 lang: languageProperty
             },
-            additionalProperties: false
+            additionalProperties: false,
+            required:['lang', 'technology']
         },
         {
             type: 'object',
             properties: {
                 lang: languageProperty
             },
-            additionalProperties: false
+            additionalProperties: false,
+            required:['lang']
         }
     ]
 };
@@ -81,6 +108,9 @@ self.SaveData_Body = {
     type: 'object',
     required: ['technologyDataName', 'technologyData', 'technologyDataDescription', 'technologyUUID', 'componentList'],
     properties: {
+        isFile: {
+            type: 'boolean'
+        },
         technologyDataName: {
             type: 'string',
             minLength: 1,
@@ -143,7 +173,7 @@ self.SaveData_Body = {
         },
         image: {
             type: 'string',
-            maxLength: 10000
+            maxLength: 200000
         }
     },
     additionalProperties: false
@@ -157,7 +187,7 @@ self.GetContent_Query = {
             format: 'uuid'
         }
     },
-    required: ['offerId'],
+    required: [],
     additionalProperties: false
 };
 module.exports = self;

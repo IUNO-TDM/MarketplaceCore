@@ -25,8 +25,9 @@ router.get('/revenue/', validate({
     const from = req.query['from'];
     const to = req.query['to'];
     const detail = req.query['detail'];
+    const technologyuuid = req.query['technologyuuid'];
     dbReports.GetTotalRevenue(
-        from, to, detail,
+        from, to, technologyuuid, detail,
         req.token.user.id,
         req.token.user.roles, function (err, data) {
             if (err) {
@@ -46,11 +47,19 @@ router.get('/revenue/user', validate({
     query: validation_schema.Revenue_User_Query,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
+
+    const from = req.query['from'];
+    const to = req.query['to'];
+    const technologyuuid = req.query['technologyuuid'];
+    const userid = req.token.user.id;
+    const userroles = req.token.user.roles;
+
     dbReports.GetTotalUserRevenue(
-        req.query['from'],
-        req.query['to'],
-        req.token.user.id,
-        req.token.user.roles, function (err, data) {
+        from,
+        to,
+        technologyuuid,
+        userid,
+        userroles, function (err, data) {
             if (err) {
                 next(err);
             }
@@ -68,11 +77,15 @@ router.get('/revenue/technologydata/history', validate({
 
     const from = req.query['from'];
     const to = req.query['to'];
+    const technologyuuid = req.query['technologyuuid'];
+    const userid = req.token.user.id;
+    const userroles = req.token.user.roles;
     dbReports.GetRevenueHistory(
         from,
         to,
-        req.token.user.id,
-        req.token.user.roles,
+        technologyuuid,
+        userid,
+        userroles,
         function (err, data) {
             if (err) {
                 next(err);
@@ -92,12 +105,21 @@ router.get('/technologydata/top', validate({
     query: validation_schema.Top_TD_Query,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
+
+    const from = req.query['from'];
+    const to = req.query['to'];
+    const technologyuuid = req.query['technologyuuid'];
+    const limit = req.query['limit'];
+    const userid = req.query['user'];
+    const userroles = req.token.user.roles;
+
     dbReports.GetTopTechnologyData(
-        req.query['from'],
-        req.query['to'],
-        req.query['limit'],
-        req.query['user'],
-        req.token.user.roles, function (err, data) {
+        from,
+        to,
+        technologyuuid,
+        limit,
+        userid,
+        userroles, function (err, data) {
             if (err) {
                 next(err);
             }
@@ -111,11 +133,19 @@ router.get('/technologydata/history', validate({
     query: validation_schema.History_Query,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
+
+    const from = req.query['from'];
+    const to = req.query['to'];
+    const technologyuuid = req.query['technologyuuid'];
+    const userid = req.token.user.id;
+    const userroles = req.token.user.roles;
+
     dbReports.GetTechnologyDataHistory(
-        req.query['from'],
-        req.query['to'],
-        req.token.user.id,
-        req.token.user.roles, function (err, data) {
+        from,
+        to,
+        technologyuuid,
+        userid,
+        userroles, function (err, data) {
             if (err) {
                 next(err);
             }
@@ -129,13 +159,23 @@ router.get('/components/top', validate({
     query: validation_schema.Top_Components_Query,
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
+
+    const from = req.query['from'];
+    const to = req.query['to'];
+    const technologyuuid = req.query['technologyuuid'];
+    const limit = req.query['limit'];
+    const lang = req.query['lang'];
+    const userid = req.token.user.id;
+    const userroles = req.token.user.roles;
+
     dbReports.GetTopComponents(
-        req.query['from'],
-        req.query['to'],
-        req.query['limit'],
-        req.token.user.id,
-        req.query['lang'],
-        req.token.user.roles, function (err, data) {
+        from,
+        to,
+        technologyuuid,
+        limit,
+        userid,
+        lang,
+        userroles, function (err, data) {
             if (err) {
                 next(err);
             }
@@ -150,9 +190,15 @@ router.get('/licenses/count', validate({
     body: validation_schema.Empty_Body
 }), function (req, res, next) {
     if (req.query['activated']) {
+
+        const technologyuuid = req.query['technologyuuid'];
+        const userid = req.query['user'];
+        const inquirer = req.token.user;
+
         dbLicenses.GetActivatedLicenseCountForUser(
-            req.query['user'],
-            req.token.user, function (err, data) {
+            technologyuuid,
+            userid,
+            inquirer, function (err, data) {
                 if (err) {
                     next(err);
                 }

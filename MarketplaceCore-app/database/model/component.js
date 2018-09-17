@@ -16,7 +16,7 @@ function Component(data) {
     if (data) {
         this.componentuuid = data.componentuuid;
         this.componentname = data.componentname;
-        this.componentparentid = data.componentparentid;
+        this.componentparentuuid = data.componentparentuuid;
         this.componentparentname = data.componentparentname;
         this.componentdescription = data.componentdescription;
         this.createdat = data.createdat;
@@ -31,7 +31,7 @@ function Component(data) {
 }
 
 Component.prototype.FindAll = Component.FindAll = function (userUUID, roles, params, callback) {
-    db.func('GetAllComponents', [userUUID, params.lang || 'en', params.technologies, undefined, roles])
+    db.func('GetAllComponents', [userUUID, params.lang || 'en', params.technologies, params.attributes, roles])
         .then(function (data) {
             const resultList = [];
 
@@ -64,8 +64,8 @@ Component.prototype.FindSingle = Component.FindSingle = function (userUUID, role
 Component.prototype.FindByTechnologyDataId = Component.FindByTechnologyDataId = function (userUUID, roles, technologyDataId, lang, callback) {
     db.func('GetComponentsForTechnologyDataId', [technologyDataId, userUUID, lang || 'en', roles])
         .then(function (data) {
-            var resultList = [];
-            for (var key in data) {
+            let resultList = [];
+            for (let key in data) {
                 resultList.push(new Component(data[key]));
             }
             callback(null, resultList);

@@ -32,7 +32,7 @@ self.validateToken = function (accessToken, callback) {
         }
     }
 
-    var options = buildOptionsForRequest(
+    const options = buildOptionsForRequest(
         'GET',
         CONFIG.HOST_SETTINGS.OAUTH_SERVER.PROTOCOL,
         CONFIG.HOST_SETTINGS.OAUTH_SERVER.HOST,
@@ -50,14 +50,17 @@ self.validateToken = function (accessToken, callback) {
             return callback(err);
         }
 
-        if (token && new Date(token.accessTokenExpiresAt) < new Date()) {
+        let isValid = false;
 
+        if (token && new Date(token.accessTokenExpiresAt) > new Date()) {
+            isValid = true;
+        }
+        else {
             logger.warn('[auth_service_adapter] access token expired');
-
-            return callback(null, false, token)
         }
 
-        callback(err, true, token)
+        return callback(null, isValid, token);
+
     });
 
 

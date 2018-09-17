@@ -37,8 +37,8 @@ self.GetLicenseFeeByTechnologyData = function (userUUID, technologyDataUUID, rol
         });
 };
 
-self.GetActivatedLicenseCountForUser = function (userUUID, grant, callback) {
-    db.func('GetActivatedLicensesCountForUser', [userUUID, grant['id'], grant['roles']])
+self.GetActivatedLicenseCountForUser = function (technologyUUID, userUUID, grant, callback) {
+    db.func('GetActivatedLicensesCountForUser', [technologyUUID, userUUID, grant['id'], grant['roles']])
         .then(function (data) {
             if (data && data.length) {
                 data = data[0];

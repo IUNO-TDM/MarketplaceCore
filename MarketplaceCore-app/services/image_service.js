@@ -5,8 +5,7 @@ const logger = require('../global/logger');
 const seedRandom = require('seedrandom');
 const crypto = require('crypto');
 
-const IMAGE_DIR = 'images/recipes/';
-const DEFAULT_IMAGE = 'images/recipes/default.svg';
+const mime = require('mime-types');
 
 const self = {};
 
@@ -22,42 +21,48 @@ function randomInt(low, high, seed) {
 
 self.getRandomImagePath = function () {
     try {
-        const files = fs.readdirSync(IMAGE_DIR);
+        const files = fs.readdirSync(config.IMAGE_DIR);
 
         const randomIndex = randomInt(0, files.length);
 
-        return path.join(IMAGE_DIR, files[randomIndex]);
+        return path.join(config.IMAGE_DIR, files[randomIndex]);
     }
     catch (err) {
         logger.crit(err);
 
-        return DEFAULT_IMAGE;
+        return config.DEFAULT_IMAGE;
     }
 };
 
 self.getDefaultImagePathForUUID = function (uuid) {
     try {
-        const files = fs.readdirSync(IMAGE_DIR);
+        const files = fs.readdirSync(config.IMAGE_DIR);
 
         const randomIndex = randomInt(0, files.length, uuid);
 
-        return path.join(IMAGE_DIR, files[randomIndex]);
+        return path.join(config.IMAGE_DIR, files[randomIndex]);
     }
     catch (err) {
         logger.crit(err);
 
-        return DEFAULT_IMAGE;
+        return config.DEFAULT_IMAGE;
     }
 };
 
-self.saveImage = function (user, tdName, image) {
-    const imageName = crypto.createHash('md5').update(user + tdName).digest('hex') + '.svg';
+self.saveImage = function (user, tdName, image, mimeType) {
+    const hash = crypto.createHash('md5').update(user + tdName).digest('hex');
+    const extension = mime.extension(mimeType);
+    const imageName = `${hash}.${extension}`;
 
-    const filePath = path.join(IMAGE_DIR, imageName);
+    const filePath = path.join(config.IMAGE_DIR, imageName);
 
-    fs.writeFile(filePath, image);
+    fs.writeFile(filePath, image, (err) => {
+        if (err) {
+            logger.crit(err);
+        }
+    });
 
-    return IMAGE_DIR + imageName;
+    return config.IMAGE_DIR + imageName;
 };
 
 

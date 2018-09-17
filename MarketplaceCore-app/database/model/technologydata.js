@@ -15,6 +15,7 @@ function TechnologyData(data) {
 
 TechnologyData.prototype.SetProperties = function (data) {
     if (data) {
+        this.technologyuuid = data.technologyuuid ? data.technologyuuid : this.technologyuuid;
         this.technologydataid = data.technologydataid ? data.technologydataid : this.technologydataid;
         this.technologydatauuid = data.technologydatauuid ? data.technologydatauuid : this.technologydatauuid;
         this.technologydataname = data.technologydataname ? data.technologydataname : this.technologydataname;
@@ -26,6 +27,8 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.componentlist = data.componentlist ? data.componentlist : this.componentlist;
         this.backgroundcolor = data.backgroundcolor ? data.backgroundcolor : this.backgroundcolor;
         this.technologydataimgref = data.technologydataimgref ? data.technologydataimgref : this.technologydataimgref;
+        this.isfile = data.isfile ? data.isfile : this.isfile;
+        this.filepath = data.filepath ? data.filepath : this.filepath;
     }
 };
 
@@ -51,6 +54,7 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
     const technologydataname = params['technologydataname'];
     const ownerUUID = params['ownerUUID'];
     const language = params['lang'];
+    const productCodes = params['productCodes'];
 
 
     db.func('GetTechnologyDataByParams',
@@ -59,6 +63,7 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
             technologyUUID,
             technologydataname,
             ownerUUID,
+            productCodes,
             userUUID,
             language,
             roles
@@ -77,6 +82,46 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
         });
 };
 
+TechnologyData.prototype.FindAllPurchased = TechnologyData.FindAllPurchased = function (userUUID, clientUUID, roles, params, callback) {
+    const technologyUUID = params['technology'];
+    const components = params['components'];
+    const technologydataname = params['technologydataname'];
+    const ownerUUID = params['ownerUUID'];
+    const language = params['lang'];
+    const productCodes = params['productCodes'];
+
+
+    db.func('GetPurchasedTechnologyDataForUser',
+        [
+            components,
+            technologyUUID,
+            technologydataname,
+            ownerUUID,
+            productCodes,
+            userUUID,
+            clientUUID,
+            language,
+            roles
+        ], 1 //TODO: Document this parameter
+    )
+        .then(function (data) {
+            const resultList = [];
+            for (let key in data.result) {
+                resultList.push(new TechnologyData(data.result[key]));
+            }
+            callback(null, resultList);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
+/**
+ *
+ * @type {TechnologyData.FindSingle}
+ * @return {TechnologyData}
+ */
 TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, roles, id, callback) {
     db.func('GetTechnologyDataByID', [id, userUUID, roles])
         .then(function (data) {
@@ -127,6 +172,8 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             this.componentlist,
             this.technologydataimgref,
             this.backgroundcolor,
+            this.isfile,
+            this.filepath,
             userUUID,
             roles
         ])
@@ -144,8 +191,23 @@ TechnologyData.prototype.Create = function (userUUID, roles, callback) {
             callback(error);
         });
 };
-TechnologyData.prototype.Update = function () {
-    throw {name: "NotImplementedError", message: "Function not implemented yet"}; //TODO: Implement this function if needed
+TechnologyData.prototype.Update = function (userUUID, roles, callback) {
+    db.func('updatetechnologydata',
+        [this.technologydatauuid,
+            this.technologydata,
+            this.isfile,
+            this.filepath,
+            this.technologydataimgref,
+            userUUID,
+            roles
+        ])
+        .then(function () {
+            callback(null);
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
 };
 
 TechnologyData.prototype.Delete = TechnologyData.Delete = function (technologydatauuid, userUUID, roles, callback) {
@@ -164,10 +226,9 @@ TechnologyData.prototype.Delete = TechnologyData.Delete = function (technologyda
         });
 };
 
-TechnologyData.prototype.FindWithContent = TechnologyData.FindWithContent = function (technologydataUUID, offerUUID, clientUUID, userUUID, roles, callback) {
+TechnologyData.prototype.FindWithContent = TechnologyData.FindWithContent = function (technologydataUUID, clientUUID, userUUID, roles, callback) {
     db.func('GetTechnologyDataWithContent',
         [technologydataUUID,
-            offerUUID,
             clientUUID,
             userUUID,
             roles
@@ -180,6 +241,18 @@ TechnologyData.prototype.FindWithContent = TechnologyData.FindWithContent = func
                 return callback(null, null);
             }
             callback(null, new TechnologyData(data));
+        })
+        .catch(function (error) {
+            logger.crit(error);
+            callback(error);
+        });
+};
+
+TechnologyData.GetComponentAttributes = function (uuid, roles, callback) {
+    db.func('GetComponentAttributesForTechnologyData',
+        [uuid, roles])
+        .then(function (data) {
+            callback(null, data);
         })
         .catch(function (error) {
             logger.crit(error);
