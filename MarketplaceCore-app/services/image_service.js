@@ -35,18 +35,7 @@ self.getRandomImagePath = function () {
 };
 
 self.getDefaultImagePathForUUID = function (uuid) {
-    try {
-        const files = fs.readdirSync(config.IMAGE_DIR);
-
-        const randomIndex = randomInt(0, files.length, uuid);
-
-        return path.join(config.IMAGE_DIR, files[randomIndex]);
-    }
-    catch (err) {
-        logger.crit(err);
-
-        return config.DEFAULT_IMAGE;
-    }
+    return config.DEFAULT_IMAGE;
 };
 
 self.saveImage = function (user, tdName, image, mimeType) {
