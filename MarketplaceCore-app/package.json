@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "ascii85": "^1.0.2",
@@ -30,10 +32,11 @@
     "request": "^2.81.0",
     "seedrandom": "^2.4.3",
     "serve-favicon": "~2.4.5",
-    "snyk": "^1.41.1",
+    "snyk": "^1.123.0",
     "socket.io": "^2.0.2",
     "socket.io-client": "^2.0.2",
     "uuid": "^3.3.2",
     "winston": "^2.3.0"
-  }
+  },
+  "snyk": true
 }
