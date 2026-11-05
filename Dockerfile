@@ -1,24 +1,22 @@
-FROM node:carbon
-RUN npm install pm2 -g
+FROM node:20-slim
 
-# Configure log rotate
-
-RUN pm2 install pm2-logrotate
-RUN pm2 set pm2-logrotate:retain 10
-
-
-# Create app directory
-
-RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-# Bundle app source
+COPY MarketplaceCore-app/package.json MarketplaceCore-app/package-lock.json ./
+RUN npm install --omit=dev
 
-COPY MarketplaceCore-app /usr/src/app
+COPY MarketplaceCore-app/ ./
 
-# Install app dependencies
-RUN npm install
+RUN chown -R node:node /usr/src/app
 
+# Uploaded recipe images; mount a volume to persist them
+VOLUME /usr/src/app/images/recipes
+
+# Configuration is read from environment variables only:
+# DB_HOST DB_PORT DB_NAME DB_USER DB_PASSWORD KEYCLOAK_INTERNAL_URL KEYCLOAK_REALM
+# BACKEND_CLIENT_ID BACKEND_CLIENT_SECRET LOG_LEVEL PORT
+ENV PORT=3002 NODE_ENV=production
 EXPOSE 3002
 
-CMD [ "pm2-docker", "npm", "--", "start" ]
+USER node
+CMD ["node", "./bin/www"]

@@ -9,10 +9,10 @@ const TechnologyData = require('../database/model/technologydata');
 
 
 if (!fs.existsSync(CONFIG.FILE_DIR)) {
-    fs.mkdir(CONFIG.FILE_DIR);
+    fs.mkdirSync(CONFIG.FILE_DIR);
 }
 if (!fs.existsSync(CONFIG.TMP_DIR)) {
-    fs.mkdir(CONFIG.TMP_DIR);
+    fs.mkdirSync(CONFIG.TMP_DIR);
 }
 
 const storage = multer.diskStorage({

@@ -59,21 +59,6 @@ self.Get_Query = {
                     type: 'string',
                     format: 'uuid'
                 },
-                productCodes: {
-                    type: 'array',
-                    minItems: 1,
-                    maxItems: 100,
-                    uniqueItems: true,
-                    items: {
-                        type: 'integer',
-                        minimum: 1000,
-                        maximum: 1000000
-                    },
-                    additionalItems: false
-                },
-                purchased: {
-                  type: 'boolean'
-                },
                 lang: languageProperty
             },
             additionalProperties: false,
@@ -119,16 +104,12 @@ self.SaveData_Body = {
         technologyData: {
             oneOf: [
                 {
-                    type: 'string',
-                    pattern: '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$',
-                    minLength: 1,
-                    maxLength: 100000
+                    type: 'object'
                 },
                 {
                     type: 'string',
-                    pattern: '\\{.*\\:\\{.*\\:.*\\}\\}',
                     minLength: 1,
-                    maxLength: 100000
+                    maxLength: 30000
                 }]
         },
         technologyDataDescription: {
@@ -139,10 +120,6 @@ self.SaveData_Body = {
         technologyUUID: {
             type: 'string',
             format: 'uuid'
-        },
-        licenseFee: {
-            type: 'integer',
-            maximum: Number.MAX_SAFE_INTEGER
         },
         tagList: {
             type: 'array',
@@ -181,13 +158,7 @@ self.SaveData_Body = {
 
 self.GetContent_Query = {
     type: 'object',
-    properties: {
-        offerId: {
-            type: 'string',
-            format: 'uuid'
-        }
-    },
-    required: [],
+    properties: {},
     additionalProperties: false
 };
 module.exports = self;

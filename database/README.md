@@ -63,6 +63,8 @@
 | iuno_marketplacecore_V0054V_20180829.sql                          | 0054              | Fixed report topComponents and totalRevenue                                                            |  [#219][i219]                 | [@mbeuttler][imbeuttler]  |
 | iuno_marketplacecore_V0055V_20180912.sql                          | 0055              | Updated permissions for public role, removed duplicates in payment table, added unique constraints to payment table |  [#220][i220]                 | [@mbeuttler][imbeuttler]  |
 | iuno_marketplacecore_V0056V_20180912.sql                          | 0056              | Fixed bug in getTotalUserRevenue function always returning 0                                           |  [#219][i219]                 | [@mbeuttler][imbeuttler]  |
+| iuno_marketplacecore_V0057V_20261105.sql                          | 0057              | Reactivation: removed license, payment, offer, transaction and report objects; removed licensefee/productcode from technologydata; recipes are stored in plaintext; Public role may manage own recipes, Admin may delete any recipe |  | |
+| iuno_marketplacecore_V0058V_data.sql                              | 0058              | Seed: four plaintext example recipes                                                                    |  | |
 
 [i54]: https://github.com/IUNO-TDM/MarketplaceCore/issues/54
 [i91]: https://github.com/IUNO-TDM/MarketplaceCore/issues/91
@@ -105,3 +107,17 @@
 
 [igomarcel]: https://github.com/gomarcel
 [imbeuttler]: https://github.com/MBeuttler
+
+## Docker image (PostgreSQL 16)
+
+Build from this directory (`docker build -t iuno-db .`). On first start all `patches/*.sql` and
+`patches/data_scripts/*.sql` are applied and a second database for Keycloak is created.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `POSTGRES_PASSWORD` | required | password of the marketplace DB user |
+| `POSTGRES_USER` | `marketplace` | marketplace DB user |
+| `POSTGRES_DB` | `MarketplaceCore` | marketplace database |
+| `KEYCLOAK_DB_PASSWORD` | required | password of the Keycloak DB user |
+| `KEYCLOAK_DB_USER` | `keycloak` | Keycloak DB user |
+| `KEYCLOAK_DB_NAME` | `keycloak` | Keycloak database |

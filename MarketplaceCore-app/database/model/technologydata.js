@@ -20,8 +20,6 @@ TechnologyData.prototype.SetProperties = function (data) {
         this.technologydatauuid = data.technologydatauuid ? data.technologydatauuid : this.technologydatauuid;
         this.technologydataname = data.technologydataname ? data.technologydataname : this.technologydataname;
         this.technologydata = data.technologydata ? data.technologydata : this.technologydata;
-        this.licensefee = data.licensefee ? data.licensefee : this.licensefee;
-        this.productcode = data.productcode ? data.productcode : this.productcode;
         this.technologydatadescription = data.technologydatadescription ? data.technologydatadescription : this.technologydatadescription;
         this.createdby = data.createdby ? data.createdby : this.createdby;
         this.componentlist = data.componentlist ? data.componentlist : this.componentlist;
@@ -33,7 +31,7 @@ TechnologyData.prototype.SetProperties = function (data) {
 };
 
 TechnologyData.prototype.FindForUser = TechnologyData.FindForUser = function (user, inquirerId, inquireRoles, lang, callback) {
-    db.func('GetTechnologyDataForUser', [user, inquirerId, lang, inquireRoles])
+    db.func('gettechnologydataforuser', [user, inquirerId, lang, inquireRoles])
         .then(function (data) {
             const resultList = [];
             for (let key in data) {
@@ -54,52 +52,14 @@ TechnologyData.prototype.FindAll = TechnologyData.FindAll = function (userUUID, 
     const technologydataname = params['technologydataname'];
     const ownerUUID = params['ownerUUID'];
     const language = params['lang'];
-    const productCodes = params['productCodes'];
 
-
-    db.func('GetTechnologyDataByParams',
+    db.func('gettechnologydatabyparams',
         [
             components,
             technologyUUID,
             technologydataname,
             ownerUUID,
-            productCodes,
             userUUID,
-            language,
-            roles
-        ], 1 //TODO: Document this parameter
-    )
-        .then(function (data) {
-            const resultList = [];
-            for (let key in data.result) {
-                resultList.push(new TechnologyData(data.result[key]));
-            }
-            callback(null, resultList);
-        })
-        .catch(function (error) {
-            logger.crit(error);
-            callback(error);
-        });
-};
-
-TechnologyData.prototype.FindAllPurchased = TechnologyData.FindAllPurchased = function (userUUID, clientUUID, roles, params, callback) {
-    const technologyUUID = params['technology'];
-    const components = params['components'];
-    const technologydataname = params['technologydataname'];
-    const ownerUUID = params['ownerUUID'];
-    const language = params['lang'];
-    const productCodes = params['productCodes'];
-
-
-    db.func('GetPurchasedTechnologyDataForUser',
-        [
-            components,
-            technologyUUID,
-            technologydataname,
-            ownerUUID,
-            productCodes,
-            userUUID,
-            clientUUID,
             language,
             roles
         ], 1 //TODO: Document this parameter
@@ -123,7 +83,7 @@ TechnologyData.prototype.FindAllPurchased = TechnologyData.FindAllPurchased = fu
  * @return {TechnologyData}
  */
 TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (userUUID, roles, id, callback) {
-    db.func('GetTechnologyDataByID', [id, userUUID, roles])
+    db.func('gettechnologydatabyid', [id, userUUID, roles])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {
@@ -142,7 +102,7 @@ TechnologyData.prototype.FindSingle = TechnologyData.FindSingle = function (user
 };
 
 TechnologyData.prototype.FindByName = TechnologyData.FindByName = function (userUUID, roles, name, callback) {
-    db.func('GetTechnologyDataByName', [name, userUUID, roles])
+    db.func('gettechnologydatabyname', [name, userUUID, roles])
         .then(function (data) {
             //Only return the first element
             if (data && data.length) {
@@ -161,13 +121,11 @@ TechnologyData.prototype.FindByName = TechnologyData.FindByName = function (user
 
 TechnologyData.prototype.Create = function (userUUID, roles, callback) {
     const self = this;
-    db.func('SetTechnologyData',
+    db.func('settechnologydata',
         [this.technologydataname,
             this.technologydata,
             this.technologydatadescription,
             this.technologyuuid,
-            this.licensefee,
-            this.productcode,
             this.taglist ? this.taglist : [''],
             this.componentlist,
             this.technologydataimgref,
@@ -226,10 +184,9 @@ TechnologyData.prototype.Delete = TechnologyData.Delete = function (technologyda
         });
 };
 
-TechnologyData.prototype.FindWithContent = TechnologyData.FindWithContent = function (technologydataUUID, clientUUID, userUUID, roles, callback) {
-    db.func('GetTechnologyDataWithContent',
+TechnologyData.prototype.FindWithContent = TechnologyData.FindWithContent = function (technologydataUUID, userUUID, roles, callback) {
+    db.func('gettechnologydatawithcontent',
         [technologydataUUID,
-            clientUUID,
             userUUID,
             roles
         ])
@@ -249,7 +206,7 @@ TechnologyData.prototype.FindWithContent = TechnologyData.FindWithContent = func
 };
 
 TechnologyData.GetComponentAttributes = function (uuid, roles, callback) {
-    db.func('GetComponentAttributesForTechnologyData',
+    db.func('getcomponentattributesfortechnologydata',
         [uuid, roles])
         .then(function (data) {
             callback(null, data);

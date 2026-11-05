@@ -1,10 +1,8 @@
 const ExpressBrute = require('express-brute');
 const BruteStore = require('../database/brute_pg/store');
 const store = new BruteStore({db: require('../database/db_connection')});
-const _ = require('lodash');
 
 const logger = require('../global/logger');
-const email = require('../services/email_service');
 
 // 1000 Requests per 61 minutes
 const global = new ExpressBrute(store, {
@@ -44,13 +42,9 @@ const fileUpload = new ExpressBrute(store, {
 function failCallback (req, res, next, nextValidRequestDate) {
 
     logger.warn(`[brute_force_protection] Request blocked because of to many attempts`);
-    logger.warn(`[brute_force_protection] Path: ${req.baseUrl} - User: ${req.token.user.id} - Client: ${req.token.client.id}`);
+    logger.warn(`[brute_force_protection] Path: ${req.baseUrl} - User: ${req.token.user.id} - Client: ${req.token.client ? req.token.client.id : ''}`);
     logger.debug(`[brute_force_protection] NextValidRequestDate: ${nextValidRequestDate}`);
 
-
-    const message = _.pick(req,['baseUrl', 'body', 'method', 'originalUrl','params', 'query', 'token', 'url']);
-
-    email.sendReportToAdmins('Request blocked because of too many attempts', JSON.stringify(message, null, "\t"));
 
     return ExpressBrute.FailTooManyRequests(req, res, next, nextValidRequestDate);
 }

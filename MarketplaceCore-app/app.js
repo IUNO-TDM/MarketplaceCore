@@ -14,10 +14,6 @@ app.use(logger('dev'));
 // Accept JSON only
 app.use('/', contentTypeValidation);
 
-app.use('/cmdongle', bodyParser.json({
-    limit: '50mb'
-}));
-
 app.use('/technologydata/*/image', bodyParser.raw(
     {
         type: ['image/png', 'image/jpeg', 'image/svg+xml'],
@@ -38,11 +34,6 @@ app.use('/', authentication.oAuth);
 // Load all routes
 app.use('/technologydata', require('./routes/technologydata'));
 app.use('/components', require('./routes/components'));
-app.use('/offers', require('./routes/offers'));
-app.use('/offers', require('./routes/offers'));
-app.use('/reports', require('./routes/reports'));
-app.use('/cmdongle', require('./routes/cmdongle'));
-app.use('/vault', require('./routes/vault'));
 app.use('/protocols', require('./routes/protocols'));
 
 // catch 404 and forward to error handler

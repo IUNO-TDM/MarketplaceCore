@@ -169,7 +169,7 @@
             ]
           }
         ],
-        "description": "Gets the encrypted technology data for a specific identifier",
+        "description": "Gets the technology data content for a specific identifier",
         "parameters": [
           {
             "name": "technologyDataId",
@@ -262,83 +262,6 @@
           },
           "404": {
             "description": "technologydata not found"
-          }
-        }
-      }
-    },
-    "/offers": {
-      "post": {
-        "security": [
-          {
-            "Core_Auth": [
-              "default"
-            ]
-          }
-        ],
-        "description": "Create a new offer",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/OfferRequestBody"
-            }
-          },
-          {
-            "name": "userUUID",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Operation successful",
-            "schema": {
-              "$ref": "#/definitions/Invoice"
-            }
-          },
-          "400": {
-            "description": "bad request"
-          }
-        }
-      }
-    },
-    "/offers/{id}": {
-      "get": {
-        "security": [
-          {
-            "Core_Auth": [
-              "default"
-            ]
-          }
-        ],
-        "description": "Get a offer based on the id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "offerid to search for",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Offer"
-              }
-            }
-          },
-          "400": {
-            "description": "bad request"
-          },
-          "404": {
-            "description": "offer not found"
           }
         }
       }
@@ -441,178 +364,6 @@
           },
           "404": {
             "description": "component not found"
-          }
-        }
-      }
-    },
-    "/vault/users/{userId}/balance": {
-      "get": {
-        "security": [
-          {
-            "Core_Auth": [
-              "default"
-            ]
-          }
-        ],
-        "description": "returns the current balance of the license fee income in the vault for a given User UUID",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "the user id for which the balance is displayed",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "the balance in coin",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          "404": {
-            "description": "the user is unknown"
-          }
-        }
-      }
-    },
-    "/vault/users/{userId}/wallets": {
-      "get": {
-        "security": [
-          {
-            "Core_Auth": [
-              "default"
-            ]
-          }
-        ],
-        "description": "returns the vault wallets for a user UUID",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "the user id",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "the balance in coin",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Wallet"
-              }
-            }
-          },
-          "404": {
-            "description": "the user is unknown"
-          }
-        }
-      }
-    },
-    "/vault/users/{userId}/wallets/{walletId}/payouts": {
-      "post": {
-        "security": [
-          {
-            "Core_Auth": [
-              "default"
-            ]
-          }
-        ],
-        "description": "create a payout at the vault for a user and its wallet",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "the user id",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "walletId",
-            "in": "path",
-            "description": "the wallet id",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "the payout to create",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Payout"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "the created Payout",
-            "schema": {
-              "$ref": "#/definitions/Payout"
-            }
-          },
-          "404": {
-            "description": "the user is unknown"
-          },
-          "409": {
-            "description": "the wallet balance is to low for this"
-          }
-        }
-      }
-    },
-    "/vault/users/{userId}/wallets/{walletId}/payouts/check": {
-      "post": {
-        "security": [
-          {
-            "Core_Auth": [
-              "default"
-            ]
-          }
-        ],
-        "description": "check a payout at the vault for a user and its wallet",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "the user id",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "walletId",
-            "in": "path",
-            "description": "the wallet id",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "the payout to create",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Payout"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "the created Payout",
-            "schema": {
-              "$ref": "#/definitions/PayoutCheck"
-            }
-          },
-          "404": {
-            "description": "the user is unknown"
-          },
-          "409": {
-            "description": "the Wallet balance is to low",
-            "schema": {
-              "$ref": "#/definitions/PayoutCheck"
-            }
           }
         }
       }
@@ -766,77 +517,6 @@
         }
       }
     },
-    "Payout": {
-      "description": "object describing a payout job",
-      "type": "object",
-      "properties": {
-        "payoutId": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "payoutAddress": {
-          "type": "string"
-        },
-        "amount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "emptyWallet": {
-          "type": "boolean",
-          "description": "if true, the amount value will be the maximum value paid out. but it will also payout if there is less balance in the wallet"
-        },
-        "referenceId": {
-          "type": "string",
-          "description": "a place to put describing information"
-        }
-      }
-    },
-    "PayoutCheck": {
-      "description": "The result object of payout checks",
-      "type": "object",
-      "properties": {
-        "fee": {
-          "type": "integer",
-          "format": "long"
-        },
-        "remaining": {
-          "type": "integer",
-          "format": "long"
-        }
-      }
-    },
-    "Wallet": {
-      "type": "object",
-      "properties": {
-        "walletId": {
-          "type": "string",
-          "format": "UUID"
-        },
-        "unconfirmed": {
-          "type": "number"
-        },
-        "confirmed": {
-          "type": "number"
-        }
-      }
-    },
-    "Offer": {
-      "type": "object",
-      "properties": {
-        "offeruuid": {
-          "type": "string"
-        },
-        "paymentinvoiceuuid": {
-          "type": "string"
-        },
-        "createdat": {
-          "type": "string"
-        },
-        "createdby": {
-          "type": "string"
-        }
-      }
-    },
     "TechnologyDataSaveDataBody": {
       "type": "object",
       "properties": {
@@ -854,9 +534,6 @@
         },
         "technologyUUID": {
           "type": "string"
-        },
-        "licenseFee": {
-          "type": "number"
         },
         "tagList": {
           "type": "array",
@@ -902,47 +579,11 @@
         },
         "technologydatadescription": {
           "type": "string"
-        },
-        "licensefee": {
-          "type": "number"
         }
       }
     },
     "TechnologyDataContent": {
       "type": "string"
-    },
-    "OfferRequestBody": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "dataId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "integer"
-              }
-            }
-          }
-        },
-        "hsmId": {
-          "type": "string"
-        }
-      }
-    },
-    "Invoice": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "invoice": {
-          "type": "string"
-        }
-      }
     },
     "Components": {
       "type": "object",

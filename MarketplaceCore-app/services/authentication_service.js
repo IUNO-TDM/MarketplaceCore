@@ -57,28 +57,6 @@ self.oAuth = function (req, res, next) {
     }
 };
 
-self.ws_oAuth = function (socket, next) {
-    try {
-        const accessToken = getBearerTokenFromHeader(socket.handshake);
-
-        authService.validateToken(accessToken, function (err, isValid, token) {
-            if (isValid) {
-                next();
-            }
-            else {
-                logger.info('[authentication_service] Websocket Client unauthorized.');
-                return next(new Error('WWW-Authenticate: Bearer realm=Valid oauth token required'));
-            }
-        })
-
-    }
-    catch (ex) {
-        logger.warn(ex);
-
-        return next(new Error('WWW-Authenticate: Bearer realm=Valid oauth token required'));
-    }
-};
-
 self.isUserWithRole = function (role, req, res, next) {
     if (req.token.user.roles.indexOf(role) > -1) {
         return next();

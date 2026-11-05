@@ -2,8 +2,6 @@
  * Created by beuttlerma on 09.03.16.
  */
 
-const ascii85 = require('ascii85');
-
 String.prototype.format = function () {
     var args = [].slice.call(arguments);
     return this.replace(/(\{\d+\})/g, function (a) {
@@ -40,18 +38,6 @@ self.convertUUIDtoBase64 = function (uuid) {
     base64 = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
     return base64;
-};
-
-self.convertUUIDtoBase85 = function (uuid) {
-
-    uuid = uuid.replace(new RegExp('-', 'g'), '');
-    const base85String = ascii85.encode(new Buffer(uuid, 'hex')).toString();
-
-    if (base85String.length > 20) {
-        throw new Error('[helper_service] Error when encoding uuid. Resulting string is to long.')
-    }
-
-    return base85String;
 };
 
 

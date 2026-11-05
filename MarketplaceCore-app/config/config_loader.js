@@ -1,35 +1,46 @@
 /**
- * Created by beuttlerma on 18.04.17.
+ * Configuration is read from environment variables only (see contracts/configuration.md).
+ *
+ * Required: DB_PASSWORD, BACKEND_CLIENT_SECRET
+ * Optional: DB_HOST (localhost), DB_PORT (5432), DB_USER (marketplace), DB_NAME (MarketplaceCore),
+ *           KEYCLOAK_INTERNAL_URL (http://localhost:8080), KEYCLOAK_REALM (iuno),
+ *           BACKEND_CLIENT_ID (marketplace-backend), LOG_LEVEL (info), IMAGE_DIR (images/recipes/)
  */
+const path = require('path');
+const env = process.env;
 
-/**
- * To use a custom config file use the config_default as a template.
- * Save the custom config file in the same directory. All files starting with private* will be ignored by git.
- *
- * Set the file name as environment variable for TDM_CORE_CONFIG.
- *
- * Example: TDM_CORE_CONFIG = 'private_config_local'
- *
- * If the custom config is missing any variables, the default variables will be used.
- * If no custom config is defined, the default configuration will be loaded.
- *
- * @returns {config}
- */
-
-var config = require('./config_defaults');
-const ENV_NAME = 'TDM_CORE_CONFIG';
-if (process.env[ENV_NAME]) {
-    console.info('Loading configuration file: ' + process.env[ENV_NAME]);
-
-    var customConfig = require('./' + process.env[ENV_NAME]);
-
-    // override default values from custom configuration
-    for (var key in customConfig) {
-        config[key] = customConfig[key];
+function required(name) {
+    if (!env[name]) {
+        throw new Error('Missing required environment variable: ' + name);
     }
-}
-else {
-    console.warn('ENV Variable: ' + ENV_NAME + ' not specified. Loading defaults only.');
+
+    return env[name];
 }
 
-module.exports = config;
+const self = {};
+
+self.DB_CONNECTION = {
+    host: env.DB_HOST || 'localhost',
+    port: parseInt(env.DB_PORT, 10) || 5432,
+    database: env.DB_NAME || 'MarketplaceCore',
+    user: env.DB_USER || 'marketplace',
+    password: required('DB_PASSWORD')
+};
+
+const keycloakUrl = (env.KEYCLOAK_INTERNAL_URL || 'http://localhost:8080').replace(/\/+$/, '');
+self.OAUTH = {
+    INTROSPECTION_URL: keycloakUrl + '/realms/' + encodeURIComponent(env.KEYCLOAK_REALM || 'iuno') +
+        '/protocol/openid-connect/token/introspect',
+    CLIENT_ID: env.BACKEND_CLIENT_ID || 'marketplace-backend',
+    CLIENT_SECRET: required('BACKEND_CLIENT_SECRET'),
+    CACHE_SECONDS: parseInt(env.TOKEN_CACHE_SECONDS, 10) || 30
+};
+
+self.LOG_LEVEL = env.LOG_LEVEL || 'info';
+
+self.TMP_DIR = path.resolve(__dirname, '../tmp');
+self.FILE_DIR = path.resolve(__dirname, '../files');
+self.IMAGE_DIR = env.IMAGE_DIR || 'images/recipes/';
+self.DEFAULT_IMAGE = 'images/default.svg';
+
+module.exports = self;
